@@ -1,62 +1,68 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Scribouilli</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js" defer></script>
 </head>
+
 <body>
-<main>
-    <h1>Scribouilli</h1>
+    <main>
+        <h1>Scribouilli</h1>
 
-    <section>
-        <h2>Un espace collaboratif de publication de contenu.</h2>
+        <section class="screen" id="welcome">
+            <h2>Un espace collaboratif de publication de contenu.</h2>
 
-        <a href="#creer">Créer un espace</a>
-        <a href="#rejoindre">Rejoindre un espace</a>
-    </section>
+            <a href="#account">Créer un espace</a>
+            <!-- <a href="#account">Rejoindre un espace</a> -->
+        </section>
 
-    <section>
-        <h2>Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à un compte Github.</h2>
+        <section class="screen" id="account">
+            <h2>Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à un compte Github.</h2>
 
-        <a href="#">J'ai déjà un compte</a>
-        <a href="#">Pas de compte</a>
-    </section>
+            <a href="#login">J'ai déjà un compte</a>
+            <!-- <a href="#create-account">Pas de compte</a> -->
+        </section>
 
-    <section>
-        <h2>Super, nous allons demander les clés sur la page suivante.</h2>
+        <section class="screen" id="login">
+            <h2>Super, nous allons demander les clés sur la page suivante.</h2>
 
-        <a href="#">Connexion Github</a>
-    </section>
+            <a id="github-login">Connexion Github</a>
 
-    <section>
-        <h2>Créez un compte par ici</h2>
+        </section>
 
-        <a href="#">Github</a>
-    </section>
+        <!-- <section class="screen" id="create-account">
+            <h2>Créez un compte par ici</h2>
 
-    <section>
-        <h2>Créez un projet</h2>
+            <a href="#">Github</a>
+        </section> -->
 
-        <h3>Ce projet va être créer sur l'url https://blabla.github.io</h3>
+        <section class="screen" id="create-project">
+            <h2>Créez un projet</h2>
 
-        <a href="">Créer</a>
-    </section>
+            <h3>Ce projet va être créer sur l'url https://blabla.github.io</h3>
 
-    <section>
-        <h2>Nous sommes entrain de créer le projet : blabla</h2>
-        <img src="" alt="loader qui tourne, wahou">
-    </section>
+            <a href="">Créer</a>
+        </section>
 
-    <section>
-        <h2>Youpi ! C'est un réussite !</h2>
+        <section class="screen" id="">
+            <h2>Nous sommes entrain de créer le projet : blabla</h2>
+            <img src="" alt="loader qui tourne, wahou">
+        </section>
 
-        <a href="">Voir le site blabla</a>
-        <a href="#">Voir les coulisses</a>
-    </section>
+        <section class="screen" id="">
+            <h2>Youpi ! C'est un réussite !</h2>
 
-</main>
+            <a href="">Voir le site blabla</a>
+            <a href="#">Voir les coulisses</a>
+        </section>
+
+    </main>
 </body>
+
 </html>

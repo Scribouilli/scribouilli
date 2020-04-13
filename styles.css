@@ -1,0 +1,7 @@
+.screen {
+  display: none;
+}
+
+.screen:target {
+  display: block;
+}
