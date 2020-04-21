@@ -16,7 +16,14 @@ if (accessToken) {
     location.href = "#create-project";
 
 
-    fetch("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}}).then (r => r.json()).then(result=>console.log(result))
+    fetch("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
+        .then (r => r.json())
+        .then(result => {
+            console.log(result);
+            const login = result.login;
+            const loginElement = document.querySelector("#create-project .login");
+            loginElement.textContent = login;
+        })
         } else {
     console.log("bonjoir");
     location.href = "#welcome";
