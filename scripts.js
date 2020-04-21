@@ -17,12 +17,18 @@ if (accessToken) {
 
 
     fetch("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
-        .then (r => r.json())
+        .then(r => r.json())
         .then(result => {
             console.log(result);
             const login = result.login;
             const loginElement = document.querySelector("#create-project .login");
             loginElement.textContent = login;
+        })
+        .then(()=> {
+            const button = document.querySelector("#create-project .submit");
+            button.addEventListener("click", ()=>{
+                // Là on va créer et faire des trucs magiques avec Github
+            })
         })
         } else {
     console.log("bonjoir");
