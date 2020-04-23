@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Scribouilli</title>
     <link rel="stylesheet" href="styles.css">
@@ -12,57 +12,178 @@
 </head>
 
 <body>
-    <main>
-        <h1>Scribouilli</h1>
+<main>
+    <h1>Scribouilli</h1>
 
-        <section class="screen" id="welcome">
-            <h2>Un espace collaboratif de publication de contenu.</h2>
+    <section class="screen" id="welcome">
+        <h2>Un espace collaboratif de publication de contenu.</h2>
 
-            <a href="#account">Créer un espace</a>
-            <!-- <a href="#account">Rejoindre un espace</a> -->
-        </section>
+        <a href="#account">Créer un espace</a>
+        <!-- <a href="#account">Rejoindre un espace</a> -->
+    </section>
 
-        <section class="screen" id="account">
-            <h2>Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à un compte Github.</h2>
+    <section class="screen" id="account">
+        <h2>Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à un compte Github.</h2>
 
-            <a href="#login">J'ai déjà un compte</a>
-            <!-- <a href="#create-account">Pas de compte</a> -->
-        </section>
+        <a href="#login">J'ai déjà un compte</a>
+        <!-- <a href="#create-account">Pas de compte</a> -->
+    </section>
 
-        <section class="screen" id="login">
-            <h2>Super, nous allons demander les clés sur la page suivante.</h2>
+    <section class="screen" id="login">
+        <h2>Super, nous allons demander les clés sur la page suivante.</h2>
 
-            <a id="github-login">Connexion Github</a>
+        <a id="github-login">Connexion Github</a>
 
-        </section>
+    </section>
 
-        <!-- <section class="screen" id="create-account">
-            <h2>Créez un compte par ici</h2>
+    <!-- <section class="screen" id="create-account">
+        <h2>Créez un compte par ici</h2>
 
-            <a href="#">Github</a>
-        </section> -->
+        <a href="#">Github</a>
+    </section> -->
 
-        <section class="screen" id="create-project">
-            <h2>Créez un projet</h2>
+    <section class="screen" id="create-project">
+        <h2>Créez un projet</h2>
 
-            <h3>Ce projet va être créer sur l'url https://<span class="login"></span>.github.io</h3>
+        <h3>Ce projet va être créer sur l'url https://<span class="login"></span>.github.io</h3>
 
-            <a href="#loader" class="submit">Créer</a>
-        </section>
+        <a href="#loader" class="submit">Créer</a>
+    </section>
 
-        <section class="screen" id="loader">
-            <h2>Nous sommes entrain de créer l'espace de publication</h2>
-            <img src="" alt="loader qui tourne, wahou">
-        </section>
+    <section class="screen" id="loader">
+        <h2>Nous sommes entrain de créer l'espace de publication</h2>
+        <img src="" alt="loader qui tourne, wahou">
+    </section>
 
-        <section class="screen" id="">
-            <h2>Youpi ! C'est un réussite !</h2>
+    <section class="screen" id="">
+        <h2>Youpi ! C'est un réussite !</h2>
 
-            <a href="">Voir le site blabla</a>
-            <a href="#">Voir les coulisses</a>
-        </section>
+        <a href="">Voir le site blabla</a>
+        <a href="#">Voir les coulisses</a>
+    </section>
 
-    </main>
+
+    <section class="screen" id="landing">
+        <h2>Nom du projet</h2>
+
+        <nav>
+            <a href="">Pages</a>
+            <a href="">Articles</a>
+            <a href="">Paramètres</a>
+        </nav>
+
+        <div id="pages">
+            <h3>Pages</h3>
+            <a href="">Nouvelle page</a>
+            <ul>
+                <li>
+                    Nom de la page 1
+                    <a href="">Modifier</a>
+                    <a href="">Supprimer</a>
+                </li>
+                <li>
+                    Nom de la page 2
+                    <a href="">Modifier</a>
+                    <a href="">Supprimer</a>
+                </li>
+            </ul>
+        </div>
+        <div id="articles">
+            <h3>Articles</h3>
+            <a href="">Nouvel article</a>
+            <ul>
+                <li>
+                    Nom de l'article 1
+                    <a href="">Modifier</a>
+                    <a href="">Supprimer</a>
+                </li>
+                <li>
+                    Nom de l'article 2
+                    <a href="">Modifier</a>
+                    <a href="">Supprimer</a>
+                </li>
+            </ul>
+        </div>
+        <div id="settings">
+            <h3>Paramètres</h3>
+            <form action="">
+                <div>
+                    <label for="title">Titre du site</label>
+                    <input type="text" name="" id="title" value="Titre du site">
+
+                    <p>Mon identifiant : <span>blabla.github.io</span></p>
+                </div>
+                <div>
+                    <label for="theme">Thème du site</label>
+                    <select name="" id="theme">
+                        <option value="">Le plus beau theme 1</option>
+                        <option value="">Le plus beau theme 2</option>
+                    </select>
+                    <ul>
+                        <li><a href="">Thème 1</a></li>
+                        <li><a href="">Thème 2</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <label for="favicon">Icone du site</label>
+                    <input type="file" name="" id="favicon">
+                </div>
+            </form>
+
+            <a href="">Télécharger le site</a>
+        </div>
+    </section>
+
+    <section class="screen" id="newPage">
+
+        <!-- Même page pour nouvel article et nouvelle page SAUF voir commentaire suivant -->
+        <h2>Nouvel article</h2>
+        <a href="">Retour à l'accueil</a>
+
+        <form action="">
+            <div>
+                <label for="article-title">Titre de l'article</label>
+                <input type="text" name="" id="article-title">
+            </div>
+            <div>
+                <ul>
+                    <select name="" id="">
+                        <option value="">H1</option>
+                        <option value="">H2</option>
+                    </select>
+                    <li>Gras</li>
+                    <li>Italique</li>
+                    <li>Image</li>
+                    <select name="" id="">
+                        <option value="">Texte</option>
+                        <option value="">Markdown</option>
+                        <option value="">HTML</option>
+                    </select>
+                </ul>
+
+                <div>
+                    <textarea name="" id="" cols="30" rows="10">
+                        Blabla
+                    </textarea>
+                </div>
+
+                <!--
+                // ==== Seulement pour l'ajout d'une nouvelle page ====
+                <div>
+                    <label for="">Ajouter dans</label>
+                    <select name="" id="">
+                        <option value="">---</option>
+                        <option value="">Menu principal</option>
+                    </select>
+                </div>
+                -->
+            </div>
+            <button type="submit">Enregistrer l'article</button>
+        </form>
+    </section>
+
+</main>
 </body>
 
 </html>
