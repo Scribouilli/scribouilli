@@ -15,22 +15,37 @@ if (accessToken) {
     console.log("connecté t'as vu");
     location.href = "#create-project";
 
-
-    fetch("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
-        .then(r => r.json())
+    d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
         .then(result => {
             console.log(result);
             const login = result.login;
-            const loginElement = document.querySelector("#create-project .login");
-            loginElement.textContent = login;
+            const origin = `${login}.github.io`
+            const originElement = document.querySelector("#create-project .origin");
+            originElement.textContent = origin;
+            return origin;
         })
-        .then(()=> {
+        .then((origin) => {
+            const repoName = origin; // per Github pages convention
+            const publishedWebsiteURL = `https://${repoName}/`;
             const button = document.querySelector("#create-project .submit");
-            button.addEventListener("click", ()=>{
-                // Là on va créer et faire des trucs magiques avec Github
+            button.addEventListener("click", () => {
+                d3.json("https://api.github.com/user/repos", {
+                    headers: {Authorization: "token " + accessToken},
+                    method: "POST",
+                    body: JSON.stringify(
+                        {
+                            name: repoName,
+                            homepage: publishedWebsiteURL,
+                            has_issues: false,
+                            has_projects: false,
+                            has_wiki: false,
+                            auto_init: false
+                        }
+                    )
+                })
             })
         })
-        } else {
+} else {
     console.log("bonjoir");
     location.href = "#welcome";
 }
