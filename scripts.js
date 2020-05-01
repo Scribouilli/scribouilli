@@ -43,6 +43,11 @@ if (accessToken) {
                         }
                     )
                 })
+                    .then(() => {
+                        location.href="#youpi";
+                        const LinkWebsite = document.querySelector("#youpi .show-site");
+                        LinkWebsite.href = publishedWebsiteURL;
+                })
             })
         })
 } else {
