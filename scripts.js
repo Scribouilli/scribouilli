@@ -34,8 +34,8 @@ if (accessToken) {
                             })
                             .catch(() => {
                                 location.href ="#after-delete-failure"
-                                const refreshButton = document.querySelector("#delete-repo-failure .refresh");
-                                const githubDangerZone = document.querySelector("#delete-repo-failure" +
+                                const refreshButton = document.querySelector("#after-delete-failure .refresh");
+                                const githubDangerZone = document.querySelector("#after-delete-failure" +
                                     " .github-danger-zone");
 
                                 refreshButton.addEventListener("click", () => {
