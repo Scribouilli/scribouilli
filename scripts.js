@@ -30,6 +30,7 @@ if (accessToken) {
                             method: "DELETE"
                         })
                             .then(() => {
+                                // TOUTDOUX : ça n'y va pas !
                                 location.href = "#after-delete";
                             })
                             .catch(() => {
