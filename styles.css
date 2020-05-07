@@ -1,7 +1,115 @@
+/* RESET */
+
+/*
+  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+*/
+*, *:before, *:after {
+    box-sizing: border-box;
+    /* if you really care about older browsers, add prefixed versions at your own risks */
+}
+
+/*
+  Repeating the background mostly makes sense in the <body>. Otherwise, people usually want the image and preferably its center (not the top-right corner)
+*/
+*:not(body) {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+/*
+  Makes the hidden attribute works even when an element is styled display: flex
+  http://lists.w3.org/Archives/Public/public-whatwg-archive/2014May/0001.html
+*/
+[hidden] {
+    display: none !important;
+}
+
+
+html, body {
+    padding: 0;
+    margin: 0;
+}
+
+/*
+  In applications, there can be lists but HTML lists have bullet points and a bunch of useless styling attributes
+*/
+ul, ol, menu {
+    margin: 0;
+    padding: 0;
+
+}
+
+ul, menu {
+    list-style: none;
+}
+
+li {
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* default iframe borders are just ugly */
+iframe {
+    border: 0;
+}
+
+
+* {
+    border-collapse: collapse;
+}
+
+/* DES VRAIS STYLES */
+html {
+    font-size: 62.5%;
+}
+body {
+    font-size: 2rem;
+    background-color: #ffe7b3;
+}
+main {
+    max-width: 100%;
+    width: 800px;
+    margin: 0 auto;
+}
+
 .screen {
-  display: none;
+    display: none;
 }
 
 .screen:target {
-  display: block;
+    display: block;
+}
+
+.screen,
+h1 {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 5rem;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 5rem;
+    padding: 1.6rem;
+    font-weight: bold;
+    border: 2px solid #000;
+    border-radius: 8px;
+    background-color: #ffe7b3;
+}
+
+.btn,
+.btn:hover {
+    color: #000;
+}
+
+.btn:hover {
+    text-decoration: none;
+    border-width: 3px;
 }

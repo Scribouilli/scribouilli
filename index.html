@@ -7,7 +7,10 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Scribouilli</title>
+
+    <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/twbs/bootstrap@v4/dist/css/bootstrap-reboot.css">
     <link rel="stylesheet" href="styles.css">
+
     <script src="https://d3js.org/d3-fetch.v1.min.js" defer></script>
     <script src="scripts.js" defer type="module"></script>
 </head>
@@ -17,23 +20,23 @@
     <h1>Scribouilli</h1>
 
     <section class="screen" id="welcome">
-        <h2>Un espace collaboratif de publication de contenu.</h2>
+        <h2>Un espace collaboratif <br> de publication de contenu.</h2>
 
-        <a href="#account">Créer un espace</a>
+        <a href="#account" class="btn">Créer un espace</a>
         <!-- <a href="#account">Rejoindre un espace</a> -->
     </section>
 
     <section class="screen" id="account">
         <h2>Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à un compte Github.</h2>
 
-        <a href="#login">J'ai déjà un compte</a>
+        <a href="#login" class="btn">J'ai déjà un compte</a>
         <!-- <a href="#create-account">Pas de compte</a> -->
     </section>
 
     <section class="screen" id="login">
         <h2>Super, nous allons demander les clés sur la page suivante.</h2>
 
-        <a id="github-login">Connexion Github</a>
+        <a id="github-login" class="btn">Connexion Github</a>
     </section>
 
     <!-- <section class="screen" id="create-account">
@@ -47,7 +50,7 @@
 
         <h3>Tu veux en créer un nouveau ?</h3>
 
-        <a href="#create-project">Ouais grave</a>
+        <a href="#create-project" class="btn">Ouais grave</a>
     </section>
     
     <section class="screen" id="after-delete-failure">
@@ -70,7 +73,7 @@
 
         <h3>Ce projet va être créé sur l'url https://<span class="origin"></span></h3>
 
-        <a href="#loader" class="submit">Créer</a>
+        <a href="#loader" class="btn submit">Créer</a>
     </section>
 
     <section class="screen" id="loader">
@@ -82,8 +85,8 @@
         <h2>Youpi ! C'est un·e réussite !</h2>
 
         <nav>
-            <a href="" class="show-site" target="_blank">Voir le site blabla</a>
-            <a href="#atelier">Voir l'atelier</a>
+            <a href="" class="btn show-site" target="_blank">Voir le site blabla</a>
+            <a href="#atelier" class="btn">Voir l'atelier</a>
         </nav>
     </section>
 
