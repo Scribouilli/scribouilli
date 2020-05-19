@@ -22,12 +22,13 @@ if (accessToken) {
 
             const deleteButton = document.querySelector("#atelier .delete-repo");
             deleteButton.addEventListener("click", () => {
-                d3.json(`https://api.github.com/repos/${login}/${origin}`, {
+                d3.text(`https://api.github.com/repos/${login}/${origin}`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "DELETE"
                 })
                     .then(() => {
-                        // TOUTDOUX : ça n'y va pas !
+                        // TOUTDOUX : ça n'y va pas ! Hypothèse, le delete retourne http204 sans contenu donc le
+                        // JSON.parse échoue
                         console.log("on passe par là ?")
                         location.href = "#after-delete";
                     })
