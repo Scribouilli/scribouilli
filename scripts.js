@@ -20,35 +20,36 @@ if (accessToken) {
             const login = result.login;
             const origin = `${login}.github.io`
 
+            const deleteButton = document.querySelector("#atelier .delete-repo");
+            deleteButton.addEventListener("click", () => {
+                d3.json(`https://api.github.com/repos/${login}/${origin}`, {
+                    headers: {Authorization: "token " + accessToken},
+                    method: "DELETE"
+                })
+                    .then(() => {
+                        // TOUTDOUX : ça n'y va pas !
+                        console.log("on passe par là ?")
+                        location.href = "#after-delete";
+                    })
+                    .catch((error) => {
+                        console.error("after delete failure", error);
+                        location.href ="#after-delete-failure"
+                        const refreshButton = document.querySelector("#after-delete-failure .refresh");
+                        const githubDangerZone = document.querySelector("#after-delete-failure" +
+                            " .github-danger-zone");
+
+                        refreshButton.addEventListener("click", () => {
+                            location.href="#";
+                            location.reload();
+                        });
+
+                        githubDangerZone.href= `https://github.com/${login}/${origin}/settings/#danger-zone`;
+                    })
+            })
+
             return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
                 .then(() => {
                     location.href = "#atelier";
-                    const deleteButton = document.querySelector("#atelier .delete-repo");
-                    deleteButton.addEventListener("click", () => {
-                        d3.json(`https://api.github.com/repos/${login}/${origin}`, {
-                            headers: {Authorization: "token " + accessToken},
-                            method: "DELETE"
-                        })
-                            .then(() => {
-                                // TOUTDOUX : ça n'y va pas !
-                                console.log("on passe par là ?")
-                                location.href = "#after-delete";
-                            })
-                            .catch((error) => {
-                                console.error("after delete failure", error);
-                                location.href ="#after-delete-failure"
-                                const refreshButton = document.querySelector("#after-delete-failure .refresh");
-                                const githubDangerZone = document.querySelector("#after-delete-failure" +
-                                    " .github-danger-zone");
-
-                                refreshButton.addEventListener("click", () => {
-                                    location.href="#";
-                                    location.reload();
-                                });
-
-                                githubDangerZone.href= `https://github.com/${login}/${origin}/settings/#danger-zone`;
-                            })
-                    })
                 })
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
