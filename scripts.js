@@ -31,9 +31,11 @@ if (accessToken) {
                         })
                             .then(() => {
                                 // TOUTDOUX : ça n'y va pas !
+                                console.log("on passe par là ?")
                                 location.href = "#after-delete";
                             })
-                            .catch(() => {
+                            .catch((error) => {
+                                console.error("after delete failure", error);
                                 location.href ="#after-delete-failure"
                                 const refreshButton = document.querySelector("#after-delete-failure .refresh");
                                 const githubDangerZone = document.querySelector("#after-delete-failure" +
