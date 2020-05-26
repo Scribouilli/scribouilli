@@ -27,9 +27,6 @@ if (accessToken) {
                     method: "DELETE"
                 })
                     .then(() => {
-                        // TOUTDOUX : ça n'y va pas ! Hypothèse, le delete retourne http204 sans contenu donc le
-                        // JSON.parse échoue
-                        console.log("on passe par là ?")
                         location.href = "#after-delete";
                     })
                     .catch((error) => {
@@ -86,6 +83,24 @@ if (accessToken) {
                                 }
                             )
                         })
+                            .then(() => {
+                                return d3.json("https://api.github.com/repos/daktary-team/coup-de-pinceau/contents/index.md", {
+                                    headers: {Authorization: "token " + accessToken}
+                                })
+                                    .then(({content}) => {
+                                        return d3.json(`https://api.github.com/repos/${login}/${origin}/contents/index.md`, {
+                                            headers: {Authorization: "token " + accessToken},
+                                            method: "PUT",
+                                            body: JSON.stringify(
+                                                {
+                                                    message: "crée le index.md",
+                                                    content
+                                                }
+                                            )
+                                        })
+                                    })
+                            })
+                            
                             .then(() => {
                                 location.href = "#youpi";
                                 const LinkWebsite = document.querySelector("#youpi .show-site");
