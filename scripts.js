@@ -20,7 +20,7 @@ if (accessToken) {
             const login = result.login;
             const origin = `${login}.github.io`
 
-            const deleteButton = document.querySelector("#atelier .delete-repo");
+            const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
             deleteButton.addEventListener("click", () => {
                 d3.text(`https://api.github.com/repos/${login}/${origin}`, {
                     headers: {Authorization: "token " + accessToken},
@@ -34,23 +34,32 @@ if (accessToken) {
                     })
                     .catch((error) => {
                         console.error("after delete failure", error);
-                        location.href ="#after-delete-failure"
+                        location.href = "#after-delete-failure"
                         const refreshButton = document.querySelector("#after-delete-failure .refresh");
                         const githubDangerZone = document.querySelector("#after-delete-failure" +
                             " .github-danger-zone");
 
                         refreshButton.addEventListener("click", () => {
-                            location.href="#";
+                            location.href = "#";
                             location.reload();
                         });
 
-                        githubDangerZone.href= `https://github.com/${login}/${origin}/settings/#danger-zone`;
+                        githubDangerZone.href = `https://github.com/${login}/${origin}/settings/#danger-zone`;
                     })
             })
 
             return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
                 .then(() => {
-                    location.href = "#atelier";
+                    location.href = "#atelier-pages";
+
+                    const projectNameElements = document.querySelectorAll("#atelier-pages .project-name, #atelier-articles .project-name, #atelier-parametres .project-name");
+                    const repoName = origin;
+                    const publishedWebsiteURL = `https://${repoName}/`;
+                    for (const projectNameElement of projectNameElements) {
+                        projectNameElement.textContent = publishedWebsiteURL;
+                        projectNameElement.href = publishedWebsiteURL;
+                    }
+
                 })
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po

@@ -97,17 +97,14 @@
         </nav>
     </section>
 
-    <section class="screen" id="atelier">
-        <!-- TOUTDOUX: ajouter un bouton pour supprimer le repo existant-->
-        <h2>Nom du projet</h2>
+    <section class="screen" id="atelier-pages">
+        <h2><a href="" class="project-name"></a></h2>
 
         <nav>
-            <a href="">Pages</a>
-            <a href="">Articles</a>
-            <a href="">Paramètres</a>
+            <a href="#atelier-pages">Pages</a>
+            <a href="#atelier-articles">Articles</a>
+            <a href="#atelier-parametres">Paramètres</a>
         </nav>
-
-        <button class="delete-repo">Tout supprimer, bim</button>
 
         <div id="pages">
             <h3>Pages</h3>
@@ -125,6 +122,16 @@
                 </li>
             </ul>
         </div>
+    </section>
+    <section class="screen" id="atelier-articles">
+        <h2><a href="" class="project-name"></a></h2>
+
+        <nav>
+            <a href="#atelier-pages">Pages</a>
+            <a href="#atelier-articles">Articles</a>
+            <a href="#atelier-parametres">Paramètres</a>
+        </nav>
+
         <div id="articles">
             <h3>Articles</h3>
             <a href="">Nouvel article</a>
@@ -141,6 +148,17 @@
                 </li>
             </ul>
         </div>
+    </section>
+
+    <section class="screen" id="atelier-parametres">
+        <h2><a href="" class="project-name"></a></h2>
+
+        <nav>
+            <a href="#atelier-pages">Pages</a>
+            <a href="#atelier-articles">Articles</a>
+            <a href="#atelier-parametres">Paramètres</a>
+        </nav>
+
         <div id="settings">
             <h3>Paramètres</h3>
             <form action="">
@@ -169,6 +187,8 @@
             </form>
 
             <a href="">Télécharger le site</a>
+
+            <button class="delete-repo">Tout supprimer, bim</button>
         </div>
     </section>
 
