@@ -1,4 +1,4 @@
-export default function () {
+export default function (accessToken, login, origin) {
 
     const originElement = document.querySelector("#create-project .origin");
     originElement.textContent = origin;
