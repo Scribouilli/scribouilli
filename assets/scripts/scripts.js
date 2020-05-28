@@ -22,6 +22,7 @@ if (accessToken) {
                 if (location.hash === '#create-project') {
                     console.log("You're visiting a cool feature!");
                     prepareCreateProjectScreen(accessToken, login, origin)
+                    // TOUTDOUX : cet appel rajoute trop d'evenlistener sur le bouton "créer"
                 }
             })
 
