@@ -122,7 +122,7 @@ if (accessToken) {
                                         {
                                             message: "création de la page d'exemple",
                                             content: btoa(
-                                                '# Exemple de titre\n\n' +
+                                                '---\n---\n\n# Exemple de titre\n\n' +
                                                 'Hey ! Voici un contenu en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)'
                                             )
                                         }
