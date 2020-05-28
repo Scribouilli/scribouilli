@@ -116,6 +116,31 @@ if (accessToken) {
                             })
 
                             .then(() => {
+                                return new Promise((resolve, reject) => {
+
+                                    (function checkIfBuilt() {
+                                        return d3.json(`https://api.github.com/repos/${login}/${origin}/pages`, {
+                                            headers: {Authorization: "token " + accessToken}
+                                        })
+                                            .then(({status}) => {
+                                                console.log('build status', status)
+                                                if (status === 'built') {
+                                                    resolve()
+                                                    return;
+                                                }
+                                                if (status === 'errored') {
+                                                    reject(new Error('Github pages build error'))
+                                                    return;
+                                                }
+
+                                                setTimeout(checkIfBuilt, 500)
+                                            })
+                                            .catch(reject)
+                                    })()
+                                })
+                            })
+
+                            .then(() => {
                                 location.href = "#youpi";
                                 const LinkWebsite = document.querySelector("#youpi .show-site");
                                 LinkWebsite.href = publishedWebsiteURL;
