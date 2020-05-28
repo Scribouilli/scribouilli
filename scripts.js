@@ -95,12 +95,26 @@ if (accessToken) {
                                                 {
                                                     message: "crée le index.md",
                                                     content
+                                                    // Attendre le repo soit déployé pas juste créé
                                                 }
                                             )
                                         })
                                     })
                             })
-                            
+
+                            .then(() => {
+                                return d3.json(`https://api.github.com/repos/${login}/${origin}/contents/_config.yml`, {
+                                    headers: {Authorization: "token " + accessToken},
+                                    method: "PUT",
+                                    body: JSON.stringify(
+                                        {
+                                            message: "crée le _config.yml",
+                                            content: btoa(`theme: jekyll-theme-cayman`)
+                                        }
+                                    )
+                                })
+                            })
+
                             .then(() => {
                                 location.href = "#youpi";
                                 const LinkWebsite = document.querySelector("#youpi .show-site");
