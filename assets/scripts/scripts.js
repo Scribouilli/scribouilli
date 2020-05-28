@@ -18,6 +18,13 @@ if (accessToken) {
             const login = result.login;
             const origin = `${login}.github.io`
 
+            window.addEventListener("hashchange", () => {
+                if (location.hash === '#create-project') {
+                    console.log("You're visiting a cool feature!");
+                    prepareCreateProjectScreen(accessToken, login, origin)
+                }
+            })
+
             const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
             deleteButton.addEventListener("click", () => {
                 d3.text(`https://api.github.com/repos/${login}/${origin}`, {
@@ -59,7 +66,7 @@ if (accessToken) {
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
                     location.href = "#create-project";
-                    prepareCreateProjectScreen( accessToken, login, origin)
+                    prepareCreateProjectScreen(accessToken, login, origin)
                 })
         });
 } else {
