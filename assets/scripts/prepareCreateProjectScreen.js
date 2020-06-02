@@ -1,12 +1,8 @@
-export default function (accessToken, login, origin) {
-
-    const originElement = document.querySelector("#create-project .origin");
-    originElement.textContent = origin;
-
+function makeButtonListener(accessToken, login, origin) {
     const repoName = origin; // per Github pages convention
     const publishedWebsiteURL = `https://${repoName}/`;
-    const button = document.querySelector("#create-project .submit");
-    button.addEventListener("click", () => {
+
+    return () => {
         d3.json("https://api.github.com/user/repos", {
             headers: {Authorization: "token " + accessToken},
             method: "POST",
@@ -99,5 +95,22 @@ export default function (accessToken, login, origin) {
                 const LinkWebsite = document.querySelector("#youpi .show-site");
                 LinkWebsite.href = publishedWebsiteURL;
             })
-    })
+    }
+}
+
+let currentlyAttachedListener = undefined;
+
+export default function (accessToken, login, origin) {
+    const originElement = document.querySelector("#create-project .origin");
+    originElement.textContent = origin;
+    const button = document.querySelector("#create-project .submit");
+
+    if (currentlyAttachedListener) {
+        button.removeEventListener("click", currentlyAttachedListener);
+    }
+
+    const buttonListener = makeButtonListener(accessToken, login, origin);
+
+    button.addEventListener("click", buttonListener);
+    currentlyAttachedListener = buttonListener;
 }
