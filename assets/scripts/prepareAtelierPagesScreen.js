@@ -22,6 +22,17 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
                     .then(
                         ({tree}) => {
                             console.log(tree);
+                            const pageFiles = tree.filter(f => {
+                                return f.type === "blob" && (f.path.endsWith(".md") || f.path.endsWith(".html"))
+                            })
+                            console.log(pageFiles);
+
+                            const pagesList = document.querySelector("#atelier-pages .pages-list");
+                            for (const pageFile of pageFiles) {
+                                const li = document.createElement("li");
+                                li.textContent = pageFile.path;
+                                pagesList.append(li);
+                            }
                         }
                     )
             }
