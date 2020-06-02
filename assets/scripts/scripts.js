@@ -1,4 +1,5 @@
 import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
+import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 
 const client_id = "2b4ed9ba835b05f83e2d";
 const destination = "https://daktary-team.github.io/scribouilli";
@@ -22,7 +23,6 @@ if (accessToken) {
                 if (location.hash === '#create-project') {
                     console.log("You're visiting a cool feature!");
                     prepareCreateProjectScreen(accessToken, login, origin)
-                    // TOUTDOUX : cet appel rajoute trop d'evenlistener sur le bouton "créer"
                 }
             })
 
@@ -54,20 +54,13 @@ if (accessToken) {
             return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
                 .then(() => {
                     location.href = "#atelier-pages";
-
-                    const projectNameElements = document.querySelectorAll("#atelier-pages .project-name, #atelier-articles .project-name, #atelier-parametres .project-name");
-                    const repoName = origin;
-                    const publishedWebsiteURL = `https://${repoName}/`;
-                    for (const projectNameElement of projectNameElements) {
-                        projectNameElement.textContent = publishedWebsiteURL;
-                        projectNameElement.href = publishedWebsiteURL;
-                    }
+                    prepareAtelierPageScreen(accessToken, login, origin);
                 })
 
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
                     location.href = "#create-project";
-                    prepareCreateProjectScreen(accessToken, login, origin)
+                    prepareCreateProjectScreen(accessToken, login, origin);
                 })
         });
 } else {
