@@ -1,5 +1,6 @@
 import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
 import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
+import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 
 const client_id = "2b4ed9ba835b05f83e2d";
 const destination = "https://daktary-team.github.io/scribouilli";
@@ -23,6 +24,9 @@ if (accessToken) {
                 if (location.hash === '#create-project') {
                     console.log("You're visiting a cool feature!");
                     prepareCreateProjectScreen(accessToken, login, origin)
+                }
+                if (location.hash === '#atelier-create-page') {
+                    prepareCreatePageScreen(accessToken, login, origin)
                 }
             })
 

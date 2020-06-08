@@ -8,7 +8,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Scribouilli</title>
 
-    <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/twbs/bootstrap@v4/dist/css/bootstrap-reboot.css">
+    <link crossorigin="anonymous" rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/twbs/bootstrap@v4/dist/css/bootstrap-reboot.css">
     <link rel="stylesheet" href="assets/styles/styles.css">
 
     <script src="https://d3js.org/d3-fetch.v1.min.js" defer></script>
@@ -52,7 +53,7 @@
 
         <a href="#create-project" class="btn">Ouais grave</a>
     </section>
-    
+
     <section class="screen" id="after-delete-failure">
         <h2>Oh non, il y a eu un souci !</h2>
 
@@ -108,10 +109,29 @@
 
         <div id="pages">
             <h3>Pages</h3>
-            <a href="">Nouvelle page</a>
+            <a href="#atelier-create-page">Nouvelle page</a>
             <ul class="pages-list"></ul>
         </div>
     </section>
+
+    <section class="screen" id="atelier-create-page">
+        <h3>Création d'une page</h3>
+
+        <form>
+            <div>
+                <label for="title">Titre</label>
+                <input type="text" name="" id="title">
+            </div>
+
+            <div>
+                <label for="content">Contenu</label>
+                <textarea name="" id="content" cols="30" rows="10"></textarea>
+            </div>
+            <button type="submit">Créer la page</button>
+        </form>
+    </section>
+
+
     <section class="screen" id="atelier-articles">
         <h2><a href="" class="project-name"></a></h2>
 
