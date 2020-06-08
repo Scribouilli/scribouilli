@@ -1,6 +1,8 @@
 export default function (accessToken, login, origin) {
     const form = document.querySelector("#atelier-create-page form");
-    form.addEventListener("submit", () => {
+    form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
             const title = form.querySelector("#title").value;
             const content = form.querySelector("#content").value;
 
