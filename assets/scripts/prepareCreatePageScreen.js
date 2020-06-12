@@ -1,9 +1,17 @@
-function makeFileNameFromTitle (title) {
+function makeFileNameFromTitle(title) {
     const fileName = title.replace(/\/|#|\?/g, "-") // replace url confusing characters
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
-        +".md";
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+        + ".md";
 
     return fileName;
+}
+
+function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
+    return [
+        "---",
+        "title: " + title,
+        "---"
+    ].join("\n")
 }
 
 export default function (accessToken, login, origin) {
@@ -21,13 +29,7 @@ export default function (accessToken, login, origin) {
                     body: JSON.stringify(
                         {
                             message: `création de la page ${title}`,
-                            content: btoa(`
-                            ---\n
-                            title: ${title}\n
-                            ---\n\n
-                            ${content}
-                            `)
-
+                            content: btoa(`${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n\n${content}`)
                         }
                     )
                 }
