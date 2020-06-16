@@ -20,7 +20,7 @@ export default function (accessToken, login, origin) {
             event.preventDefault();
 
             const title = form.querySelector("#title").value;
-            const content = form.querySelector("#content").value;
+            const content = form.querySelector("#content").value || "(Votre contenu)";
             const fileName = makeFileNameFromTitle(title);
 
             d3.json(`https://api.github.com/repos/${login}/${origin}/contents/${fileName}`, {
