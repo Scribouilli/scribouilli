@@ -13,9 +13,10 @@ function makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path}
                 )
             }
         )
-            .then(
-                location.href = "#atelier-pages",
-                prepareAtelierPageScreen(accessToken, login, origin)
+            .then(() => {
+                    location.href = "#atelier-pages",
+                        prepareAtelierPageScreen(accessToken, login, origin)
+                }
             )
     }
 };
