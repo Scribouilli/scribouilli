@@ -10,6 +10,9 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
         projectNameElement.href = publishedWebsiteURL;
     }
 
+    const pagesList = document.querySelector("#atelier-pages .pages-list");
+    pagesList.innerHTML = "";
+
     d3.json(`https://api.github.com/repos/${login}/${origin}/commits`, {
         headers: {Authorization: "token " + accessToken}
     })
@@ -28,8 +31,7 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
                                 return f.type === "blob" && (f.path.endsWith(".md") || f.path.endsWith(".html"))
                             })
                             console.log(pageFiles);
-
-                            const pagesList = document.querySelector("#atelier-pages .pages-list");
+                            
                             for (const pageFile of pageFiles) {
                                 const li = document.createElement("li");
                                 const a = document.createElement("a");
