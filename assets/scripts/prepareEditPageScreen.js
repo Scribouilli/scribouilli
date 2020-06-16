@@ -1,3 +1,5 @@
+import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
+
 export default function prepareEditPageScreen(accessToken, login, origin, {sha, path}) {
     const titrePage = document.querySelector("#atelier-edit-page .titre-page");
     const deleteButton = document.querySelector("#atelier-edit-page .delete-page");
