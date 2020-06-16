@@ -1,4 +1,4 @@
-function makeButtonListener(accessToken, login, origin) {
+function makeCreateProjectButtonListener(accessToken, login, origin) {
     const repoName = origin; // per Github pages convention
     const publishedWebsiteURL = `https://${repoName}/`;
 
@@ -108,7 +108,7 @@ export default function (accessToken, login, origin) {
         button.removeEventListener("click", currentlyAttachedListener);
     }
 
-    const buttonListener = makeButtonListener(accessToken, login, origin);
+    const buttonListener = makeCreateProjectButtonListener(accessToken, login, origin);
 
     button.addEventListener("click", buttonListener);
     currentlyAttachedListener = buttonListener;
