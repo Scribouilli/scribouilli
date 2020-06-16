@@ -1,3 +1,5 @@
+import prepareEditPageScreen from "./prepareEditPageScreen.js";
+
 export default function prepareAtelierPageScreen(accessToken, login, origin) {
     const projectNameElements = document.querySelectorAll("#atelier-pages .project-name, #atelier-articles .project-name, #atelier-parametres .project-name");
     const repoName = origin;
@@ -30,11 +32,16 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
                             const pagesList = document.querySelector("#atelier-pages .pages-list");
                             for (const pageFile of pageFiles) {
                                 const li = document.createElement("li");
-                                li.textContent = pageFile.path;
+                                const a = document.createElement("a");
+                                li.append(a);
+                                a.href = '#atelier-edit-page';
+                                a.textContent = pageFile.path;
                                 pagesList.append(li);
+                                a.addEventListener("click", () => {
+                                    prepareEditPageScreen(accessToken, login, origin, pageFile);
+                                })
                             }
                         }
-                    )
-            }
-        )
+                    );
+            })
 }
