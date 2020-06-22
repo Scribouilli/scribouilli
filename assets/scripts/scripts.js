@@ -2,6 +2,7 @@ import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
 import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 
+window.Buffer = buffer.Buffer;
 const client_id = "2b4ed9ba835b05f83e2d";
 const destination = "https://daktary-team.github.io/scribouilli";
 const redirect_url = "https://file-moi-les-clefs.herokuapp.com/gh-callback";
