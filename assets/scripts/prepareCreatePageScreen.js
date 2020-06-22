@@ -29,7 +29,7 @@ export default function (accessToken, login, origin) {
                     body: JSON.stringify(
                         {
                             message: `création de la page ${title}`,
-                            content: btoa(`${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n\n${content}`)
+                            content: Buffer.from(`${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n\n${content}`).toString('base64')
                         }
                     )
                 }

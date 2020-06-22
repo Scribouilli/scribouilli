@@ -42,7 +42,7 @@ function makeCreateProjectButtonListener(accessToken, login, origin) {
                     body: JSON.stringify(
                         {
                             message: "crée le _config.yml",
-                            content: btoa(`theme: jekyll-theme-cayman`)
+                            content: Buffer.from(`theme: jekyll-theme-cayman`).toString('base64')
                         }
                     )
                 })
@@ -55,10 +55,10 @@ function makeCreateProjectButtonListener(accessToken, login, origin) {
                     body: JSON.stringify(
                         {
                             message: "création de la page d'exemple",
-                            content: btoa(
+                            content: Buffer.from(
                                 '---\n---\n\n# Exemple de titre\n\n' +
                                 'Hey ! Voici un contenu en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)'
-                            )
+                            ).toString('base64')
                         }
                     )
                 })
