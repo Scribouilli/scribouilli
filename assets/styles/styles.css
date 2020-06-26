@@ -67,10 +67,12 @@ iframe {
 html {
     font-size: 62.5%;
 }
+
 body {
     font-size: 2rem;
     background-color: #ffe7b3;
 }
+
 main {
     max-width: 100%;
     width: 800px;
@@ -114,8 +116,19 @@ h1 {
     border-width: 3px;
 }
 
-.build-ing::after {
-    content: "🕰";
+[class^="build-"] {
     display: inline-block;
     margin-left: 20px;
+}
+
+.build-ing::after {
+    content: "🕰";
+}
+
+.build-success::after {
+    content: "✅";
+}
+
+.build-error::after {
+    content: "❌";
 }

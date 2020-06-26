@@ -1,6 +1,6 @@
-import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
+import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js"
 
-function makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path}) {
+function makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path}, buildStatus) {
     return () => {
         d3.json(`https://api.github.com/repos/${login}/${origin}/contents/${path}`, {
                 headers: {Authorization: "token " + accessToken},
@@ -14,8 +14,8 @@ function makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path}
             }
         )
             .then(() => {
-                    location.href = "#atelier-pages",
-                        prepareAtelierPageScreen(accessToken, login, origin)
+                    location.href = "#atelier-pages"
+                    prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
                 }
             )
     }
@@ -23,7 +23,7 @@ function makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path}
 
 let currentlyAttachedListener = undefined;
 
-export default function prepareEditPageScreen(accessToken, login, origin, {sha, path}) {
+export default function prepareEditPageScreen(accessToken, login, origin, {sha, path}, buildStatus) {
     const titrePage = document.querySelector("#atelier-edit-page .titre-page");
     const button = document.querySelector("#atelier-edit-page .delete-page");
 
@@ -33,7 +33,7 @@ export default function prepareEditPageScreen(accessToken, login, origin, {sha, 
         button.removeEventListener("click", currentlyAttachedListener);
     }
 
-    const buttonListener = makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path});
+    const buttonListener = makeDeleteProjectButtonListener(accessToken, login, origin, {sha, path}, buildStatus);
 
     button.addEventListener("click", buttonListener);
     currentlyAttachedListener = buttonListener;

@@ -1,7 +1,7 @@
 import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
 import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
-import makeBuildStatus from "./buildStatus.js";
+import makeBuildStatus from "./buildStatus.jsprepareAtelierPageScreen";
 
 window.Buffer = buffer.Buffer;
 const client_id = "2b4ed9ba835b05f83e2d";
@@ -62,7 +62,7 @@ if (accessToken) {
             return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
                 .then(() => {
                     location.href = "#atelier-pages";
-                    prepareAtelierPageScreen(accessToken, login, origin);
+                    prepareAtelierPageScreen(accessToken, login, origin, buildStatus);
                 })
 
                 .catch(() => {

@@ -1,12 +1,20 @@
 import prepareEditPageScreen from "./prepareEditPageScreen.js";
 
-export default function prepareAtelierPageScreen(accessToken, login, origin) {
+export default function prepareAtelierPageScreen(accessToken, login, origin, buildStatus) {
     const projectNameElements = document.querySelectorAll("#atelier-pages .project-name, #atelier-articles .project-name, #atelier-parametres .project-name");
     const repoName = origin;
     const publishedWebsiteURL = `https://${repoName}/`;
 
     for (const projectNameElement of projectNameElements) {
-        projectNameElement.classList.add("build-ing");
+        if (buildStatus.status === "built") {
+            projectNameElement.classList.add("build-success");
+        }
+        if (buildStatus.status === "errored") {
+            projectNameElement.classList.add("build-error");
+        }
+        if (buildStatus.status === "building") {
+            projectNameElement.classList.add("build-ing");
+        }
         projectNameElement.textContent = publishedWebsiteURL;
         projectNameElement.href = publishedWebsiteURL;
     }
@@ -41,7 +49,7 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
                                 a.textContent = pageFile.path;
                                 pagesList.append(li);
                                 a.addEventListener("click", () => {
-                                    prepareEditPageScreen(accessToken, login, origin, pageFile);
+                                    prepareEditPageScreen(accessToken, login, origin, pageFile, buildStatus);
                                 })
                             }
                         }
