@@ -113,3 +113,9 @@ h1 {
     text-decoration: none;
     border-width: 3px;
 }
+
+.build-ing::after {
+    content: "🕰";
+    display: inline-block;
+    margin-left: 20px;
+}

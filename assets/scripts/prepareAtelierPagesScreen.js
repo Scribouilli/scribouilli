@@ -6,6 +6,7 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
     const publishedWebsiteURL = `https://${repoName}/`;
 
     for (const projectNameElement of projectNameElements) {
+        projectNameElement.classList.add("build-ing");
         projectNameElement.textContent = publishedWebsiteURL;
         projectNameElement.href = publishedWebsiteURL;
     }
@@ -31,7 +32,7 @@ export default function prepareAtelierPageScreen(accessToken, login, origin) {
                                 return f.type === "blob" && (f.path.endsWith(".md") || f.path.endsWith(".html"))
                             })
                             console.log(pageFiles);
-                            
+
                             for (const pageFile of pageFiles) {
                                 const li = document.createElement("li");
                                 const a = document.createElement("a");

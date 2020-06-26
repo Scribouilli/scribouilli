@@ -1,3 +1,5 @@
+import buildStatus from "./buildStatus.js";
+
 function makeCreateProjectButtonListener(accessToken, login, origin) {
     const repoName = origin; // per Github pages convention
     const publishedWebsiteURL = `https://${repoName}/`;
@@ -66,26 +68,20 @@ function makeCreateProjectButtonListener(accessToken, login, origin) {
 
             .then(() => {
                 return new Promise((resolve, reject) => {
+                    const unsubscribe = buildStatus.subscribe(newStatus => {
+                        if (newStatus === 'built') {
+                            resolve();
+                            unsubscribe();
+                            return;
+                        }
+                        if (newStatus === 'errored') {
+                            reject();
+                            unsubscribe();
+                            return;
+                        }
+                    });
 
-                    (function checkIfBuilt() {
-                        return d3.json(`https://api.github.com/repos/${login}/${origin}/pages`, {
-                            headers: {Authorization: "token " + accessToken}
-                        })
-                            .then(({status}) => {
-                                console.log('build status', status)
-                                if (status === 'built') {
-                                    resolve()
-                                    return;
-                                }
-                                if (status === 'errored') {
-                                    reject(new Error('Github pages build error'))
-                                    return;
-                                }
-
-                                setTimeout(checkIfBuilt, 500)
-                            })
-                            .catch(reject)
-                    })()
+                    buildStatus.checkStatus();
                 })
             })
 
