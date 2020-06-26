@@ -2,7 +2,7 @@ export default function (accessToken, login, origin) {
     let buildStatus;
     const reactions = new Set();
 
-    return {
+    const buildStatusObject = {
         get status() {
             return buildStatus;
         },
@@ -32,8 +32,9 @@ export default function (accessToken, login, origin) {
                         return;
                     }
 
-                    setTimeout(checkIfBuilt, 1000)
+                    setTimeout(buildStatusObject.checkStatus, 1000)
                 })
         }
     }
+    return buildStatusObject
 }
