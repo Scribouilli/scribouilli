@@ -6,13 +6,14 @@ export default function prepareAtelierPageScreen(accessToken, login, origin, bui
     const publishedWebsiteURL = `https://${repoName}/`;
 
     for (const projectNameElement of projectNameElements) {
+        /* TOUTDOUX : subscribe à buildStatus changements */
         if (buildStatus.status === "built") {
             projectNameElement.classList.add("build-success");
         }
         if (buildStatus.status === "errored") {
             projectNameElement.classList.add("build-error");
         }
-        if (buildStatus.status === "building") {
+        if (buildStatus.status === "building" || buildStatus.status === undefined)  {
             projectNameElement.classList.add("build-ing");
         }
         projectNameElement.textContent = publishedWebsiteURL;

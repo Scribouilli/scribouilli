@@ -36,5 +36,6 @@ export default function (accessToken, login, origin) {
                 })
         }
     }
+    buildStatusObject.checkStatus();
     return buildStatusObject
 }
