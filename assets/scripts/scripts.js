@@ -1,7 +1,7 @@
 import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
 import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
-import makeBuildStatus from "./buildStatus";
+import makeBuildStatus from "./buildStatus.js";
 
 window.Buffer = buffer.Buffer;
 const client_id = "2b4ed9ba835b05f83e2d";
