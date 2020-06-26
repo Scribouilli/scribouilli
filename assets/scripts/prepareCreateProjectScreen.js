@@ -1,6 +1,4 @@
-import buildStatus from "./buildStatus.js";
-
-function makeCreateProjectButtonListener(accessToken, login, origin) {
+function makeCreateProjectButtonListener(accessToken, login, origin, buildStatus) {
     const repoName = origin; // per Github pages convention
     const publishedWebsiteURL = `https://${repoName}/`;
 
@@ -95,7 +93,7 @@ function makeCreateProjectButtonListener(accessToken, login, origin) {
 
 let currentlyAttachedListener = undefined;
 
-export default function (accessToken, login, origin) {
+export default function (accessToken, login, origin, buildStatus) {
     const originElement = document.querySelector("#create-project .origin");
     originElement.textContent = origin;
     const button = document.querySelector("#create-project .submit");
@@ -104,7 +102,7 @@ export default function (accessToken, login, origin) {
         button.removeEventListener("click", currentlyAttachedListener);
     }
 
-    const buttonListener = makeCreateProjectButtonListener(accessToken, login, origin);
+    const buttonListener = makeCreateProjectButtonListener(accessToken, login, origin, buildStatus);
 
     button.addEventListener("click", buttonListener);
     currentlyAttachedListener = buttonListener;

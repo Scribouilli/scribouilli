@@ -1,6 +1,7 @@
 import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
 import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
+import makeBuildStatus from "./buildStatus";
 
 window.Buffer = buffer.Buffer;
 const client_id = "2b4ed9ba835b05f83e2d";
@@ -21,10 +22,12 @@ if (accessToken) {
             const login = result.login;
             const origin = `${login}.github.io`
 
+            const buildStatus = makeBuildStatus(accessToken, login, origin);
+
             window.addEventListener("hashchange", () => {
                 if (location.hash === '#create-project') {
                     console.log("You're visiting a cool feature!");
-                    prepareCreateProjectScreen(accessToken, login, origin)
+                    prepareCreateProjectScreen(accessToken, login, origin, buildStatus)
                 }
                 if (location.hash === '#atelier-create-page') {
                     prepareCreatePageScreen(accessToken, login, origin)
@@ -65,7 +68,7 @@ if (accessToken) {
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
                     location.href = "#create-project";
-                    prepareCreateProjectScreen(accessToken, login, origin);
+                    prepareCreateProjectScreen(accessToken, login, origin, buildStatus);
                 })
         });
 } else {
