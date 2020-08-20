@@ -1,24 +1,33 @@
 import prepareEditPageScreen from "./prepareEditPageScreen.js";
 
+function displayStatus(status, projectNameElement) {
+    if (status === "built") {
+        projectNameElement.classList.add("build-success");
+    }
+    if (status === "errored") {
+        projectNameElement.classList.add("build-error");
+    }
+    if (status === "building" || status === undefined)  {
+        projectNameElement.classList.add("build-ing");
+    }
+}
+
 export default function prepareAtelierPageScreen(accessToken, login, origin, buildStatus) {
     const projectNameElements = document.querySelectorAll("#atelier-pages .project-name, #atelier-articles .project-name, #atelier-parametres .project-name");
     const repoName = origin;
     const publishedWebsiteURL = `https://${repoName}/`;
 
     for (const projectNameElement of projectNameElements) {
-        /* TOUTDOUX : subscribe à buildStatus changements */
-        if (buildStatus.status === "built") {
-            projectNameElement.classList.add("build-success");
-        }
-        if (buildStatus.status === "errored") {
-            projectNameElement.classList.add("build-error");
-        }
-        if (buildStatus.status === "building" || buildStatus.status === undefined)  {
-            projectNameElement.classList.add("build-ing");
-        }
+        displayStatus(buildStatus.status, projectNameElement);
         projectNameElement.textContent = publishedWebsiteURL;
         projectNameElement.href = publishedWebsiteURL;
     }
+
+    buildStatus.subscribe(status => {
+        for (const projectNameElement of projectNameElements) {
+            displayStatus(status, projectNameElement);
+        }
+    });
 
     const pagesList = document.querySelector("#atelier-pages .pages-list");
     pagesList.innerHTML = "";
