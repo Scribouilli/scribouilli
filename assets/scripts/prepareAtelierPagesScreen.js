@@ -1,6 +1,10 @@
 import prepareEditPageScreen from "./prepareEditPageScreen.js";
 
 function displayStatus(status, projectNameElement) {
+    projectNameElement.classList.remove("build-success");
+    projectNameElement.classList.remove("build-error");
+    projectNameElement.classList.remove("build-ing");
+
     if (status === "built") {
         projectNameElement.classList.add("build-success");
     }
