@@ -2,6 +2,7 @@ import prepareCreateProjectScreen from "./prepareCreateProjectScreen.js";
 import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 import makeBuildStatus from "./buildStatus.js";
+import prepareAtelierPagesScreen from "./prepareAtelierPagesScreen.js";
 
 window.Buffer = buffer.Buffer;
 const client_id = "2b4ed9ba835b05f83e2d";
@@ -31,6 +32,11 @@ if (accessToken) {
                 }
                 if (location.hash === '#atelier-create-page') {
                     prepareCreatePageScreen(accessToken, login, origin)
+                }
+                if (location.hash === 'atelier-pages') {
+                    /* TOUTDOUX : à tester */
+                    console.log("Atelier-page hash")
+                    prepareAtelierPagesScreen(accessToken, login, origin, buildStatus)
                 }
             })
 
