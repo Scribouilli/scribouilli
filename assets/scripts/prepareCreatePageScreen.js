@@ -34,6 +34,11 @@ export default function (accessToken, login, origin) {
                     )
                 }
             )
+                .then(() => {
+                        location.href= "#atelier-pages"
+                    }
+                )
+
         }
     );
 }
