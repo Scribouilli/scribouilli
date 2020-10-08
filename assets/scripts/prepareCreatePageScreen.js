@@ -39,9 +39,12 @@ export default function (accessToken, login, origin, buildStatus) {
             )
                 .then(() => {
                         prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
-                        location.href= "#atelier-pages"
+                        location.href = "#atelier-pages"
                     }
                 )
+                .catch((error) => {
+                    console.error(error)
+                })
 
         }
     );
