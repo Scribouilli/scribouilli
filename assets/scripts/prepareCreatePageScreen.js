@@ -1,4 +1,4 @@
-import prepareAtelierPageScreen from "./prepareAtelierPagesScreen";
+import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 
 function makeFileNameFromTitle(title) {
     const fileName = title.replace(/\/|#|\?/g, "-") // replace url confusing characters
