@@ -31,7 +31,7 @@ if (accessToken) {
                     prepareCreateProjectScreen(accessToken, login, origin, buildStatus)
                 }
                 if (location.hash === '#atelier-create-page') {
-                    prepareCreatePageScreen(accessToken, login, origin)
+                    prepareCreatePageScreen(accessToken, login, origin, buildStatus)
                 }
                 if (location.hash === 'atelier-pages') {
                     /* TOUTDOUX : à tester */

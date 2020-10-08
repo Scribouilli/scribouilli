@@ -1,3 +1,5 @@
+import prepareAtelierPageScreen from "./prepareAtelierPagesScreen";
+
 function makeFileNameFromTitle(title) {
     const fileName = title.replace(/\/|#|\?/g, "-") // replace url confusing characters
             .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
@@ -14,7 +16,7 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
     ].join("\n")
 }
 
-export default function (accessToken, login, origin) {
+export default function (accessToken, login, origin, buildStatus) {
     const form = document.querySelector("#atelier-create-page form");
     form.addEventListener("submit", (event) => {
             event.preventDefault();
@@ -35,6 +37,7 @@ export default function (accessToken, login, origin) {
                 }
             )
                 .then(() => {
+                        prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
                         location.href= "#atelier-pages"
                     }
                 )
