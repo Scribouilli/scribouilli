@@ -25,6 +25,7 @@ export default function (accessToken, login, origin, buildStatus) {
             const content = form.querySelector("#content").value || "(Votre contenu)";
             const fileName = makeFileNameFromTitle(title);
 
+            // may return HTTP 409 conflict but works anyway
             d3.json(`https://api.github.com/repos/${login}/${origin}/contents/${fileName}`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "PUT",
