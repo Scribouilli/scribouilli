@@ -1,4 +1,4 @@
-function makeCreateProjectButtonListener(accessToken, login, origin, buildStatus) {
+export function makeCreateProjectButtonListener(accessToken, login, origin, buildStatus) {
     const repoName = origin; // per Github pages convention
     const publishedWebsiteURL = `https://${repoName}/`;
 

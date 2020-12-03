@@ -79,14 +79,6 @@ main {
     margin: 0 auto;
 }
 
-.screen {
-    display: none;
-}
-
-.screen:target {
-    display: block;
-}
-
 .screen,
 h1 {
     text-align: center;
