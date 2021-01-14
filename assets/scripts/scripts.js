@@ -1,8 +1,8 @@
-/*import { makeCreateProjectButtonListener } from "./prepareCreateProjectScreen.js";
-import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
-import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
+// import { makeCreateProjectButtonListener } from "./prepareCreateProjectScreen.js";
+// import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
+// import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 import makeBuildStatus from "./buildStatus.js";
-import prepareAtelierPagesScreen from "./prepareAtelierPagesScreen.js";*/
+// import prepareAtelierPagesScreen from "./prepareAtelierPagesScreen.js";
 
 Vue.use(VueRouter);
 window.Buffer = buffer.Buffer;
@@ -13,7 +13,7 @@ const redirect_url = "https://file-moi-les-clefs.herokuapp.com/gh-callback";
 const githubLoginHref =
     `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
 
-// const accessToken = new URL(location).searchParams.get("access_token");
+const accessToken = new URL(location).searchParams.get("access_token");
 
 const Welcome = {
     template: `<section class="screen" id="welcome">
@@ -46,10 +46,40 @@ const Login = {
     }
 }
 
+const AtelierPages = {
+    template: `<section class="screen" id="atelier-pages">
+        <h2><a v-bind:href="publishedWebsiteURL" class="project-name">{{ publishedWebsiteURL }}</a></h2>
+    
+        <nav>
+            <a href="#atelier-pages">Pages</a>
+            <a href="#atelier-articles">Articles</a>
+            <a href="#atelier-parametres">Paramètres</a>
+        </nav>
+    
+        <div id="pages">
+            <h3>Pages</h3>
+            <a href="#atelier-create-page">Nouvelle page</a>
+            <ul class="pages-list">
+                <li v-for="page in pages" :key="page.name">{{ page.name }}</li>
+            </ul>
+        </div>
+    </section>`,
+    data() {
+        return {
+            publishedWebsiteURL: "n'importe quoi",
+            pages: [
+                {name: 'Plop'},
+                {name: 'Bar'}
+            ]
+        }
+    }
+}
+
 const routes = [
     {path: '/', component: Welcome},
     {path: '/account', component: Account},
-    {path: '/login', component: Login}
+    {path: '/login', component: Login},
+    {path: '/atelier-pages', component: AtelierPages}
 ]
 
 const router = new VueRouter({
@@ -81,7 +111,7 @@ if (accessToken) {
             // TOUTDOUX : affiche une erreur, spas cool !
             const buildStatus = makeBuildStatus(accessToken, login, origin);
 
-            window.addEventListener("hashchange", () => {
+            /*window.addEventListener("hashchange", () => {
                 if (location.hash === '#create-project') {
                     console.log("You're visiting a cool feature!");
                     new Vue({
@@ -98,14 +128,14 @@ if (accessToken) {
                     prepareCreatePageScreen(accessToken, login, origin, buildStatus)
                 }
                 if (location.hash === 'atelier-pages') {
-                    /* TOUTDOUX : à tester */
+                    /!* TOUTDOUX : à tester *!/
                     console.log("Atelier-page hash")
                     prepareAtelierPagesScreen(accessToken, login, origin, buildStatus)
                 }
-            })
+            })*/
 
-            const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
-            deleteButton.addEventListener("click", () => {
+            // const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
+            /*deleteButton.addEventListener("click", () => {
                 d3.text(`https://api.github.com/repos/${login}/${origin}`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "DELETE"
@@ -127,12 +157,12 @@ if (accessToken) {
 
                         githubDangerZone.href = `https://github.com/${login}/${origin}/settings/#danger-zone`;
                     })
-            })
+            })*/
 
             return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
                 .then(() => {
-                    location.href = "#atelier-pages";
-                    prepareAtelierPageScreen(accessToken, login, origin, buildStatus);
+                    router.push("/atelier-pages");
+                    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus);
                 })
 
                 .catch(() => {
@@ -153,7 +183,6 @@ if (accessToken) {
         });
 } else {
     console.log("bonjoir");
-    location.href = "#welcome";
-
+    //  location.href = "#welcome";
 }
 
