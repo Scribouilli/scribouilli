@@ -76,7 +76,99 @@ const AtelierPages = {
 }
 
 const routes = [
-    {path: '/', component: Welcome},
+    {
+        path: '/',
+        component: Welcome,
+        beforeEnter(to, from, next) {
+            if (accessToken) {
+                console.log("connecté t'as vu");
+
+                d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
+                    .then(result => {
+                        console.log("User:", result);
+                        const login = result.login;
+                        const origin = `${login}.github.io`
+
+                        // TOUTDOUX : affiche une erreur, spas cool !
+                        const buildStatus = makeBuildStatus(accessToken, login, origin);
+
+                        /*window.addEventListener("hashchange", () => {
+                            if (location.hash === '#create-project') {
+                                console.log("You're visiting a cool feature!");
+                                new Vue({
+                                    el: document.querySelector('#create-project'),
+                                    data: {
+                                        origin
+                                    },
+                                    methods: {
+                                        createProject: makeCreateProjectButtonListener(accessToken, login, origin, buildStatus)
+                                    }
+                                })
+                            }
+                            if (location.hash === '#atelier-create-page') {
+                                prepareCreatePageScreen(accessToken, login, origin, buildStatus)
+                            }
+                            if (location.hash === 'atelier-pages') {
+                                /!* TOUTDOUX : à tester *!/
+                                console.log("Atelier-page hash")
+                                prepareAtelierPagesScreen(accessToken, login, origin, buildStatus)
+                            }
+                        })*/
+
+                        // const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
+                        /*deleteButton.addEventListener("click", () => {
+                            d3.text(`https://api.github.com/repos/${login}/${origin}`, {
+                                headers: {Authorization: "token " + accessToken},
+                                method: "DELETE"
+                            })
+                                .then(() => {
+                                    location.href = "#after-delete";
+                                })
+                                .catch((error) => {
+                                    console.error("after delete failure", error);
+                                    location.href = "#after-delete-failure"
+                                    const refreshButton = document.querySelector("#after-delete-failure .refresh");
+                                    const githubDangerZone = document.querySelector("#after-delete-failure" +
+                                        " .github-danger-zone");
+
+                                    refreshButton.addEventListener("click", () => {
+                                        location.href = "#";
+                                        location.reload();
+                                    });
+
+                                    githubDangerZone.href = `https://github.com/${login}/${origin}/settings/#danger-zone`;
+                                })
+                        })*/
+
+                        return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
+                            .then(() => {
+                                router.push("/atelier-pages");
+                                // prepareAtelierPageScreen(accessToken, login, origin, buildStatus);
+                            })
+
+                            .catch(() => {
+                                // ToutDoux : gérer les erreurs autres que le repo n'existe po
+                                location.href = "#create-project";
+                                // prepareCreateProjectScreen(accessToken, login, origin, buildStatus);
+
+                                new Vue({
+                                    el: document.querySelector('#create-project'),
+                                    data: {
+                                        origin
+                                    },
+                                    methods: {
+                                        createProject: makeCreateProjectButtonListener(accessToken, login, origin, buildStatus)
+                                    }
+                                })
+                            })
+                    });
+            } else {
+                console.log("bonjoir");
+                next();
+                //  location.href = "#welcome";
+            }
+        }
+    },
     {path: '/account', component: Account},
     {path: '/login', component: Login},
     {path: '/atelier-pages', component: AtelierPages}
@@ -97,92 +189,3 @@ console.log(main)
 const app = new Vue({
     router
 }).$mount(main)
-
-
-if (accessToken) {
-    console.log("connecté t'as vu");
-
-    d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
-        .then(result => {
-            console.log(result);
-            const login = result.login;
-            const origin = `${login}.github.io`
-
-            // TOUTDOUX : affiche une erreur, spas cool !
-            const buildStatus = makeBuildStatus(accessToken, login, origin);
-
-            /*window.addEventListener("hashchange", () => {
-                if (location.hash === '#create-project') {
-                    console.log("You're visiting a cool feature!");
-                    new Vue({
-                        el: document.querySelector('#create-project'),
-                        data: {
-                            origin
-                        },
-                        methods: {
-                            createProject: makeCreateProjectButtonListener(accessToken, login, origin, buildStatus)
-                        }
-                    })
-                }
-                if (location.hash === '#atelier-create-page') {
-                    prepareCreatePageScreen(accessToken, login, origin, buildStatus)
-                }
-                if (location.hash === 'atelier-pages') {
-                    /!* TOUTDOUX : à tester *!/
-                    console.log("Atelier-page hash")
-                    prepareAtelierPagesScreen(accessToken, login, origin, buildStatus)
-                }
-            })*/
-
-            // const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
-            /*deleteButton.addEventListener("click", () => {
-                d3.text(`https://api.github.com/repos/${login}/${origin}`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "DELETE"
-                })
-                    .then(() => {
-                        location.href = "#after-delete";
-                    })
-                    .catch((error) => {
-                        console.error("after delete failure", error);
-                        location.href = "#after-delete-failure"
-                        const refreshButton = document.querySelector("#after-delete-failure .refresh");
-                        const githubDangerZone = document.querySelector("#after-delete-failure" +
-                            " .github-danger-zone");
-
-                        refreshButton.addEventListener("click", () => {
-                            location.href = "#";
-                            location.reload();
-                        });
-
-                        githubDangerZone.href = `https://github.com/${login}/${origin}/settings/#danger-zone`;
-                    })
-            })*/
-
-            return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: "token " + accessToken}})
-                .then(() => {
-                    router.push("/atelier-pages");
-                    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus);
-                })
-
-                .catch(() => {
-                    // ToutDoux : gérer les erreurs autres que le repo n'existe po
-                    location.href = "#create-project";
-                    // prepareCreateProjectScreen(accessToken, login, origin, buildStatus);
-
-                    new Vue({
-                        el: document.querySelector('#create-project'),
-                        data: {
-                            origin
-                        },
-                        methods: {
-                            createProject: makeCreateProjectButtonListener(accessToken, login, origin, buildStatus)
-                        }
-                    })
-                })
-        });
-} else {
-    console.log("bonjoir");
-    //  location.href = "#welcome";
-}
-
