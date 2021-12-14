@@ -1,0 +1,24 @@
+{
+  "name": "scribouilli",
+  "version": "1.0.0",
+  "description": "## Installation - Ouvrir un terminal - Récupérer le repo `git clone git@github.com:daktary-team/scribouilli.git` dans le dossier qui va bien - Rentrer dans le dossier `scribouilli` -",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daktary-team/scribouilli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daktary-team/scribouilli/issues"
+  },
+  "homepage": "https://github.com/daktary-team/scribouilli#readme",
+  "devDependencies": {
+    "serve": "^13.0.2"
+  }
+}
