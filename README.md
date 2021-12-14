@@ -7,3 +7,8 @@
 - Faire `npm install`
 - Lancer le projet avec `npm start`
 - Ouvrir dans votre navigateur préféré `http://localhost:3000/`
+
+## Intention 
+Permettre à des non-informaticiennes 
+- de créer un petit site rapidement / facilement 
+- avoir une relation saine et sereine avec son contenu
