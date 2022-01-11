@@ -10,6 +10,7 @@ import page from 'page'
 
 import Welcome from './components/Welcome.svelte'
 import Account from './components/Account.svelte'
+import Login from './components/Login.svelte'
 
 
 window.Buffer = buffer.Buffer;
@@ -126,20 +127,6 @@ function render(state){
 
 store.subscribe(render)
 
-
-
-const Login = {
-    template: `<section class="screen" id="login">
-    <h2>Super, nous allons demander les clés sur la page suivante.</h2>
-
-    <a id="github-login" v-bind:href="href" class="btn">Connexion Github</a>
-</section>`,
-    data() {
-        return {
-            href: githubLoginHref
-        }
-    }
-}
 
 const AtelierPages = {
     template: `<section class="screen" id="atelier-pages">
@@ -311,19 +298,27 @@ page('/', () => {
 })
 
 page('/account', () => {
-
     const account = new Account({
         target: svelteTarget,
         props: {}
     });
 
     replaceComponent(account, () => {})
+})
 
+page('/login', () => {
+    const login = new Login({
+        target: svelteTarget,
+        props: {
+            href: githubLoginHref
+        }
+    });
+
+    replaceComponent(login, () => {})
 })
 
 
 const routes = [
-    {path: '/login', component: Login},
     {
         path: '/atelier-pages',
         props(route) {
