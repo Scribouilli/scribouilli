@@ -34,6 +34,12 @@ export default function (accessToken, login, origin) {
 
                     setTimeout(buildStatusObject.checkStatus, 1000)
                 })
+                .catch(() => {
+                    buildStatus = 'errored'
+                    for (const reaction of reactions) {
+                        reaction(status);
+                    }
+                })
         }
     }
     buildStatusObject.checkStatus();
