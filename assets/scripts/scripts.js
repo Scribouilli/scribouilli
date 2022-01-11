@@ -27,6 +27,7 @@ const store = new Store({
         accessToken: new URL(location).searchParams.get("access_token"),
         login: undefined, // Promise<string> | string
         origin: undefined, // Promise<string> | string
+        repoName: 'test-website-repo-3796',
         publishedWebsiteURL: undefined,
         pages: undefined
     },
@@ -61,8 +62,8 @@ if (store.state.accessToken) {
 }
 
 
-function getPagesList(login, origin, accessToken) {
-    return d3.json(`https://api.github.com/repos/${login}/${origin}/commits`, {
+function getPagesList(login, repoName, accessToken) {
+    return d3.json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
         headers: {Authorization: "token " + accessToken}
     })
         .then(
@@ -70,7 +71,7 @@ function getPagesList(login, origin, accessToken) {
                 const firstCommit = commits[0];
                 const {sha} = firstCommit;
 
-                return d3.json(`https://api.github.com/repos/${login}/${origin}/git/trees/${sha}`, {
+                return d3.json(`https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`, {
                     headers: {Authorization: "token " + accessToken}
                 })
                     .then(
@@ -210,11 +211,13 @@ const AtelierCreatePage = {
 page('/', () => {
 
     if(store.state.login){
+        const repoName = store.state.repoName
+
         Promise.resolve(store.state.login).then(login => {
             const origin = `${login}.github.io`
 
             // TOUTDOUX : affiche une erreur, spas cool !
-            //const buildStatus = makeBuildStatus(accessToken, login, origin);
+            //const buildStatus = makeBuildStatus(accessToken, login, repoName);
 
             /*window.addEventListener("hashchange", () => {
                 if (location.hash === '#create-project') {
@@ -241,7 +244,7 @@ page('/', () => {
 
             // const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
             /*deleteButton.addEventListener("click", () => {
-                d3.text(`https://api.github.com/repos/${login}/${origin}`, {
+                d3.text(`https://api.github.com/repos/${login}/${repoName}`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "DELETE"
                 })
@@ -260,28 +263,28 @@ page('/', () => {
                             location.reload();
                         });
 
-                        githubDangerZone.href = `https://github.com/${login}/${origin}/settings/#danger-zone`;
+                        githubDangerZone.href = `https://github.com/${login}/${repoName}/settings/#danger-zone`;
                     })
             })*/
 
-            return d3.json(`https://api.github.com/repos/${login}/${origin}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
+            return d3.json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
                 .then(() => {
                     //router.push("/atelier-pages");
-                    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus);
+                    // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
                 })
 
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
                     //location.href = "#create-project";
-                    // prepareCreateProjectScreen(accessToken, login, origin, buildStatus);
+                    // prepareCreateProjectScreen(accessToken, login, repoName, buildStatus);
 
                     /*new Vue({
                         el: document.querySelector('#create-project'),
                         data: {
-                            origin
+                            origin: repoName
                         },
                         methods: {
-                            createProject: makeCreateProjectButtonListener(accessToken, login, origin, buildStatus)
+                            createProject: makeCreateProjectButtonListener(accessToken, login, repoName, buildStatus)
                         }
                     })*/
                 })
@@ -336,7 +339,7 @@ const routes = [
                                 state.origin = `${state.login}.github.io`;
                                 state.publishedWebsiteURL = state.origin;
 
-                                getPagesList(state.login, state.origin, accessToken)
+                                getPagesList(state.login, state.repoName, accessToken)
 
                                     .then(
                                         pages => {
