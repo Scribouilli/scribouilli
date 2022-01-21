@@ -1,4 +1,4 @@
-export function makeCreateProjectButtonListener(accessToken, login, origin, buildStatus) {
+export default function makeCreateProjectButtonListener(accessToken, login, origin, buildStatus) {
     const repoName = origin; // per Github pages convention
     const publishedWebsiteURL = `https://${repoName}/`;
 
@@ -89,21 +89,4 @@ export function makeCreateProjectButtonListener(accessToken, login, origin, buil
                 LinkWebsite.href = publishedWebsiteURL;
             })
     }
-}
-
-let currentlyAttachedListener = undefined;
-
-export default function (accessToken, login, origin, buildStatus) {
-    const originElement = document.querySelector("#create-project .origin");
-    originElement.textContent = origin;
-    const button = document.querySelector("#create-project .submit");
-
-    if (currentlyAttachedListener) {
-        button.removeEventListener("click", currentlyAttachedListener);
-    }
-
-    const buttonListener = makeCreateProjectButtonListener(accessToken, login, origin, buildStatus);
-
-    button.addEventListener("click", buttonListener);
-    currentlyAttachedListener = buttonListener;
 }

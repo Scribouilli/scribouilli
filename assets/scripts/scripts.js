@@ -1,4 +1,4 @@
-// import { makeCreateProjectButtonListener } from "./prepareCreateProjectScreen.js";
+import makeCreateProjectButtonListener from "./makeCreateProjectButtonListener.js";
 // import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
 // import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 import makeBuildStatus from "./buildStatus.js";
@@ -11,6 +11,7 @@ import page from 'page'
 import Welcome from './components/Welcome.svelte'
 import Account from './components/Account.svelte'
 import Login from './components/Login.svelte'
+import CreateProject from './components/CreateProject.svelte'
 
 
 window.Buffer = buffer.Buffer;
@@ -37,6 +38,9 @@ const store = new Store({
         },
         setOrigin(state, origin){
             state.origin = origin;
+        },
+        setPublishedWebsiteURL(state, publishedWebsiteURL){
+            state.publishedWebsiteURL = publishedWebsiteURL;
         }
     }
 })
@@ -208,6 +212,8 @@ const AtelierCreatePage = {
 }
 
 
+
+
 page('/', () => {
 
     if(store.state.login){
@@ -269,24 +275,13 @@ page('/', () => {
 
             return d3.json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
                 .then(() => {
-                    //router.push("/atelier-pages");
+                    //page('/atelier-pages');
                     // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
                 })
 
                 .catch(() => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
-                    //location.href = "#create-project";
-                    // prepareCreateProjectScreen(accessToken, login, repoName, buildStatus);
-
-                    /*new Vue({
-                        el: document.querySelector('#create-project'),
-                        data: {
-                            origin: repoName
-                        },
-                        methods: {
-                            createProject: makeCreateProjectButtonListener(accessToken, login, repoName, buildStatus)
-                        }
-                    })*/
+                    page('/create-project');
                 })
         });
     }
@@ -319,6 +314,55 @@ page('/login', () => {
 
     replaceComponent(login, () => {})
 })
+
+page('/create-project', () => {
+    const createProject = new CreateProject({
+        target: svelteTarget,
+        props: {}
+    });
+
+    replaceComponent(createProject, state => ({
+        origin: state.origin,
+        createProject: makeCreateProjectButtonListener(state.accessToken, state.login, state.repoName, state.buildStatus)
+    }))
+})
+
+
+/*page('/atelier-pages', () => {
+    const atelierPages = new AtelierPages({
+        target: svelteTarget,
+        props: {
+            publishedWebsiteURL, pages
+        }
+    });
+
+    const state = store.state
+
+    if (state.accessToken) {
+        if (!state.publishedWebsiteURL) {
+            d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
+                .then(result => {
+                        console.log("User:", result);
+                        store.setLogin(result.login);
+                        store.setOrigin(`${state.login}.github.io`);
+                        store.setPublishedWebsiteURL(state.origin);
+
+                        getPagesList(state.login, state.repoName, accessToken)
+                            .then(
+                                pages => {
+                                    state.pages = pages;
+                                    page("/atelier-pages");
+                                }
+                            )
+                    }
+                )
+        } 
+    } else {
+        page("/");
+    }
+
+    replaceComponent(atelierPages, () => {})
+})*/
 
 
 const routes = [
