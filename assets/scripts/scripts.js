@@ -29,21 +29,24 @@ const store = new Store({
         login: undefined, // Promise<string> | string
         origin: undefined, // Promise<string> | string
         repoName: 'test-website-repo-3796',
-        publishedWebsiteURL: undefined,
         pages: undefined
     },
     mutations: {
         setLogin(state, login){
             state.login = login;
-        },
-        setOrigin(state, origin){
-            state.origin = origin;
-        },
-        setPublishedWebsiteURL(state, publishedWebsiteURL){
-            state.publishedWebsiteURL = publishedWebsiteURL;
         }
     }
 })
+
+async function makeOrigin(state){
+    const login = await Promise.resolve(state.login);
+    return `${login.toLowerCase()}.github.io`;
+}
+
+async function makePublishedWebsiteURL(state){
+    const origin = await makeOrigin(state);
+    return `https://${origin}/${state.repoName}`;
+}
 
 if (store.state.accessToken) {
     console.log("connecté t'as vu");
@@ -55,14 +58,6 @@ if (store.state.accessToken) {
         });
 
     store.mutations.setLogin(loginP)
-
-    const originP = loginP.then(login => {
-        const origin = `${login}.github.io`
-        store.mutations.setOrigin(origin)
-        return origin;
-    })
-
-    store.mutations.setOrigin(originP)
 }
 
 
@@ -111,7 +106,7 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
 const svelteTarget = document.querySelector("main");
 
 let currentComponent;
-let mapStateToProps;
+let mapStateToProps = () => {};
 
 function replaceComponent(newComponent, _mapStateToProps){
     if(!_mapStateToProps){
@@ -132,7 +127,7 @@ function render(state){
 
 store.subscribe(render)
 
-
+/*
 const AtelierPages = {
     template: `<section class="screen" id="atelier-pages">
         <h2><a v-bind:href="publishedWebsiteURL" class="project-name">{{ publishedWebsiteURL }}</a></h2>
@@ -210,7 +205,7 @@ const AtelierCreatePage = {
         }
     }
 }
-
+*/
 
 
 
@@ -219,8 +214,9 @@ page('/', () => {
     if(store.state.login){
         const repoName = store.state.repoName
 
-        Promise.resolve(store.state.login).then(login => {
-            const origin = `${login}.github.io`
+        Promise.resolve(store.state.login).then(async login => {
+            const origin = await makeOrigin(store.state)
+
 
             // TOUTDOUX : affiche une erreur, spas cool !
             //const buildStatus = makeBuildStatus(accessToken, login, repoName);
@@ -316,15 +312,22 @@ page('/login', () => {
 })
 
 page('/create-project', () => {
+
+    function mapStateToProps(state){
+        return {
+            publishedWebsiteURL: makePublishedWebsiteURL(state),
+            createProject: Promise.resolve(state.login).then(
+                login => makeCreateProjectButtonListener(state.accessToken, login, state.repoName, state.buildStatus)
+            )
+        }
+    }
+
     const createProject = new CreateProject({
         target: svelteTarget,
-        props: {}
+        props: mapStateToProps(store.state)
     });
 
-    replaceComponent(createProject, state => ({
-        origin: state.origin,
-        createProject: makeCreateProjectButtonListener(state.accessToken, state.login, state.repoName, state.buildStatus)
-    }))
+    replaceComponent(createProject, mapStateToProps)
 })
 
 
@@ -364,7 +367,7 @@ page('/create-project', () => {
     replaceComponent(atelierPages, () => {})
 })*/
 
-
+/*
 const routes = [
     {
         path: '/atelier-pages',
@@ -408,5 +411,6 @@ const routes = [
         component: AtelierCreatePage
     }
 ]
+*/
 
 page.start({hashbang: true})

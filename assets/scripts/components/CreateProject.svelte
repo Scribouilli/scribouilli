@@ -1,11 +1,12 @@
 <script>
-    export let origin;
+    export let publishedWebsiteURL;
     export let createProject;
 
     let projectCreationProgressP = undefined;
 
     function clickListener(){
-        projectCreationProgressP = createProject()
+        projectCreationProgressP = Promise.resolve(createProject)
+            .then(createProject => createProject())
     }
 
 </script>
@@ -14,11 +15,10 @@
     <section class="screen" id="create-project">
         <h2>Créez un projet</h2>
 
-        {#await origin}
-        {:then value}
-        <h3>Ce projet va être créé à l'adresse https://{origin}/ </h3>
-
-        
+        {#await publishedWebsiteURL}
+        (en attente de l'origine)
+        {:then url}
+        <h3>Ce projet va être créé à l'adresse <span class="url">{url}</span> </h3>
         {/await}    
 
         <button class="btn submit" on:click={clickListener}>Créer le projet</button>
@@ -35,5 +35,10 @@
 {/if}
 
 
-
+<style lang="scss">
+    .url{
+        white-space: nowrap;
+        color: darkslategray;
+    }
+</style>
 
