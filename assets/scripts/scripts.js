@@ -29,11 +29,13 @@ const store = new Store({
         login: undefined, // Promise<string> | string
         origin: undefined, // Promise<string> | string
         repoName: 'test-website-repo-3796',
-        pages: undefined
+        pages: undefined,
+        buildStatus: undefined
     },
     mutations: {
         setLogin(state, login){
             state.login = login;
+            state.buildStatus = makeBuildStatus(state.accessToken, login, state.repoName)
         }
     }
 })
@@ -316,8 +318,11 @@ page('/create-project', () => {
     function mapStateToProps(state){
         return {
             publishedWebsiteURL: makePublishedWebsiteURL(state),
-            createProject: Promise.resolve(state.login).then(
-                login => makeCreateProjectButtonListener(state.accessToken, login, state.repoName, state.buildStatus)
+            createProject: Promise.all([
+                Promise.resolve(state.login),
+                makeOrigin(state)
+            ]).then(
+                ([login, origin]) => makeCreateProjectButtonListener(state.accessToken, login, origin, state.repoName, state.buildStatus)
             )
         }
     }

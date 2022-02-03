@@ -1,28 +1,28 @@
-export default function makeCreateProjectButtonListener(accessToken, login, origin, buildStatus) {
-    const repoName = origin; // per Github pages convention
-    const publishedWebsiteURL = `https://${repoName}/`;
+export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
+    const publishedWebsiteURL = `https://${origin}/${repoName}`;
 
-    return () => {
-        d3.json("https://api.github.com/user/repos", {
-            headers: {Authorization: "token " + accessToken},
-            method: "POST",
-            body: JSON.stringify(
-                {
-                    name: repoName,
-                    homepage: publishedWebsiteURL,
-                    has_issues: false,
-                    has_projects: false,
-                    has_wiki: false,
-                    auto_init: false
-                }
-            )
-        })
+    return () => Promise.resolve(login)
+        .then(login  => 
+            d3.json("https://api.github.com/user/repos", {
+                headers: {Authorization: "token " + accessToken},
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        name: repoName,
+                        homepage: publishedWebsiteURL,
+                        has_issues: false,
+                        has_projects: false,
+                        has_wiki: false,
+                        auto_init: false
+                    }
+                )
+            })
             .then(() => {
                 return d3.json("https://api.github.com/repos/daktary-team/coup-de-pinceau/contents/index.md", {
                     headers: {Authorization: "token " + accessToken}
                 })
                     .then(({content}) => {
-                        return d3.json(`https://api.github.com/repos/${login}/${origin}/contents/index.md`, {
+                        return d3.json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
                             headers: {Authorization: "token " + accessToken},
                             method: "PUT",
                             body: JSON.stringify(
@@ -36,7 +36,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                return d3.json(`https://api.github.com/repos/${login}/${origin}/contents/_config.yml`, {
+                return d3.json(`https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "PUT",
                     body: JSON.stringify(
@@ -49,7 +49,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                return d3.json(`https://api.github.com/repos/${login}/${origin}/contents/example.md`, {
+                return d3.json(`https://api.github.com/repos/${login}/${repoName}/contents/example.md`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "PUT",
                     body: JSON.stringify(
@@ -65,6 +65,8 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
+                throw `TODO requester un build avant de checker` 
+
                 return new Promise((resolve, reject) => {
                     const unsubscribe = buildStatus.subscribe(newStatus => {
                         if (newStatus === 'built') {
@@ -88,5 +90,6 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                 const LinkWebsite = document.querySelector("#youpi .show-site");
                 LinkWebsite.href = publishedWebsiteURL;
             })
-    }
+    
+        )
 }

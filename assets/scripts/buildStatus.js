@@ -1,6 +1,17 @@
-export default function (accessToken, login, origin) {
+export default function (accessToken, login, repoName) {
     let buildStatus;
     const reactions = new Set();
+
+    let timeout
+
+    function scheduleCheck(){
+        if(!timeout){
+            timeout = setTimeout(() => {
+                buildStatusObject.checkStatus()
+                timeout = undefined;
+            }, 1000)
+        }
+    }
 
     const buildStatusObject = {
         get status() {
@@ -14,9 +25,10 @@ export default function (accessToken, login, origin) {
             }
         },
         checkStatus() {
-            return d3.json(`https://api.github.com/repos/${login}/${origin}/pages`, {
-                headers: {Authorization: "token " + accessToken}
-            })
+            return Promise.resolve(login).then(login => 
+                d3.json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+                    headers: {Authorization: "token " + accessToken}
+                }))
                 .then(({status}) => {
                     console.log('build status', status)
                     buildStatus = status;
@@ -25,19 +37,20 @@ export default function (accessToken, login, origin) {
                         reaction(status);
                     }
 
-                    if (status === 'built') {
-                        return;
-                    }
-                    if (status === 'errored') {
+                    if (status === 'built' || status === 'errored') {
                         return;
                     }
 
-                    setTimeout(buildStatusObject.checkStatus, 1000)
+                    scheduleCheck()
                 })
-                .catch(() => {
+                .catch(error => {
+                    /*if(error.message === "404 Not Found"){
+                        scheduleCheck()
+                        return;
+                    }*/
                     buildStatus = 'errored'
                     for (const reaction of reactions) {
-                        reaction(status);
+                        reaction(buildStatus);
                     }
                 })
         }
