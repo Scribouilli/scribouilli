@@ -273,7 +273,7 @@ page('/', () => {
 
             return d3.json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
                 .then(() => {
-                    //page('/atelier-pages');
+                    page('/atelier-pages');
                     // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
                 })
 
@@ -336,7 +336,7 @@ page('/create-project', () => {
 })
 
 
-/*page('/atelier-pages', () => {
+page('/atelier-pages', () => {
     const atelierPages = new AtelierPages({
         target: svelteTarget,
         props: {
@@ -347,30 +347,25 @@ page('/create-project', () => {
     const state = store.state
 
     if (state.accessToken) {
-        if (!state.publishedWebsiteURL) {
-            d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
-                .then(result => {
-                        console.log("User:", result);
-                        store.setLogin(result.login);
-                        store.setOrigin(`${state.login}.github.io`);
-                        store.setPublishedWebsiteURL(state.origin);
+        d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
+            .then(result => {
+                    console.log("User:", result);
+                    store.setLogin(result.login);
 
-                        getPagesList(state.login, state.repoName, accessToken)
-                            .then(
-                                pages => {
-                                    state.pages = pages;
-                                    page("/atelier-pages");
-                                }
-                            )
-                    }
-                )
-        } 
+                    getPagesList(state.login, state.repoName, accessToken)
+                        .then(
+                            pages => {
+                                atelierPages.$set({pages})
+                            }
+                        )
+                }
+            )
     } else {
         page("/");
     }
 
     replaceComponent(atelierPages, () => {})
-})*/
+})
 
 /*
 const routes = [

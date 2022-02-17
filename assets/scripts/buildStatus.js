@@ -44,10 +44,6 @@ export default function (accessToken, login, repoName) {
                     scheduleCheck()
                 })
                 .catch(error => {
-                    /*if(error.message === "404 Not Found"){
-                        scheduleCheck()
-                        return;
-                    }*/
                     buildStatus = 'errored'
                     for (const reaction of reactions) {
                         reaction(buildStatus);

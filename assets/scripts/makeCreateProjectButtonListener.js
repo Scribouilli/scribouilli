@@ -65,7 +65,14 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                throw `TODO requester un build avant de checker` 
+                return d3.json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+                    headers: {Authorization: "token " + accessToken},
+                    method: "POST",
+                    body: JSON.stringify( { source: {branch: 'main' } } )
+                })
+            })
+
+            .then(() => {
 
                 return new Promise((resolve, reject) => {
                     const unsubscribe = buildStatus.subscribe(newStatus => {
@@ -86,9 +93,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                location.href = "#youpi";
-                const LinkWebsite = document.querySelector("#youpi .show-site");
-                LinkWebsite.href = publishedWebsiteURL;
+                return publishedWebsiteURL;
             })
     
         )
