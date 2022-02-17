@@ -1,9 +1,7 @@
-// import { makeCreateProjectButtonListener } from "./prepareCreateProjectScreen.js";
-// import prepareAtelierPageScreen from "./prepareAtelierPagesScreen.js";
+import makeCreateProjectButtonListener from "./makeCreateProjectButtonListener.js";
 // import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 import makeBuildStatus from "./buildStatus.js";
-// import prepareAtelierPageScreen from "./prepareAtelierPagesScreen";
-// import prepareAtelierPagesScreen from "./prepareAtelierPagesScreen.js";
+
 import Store from 'baredux'
 
 import page from 'page'
@@ -11,6 +9,8 @@ import page from 'page'
 import Welcome from './components/Welcome.svelte'
 import Account from './components/Account.svelte'
 import Login from './components/Login.svelte'
+import CreateProject from './components/CreateProject.svelte'
+import AtelierPages from './components/AtelierPages.svelte'
 
 
 window.Buffer = buffer.Buffer;
@@ -28,18 +28,30 @@ const store = new Store({
         login: undefined, // Promise<string> | string
         origin: undefined, // Promise<string> | string
         repoName: 'test-website-repo-3796',
-        publishedWebsiteURL: undefined,
-        pages: undefined
+        pages: undefined,
+        buildStatus: undefined
     },
     mutations: {
         setLogin(state, login){
             state.login = login;
+            // TODO déplacer la création de buildStatus qui dépend de mais n'a rien à faire avec le login
+            state.buildStatus = makeBuildStatus(state.accessToken, login, state.repoName)
         },
-        setOrigin(state, origin){
-            state.origin = origin;
+        setPages(state, pages){
+            state.pages = pages;
         }
     }
 })
+
+async function makeOrigin(state){
+    const login = await Promise.resolve(state.login);
+    return `${login.toLowerCase()}.github.io`;
+}
+
+async function makePublishedWebsiteURL(state){
+    const origin = await makeOrigin(state);
+    return `https://${origin}/${state.repoName}`;
+}
 
 if (store.state.accessToken) {
     console.log("connecté t'as vu");
@@ -51,14 +63,6 @@ if (store.state.accessToken) {
         });
 
     store.mutations.setLogin(loginP)
-
-    const originP = loginP.then(login => {
-        const origin = `${login}.github.io`
-        store.mutations.setOrigin(origin)
-        return origin;
-    })
-
-    store.mutations.setOrigin(originP)
 }
 
 
@@ -107,7 +111,7 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
 const svelteTarget = document.querySelector("main");
 
 let currentComponent;
-let mapStateToProps;
+let mapStateToProps = () => {};
 
 function replaceComponent(newComponent, _mapStateToProps){
     if(!_mapStateToProps){
@@ -128,29 +132,7 @@ function render(state){
 
 store.subscribe(render)
 
-
-const AtelierPages = {
-    template: `<section class="screen" id="atelier-pages">
-        <h2><a v-bind:href="publishedWebsiteURL" class="project-name">{{ publishedWebsiteURL }}</a></h2>
-    
-        <nav>
-            <a href="#atelier-pages">Pages</a>
-            <a href="#atelier-articles">Articles</a>
-            <a href="#atelier-parametres">Paramètres</a>
-        </nav>
-    
-        <div id="pages">
-            <h3>Pages</h3>
-            
-            <router-link to="/atelier-create-page">Nouvelle page</router-link>
-            
-            <ul class="pages-list">
-                <li v-for="page in pages" :key="page.path">{{ page.path }}</li>
-            </ul>
-        </div>
-    </section>`,
-    props: ["publishedWebsiteURL", "pages"]
-}
+/*
 
 const AtelierCreatePage = {
     template: `
@@ -206,6 +188,8 @@ const AtelierCreatePage = {
         }
     }
 }
+*/
+
 
 
 page('/', () => {
@@ -213,8 +197,9 @@ page('/', () => {
     if(store.state.login){
         const repoName = store.state.repoName
 
-        Promise.resolve(store.state.login).then(login => {
-            const origin = `${login}.github.io`
+        Promise.resolve(store.state.login).then(async login => {
+            const origin = await makeOrigin(store.state)
+
 
             // TOUTDOUX : affiche une erreur, spas cool !
             //const buildStatus = makeBuildStatus(accessToken, login, repoName);
@@ -269,24 +254,13 @@ page('/', () => {
 
             return d3.json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
                 .then(() => {
-                    //router.push("/atelier-pages");
+                    page('/atelier-pages');
                     // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
                 })
 
-                .catch(() => {
+                .catch(err => {
                     // ToutDoux : gérer les erreurs autres que le repo n'existe po
-                    //location.href = "#create-project";
-                    // prepareCreateProjectScreen(accessToken, login, repoName, buildStatus);
-
-                    /*new Vue({
-                        el: document.querySelector('#create-project'),
-                        data: {
-                            origin: repoName
-                        },
-                        methods: {
-                            createProject: makeCreateProjectButtonListener(accessToken, login, repoName, buildStatus)
-                        }
-                    })*/
+                    page('/create-project');
                 })
         });
     }
@@ -320,7 +294,63 @@ page('/login', () => {
     replaceComponent(login, () => {})
 })
 
+page('/create-project', () => {
 
+    function mapStateToProps(state){
+        return {
+            publishedWebsiteURL: makePublishedWebsiteURL(state),
+            createProject: Promise.all([
+                Promise.resolve(state.login),
+                makeOrigin(state)
+            ]).then(
+                ([login, origin]) => makeCreateProjectButtonListener(state.accessToken, login, origin, state.repoName, state.buildStatus)
+            )
+        }
+    }
+
+    const createProject = new CreateProject({
+        target: svelteTarget,
+        props: mapStateToProps(store.state)
+    });
+
+    replaceComponent(createProject, mapStateToProps)
+})
+
+
+page('/atelier-pages', () => {
+
+    function mapStateToProps(state){
+        return {
+            publishedWebsiteURL: makePublishedWebsiteURL(state),
+            pages: state.pages
+        }
+    }
+
+    const atelierPages = new AtelierPages({
+        target: svelteTarget,
+        props: mapStateToProps(store.state)
+    });
+
+    const state = store.state
+
+    if (state.accessToken) {
+        d3.json("https://api.github.com/user", {headers: {Authorization: "token " + state.accessToken}})
+            .then(result => {
+                    console.log("User:", result);
+                    store.mutations.setLogin(result.login);
+
+                    getPagesList(state.login, state.repoName, state.accessToken)
+                    .then(store.mutations.setPages)
+                }
+            )
+    } else {
+        page("/");
+    }
+
+    replaceComponent(atelierPages, mapStateToProps)
+})
+
+/*
 const routes = [
     {
         path: '/atelier-pages',
@@ -364,5 +394,6 @@ const routes = [
         component: AtelierCreatePage
     }
 ]
+*/
 
 page.start({hashbang: true})
