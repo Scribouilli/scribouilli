@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "baredux": "github:DavidBruant/baredux",
+    "d3-fetch": "^3.0.1",
     "page": "^1.11.6"
   }
 }

@@ -1,9 +1,12 @@
+import {json} from 'd3-fetch'
+
+
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
 
     return () => Promise.resolve(login)
         .then(login  => 
-            d3.json("https://api.github.com/user/repos", {
+            json("https://api.github.com/user/repos", {
                 headers: {Authorization: "token " + accessToken},
                 method: "POST",
                 body: JSON.stringify(
@@ -18,11 +21,11 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                 )
             })
             .then(() => {
-                return d3.json("https://api.github.com/repos/daktary-team/coup-de-pinceau/contents/index.md", {
+                return json("https://api.github.com/repos/daktary-team/coup-de-pinceau/contents/index.md", {
                     headers: {Authorization: "token " + accessToken}
                 })
                     .then(({content}) => {
-                        return d3.json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
+                        return json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
                             headers: {Authorization: "token " + accessToken},
                             method: "PUT",
                             body: JSON.stringify(
@@ -36,7 +39,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                return d3.json(`https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`, {
+                return json(`https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "PUT",
                     body: JSON.stringify(
@@ -49,7 +52,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                return d3.json(`https://api.github.com/repos/${login}/${repoName}/contents/example.md`, {
+                return json(`https://api.github.com/repos/${login}/${repoName}/contents/example.md`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "PUT",
                     body: JSON.stringify(
@@ -65,7 +68,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
             })
 
             .then(() => {
-                return d3.json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+                return json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "POST",
                     body: JSON.stringify( { source: {branch: 'main' } } )

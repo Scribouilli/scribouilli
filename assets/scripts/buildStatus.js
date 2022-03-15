@@ -1,3 +1,5 @@
+import {json} from 'd3-fetch'
+
 export default function (accessToken, login, repoName) {
     let buildStatus;
     const reactions = new Set();
@@ -26,7 +28,7 @@ export default function (accessToken, login, repoName) {
         },
         checkStatus() {
             return Promise.resolve(login).then(login => 
-                d3.json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+                json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
                     headers: {Authorization: "token " + accessToken}
                 }))
                 .then(({status}) => {
