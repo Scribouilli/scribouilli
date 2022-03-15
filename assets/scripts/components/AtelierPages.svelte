@@ -12,9 +12,9 @@
     
 
     <nav>
-        <a href="#atelier-pages">Pages</a>
-        <a href="#atelier-articles">Articles</a>
-        <a href="#atelier-parametres">Paramètres</a>
+        <a href=".">Pages</a>
+        <a href="#TODO-articles">Articles</a>
+        <a href="#TODO-parametres">Paramètres</a>
     </nav>
 
     <div id="pages">
