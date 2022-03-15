@@ -1,3 +1,7 @@
+//@ts-check
+
+import {json, text} from 'd3-fetch';
+
 import makeCreateProjectButtonListener from "./makeCreateProjectButtonListener.js";
 // import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
 import makeBuildStatus from "./buildStatus.js";
@@ -11,6 +15,7 @@ import Account from './components/Account.svelte'
 import Login from './components/Login.svelte'
 import CreateProject from './components/CreateProject.svelte'
 import AtelierPages from './components/AtelierPages.svelte'
+import AtelierCreatePage from './components/AtelierCreatePage.svelte'
 
 
 window.Buffer = buffer.Buffer;
@@ -22,8 +27,10 @@ const githubLoginHref =
     `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
 
 
+// @ts-ignore
 const store = new Store({
     state: {
+        // @ts-ignore
         accessToken: new URL(location).searchParams.get("access_token"),
         login: undefined, // Promise<string> | string
         origin: undefined, // Promise<string> | string
@@ -56,7 +63,7 @@ async function makePublishedWebsiteURL(state){
 if (store.state.accessToken) {
     console.log("connecté t'as vu");
 
-    const loginP = d3.json("https://api.github.com/user", {headers: {Authorization: `token ${store.state.accessToken}`}})
+    const loginP = json("https://api.github.com/user", {headers: {Authorization: `token ${store.state.accessToken}`}})
         .then(({login}) => {
             store.mutations.setLogin(login)
             return login
@@ -67,7 +74,7 @@ if (store.state.accessToken) {
 
 
 function getPagesList(login, repoName, accessToken) {
-    return d3.json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
+    return json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
         headers: {Authorization: "token " + accessToken}
     })
         .then(
@@ -75,10 +82,11 @@ function getPagesList(login, repoName, accessToken) {
                 const firstCommit = commits[0];
                 const {sha} = firstCommit;
 
-                return d3.json(`https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`, {
+                return json(`https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`, {
                     headers: {Authorization: "token " + accessToken}
                 })
                     .then(
+                        // @ts-ignore
                         ({tree}) => {
                             console.log(tree);
                             const pageFiles = tree.filter(f => {
@@ -88,22 +96,6 @@ function getPagesList(login, repoName, accessToken) {
                         }
                     )
             })
-}
-
-function makeFileNameFromTitle(title) {
-    const fileName = title.replace(/\/|#|\?/g, "-") // replace url confusing characters
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
-        + ".md";
-
-    return fileName;
-}
-
-function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
-    return [
-        "---",
-        "title: " + title,
-        "---"
-    ].join("\n")
 }
 
 
@@ -132,65 +124,9 @@ function render(state){
 
 store.subscribe(render)
 
-/*
-
-const AtelierCreatePage = {
-    template: `
-    <section class="screen" id="atelier-create-page">
-        <h3>Création d'une page</h3>
-    
-        <form v-on:submit="onSubmit">
-            <div>
-                <label for="title">Titre</label>
-                <input v-model="title" type="text" id="title">
-            </div>
-            <p>Attention, si le titre contient <code>/</code>, <code>#</code> ou <code>?</code>, ça peut ne pas marcher
-            </p>
-    
-            <div>
-                <label for="content">Contenu</label>
-                <textarea v-model="content" id="content" cols="30" rows="10"></textarea>
-            </div>
-            <button type="submit">Publier la page</button>
-        </form>
-    </section>
-    `,
-    data() {
-        return {
-            title: "",
-            content: ""
-        }
-    },
-    methods: {
-        onSubmit: function (event) {
-            const {title, content} = this;
-            const fileName = makeFileNameFromTitle(title);
-
-            d3.json(`https://api.github.com/repos/${login}/${origin}/contents/${fileName}`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "PUT",
-                    body: JSON.stringify(
-                        {
-                            message: `création de la page ${title}`,
-                            content: Buffer.from(`${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n\n${content}`).toString('base64')
-                        }
-                    )
-                }
-            )
-                .then(() => {
-                        // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
-                        //location.href = "#atelier-pages"
-                    }
-                )
-                .catch((error) => {
-                    console.error(error)
-                })
-        }
-    }
-}
-*/
-
-
+/**
+ *  Par ici, y'a des routes
+ */
 
 page('/', () => {
 
@@ -252,7 +188,7 @@ page('/', () => {
                     })
             })*/
 
-            return d3.json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
+            return json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
                 .then(() => {
                     page('/atelier-pages');
                     // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
@@ -265,6 +201,7 @@ page('/', () => {
         });
     }
 
+    // @ts-ignore
     const welcome = new Welcome({
         target: svelteTarget,
         props: {}
@@ -275,6 +212,7 @@ page('/', () => {
 })
 
 page('/account', () => {
+    // @ts-ignore
     const account = new Account({
         target: svelteTarget,
         props: {}
@@ -284,6 +222,7 @@ page('/account', () => {
 })
 
 page('/login', () => {
+    // @ts-ignore
     const login = new Login({
         target: svelteTarget,
         props: {
@@ -308,6 +247,7 @@ page('/create-project', () => {
         }
     }
 
+    // @ts-ignore
     const createProject = new CreateProject({
         target: svelteTarget,
         props: mapStateToProps(store.state)
@@ -326,6 +266,7 @@ page('/atelier-pages', () => {
         }
     }
 
+    // @ts-ignore
     const atelierPages = new AtelierPages({
         target: svelteTarget,
         props: mapStateToProps(store.state)
@@ -334,7 +275,7 @@ page('/atelier-pages', () => {
     const state = store.state
 
     if (state.accessToken) {
-        d3.json("https://api.github.com/user", {headers: {Authorization: "token " + state.accessToken}})
+        json("https://api.github.com/user", {headers: {Authorization: "token " + state.accessToken}})
             .then(result => {
                     console.log("User:", result);
                     store.mutations.setLogin(result.login);
@@ -350,50 +291,66 @@ page('/atelier-pages', () => {
     replaceComponent(atelierPages, mapStateToProps)
 })
 
-/*
-const routes = [
-    {
-        path: '/atelier-pages',
-        props(route) {
-            const {publishedWebsiteURL, pages} = store.state;
-            return {publishedWebsiteURL, pages}
-        },
-        beforeEnter(to, from, next) {
-            // TOUTDOUX réécrire avec baredux
-            if (accessToken) {
-                if (!state.publishedWebsiteURL) {
-                    d3.json("https://api.github.com/user", {headers: {Authorization: "token " + accessToken}})
-                        .then(result => {
-                                console.log("User:", result);
-                                state.login = result.login;
-                                state.origin = `${state.login}.github.io`;
-                                state.publishedWebsiteURL = state.origin;
+function makeFileNameFromTitle(title) {
+    const fileName = title.replace(/\/|#|\?/g, "-") // replace url confusing characters
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+        + ".md";
 
-                                getPagesList(state.login, state.repoName, accessToken)
+    return fileName;
+}
 
-                                    .then(
-                                        pages => {
-                                            state.pages = pages;
-                                            router.replace("/atelier-pages");
-                                        }
-                                    )
+function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
+    return [
+        "---",
+        "title: " + title,
+        "---"
+    ].join("\n")
+}
+
+page('/atelier-create-page', () => {
+
+    function mapStateToProps(state){
+        return {
+            title: "",
+            content: "",
+            onPageCreate(title, content){
+                const fileName = makeFileNameFromTitle(title);
+
+                Promise.resolve(state.login)
+                .then(login => {
+                        json(`https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`, {
+                                headers: {Authorization: "token " + state.accessToken},
+                                method: "PUT",
+                                body: JSON.stringify(
+                                    {
+                                        message: `création de la page ${title}`,
+                                        content: Buffer.from(`${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n\n${content}`).toString('base64')
+                                    }
+                                )
                             }
                         )
-                } else {
-                    next();
-                }
-            } else {
-                router.push("/");
+                        .then(() => {
+                            console.log('nouvelle page créée')
+                            // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
+                            page('/atelier-pages')
+                        })
+                        .catch((error) => {
+                            console.error(error)
+                        })
+                    }
+                )
             }
-
-        },
-        component: AtelierPages
-    },
-    {
-        path: '/atelier-create-page',
-        component: AtelierCreatePage
+        }
     }
-]
-*/
+
+    // @ts-ignore
+    const atelierCreatePage = new AtelierCreatePage({
+        target: svelteTarget,
+        props: mapStateToProps(store.state)
+    });
+    
+    replaceComponent(atelierCreatePage, mapStateToProps)
+})
+
 
 page.start({hashbang: true})
