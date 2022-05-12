@@ -1,6 +1,9 @@
+//@ts-check
+
 import {json} from 'd3-fetch'
 
 export default function (accessToken, login, repoName) {
+    /** @type {"building" | "built" | "errored"} */
     let buildStatus;
     const reactions = new Set();
 
@@ -31,6 +34,7 @@ export default function (accessToken, login, repoName) {
                 json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
                     headers: {Authorization: "token " + accessToken}
                 }))
+                // @ts-ignore
                 .then(({status}) => {
                     console.log('build status', status)
                     buildStatus = status;
@@ -53,6 +57,7 @@ export default function (accessToken, login, repoName) {
                 })
         }
     }
+
     buildStatusObject.checkStatus();
     return buildStatusObject
 }

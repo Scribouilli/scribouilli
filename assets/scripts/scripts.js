@@ -18,6 +18,7 @@ import AtelierPages from './components/AtelierPages.svelte'
 import AtelierCreatePage from './components/AtelierCreatePage.svelte'
 
 
+// @ts-ignore
 window.Buffer = buffer.Buffer;
 const client_id = "2b4ed9ba835b05f83e2d";
 const destination = "https://daktary-team.github.io/scribouilli";
@@ -64,6 +65,7 @@ if (store.state.accessToken) {
     console.log("connecté t'as vu");
 
     const loginP = json("https://api.github.com/user", {headers: {Authorization: `token ${store.state.accessToken}`}})
+        // @ts-ignore
         .then(({login}) => {
             store.mutations.setLogin(login)
             return login
@@ -103,7 +105,7 @@ function getPagesList(login, repoName, accessToken) {
 const svelteTarget = document.querySelector("main");
 
 let currentComponent;
-let mapStateToProps = () => {};
+let mapStateToProps = (_) => {};
 
 function replaceComponent(newComponent, _mapStateToProps){
     if(!_mapStateToProps){
@@ -262,7 +264,8 @@ page('/atelier-pages', () => {
     function mapStateToProps(state){
         return {
             publishedWebsiteURL: makePublishedWebsiteURL(state),
-            pages: state.pages
+            pages: state.pages,
+            buildStatus: state.buildStatus
         }
     }
 

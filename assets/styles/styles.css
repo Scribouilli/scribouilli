@@ -108,19 +108,3 @@ h1 {
     border-width: 3px;
 }
 
-[class^="build-"] {
-    display: inline-block;
-    margin-left: 20px;
-}
-
-.build-ing::after {
-    content: "🕰";
-}
-
-.build-success::after {
-    content: "✅";
-}
-
-.build-error::after {
-    content: "❌";
-}

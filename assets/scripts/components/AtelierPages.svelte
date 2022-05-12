@@ -1,6 +1,17 @@
 <script>
     export let publishedWebsiteURL
     export let pages
+    export let buildStatus
+
+    let status = buildStatus.status;
+
+    buildStatus.subscribe(s => { status = s });
+
+    let buildStatusClass;
+
+    $: buildStatusClass = status === 'building' ? 'build-ing' : 
+        (status === 'built' ? 'build-success' : 'build-error')
+
 </script>
 
 <section class="screen" id="atelier-pages">
@@ -18,7 +29,7 @@
     </nav>
 
     <div id="pages">
-        <h3>Pages</h3>
+        <h3 class={buildStatusClass}>Pages</h3>
         
         <a href="/atelier-create-page">Nouvelle page</a>
         
@@ -29,3 +40,23 @@
         </ul>
     </div>
 </section>
+
+<style lang="scss">
+[class^="build-"] {
+    &::after{
+        margin-left: 1rem;
+    }
+}
+
+.build-ing::after {
+    content: "🕰";
+}
+
+.build-success::after {
+    content: "✅";
+}
+
+.build-error::after {
+    content: "❌";
+}
+</style>
