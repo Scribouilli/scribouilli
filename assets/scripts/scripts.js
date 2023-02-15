@@ -20,13 +20,12 @@ import AtelierCreatePage from './components/AtelierCreatePage.svelte'
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
-const client_id = "2b4ed9ba835b05f83e2d";
-const destination = "https://daktary-team.github.io/scribouilli";
-const redirect_url = "https://file-moi-les-clefs.herokuapp.com/gh-callback";
+const client_id = process.env.CLIENT_ID;
+const destination = "http://localhost:3000";
+const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
 
 const githubLoginHref =
     `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
-
 
 // @ts-ignore
 const store = new Store({
