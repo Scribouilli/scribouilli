@@ -21,7 +21,7 @@ import AtelierCreatePage from './components/AtelierCreatePage.svelte'
 // @ts-ignore
 window.Buffer = buffer.Buffer;
 const client_id = "a6302f0a0c8199ef730b";
-const destination = "http://localhost:3000";
+const destination = "https://lechappeebelle.github.io/scribouilli";
 const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
 
 const githubLoginHref =
