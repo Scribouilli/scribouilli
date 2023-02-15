@@ -20,7 +20,7 @@ import AtelierCreatePage from './components/AtelierCreatePage.svelte'
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
-const client_id = process.env.CLIENT_ID;
+const client_id = "a6302f0a0c8199ef730b";
 const destination = "http://localhost:3000";
 const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
 
