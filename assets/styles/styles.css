@@ -3,18 +3,20 @@
 /*
   http://www.paulirish.com/2012/box-sizing-border-box-ftw/
 */
-*, *:before, *:after {
-    box-sizing: border-box;
-    /* if you really care about older browsers, add prefixed versions at your own risks */
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  /* if you really care about older browsers, add prefixed versions at your own risks */
 }
 
 /*
   Repeating the background mostly makes sense in the <body>. Otherwise, people usually want the image and preferably its center (not the top-right corner)
 */
 *:not(body) {
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
 }
 
 /*
@@ -22,89 +24,141 @@
   http://lists.w3.org/Archives/Public/public-whatwg-archive/2014May/0001.html
 */
 [hidden] {
-    display: none !important;
+  display: none !important;
 }
 
-
-html, body {
-    padding: 0;
-    margin: 0;
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
 
 /*
-  In applications, there can be lists but HTML lists have bullet points and a bunch of useless styling attributes
+  In applications, there can be lists but HTML lists hav=e bullet points and a bunch of useless styling attributes
 */
-ul, ol, menu {
-    margin: 0;
-    padding: 0;
-
+ul,
+ol,
+menu {
+  margin: 0;
+  padding: 0;
 }
 
-ul, menu {
-    list-style: none;
+ul,
+menu {
+  list-style: none;
 }
 
 li {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 /* default iframe borders are just ugly */
 iframe {
-    border: 0;
+  border: 0;
 }
 
-
 * {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 /* DES VRAIS STYLES */
 html {
-    font-size: 62.5%;
 }
 
 body {
-    font-size: 2rem;
-    background-color: #ffe7b3;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.2rem;
+  background-color: #ffe7b3;
 }
 
-main {
-    max-width: 100%;
-    width: 800px;
-    margin: 0 auto;
+header {
+  padding-right: 2rem;
+  padding-left: 2rem;
 }
 
-.screen,
+#pages,
+.wrapper {
+  max-width: 100%;
+  width: 800px;
+  margin: 0 auto;
+}
+#pages .btn {
+  margin-top: 0;
+}
+
+.mesPages {
+  margin-top: 3rem;
+}
+
+nav ul {
+  display: flex;
+  gap: 4rem;
+}
+.screen {
+  text-align: center;
+}
+
 h1 {
-    text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: 1.5625rem;
 }
 
-h1 {
-    margin-bottom: 5rem;
+h2 {
+  font-size: 2.4rem;
+}
+
+h3 {
+  font-size: 2rem;
 }
 
 .btn {
-    display: inline-block;
-    margin-top: 5rem;
-    padding: 1.6rem;
-    font-weight: bold;
-    border: 2px solid #000;
-    border-radius: 8px;
-    background-color: #ffe7b3;
+  display: inline-block;
+  margin-top: 5rem;
+  padding: 1.6rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-decoration: none;
+  border: 2px solid #000;
+  border-radius: 8px;
+  background-color: #ffe7b3;
+}
+
+.btn__medium {
+    padding: .8rem;
 }
 
 .btn,
 .btn:hover {
-    color: #000;
+  color: #000;
 }
 
 .btn:hover {
-    text-decoration: none;
-    border-width: 3px;
+  text-decoration: none;
+  border-width: 3px;
 }
 
+a {
+  color: #912222;
+}
+
+form {
+  text-align: left;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+[type="text"],
+textarea {
+    width: 80%;
+    padding: .5rem;
+    font-size: 1rem;
+}

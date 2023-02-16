@@ -21,7 +21,7 @@ import PageContenu from "./components/PageContenu.svelte";
 // @ts-ignore
 window.Buffer = buffer.Buffer;
 const client_id = "a6302f0a0c8199ef730b";
-const destination = "https://lechappeebelle.github.io/scribouilli";
+const destination = "http://localhost:3000/";
 const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
 
 const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
