@@ -15,7 +15,7 @@ import Account from './components/Account.svelte'
 import Login from './components/Login.svelte'
 import CreateProject from './components/CreateProject.svelte'
 import AtelierPages from './components/AtelierPages.svelte'
-import AtelierCreatePage from './components/AtelierCreatePage.svelte'
+import PageContenu from './components/PageContenu.svelte'
 
 
 // @ts-ignore
@@ -113,7 +113,7 @@ function replaceComponent(newComponent, _mapStateToProps){
 
     if(currentComponent)
         currentComponent.$destroy()
-    
+
     currentComponent = newComponent
     mapStateToProps = _mapStateToProps
 }
@@ -154,10 +154,10 @@ page('/', () => {
                         }
                     })
                 }
-                if (location.hash === '#atelier-create-page') {
+                if (location.hash === '#atelier-page') {
                     prepareCreatePageScreen(accessToken, login, origin, buildStatus)
                 }
-                if (location.hash === 'atelier-pages') {
+                if (location.hash === 'atelier-list-pages') {
                     /!* TOUTDOUX : à tester *!/
                     console.log("Atelier-page hash")
                     prepareAtelierPagesScreen(accessToken, login, origin, buildStatus)
@@ -191,7 +191,7 @@ page('/', () => {
 
             return json(`https://api.github.com/repos/${login}/${repoName}`, {headers: {Authorization: `token ${store.state.accessToken}`}})
                 .then(() => {
-                    page('/atelier-pages');
+                    page('/atelier-list-pages');
                     // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
                 })
 
@@ -258,7 +258,7 @@ page('/create-project', () => {
 })
 
 
-page('/atelier-pages', () => {
+page('/atelier-list-pages', () => {
 
     function mapStateToProps(state){
         return {
@@ -309,7 +309,7 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
     ].join("\n")
 }
 
-page('/atelier-create-page', () => {
+page('/atelier-page', () => {
 
     function mapStateToProps(state){
         return {
@@ -334,7 +334,7 @@ page('/atelier-create-page', () => {
                         .then(() => {
                             console.log('nouvelle page créée')
                             // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
-                            page('/atelier-pages')
+                            page('/atelier-list-pages')
                         })
                         .catch((error) => {
                             console.error(error)
@@ -346,12 +346,12 @@ page('/atelier-create-page', () => {
     }
 
     // @ts-ignore
-    const atelierCreatePage = new AtelierCreatePage({
+    const pageContenu = new PageContenu({
         target: svelteTarget,
         props: mapStateToProps(store.state)
     });
-    
-    replaceComponent(atelierCreatePage, mapStateToProps)
+
+    replaceComponent(pageContenu, mapStateToProps)
 })
 
 

@@ -14,7 +14,7 @@
 
 </script>
 
-<section class="screen" id="atelier-pages">
+<section class="screen" id="atelier-list-pages">
     {#await publishedWebsiteURL}
     (en attente de l'origine)
     {:then url}
@@ -31,11 +31,11 @@
     <div id="pages">
         <h3 class={buildStatusClass}>Pages</h3>
         
-        <a href="/atelier-create-page">Nouvelle page</a>
+        <a href="./atelier-page">Nouvelle page</a>
         
         <ul class="pages-list">
             {#each pages || [] as page}
-            <li>{ page.path }</li>
+            <li><a href="./atelier-page?page={page.path}">{ page.path }</a></li>
             {/each}
         </ul>
     </div>
