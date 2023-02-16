@@ -1,17 +1,21 @@
 <script>
 export let title;
 export let content;
-export let onPageCreate;
+export let sha;
+
+import { createEventDispatcher } from 'svelte';
+
+const dispatch = createEventDispatcher();
 
 const onSubmit = (e) => {
     e.preventDefault()
-    onPageCreate(title, content)
+    dispatch("save", {content, title, sha})
 }
 
 </script>
 
 <section class="screen">
-    <h3>Création d'une page</h3>
+    <h3>Édition d'une page</h3>
 
     <form on:submit={onSubmit}>
         <div>
@@ -25,6 +29,7 @@ const onSubmit = (e) => {
             <label for="content">Contenu</label>
             <textarea bind:value={content} id="content" cols="30" rows="10"></textarea>
         </div>
-        <button type="submit">Publier la page</button>
+        <button type="submit">Enregistrer la page</button>
+        <a href="./atelier-list-pages">Annuler</a>
     </form>
 </section>
