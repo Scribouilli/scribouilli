@@ -120,7 +120,7 @@ page("/", () => {
   console.debug(page.base())
   if (location.pathname.length > 1) {
 
-    page.base(location.pathname)
+    page.base(location.pathname + "#!")
   }
   console.debug(page.base())
 
