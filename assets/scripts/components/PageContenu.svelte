@@ -32,7 +32,7 @@
         <textarea bind:value={content} id="content" cols="30" rows="10" />
       </div>
       <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
-      <a href="./atelier-list-pages">Retour</a>
+      <a href="/atelier-list-pages">Retour</a>
     </form>
   </div>
 </section>
