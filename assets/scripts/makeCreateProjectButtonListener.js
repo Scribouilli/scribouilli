@@ -1,12 +1,29 @@
 import {json} from 'd3-fetch'
 
-const example_page_content = `---
-title: Example
+const a_propos_page_content = `---
+title: À propos
 ---
-# Exemple de titre
+# À propos
 
-Hey ! Voici un contenu en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+Hey ! Voici une page à propos en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
 `
+
+const activites_page_content = `---
+title: Activités
+---
+# Activités
+
+Hey ! Voici une page activités en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+`
+
+const contact_page_content = `---
+title: Contact
+---
+# Contact
+
+Hey ! Voici une page contact en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+`
+
 
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
@@ -57,15 +74,38 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     )
                 })
             })
-
             .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/contents/example.md`, {
+                return json(`https://api.github.com/repos/${login}/${repoName}/contents/a_propos.md`, {
                     headers: {Authorization: "token " + accessToken},
                     method: "PUT",
                     body: JSON.stringify(
                         {
-                            message: "création de la page d'exemple",
-                            content: Buffer.from(example_page_content).toString('base64')
+                            message: "création de la page à propos",
+                            content: Buffer.from(a_propos_page_content).toString('base64')
+                        }
+                    )
+                })
+            })
+            .then(() => {
+                return json(`https://api.github.com/repos/${login}/${repoName}/contents/activites.md`, {
+                    headers: {Authorization: "token " + accessToken},
+                    method: "PUT",
+                    body: JSON.stringify(
+                        {
+                            message: "création de la page activites",
+                            content: Buffer.from(activites_page_content).toString('base64')
+                        }
+                    )
+                })
+            })
+            .then(() => {
+                return json(`https://api.github.com/repos/${login}/${repoName}/contents/contact.md`, {
+                    headers: {Authorization: "token " + accessToken},
+                    method: "PUT",
+                    body: JSON.stringify(
+                        {
+                            message: "création de la page contact",
+                            content: Buffer.from(contact_page_content).toString('base64')
                         }
                     )
                 })
