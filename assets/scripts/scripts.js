@@ -334,7 +334,7 @@ page("/atelier-page", ({ querystring }) => {
     const body = {
       message: `création de la page ${title}`,
       content: Buffer.from(
-        `${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n\n${content}`
+        `${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n${content}`
       ).toString("base64"),
       sha: sha,
     };
@@ -398,7 +398,7 @@ page("/atelier-page", ({ querystring }) => {
             errors,
           } = parseMarkdown(contenu);
           pageContenu.$set({
-            content: markdownContent?.trim(),
+            content: markdownContent,
             title: data.title,
             sha: sha,
           });
