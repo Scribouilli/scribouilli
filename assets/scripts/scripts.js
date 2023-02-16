@@ -421,7 +421,8 @@ page("/atelier-page", ({ querystring }) => {
   }
 });
 
-page.base(location.pathname)
+// Removing trailling '/'
+page.base(location.pathname.slice(0,-1))
 page.start();
 
 if (store.state.accessToken) {
