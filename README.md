@@ -3,7 +3,7 @@
 ## Installation
 
 - Ouvrir un terminal
-- Récupérer le repo `git clone git@github.com:lechapeebelle/scribouilli.git` dans le dossier qui va bien
+- Récupérer le repo `git clone git@github.com:lechappeebelle/scribouilli.git` dans le dossier qui va bien
 - Rentrer dans le dossier `scribouilli`
 - Faire `npm install`
 - Builder le projet avec `npm run dev` (?)
