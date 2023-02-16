@@ -398,7 +398,7 @@ page("/atelier-page", ({ querystring }) => {
             errors,
           } = parseMarkdown(contenu);
           pageContenu.$set({
-            content: markdownContent,
+            content: markdownContent?.trim(),
             title: data.title,
             sha: sha,
           });
