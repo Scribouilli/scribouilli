@@ -33,6 +33,9 @@
       </div>
       <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
       <a href="/atelier-list-pages">Retour</a>
+      {#if sha}
+      <button type="button" on:click={dispatch("delete", { sha })} class=" btn__medium btn">Supprimer la page</button>
+      {/if}
     </form>
   </div>
 </section>

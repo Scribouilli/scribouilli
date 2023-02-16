@@ -318,6 +318,24 @@ page("/atelier-page", ({ querystring }) => {
     },
   });
 
+  pageContenu.$on("delete", ({ detail: { sha } }) => {
+    Promise.resolve(state.login).then((login) => {
+      json(
+        `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
+        {
+          headers: { Authorization: "token " + state.accessToken },
+          method: "DELETE",
+          body: JSON.stringify({
+            sha,
+            message: `suppression du fichier ${fileName}`,
+          }),
+        }
+      ).then(() => {
+        page("/atelier-list-pages")
+      });  
+    });
+  });
+
   pageContenu.$on("save", ({ detail: { content, title, sha } }) => {
     const newFileName = makeFileNameFromTitle(title);
     const body = {
@@ -378,6 +396,7 @@ page("/atelier-page", ({ querystring }) => {
           headers: { Authorization: "token " + store.state.accessToken },
         }
       )
+        //@ts-ignore
         .then(({ content, sha }) => {
           //@ts-ignore
           const contenu = Buffer.from(content, "base64").toString();
