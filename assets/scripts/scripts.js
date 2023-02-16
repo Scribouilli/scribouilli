@@ -20,11 +20,7 @@ import PageContenu from "./components/PageContenu.svelte";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
-const client_id = "a6302f0a0c8199ef730b";
-const destination = "http://localhost:3000/";
-const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
 const ACCESS_TOKEN_STORAGE_KEY = "access_token"
-const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
 
 // @ts-ignore
 const store = new Store({
@@ -63,26 +59,6 @@ async function makePublishedWebsiteURL(state) {
   return `https://${origin}/${state.repoName}`;
 }
 
-if (store.state.accessToken) {
-  console.log("connecté t'as vu");
-
-  const url = new URL(location.href)
-  url.searchParams.delete("access_token")
-  history.replaceState(undefined, '', url)
-
-  localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
-
-  const loginP = json("https://api.github.com/user", {
-    headers: { Authorization: `token ${store.state.accessToken}` },
-  })
-    // @ts-ignore
-    .then(({ login }) => {
-      store.mutations.setLogin(login);
-      return login;
-    });
-
-  store.mutations.setLogin(loginP);
-}
 
 function getPagesList(login, repoName, accessToken) {
   return json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
@@ -232,6 +208,12 @@ page("/account", () => {
 });
 
 page("/login", () => {
+  const destination = location.href;
+  console.log("destination ", destination)
+  const client_id = "a6302f0a0c8199ef730b";
+  const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
+  const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
+  
   // @ts-ignore
   const login = new Login({
     target: svelteTarget,
@@ -346,7 +328,7 @@ page("/atelier-page", ({ querystring }) => {
     };
 
     let readyToUpdate = Promise.resolve();
-    if (fileName !== newFileName) {
+    if (fileName && (fileName !== newFileName)) {
       // On supprime la référence correspondante à l'ancien nom
       // Nous ne pouvons pas renommer le fichier via l'API
       // https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
@@ -420,3 +402,26 @@ page("/atelier-page", ({ querystring }) => {
 });
 
 page.start({ hashbang: true });
+
+if (store.state.accessToken) {
+  console.log("connecté t'as vu");
+
+  const url = new URL(location.href)
+  url.searchParams.delete("access_token")
+  history.replaceState(undefined, '', url)
+
+  localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
+
+  const loginP = json("https://api.github.com/user", {
+    headers: { Authorization: `token ${store.state.accessToken}` },
+  })
+  // @ts-ignore
+  .then(({ login }) => {
+    store.mutations.setLogin(login);
+    return login;
+  });
+
+  store.mutations.setLogin(loginP);
+
+  page("/atelier-list-pages")
+}
