@@ -422,7 +422,9 @@ page("/atelier-page", ({ querystring }) => {
 });
 
 // Removing trailling '/'
-page.base(location.pathname.slice(0,-1))
+if (location.hostname.endsWith(".github.io")) {
+  page.base("/scribouilli")
+}
 page.start();
 
 if (store.state.accessToken) {
