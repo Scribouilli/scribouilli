@@ -28,7 +28,7 @@
 
     <section class="screen" id="loader">
         <h2>Nous sommes en train de créer l'espace de publication</h2>
-        <img src="assets/images/hearts.svg" alt="cœur sur toi le temps que ça charge">
+        <img src="./assets/images/hearts.svg" alt="cœur sur toi le temps que ça charge">
     </section>
 
     {:then url}
@@ -36,7 +36,7 @@
     <section class="screen" id="loader">
         <h2>Youpiiiiiiiiiii !!</h2>
         <p>Le site est publié par ici : <a href={url}>{url}</a></p>
-        <p>Pour rajouter des pages, c'est <a href="/atelier-list-pages">par là</a></p>
+        <p>Pour rajouter des pages, c'est <a href="./atelier-list-pages">par là</a></p>
     </section>
 
     {/await}

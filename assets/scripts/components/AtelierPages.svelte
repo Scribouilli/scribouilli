@@ -39,14 +39,14 @@
   <div id="pages">
     <h2 class={buildStatusClass}>Pages</h2>
 
-    <a href="/atelier-page" class="btn">Nouvelle page</a>
+    <a href="./atelier-page" class="btn">Nouvelle page</a>
 
     <div class="mesPages">
       <h3>Mes pages</h3>
 
       <ul class="pages-list">
         {#each pages || [] as page}
-          <li><a href="/atelier-page?page={page.path}">{page.path}</a></li>
+          <li><a href="./atelier-page?page={page.path}">{page.path}</a></li>
         {/each}
       </ul>
     </div>
