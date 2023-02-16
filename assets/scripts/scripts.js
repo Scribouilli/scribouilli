@@ -23,14 +23,14 @@ window.Buffer = buffer.Buffer;
 const client_id = "a6302f0a0c8199ef730b";
 const destination = "http://localhost:3000/";
 const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
-
+const ACCESS_TOKEN_STORAGE_KEY = "access_token"
 const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
 
 // @ts-ignore
 const store = new Store({
   state: {
     // @ts-ignore
-    accessToken: new URL(location).searchParams.get("access_token"),
+    accessToken: new URL(location).searchParams.get("access_token") || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
     login: undefined, // Promise<string> | string
     origin: undefined, // Promise<string> | string
     repoName: "test-website-repo-3796",
@@ -65,6 +65,12 @@ async function makePublishedWebsiteURL(state) {
 
 if (store.state.accessToken) {
   console.log("connecté t'as vu");
+
+  const url = new URL(location.href)
+  url.searchParams.delete("access_token")
+  history.replaceState(undefined, '', url)
+
+  localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
 
   const loginP = json("https://api.github.com/user", {
     headers: { Authorization: `token ${store.state.accessToken}` },
