@@ -79,6 +79,7 @@ function getPagesList(login, repoName, accessToken) {
         const pageFiles = tree.filter((f) => {
           return (
             f.type === "blob" &&
+            f.path !== "index.md" &&
             (f.path.endsWith(".md") || f.path.endsWith(".html"))
           );
         });
@@ -423,5 +424,5 @@ if (store.state.accessToken) {
 
   store.mutations.setLogin(loginP);
 
-  page("/atelier-list-pages")
+  page("/")
 }

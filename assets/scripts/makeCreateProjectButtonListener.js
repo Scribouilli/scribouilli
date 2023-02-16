@@ -1,5 +1,12 @@
 import {json} from 'd3-fetch'
 
+const example_page_content = `---
+title: Example
+---
+# Exemple de titre
+
+Hey ! Voici un contenu en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+`
 
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
@@ -58,10 +65,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     body: JSON.stringify(
                         {
                             message: "création de la page d'exemple",
-                            content: Buffer.from(
-                                '---\n---\n\n# Exemple de titre\n\n' +
-                                'Hey ! Voici un contenu en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)'
-                            ).toString('base64')
+                            content: Buffer.from(example_page_content).toString('base64')
                         }
                     )
                 })
