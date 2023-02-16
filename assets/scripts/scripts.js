@@ -117,6 +117,13 @@ store.subscribe(render);
  */
 
 page("/", () => {
+  console.debug(page.base())
+  if (location.pathname.length > 1) {
+
+    page.base(location.pathname)
+  }
+  console.debug(page.base())
+
   if (store.state.login) {
     const repoName = store.state.repoName;
 
@@ -420,6 +427,8 @@ page("/atelier-page", ({ querystring }) => {
     replaceComponent(pageContenu, mapStateToProps);
   }
 });
+
+console.log(page.base())
 
 page.start({ hashbang: true });
 
