@@ -16,7 +16,6 @@
       <nav>
         <ul>
           <li><a href="./atelier-list-pages">Pages</a></li>
-          <li><a href="#TODO-articles">Articles</a></li>
           <li><a href="./settings">Paramètres</a></li>
         </ul>
       </nav>
