@@ -52,6 +52,10 @@ const store = new Store({
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
     },
+    removeSite(state){
+      state.pages = undefined
+      state.siteRepoConfig = undefined
+    }
 
   },
 });
@@ -78,11 +82,16 @@ if (store.state.accessToken) {
 
   store.mutations.setLogin(loginP);
 
-  store.mutations.setSiteRepoConfig(loginP.then((login) => {
+  const siteRepoConfigP = loginP.then((login) => {
     return json(`https://api.github.com/repos/${login}/${store.state.repoName}`, {
       headers: { Authorization: "token " + store.state.accessToken }
     })
-  }))
+  })
+
+  store.mutations.setSiteRepoConfig(siteRepoConfigP)
+  siteRepoConfigP.catch(() => {
+    page("/create-project")
+  })
 } else {
   history.replaceState(undefined, '', store.state.basePath + "/")
 }
@@ -451,7 +460,8 @@ page("/settings", () => {
           headers: { Authorization: "token " + store.state.accessToken },
           method: "DELETE",
         }).then(() => {
-          page("/")
+          store.mutations.removeSite(store.state)
+          page("/create-project")
         });
     });
   });

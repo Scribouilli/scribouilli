@@ -14,7 +14,7 @@
   }
 </script>
 
-<Skeleton {publishedWebsiteURL}>
+<Skeleton>
   {#if projectCreationProgressP === undefined}
     <section class="screen" id="create-project">
       <h2>Créez un site</h2>
