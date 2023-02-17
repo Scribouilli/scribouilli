@@ -41,8 +41,10 @@
           </p>
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
-        <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
-        <a href="./atelier-list-pages" class="btn__retour">Retour</a>
+        <div class="actions-zone">
+          <a href="./atelier-list-pages" class="btn__retour">Retour</a>
+          <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
+        </div>
 
         {#if sha}
           <div class="wrapper delete-zone">
@@ -79,12 +81,21 @@
     margin-top: 4rem;
   }
 
-  .btn {
+  .actions-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 1rem;
+    padding-right: 2rem;
+    padding-left: 2rem;
   }
 
   .btn__retour {
-    margin-left: 1rem;
+
+    &::before {
+      content: '‹';
+      margin-right: .5rem;
+    }
   }
 
   .delete-zone {
