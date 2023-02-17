@@ -126,8 +126,8 @@ h3 {
 }
 
 .btn__medium {
-    padding: .8rem;
-    font-size: 1.2rem;
+  padding: 0.8rem;
+  font-size: 1.2rem;
 }
 
 .btn,
@@ -159,7 +159,38 @@ label {
 
 [type="text"],
 textarea {
-    width: 80%;
-    padding: .5rem;
-    font-size: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+}
+
+textarea {
+  min-height: 32rem;
+}
+
+.delete-zone {
+  padding: 2rem 1rem;
+  width: 500px;
+  background: white;
+  border-radius: 16px;
+}
+
+.delete-zone label {
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.delete-zone .btn {
+  margin-top: 2rem;
+  color: crimson;
+  background: none;
+  border-color: crimson;
+}
+
+.delete-zone .btn:disabled {
+  display: none;
+}
+
+.delete-zone .btn:hover {
+  box-shadow: 0 0 0 1px crimson inset;
 }

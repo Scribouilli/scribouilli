@@ -33,35 +33,35 @@
           <code>?</code>, ça peut ne pas marcher
         </p>
 
-        <div>
+        <div class="content">
           <label for="content">Contenu</label>
           <p>
-            Pour mettre en forme votre contenu, vous pouvez bidouiller <a
-              href="https://flus.fr/carnet/markdown.html">avec du Markdown</a
-            >.
+            Pour mettre en forme votre contenu, vous pouvez bidouiller 
+            <a href="https://flus.fr/carnet/markdown.html">avec du Markdown</a>.
           </p>
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
         <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
-
-        <h2>Settings</h2>
         <a href="./atelier-list-pages" class="btn__retour">Retour</a>
+
         {#if sha}
-          <label>
-            <input
-              type="checkbox"
-              on:change={() => {
-                deleteDisabled = !deleteDisabled;
-              }}
-            />
-            Activer la suppression du site
-          </label>
-          <button
-            type="button"
-            on:click={dispatch("delete", { sha })}
-            disabled={deleteDisabled}
-            class=" btn__medium btn">Supprimer la page</button
-          >
+          <div class="wrapper delete-zone">
+            <h3>Suppression</h3>
+            <label>
+              <input
+                type="checkbox"
+                on:change={() => {
+                  deleteDisabled = !deleteDisabled;
+                }}
+              />
+              Activer la suppression de la page
+            </label>
+            <button
+              type="button"
+              on:click={dispatch("delete", { sha })}
+              disabled={deleteDisabled}
+              class=" btn__medium btn">Supprimer la page</button>
+          </div>
         {/if}
       </form>
     </div>
@@ -73,16 +73,28 @@
     & + p {
       margin-top: 0.2rem;
     }
-
-    &:not(:first-child) {
-      margin-top: 4rem;
-    }
   }
+
+  .content {
+    margin-top: 4rem;
+  }
+
   .btn {
     margin-top: 1rem;
   }
 
   a {
     margin-left: 1rem;
+  }
+
+  .delete-zone {
+    margin-top: 12rem;
+    margin-bottom: 2rem;
+    background: none;
+    border: 4px solid white;
+
+    h3 {
+      margin-top: 0;
+    }
   }
 </style>
