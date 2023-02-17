@@ -5,7 +5,8 @@ title: À propos
 ---
 # À propos
 
-Hey ! Voici une page à propos en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+L'Échappée Belle est **une association** qui a pour objet de soutenir et promouvoir des activités et des personnes qui travaillent autour de **valeurs de consentement, de bien commun et de prendre soin des personnes et de l’environnement**.
+
 `
 
 const activites_page_content = `---
@@ -13,7 +14,17 @@ title: Activités
 ---
 # Activités
 
-Hey ! Voici une page activités en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+L’association cherche à œuvrer en collaboration avec des organismes publics, des organisations privées et des individus.
+
+A titre indicatif, les activités commerciales possibles sont (liste non-exhaustive) :
+
+- Accompagnement à la **création de structures** juridiques
+- Conception, développement et accompagnement de **produits innovants**
+- **Formation** d’enfants et d’adultes, par exemple dans les domaines de la communication non-violente, méthodologie lean et approche agile, les relations aux animaux, l’alimentation, la gestion de budget familial ou d’entreprise…
+- Projets à **impact environnemental positif**
+- Projets à **impact social positif**
+- Vente d’objets ou de denrées alimentaires, avec **impact humain ou environnemental positif**
+
 `
 
 const contact_page_content = `---
@@ -21,7 +32,9 @@ title: Contact
 ---
 # Contact
 
-Hey ! Voici une page contact en [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#table-of-contents)
+L'Échappée Belle est actuellement composée de 5 membres.
+
+Pour nous contacter : [coucou@lechappeebelle.team](mailto:coucou@lechappeebelle.team)
 `
 
 
