@@ -263,12 +263,6 @@ page("/atelier-list-pages", () => {
     };
   }
 
-  // @ts-ignore
-  const atelierPages = new AtelierPages({
-    target: svelteTarget,
-    props: mapStateToProps(store.state),
-  });
-
   const state = store.state;
 
   if (state.accessToken) {
@@ -278,15 +272,23 @@ page("/atelier-list-pages", () => {
       console.log("User:", result);
       store.mutations.setLogin(result.login);
 
+      // @ts-ignore
+      const atelierPages = new AtelierPages({
+        target: svelteTarget,
+        props: mapStateToProps(store.state),
+      });
+
       getPagesList(state.login, state.repoName, state.accessToken).then(
         store.mutations.setPages
       );
+
+      replaceComponent(atelierPages, mapStateToProps);      
+
     });
   } else {
     page("/");
   }
 
-  replaceComponent(atelierPages, mapStateToProps);
 });
 
 function makeFileNameFromTitle(title) {
@@ -302,6 +304,52 @@ function makeFileNameFromTitle(title) {
 
 function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
   return ["---", "title: " + title, "---"].join("\n");
+}
+
+/**
+ * @summary Remove file from github
+ */
+function deleteFile(login, state, fileName, sha) {
+  return json(
+    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
+    {
+      headers: { Authorization: "token " + state.accessToken },
+      method: "DELETE",
+      body: JSON.stringify({
+        sha,
+        message: `suppression du fichier ${fileName}`,
+      }),
+    }
+  )
+}
+
+/**
+ * @summary Update or Create file from github
+ * 
+ * If body contains a SHA ;
+ * it's an update ;
+ * else it's a creation.
+ */
+function updateOrCreateFile(login, state, fileName, body) {
+  return json(
+    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
+    {
+      headers: { Authorization: "token " + state.accessToken },
+      method: "PUT",
+      body: JSON.stringify(body),
+    }
+  ).then(() => {
+    if (body.sha) { 
+      console.log("page mise à jour");
+    } else {
+      console.log("nouvelle page créée");
+    }
+    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
+    page("/atelier-list-pages");
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 }
 
 page("/atelier-page", ({ querystring }) => {
@@ -320,17 +368,7 @@ page("/atelier-page", ({ querystring }) => {
 
   pageContenu.$on("delete", ({ detail: { sha } }) => {
     Promise.resolve(state.login).then((login) => {
-      json(
-        `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
-        {
-          headers: { Authorization: "token " + state.accessToken },
-          method: "DELETE",
-          body: JSON.stringify({
-            sha,
-            message: `suppression du fichier ${fileName}`,
-          }),
-        }
-      ).then(() => {
+      deleteFile(login, state, fileName, sha).then(() => {
         page("/atelier-list-pages")
       });  
     });
@@ -343,49 +381,23 @@ page("/atelier-page", ({ querystring }) => {
       content: Buffer.from(
         `${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n${content}`
       ).toString("base64"),
-      sha: sha,
     };
 
-    let readyToUpdate = Promise.resolve();
     if (fileName && (fileName !== newFileName)) {
       // On supprime la référence correspondante à l'ancien nom
       // Nous ne pouvons pas renommer le fichier via l'API
       // https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
-      readyToUpdate = Promise.resolve(state.login).then((login) => {
-        json(
-          `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
-          {
-            headers: { Authorization: "token " + state.accessToken },
-            method: "DELETE",
-            body: JSON.stringify({
-              sha,
-              message: "changement de nom de fichier",
-            }),
-          }
-        );
-      });
-    }
-
-    readyToUpdate.then(() => {
-      return Promise.resolve(state.login).then((login) => {
-        json(
-          `https://api.github.com/repos/${login}/${state.repoName}/contents/${newFileName}`,
-          {
-            headers: { Authorization: "token " + state.accessToken },
-            method: "PUT",
-            body: JSON.stringify(body),
-          }
-        )
-          .then(() => {
-            console.log("nouvelle page créée");
-            // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
-            page("/atelier-list-pages");
-          })
-          .catch((error) => {
-            console.error(error);
+      Promise.resolve(state.login).then((login) => {
+          deleteFile(login, state, fileName, sha).then(() => {
+            updateOrCreateFile(login, state, newFileName, body)
           });
       });
-    });
+    } else {
+      Promise.resolve(state.login).then((login) => {
+        body.sha = sha
+        updateOrCreateFile(login, state, newFileName, body)
+      });
+    }
   });
 
   if (fileName) {
