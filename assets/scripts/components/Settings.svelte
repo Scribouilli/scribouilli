@@ -14,7 +14,7 @@
 
 <Skeleton {publishedWebsiteURL}>
   <section class="screen" id="settings">
-    <h2>Settings</h2>
+    <h2>Paramètres</h2>
     <div class="wrapper delete-zone">
       <label>
         <input
@@ -23,7 +23,7 @@
             enabled = !enabled;
           }}
         />
-        Activer la suppression du site
+        Afficher le bouton de suppression
       </label>
       <button on:click={temporaire} disabled={!enabled} class="btn btn__medium">Supprimer le site</button>
     </div>
