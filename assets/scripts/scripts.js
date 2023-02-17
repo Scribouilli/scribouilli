@@ -315,6 +315,7 @@ page("/atelier-page", ({ querystring }) => {
       title: "",
       content: "",
       sha: "",
+      publishedWebsiteURL: makePublishedWebsiteURL(state)
     },
   });
 
