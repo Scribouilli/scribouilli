@@ -1,4 +1,6 @@
 <script>
+  import Skeleton from "./Skeleton.svelte";
+
   export let publishedWebsiteURL;
   export let pages;
   export let buildStatus;
@@ -19,39 +21,25 @@
       : "build-error";
 </script>
 
-<section class="screen" id="atelier-list-pages">
-  <header>
-    {#await publishedWebsiteURL}
-      (en attente de l'origine)
-    {:then url}
-      <a href={url} class="project-name">{url}</a>
-    {/await}
+<Skeleton publishedWebsiteURL={publishedWebsiteURL}>
+  <section class="screen" id="atelier-list-pages">
+    <div id="pages">
+      <h2 class={buildStatusClass}>Pages</h2>
 
-    <nav>
-      <ul>
-        <li><a href=".">Pages</a></li>
-        <li><a href="#TODO-articles">Articles</a></li>
-        <li><a href="#TODO-parametres">Paramètres</a></li>
-      </ul>
-    </nav>
-  </header>
+      <a href="./atelier-page" class="btn">Nouvelle page</a>
 
-  <div id="pages">
-    <h2 class={buildStatusClass}>Pages</h2>
+      <div class="mesPages">
+        <h3>Mes pages</h3>
 
-    <a href="./atelier-page" class="btn">Nouvelle page</a>
-
-    <div class="mesPages">
-      <h3>Mes pages</h3>
-
-      <ul class="pages-list">
-        {#each pages || [] as page}
-          <li><a href="./atelier-page?page={page.path}">{page.path}</a></li>
-        {/each}
-      </ul>
+        <ul class="pages-list">
+          {#each pages || [] as page}
+            <li><a href="./atelier-page?page={page.path}">{page.path}</a></li>
+          {/each}
+        </ul>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</Skeleton>
 
 <style lang="scss">
   header {
@@ -81,11 +69,10 @@
   }
 
   .pages-list {
-
     li {
-        & + li {
-            margin-top: 2rem;
-        }
+      & + li {
+        margin-top: 2rem;
+      }
     }
   }
 </style>

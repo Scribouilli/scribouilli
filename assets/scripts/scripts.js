@@ -89,7 +89,7 @@ function getPagesList(login, repoName, accessToken) {
   });
 }
 
-const svelteTarget = document.querySelector("main");
+const svelteTarget = document.querySelector("body");
 
 let currentComponent;
 let mapStateToProps = (_) => {};
@@ -431,6 +431,10 @@ page("/atelier-page", ({ querystring }) => {
   } else {
     replaceComponent(pageContenu, mapStateToProps);
   }
+});
+
+page("/settings", () => {
+
 });
 
 // Removing trailling '/'
