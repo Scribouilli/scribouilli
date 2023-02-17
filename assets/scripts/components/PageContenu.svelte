@@ -83,7 +83,7 @@
     margin-top: 1rem;
   }
 
-  a {
+  .btn__retour {
     margin-left: 1rem;
   }
 
