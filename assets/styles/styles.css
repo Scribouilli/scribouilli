@@ -78,6 +78,14 @@ header {
   padding-left: 2rem;
 }
 
+header > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
 #pages,
 .wrapper {
   max-width: 100%;

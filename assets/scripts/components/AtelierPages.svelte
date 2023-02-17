@@ -42,14 +42,6 @@
 </Skeleton>
 
 <style lang="scss">
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-  }
-
   [class^="build-"] {
     &::after {
       margin-left: 1rem;
