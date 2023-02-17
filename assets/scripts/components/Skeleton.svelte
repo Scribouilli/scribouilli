@@ -1,6 +1,6 @@
 <script>
   import Header from "./Header.svelte";
-  export let publishedWebsiteURL;
+  export let publishedWebsiteURL = undefined;
 </script>
 
 <Header {publishedWebsiteURL} />

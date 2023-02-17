@@ -1,10 +1,8 @@
 <script>
   import Skeleton from "./Skeleton.svelte";
-
-  export let publishedWebsiteURL
 </script>
 
-<Skeleton {publishedWebsiteURL}>
+<Skeleton>
   <section class="screen" id="welcome">
     <h2>Un espace collaboratif <br /> de publication de contenu.</h2>
 
