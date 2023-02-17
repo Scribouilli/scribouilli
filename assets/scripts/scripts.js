@@ -247,8 +247,9 @@ function makeFileNameFromTitle(title) {
     title
       .replace(/\/|#|\?/g, "-") // replace url confusing characters
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") + // remove accent because GH pages triggers file download
-    ".md";
+      .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+      .toLowerCase() +
+    ".md"
 
   return fileName;
 }
