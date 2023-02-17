@@ -106,6 +106,11 @@ h1 {
   font-size: 1.5625rem;
 }
 
+h1 a {
+  color: #000;
+  text-decoration: none;
+}
+
 h2 {
   font-size: 2.4rem;
 }
