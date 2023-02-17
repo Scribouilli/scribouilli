@@ -225,7 +225,9 @@ page("/login", () => {
 
 page("/create-project", () => {
   Promise.resolve(store.state.siteRepoConfig).then((repo) => {
-    page.redirect("/atelier-list-pages")
+    if (repo) {
+      page.redirect("/atelier-list-pages")
+    }
   })
 
   function mapStateToProps(state) {
