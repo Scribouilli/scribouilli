@@ -272,6 +272,7 @@ page("/atelier-list-pages", () => {
       headers: { Authorization: "token " + state.accessToken },
     }).then((result) => {
 
+      // TODO Est-ce bien nécessaire ?
       store.mutations.setLogin(result.login);
 
       // @ts-ignore
@@ -367,6 +368,9 @@ page("/atelier-page", ({ querystring }) => {
       content: "",
       previousTitle: undefined,
       previousContent: undefined,
+      makeFileNameFromTitle: makeFileNameFromTitle,
+      // TODO Il se passe un truc bizarre ici quand on recharge la page
+      pagesP: Promise.resolve(state.login).then((login) => getPagesList(login, state.repoName, state.accessToken)),
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state)
     },
@@ -408,6 +412,7 @@ page("/atelier-page", ({ querystring }) => {
     }
   });
 
+  // To update existing file
   if (fileName) {
     Promise.resolve(store.state.login).then((login) => {
       json(

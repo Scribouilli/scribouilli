@@ -5,16 +5,33 @@
   export let previousTitle;
   export let sha;
   export let publishedWebsiteURL;
+  export let pagesP;
+  export let makeFileNameFromTitle;
 
   import { createEventDispatcher } from "svelte";
   import Skeleton from "./Skeleton.svelte";
 
   $: deleteDisabled = true;
+  $: submitDisabled = true;
+  let filesPath = undefined;
 
   const dispatch = createEventDispatcher();
 
+  pagesP.then((pages) => {
+    filesPath = pages.map((page) => page.path)
+    submitDisabled = false
+  })
+
   const onSubmit = (e) => {
     e.preventDefault();
+    
+    if (filesPath.includes(makeFileNameFromTitle(title))) {
+      // TODO afficher un message
+      console.log("Fichier existant");
+      submitDisabled = true
+      return 
+    }
+    submitDisabled = false
 
     const titleChanged =
       (sha === "" || previousTitle) && previousTitle !== title.trim();
@@ -55,7 +72,8 @@
         </div>
         <div class="actions-zone">
           <a href="./atelier-list-pages" class="btn__retour">Retour</a>
-          <button type="submit" class=" btn__medium btn">
+          
+          <button type="submit" class=" btn__medium btn" disabled={submitDisabled} >
             Enregistrer la page
           </button>
         </div>
