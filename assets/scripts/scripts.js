@@ -75,7 +75,6 @@ function getPagesList(login, repoName, accessToken) {
     ).then(
       // @ts-ignore
       ({ tree }) => {
-        console.log(tree);
         const pageFiles = tree.filter((f) => {
           return (
             f.type === "blob" &&
