@@ -16,9 +16,10 @@
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const titleChanged = previousTitle && previousTitle !== title.trim();
+    const titleChanged =
+      (sha === "" || previousTitle) && previousTitle !== title.trim();
     const contentChanged =
-      previousContent && previousContent !== content.trim();
+      (sha === "" || previousContent) && previousContent !== content.trim();
 
     if (title !== "" && (titleChanged || contentChanged)) {
       dispatch("save", { content, title, sha });
@@ -75,7 +76,8 @@
               type="button"
               on:click={dispatch("delete", { sha })}
               disabled={deleteDisabled}
-              class=" btn__medium btn">
+              class=" btn__medium btn"
+            >
               Supprimer la page
             </button>
           </div>
