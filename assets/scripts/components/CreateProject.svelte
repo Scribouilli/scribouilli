@@ -3,6 +3,7 @@
 
   export let publishedWebsiteURL;
   export let createProject;
+  export let siteRepoConfig;
 
   let projectCreationProgressP = undefined;
 
@@ -18,10 +19,16 @@
     <section class="screen" id="create-project">
       <h2>Créez un site</h2>
 
-      {#await publishedWebsiteURL}
-        (en attente de l'origine)
-      {:then url}
-        <h3>Ce site va être créé à l'adresse <span class="url">{url}</span></h3>
+      {#await siteRepoConfig}
+        (Vérification de l'existance de votre site)
+      {:catch}
+        {#await publishedWebsiteURL}
+          (En attente de récupération du nom d'utilisateur-ice)
+        {:then url}
+          <h3>
+            Ce site va être créé à l'adresse <span class="url">{url}</span>
+          </h3>
+        {/await}
       {/await}
 
       <button class="btn submit" on:click={clickListener}>Créer le site</button>

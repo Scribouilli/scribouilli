@@ -33,6 +33,8 @@ const store = new Store({
     repoName: "test-website-repo-3796",
     pages: undefined,
     buildStatus: undefined,
+    basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
+    siteRepoConfig: undefined
   },
   mutations: {
     setLogin(state, login) {
@@ -47,8 +49,43 @@ const store = new Store({
     setPages(state, pages) {
       state.pages = pages;
     },
+    setSiteRepoConfig(state, repo) {
+      state.siteRepoConfig = repo;
+    },
+
   },
 });
+
+// Store access_token in browser
+const url = new URL(location.href)
+if (url.searchParams.has("access_token")) {
+  url.searchParams.delete("access_token")
+  history.replaceState(undefined, '', url)
+
+  localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
+}
+
+// Retrieve logged in user from access_token
+if (store.state.accessToken) {
+  const loginP = json("https://api.github.com/user", {
+    headers: { Authorization: `token ${store.state.accessToken}` },
+  })
+    // @ts-ignore
+    .then(({ login }) => {
+      store.mutations.setLogin(login);
+      return login;
+    });
+
+  store.mutations.setLogin(loginP);
+
+  store.mutations.setSiteRepoConfig(loginP.then((login) => {
+    return json(`https://api.github.com/repos/${login}/${store.state.repoName}`, {
+      headers: { Authorization: "token " + store.state.accessToken }
+    })
+  }))
+} else {
+  history.replaceState(undefined, '', store.state.basePath + "/")
+}
 
 async function makeOrigin(state) {
   const login = await Promise.resolve(state.login);
@@ -91,7 +128,7 @@ function getPagesList(login, repoName, accessToken) {
 const svelteTarget = document.querySelector("body");
 
 let currentComponent;
-let mapStateToProps = (_) => {};
+let mapStateToProps = (_) => { };
 
 function replaceComponent(newComponent, _mapStateToProps) {
   if (!_mapStateToProps) {
@@ -105,7 +142,7 @@ function replaceComponent(newComponent, _mapStateToProps) {
 }
 
 function render(state) {
-  
+
   const props = mapStateToProps(state);
   if (props) {
     currentComponent.$set(props);
@@ -147,7 +184,7 @@ page("/", () => {
     props: {},
   });
 
-  replaceComponent(welcome, () => {});
+  replaceComponent(welcome, () => { });
 });
 
 page("/account", () => {
@@ -157,15 +194,15 @@ page("/account", () => {
     props: {},
   });
 
-  replaceComponent(account, () => {});
+  replaceComponent(account, () => { });
 });
 
 page("/login", () => {
-  const destination = location.href;
+  const destination = location.origin + store.state.basePath + "/create-project";
   const client_id = "a6302f0a0c8199ef730b";
   const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
   const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
-  
+
   // @ts-ignore
   const login = new Login({
     target: svelteTarget,
@@ -174,13 +211,18 @@ page("/login", () => {
     },
   });
 
-  replaceComponent(login, () => {});
+  replaceComponent(login, () => { });
 });
 
 page("/create-project", () => {
+  Promise.resolve(store.state.siteRepoConfig).then((repo) => {
+    page.redirect("/atelier-list-pages")
+  })
+
   function mapStateToProps(state) {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
+      siteRepoConfig: state.siteRepoConfig,
       createProject: Promise.all([
         Promise.resolve(state.login),
         makeOrigin(state),
@@ -215,12 +257,12 @@ page("/atelier-list-pages", () => {
   }
 
   const state = store.state;
-  
+
   if (state.accessToken) {
     json("https://api.github.com/user", {
       headers: { Authorization: "token " + state.accessToken },
     }).then((result) => {
-      
+
       store.mutations.setLogin(result.login);
 
       // @ts-ignore
@@ -233,7 +275,7 @@ page("/atelier-list-pages", () => {
         store.mutations.setPages
       );
 
-      replaceComponent(atelierPages, mapStateToProps);      
+      replaceComponent(atelierPages, mapStateToProps);
 
     });
   } else {
@@ -291,7 +333,7 @@ function updateOrCreateFile(login, state, fileName, body) {
       body: JSON.stringify(body),
     }
   ).then(() => {
-    if (body.sha) { 
+    if (body.sha) {
       console.log("page mise à jour");
     } else {
       console.log("nouvelle page créée");
@@ -299,9 +341,9 @@ function updateOrCreateFile(login, state, fileName, body) {
     // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
     page("/atelier-list-pages");
   })
-  .catch((error) => {
-    console.error(error);
-  });
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 page("/atelier-page", ({ querystring }) => {
@@ -325,7 +367,7 @@ page("/atelier-page", ({ querystring }) => {
     Promise.resolve(state.login).then((login) => {
       deleteFile(login, state, fileName, sha).then(() => {
         page("/atelier-list-pages")
-      });  
+      });
     });
   });
 
@@ -343,9 +385,9 @@ page("/atelier-page", ({ querystring }) => {
       // Nous ne pouvons pas renommer le fichier via l'API
       // https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
       Promise.resolve(state.login).then((login) => {
-          deleteFile(login, state, fileName, sha).then(() => {
-            updateOrCreateFile(login, state, newFileName, body)
-          });
+        deleteFile(login, state, fileName, sha).then(() => {
+          updateOrCreateFile(login, state, newFileName, body)
+        });
       });
     } else {
       Promise.resolve(state.login).then((login) => {
@@ -383,7 +425,7 @@ page("/atelier-page", ({ querystring }) => {
         });
     });
   }
-  
+
 });
 
 page("/settings", () => {
@@ -397,7 +439,7 @@ page("/settings", () => {
   // @ts-ignore
   const settings = new Settings({
     target: svelteTarget,
-    props: {publishedWebsiteURL: makePublishedWebsiteURL(store.state)}
+    props: { publishedWebsiteURL: makePublishedWebsiteURL(store.state) }
 
   });
 
@@ -414,33 +456,10 @@ page("/settings", () => {
     });
   });
 
-  replaceComponent(settings, () => {});
+  replaceComponent(settings, () => { });
 });
 
-// Removing trailling '/'
-if (location.hostname.endsWith(".github.io")) {
-  page.base("/scribouilli")
-}
+page.base(store.state.basePath)
+
 page.start();
 
-if (store.state.accessToken) {
-
-  const url = new URL(location.href)
-  url.searchParams.delete("access_token")
-  history.replaceState(undefined, '', url)
-
-  localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
-
-  const loginP = json("https://api.github.com/user", {
-    headers: { Authorization: `token ${store.state.accessToken}` },
-  })
-  // @ts-ignore
-  .then(({ login }) => {
-    store.mutations.setLogin(login);
-    return login;
-  });
-
-  store.mutations.setLogin(loginP);
-
-  page("/")
-}
