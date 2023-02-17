@@ -2,9 +2,8 @@
   export let publishedWebsiteURL;
 </script>
 
-
 <header>
-  <h1>Scribouilli</h1>
+  <h1><a href="./">Scribouilli</a></h1>
 
   {#if publishedWebsiteURL}
     {#await publishedWebsiteURL}
