@@ -17,7 +17,7 @@
       <ul>
         <li><a href=".">Pages</a></li>
         <li><a href="#TODO-articles">Articles</a></li>
-        <li><a href="#TODO-parametres">Paramètres</a></li>
+        <li><a href="./settings">Paramètres</a></li>
       </ul>
     </nav>
   {/if}

@@ -17,6 +17,7 @@ import Login from "./components/Login.svelte";
 import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
 import PageContenu from "./components/PageContenu.svelte";
+import Settings from "./components/Settings.svelte";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
@@ -58,7 +59,6 @@ async function makePublishedWebsiteURL(state) {
   const origin = await makeOrigin(state);
   return `https://${origin}/${state.repoName}`;
 }
-
 
 function getPagesList(login, repoName, accessToken) {
   return json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
@@ -106,8 +106,11 @@ function replaceComponent(newComponent, _mapStateToProps) {
 }
 
 function render(state) {
+  
   const props = mapStateToProps(state);
-  currentComponent.$set(props);
+  if (props) {
+    currentComponent.$set(props);
+  }
 }
 
 store.subscribe(render);
@@ -117,62 +120,12 @@ store.subscribe(render);
  */
 
 page("/", () => {
+
   if (store.state.login) {
     const repoName = store.state.repoName;
 
     Promise.resolve(store.state.login).then(async (login) => {
       const origin = await makeOrigin(store.state);
-
-      // TOUTDOUX : affiche une erreur, spas cool !
-      //const buildStatus = makeBuildStatus(accessToken, login, repoName);
-
-      /*window.addEventListener("hashchange", () => {
-                if (location.hash === '#create-project') {
-                    console.log("You're visiting a cool feature!");
-                    new Vue({
-                        el: document.querySelector('#create-project'),
-                        data: {
-                            origin
-                        },
-                        methods: {
-                            createProject: makeCreateProjectButtonListener(accessToken, login, origin, buildStatus)
-                        }
-                    })
-                }
-                if (location.hash === '#atelier-page') {
-                    prepareCreatePageScreen(accessToken, login, origin, buildStatus)
-                }
-                if (location.hash === 'atelier-list-pages') {
-                    /!* TOUTDOUX : à tester *!/
-                    console.log("Atelier-page hash")
-                    prepareAtelierPagesScreen(accessToken, login, origin, buildStatus)
-                }
-            })*/
-
-      // const deleteButton = document.querySelector("#atelier-parametres .delete-repo");
-      /*deleteButton.addEventListener("click", () => {
-                d3.text(`https://api.github.com/repos/${login}/${repoName}`, {
-                headers: {Authorization: "token " + accessToken},
-                method: "DELETE"
-            })
-            .then(() => {
-                location.href = "#after-delete";
-            })
-            .catch((error) => {
-                console.error("after delete failure", error);
-                location.href = "#after-delete-failure"
-                const refreshButton = document.querySelector("#after-delete-failure .refresh");
-                const githubDangerZone = document.querySelector("#after-delete-failure" +
-                " .github-danger-zone");
-                
-                refreshButton.addEventListener("click", () => {
-                    location.href = "#";
-                    location.reload();
-                });
-                
-                githubDangerZone.href = `https://github.com/${login}/${repoName}/settings/#danger-zone`;
-            })
-        })*/
 
       return json(`https://api.github.com/repos/${login}/${repoName}`, {
         headers: { Authorization: `token ${store.state.accessToken}` },
@@ -210,7 +163,6 @@ page("/account", () => {
 
 page("/login", () => {
   const destination = location.href;
-  console.log("destination ", destination)
   const client_id = "a6302f0a0c8199ef730b";
   const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
   const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
@@ -264,12 +216,12 @@ page("/atelier-list-pages", () => {
   }
 
   const state = store.state;
-
+  
   if (state.accessToken) {
     json("https://api.github.com/user", {
       headers: { Authorization: "token " + state.accessToken },
     }).then((result) => {
-      console.log("User:", result);
+      
       store.mutations.setLogin(result.login);
 
       // @ts-ignore
@@ -435,6 +387,33 @@ page("/atelier-page", ({ querystring }) => {
 
 page("/settings", () => {
 
+  function mapStateToProps(state) {
+    return {
+      publishedWebsiteURL: makePublishedWebsiteURL(state),
+    };
+  }
+
+  // @ts-ignore
+  const settings = new Settings({
+    target: svelteTarget,
+    props: {publishedWebsiteURL: makePublishedWebsiteURL(store.state)}
+
+  });
+
+  settings.$on("delete-site", () => {
+    Promise.resolve(store.state.login).then((login) => {
+
+      json(`https://api.github.com/repos/${login}/${store.state.repoName}`,
+        {
+          headers: { Authorization: "token " + store.state.accessToken },
+          method: "DELETE",
+        }).then(() => {
+          page("/")
+        });
+    });
+  });
+
+  replaceComponent(settings, () => {});
 });
 
 // Removing trailling '/'
@@ -444,7 +423,6 @@ if (location.hostname.endsWith(".github.io")) {
 page.start();
 
 if (store.state.accessToken) {
-  console.log("connecté t'as vu");
 
   const url = new URL(location.href)
   url.searchParams.delete("access_token")
