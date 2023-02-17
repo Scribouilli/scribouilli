@@ -80,7 +80,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     body: JSON.stringify(
                         {
                             message: "crée le _config.yml",
-                            content: Buffer.from(`theme: jekyll-theme-cayman`).toString('base64')
+                            content: Buffer.from(`remote_theme: oinam/oinam-jekyll`).toString('base64')
                         }
                     )
                 })
