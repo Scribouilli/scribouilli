@@ -319,6 +319,8 @@ page("/atelier-page", ({ querystring }) => {
     },
   });
 
+  replaceComponent(pageContenu, mapStateToProps);
+
   pageContenu.$on("delete", ({ detail: { sha } }) => {
     Promise.resolve(state.login).then((login) => {
       deleteFile(login, state, fileName, sha).then(() => {
@@ -375,15 +377,13 @@ page("/atelier-page", ({ querystring }) => {
             title: data.title,
             sha: sha,
           });
-          replaceComponent(pageContenu, mapStateToProps);
         })
         .catch((error) => {
           console.error(error);
         });
     });
-  } else {
-    replaceComponent(pageContenu, mapStateToProps);
   }
+  
 });
 
 page("/settings", () => {
