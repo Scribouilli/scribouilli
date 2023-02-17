@@ -35,7 +35,7 @@
         <textarea bind:value={content} id="content" cols="30" rows="10" />
       </div>
       <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
-      <a href="./atelier-list-pages">Retour</a>
+      <a href="./atelier-list-pages" class="btn__retour">Retour</a>
       {#if sha}
       <button type="button" on:click={dispatch("delete", { sha })} class=" btn__medium btn">Supprimer la page</button>
       {/if}
@@ -57,7 +57,7 @@
         margin-top: 1rem;
     }
 
-    a {
+    .btn__retour {
         margin-left: 1rem;
     }
 </style>
