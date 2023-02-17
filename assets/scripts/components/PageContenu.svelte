@@ -29,6 +29,9 @@
 
       <div>
         <label for="content">Contenu</label>
+        <p>
+          Pour mettre en forme votre contenu, vous pouvez bidouiller <a href="https://flus.fr/carnet/markdown.html">avec du Markdown</a>.
+        </p>
         <textarea bind:value={content} id="content" cols="30" rows="10" />
       </div>
       <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
