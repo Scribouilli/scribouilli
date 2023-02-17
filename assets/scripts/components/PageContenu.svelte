@@ -1,6 +1,8 @@
 <script>
   export let title;
   export let content;
+  export let previousContent;
+  export let previousTitle;
   export let sha;
   export let publishedWebsiteURL;
 
@@ -13,7 +15,16 @@
 
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch("save", { content, title, sha });
+
+    const titleChanged = previousTitle && previousTitle !== title.trim();
+    const contentChanged =
+      previousContent && previousContent !== content.trim();
+
+    if (title !== "" && (titleChanged || contentChanged)) {
+      dispatch("save", { content, title, sha });
+    } else {
+      console.log("no change, no save");
+    }
   };
 </script>
 
@@ -25,7 +36,7 @@
       <form on:submit={onSubmit}>
         <div>
           <label for="title">Titre</label>
-          <input bind:value={title} type="text" id="title" />
+          <input bind:value={title} type="text" id="title" required />
         </div>
 
         <p>
@@ -36,14 +47,16 @@
         <div class="content">
           <label for="content">Contenu</label>
           <p>
-            Pour mettre en forme votre contenu, vous pouvez bidouiller 
+            Pour mettre en forme votre contenu, vous pouvez bidouiller
             <a href="https://flus.fr/carnet/markdown.html">avec du Markdown</a>.
           </p>
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
         <div class="actions-zone">
           <a href="./atelier-list-pages" class="btn__retour">Retour</a>
-          <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
+          <button type="submit" class=" btn__medium btn">
+            Enregistrer la page
+          </button>
         </div>
 
         {#if sha}
@@ -62,7 +75,9 @@
               type="button"
               on:click={dispatch("delete", { sha })}
               disabled={deleteDisabled}
-              class=" btn__medium btn">Supprimer la page</button>
+              class=" btn__medium btn">
+              Supprimer la page
+            </button>
           </div>
         {/if}
       </form>
@@ -91,10 +106,9 @@
   }
 
   .btn__retour {
-
     &::before {
-      content: '‹';
-      margin-right: .5rem;
+      content: "‹";
+      margin-right: 0.5rem;
     }
   }
 

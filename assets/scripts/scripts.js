@@ -365,6 +365,8 @@ page("/atelier-page", ({ querystring }) => {
     props: {
       title: "",
       content: "",
+      previousTitle: undefined,
+      previousContent: undefined,
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state)
     },
@@ -425,7 +427,9 @@ page("/atelier-page", ({ querystring }) => {
           } = parseMarkdown(contenu);
           pageContenu.$set({
             content: markdownContent,
+            previousContent: markdownContent,
             title: data.title,
+            previousTitle: data.title,
             sha: sha,
           });
         })
