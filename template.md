@@ -21,6 +21,8 @@ Types de site :
 Liste de sites qu'on a visité :
 - jekyllthemes.io
 
+Notre fav : https://alshedivat.github.io/al-folio/
+
 On aime bien : 
 - https://alembic.darn.es/
 - https://oinam.github.io/oinam-jekyll/
@@ -33,7 +35,4 @@ Testés et écarté :
 - https://hyde.getpoole.com/ : Maiana elle a dit que
 - https://jeromelachaud.com/freelancer-theme/
 - https://jekyll-theme-mrgreen-demo.mrgreensworkshop.com/
-
-Que Erick tout seul : 
 - https://raviriley.github.io/agency-jekyll-theme-starter/
-- https://github.com/alshedivat/al-folio
