@@ -7,6 +7,8 @@
   import { createEventDispatcher } from "svelte";
   import Skeleton from "./Skeleton.svelte";
 
+  $: deleteDisabled = true;
+
   const dispatch = createEventDispatcher();
 
   const onSubmit = (e) => {
@@ -40,14 +42,24 @@
           </p>
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
-        <button type="submit" class=" btn__medium btn"
-          >Enregistrer la page</button
-        >
+        <button type="submit" class=" btn__medium btn">Enregistrer la page</button>
+
+        <h2>Settings</h2>
         <a href="./atelier-list-pages" class="btn__retour">Retour</a>
         {#if sha}
+          <label>
+            <input
+              type="checkbox"
+              on:change={() => {
+                deleteDisabled = !deleteDisabled;
+              }}
+            />
+            Activer la suppression du site
+          </label>
           <button
             type="button"
             on:click={dispatch("delete", { sha })}
+            disabled={deleteDisabled}
             class=" btn__medium btn">Supprimer la page</button
           >
         {/if}
