@@ -105,7 +105,10 @@ nav ul {
   display: flex;
   gap: 4rem;
 }
+
 .screen {
+  padding-right: 1rem;
+  padding-left: 1rem;
   text-align: center;
 }
 
