@@ -1,7 +1,7 @@
 //@ts-check
 
-import { json, text } from "d3-fetch";
 import parseMarkdown from "@github-docs/frontmatter";
+import DatabaseAPI from "./DatabaseAPI.js";
 
 import makeCreateProjectButtonListener from "./makeCreateProjectButtonListener.js";
 // import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
@@ -79,11 +79,13 @@ if (url.searchParams.has("access_token")) {
   localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
 }
 
+let databaseAPI
+
 // Retrieve logged in user from access_token
 if (store.state.accessToken) {
-  const loginP = json("https://api.github.com/user", {
-    headers: { Authorization: `token ${store.state.accessToken}` },
-  })
+  databaseAPI = new DatabaseAPI(store.state.accessToken)
+
+  const loginP = databaseAPI.getAuthenticatedUser()
     // @ts-ignore
     .then(({ login }) => {
       store.mutations.setLogin(login);
@@ -93,9 +95,7 @@ if (store.state.accessToken) {
   store.mutations.setLogin(loginP);
 
   const siteRepoConfigP = loginP.then((login) => {
-    return json(`https://api.github.com/repos/${login}/${store.state.repoName}`, {
-      headers: { Authorization: "token " + store.state.accessToken }
-    })
+    return databaseAPI.getRepository(login, store.state.repoName)
   })
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP)
@@ -114,34 +114,6 @@ async function makeOrigin(state) {
 async function makePublishedWebsiteURL(state) {
   const origin = await makeOrigin(state);
   return `https://${origin}/${state.repoName}`;
-}
-
-function getPagesList(login, repoName, accessToken) {
-  return json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
-    headers: { Authorization: "token " + accessToken },
-  }).then((commits) => {
-    const firstCommit = commits[0];
-    const { sha } = firstCommit;
-
-    return json(
-      `https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`,
-      {
-        headers: { Authorization: "token " + accessToken },
-      }
-    ).then(
-      // @ts-ignore
-      ({ tree }) => {
-        const pageFiles = tree.filter((f) => {
-          return (
-            f.type === "blob" &&
-            f.path !== "index.md" &&
-            (f.path.endsWith(".md") || f.path.endsWith(".html"))
-          );
-        });
-        return pageFiles;
-      }
-    );
-  });
 }
 
 const svelteTarget = document.querySelector("body");
@@ -163,6 +135,7 @@ function replaceComponent(newComponent, _mapStateToProps) {
 function render(state) {
 
   const props = mapStateToProps(state);
+  // @ts-ignore
   if (props) {
     currentComponent.$set(props);
   }
@@ -188,54 +161,6 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
 }
 
 /**
- * @summary Remove file from github
- */
-function deleteFile(login, state, fileName, sha) {
-  return json(
-    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
-    {
-      headers: { Authorization: "token " + state.accessToken },
-      method: "DELETE",
-      body: JSON.stringify({
-        sha,
-        message: `suppression du fichier ${fileName}`,
-      }),
-    }
-  )
-}
-
-/**
- * @summary Update or Create file from github
- * 
- * If body contains a SHA ;
- * it's an update ;
- * else it's a creation.
- */
-function updateOrCreateFile(login, state, fileName, body) {
-  return json(
-    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
-    {
-      headers: { Authorization: "token " + state.accessToken },
-      method: "PUT",
-      body: JSON.stringify(body),
-    }
-  ).then(() => {
-    if (body.sha) {
-      console.log("page mise à jour");
-    } else {
-      console.log("nouvelle page créée");
-    }
-    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
-    page("/atelier-list-pages");
-  })
-    .catch((error) => {
-      console.error(error);
-    });
-}
-
-
-
-/**
  * Par ici, y'a des routes
  */
 page("/", () => {
@@ -246,13 +171,10 @@ page("/", () => {
     Promise.resolve(store.state.login).then(async (login) => {
       const origin = await makeOrigin(store.state);
 
-      return json(`https://api.github.com/repos/${login}/${repoName}`, {
-        headers: { Authorization: `token ${store.state.accessToken}` },
+      return databaseAPI.getRepository(login, repoName).then(() => {
+        page("/atelier-list-pages");
+        // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
       })
-        .then(() => {
-          page("/atelier-list-pages");
-          // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
-        })
 
         .catch((err) => {
           // ToutDoux : gérer les erreurs autres que le repo n'existe po
@@ -351,12 +273,10 @@ page("/atelier-list-pages", () => {
     });
     replaceComponent(atelierPages, mapStateToProps);
 
-    json("https://api.github.com/user", {
-      headers: { Authorization: "token " + state.accessToken },
-    }).then((result) => {
+    databaseAPI.getAuthenticatedUser().then((result) => {
       // Pour s'assurer qu'il y a un login au moment de faire l'appel pour la liste des pages
       store.mutations.setLogin(result.login)
-      getPagesList(state.login, state.repoName, state.accessToken).then(
+      databaseAPI.getPagesList(state.login, state.repoName).then(
         store.mutations.setPages
       );
     });
@@ -381,7 +301,7 @@ page("/atelier-page", ({ querystring }) => {
       previousContent: undefined,
       makeFileNameFromTitle: makeFileNameFromTitle,
       // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
-      pagesP: Promise.resolve(state.login).then((login) => getPagesList(login, state.repoName, state.accessToken)),
+      pagesP: Promise.resolve(state.login).then((login) => databaseAPI.getPagesList(login, state.repoName)),
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state)
     },
@@ -389,18 +309,19 @@ page("/atelier-page", ({ querystring }) => {
 
   replaceComponent(pageContenu, mapStateToProps);
 
+  // @ts-ignore
   pageContenu.$on("delete", ({ detail: { sha } }) => {
-
     Promise.resolve(state.login).then((login) => {
       store.mutations.setPages(state.pages.filter((page) => {
         return page.path !== fileName
       }))
-      deleteFile(login, state, fileName, sha).then(() => {
+      databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
         page("/atelier-list-pages")
       });
     });
   });
 
+  // @ts-ignore
   pageContenu.$on("save", ({ detail: { fileName, content, previousContent, title, previousTitle, sha } }) => {
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
@@ -435,14 +356,36 @@ page("/atelier-page", ({ querystring }) => {
       // Nous ne pouvons pas renommer le fichier via l'API
       // https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
       Promise.resolve(state.login).then((login) => {
-        deleteFile(login, state, fileName, sha).then(() => {
-          updateOrCreateFile(login, state, newFileName, body)
+        databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
+          databaseAPI.updateOrCreateFile(login, state.repoName, newFileName, body).then(() => {
+            if (body.sha) {
+              console.log("page mise à jour");
+            } else {
+              console.log("nouvelle page créée");
+            }
+            // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
+            page("/atelier-list-pages");
+          })
+            .catch((error) => {
+              console.error(error);
+            });
         });
       });
     } else {
       Promise.resolve(state.login).then((login) => {
         body.sha = sha
-        updateOrCreateFile(login, state, newFileName, body)
+        databaseAPI.updateOrCreateFile(login, state.repoName, newFileName, body).then(() => {
+          if (body.sha) {
+            console.log("page mise à jour");
+          } else {
+            console.log("nouvelle page créée");
+          }
+          // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
+          page("/atelier-list-pages");
+        })
+          .catch((error) => {
+            console.error(error);
+          });
       });
     }
   });
@@ -450,12 +393,7 @@ page("/atelier-page", ({ querystring }) => {
   // Display existing file
   if (fileName) {
     Promise.resolve(store.state.login).then((login) => {
-      json(
-        `https://api.github.com/repos/${login}/${store.state.repoName}/contents/${fileName}`,
-        {
-          headers: { Authorization: "token " + store.state.accessToken },
-        }
-      )
+      databaseAPI.getFile(login, store.state.repoName, fileName)
         //@ts-ignore
         .then(({ content, sha }) => {
           //@ts-ignore
@@ -465,11 +403,15 @@ page("/atelier-page", ({ querystring }) => {
             content: markdownContent,
             errors,
           } = parseMarkdown(contenu);
+
+          //@ts-ignore
           pageContenu.$set({
             fileName: fileName,
             content: markdownContent,
             previousContent: markdownContent,
+            // @ts-ignore
             title: data.title,
+            // @ts-ignore
             previousTitle: data.title,
             sha: sha,
           });
@@ -497,17 +439,14 @@ page("/settings", () => {
 
   });
 
+  //@ts-ignore
   settings.$on("delete-site", () => {
     Promise.resolve(store.state.login).then((login) => {
 
-      json(`https://api.github.com/repos/${login}/${store.state.repoName}`,
-        {
-          headers: { Authorization: "token " + store.state.accessToken },
-          method: "DELETE",
-        }).then(() => {
-          store.mutations.removeSite(store.state)
-          page("/create-project")
-        });
+      databaseAPI.deleteRepository(login, store.state.repoName).then(() => {
+        store.mutations.removeSite(store.state)
+        page("/create-project")
+      });
     });
   });
 

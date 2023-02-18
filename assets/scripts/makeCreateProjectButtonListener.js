@@ -1,4 +1,4 @@
-import {json} from 'd3-fetch'
+import { json } from 'd3-fetch'
 
 const activites_page_content = `---
 title: Activités
@@ -36,9 +36,9 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
 
     return () => Promise.resolve(login)
-        .then(login  => 
+        .then(login =>
             json("https://api.github.com/user/repos", {
-                headers: {Authorization: "token " + accessToken},
+                headers: { Authorization: "token " + accessToken },
                 method: "POST",
                 body: JSON.stringify(
                     {
@@ -52,86 +52,86 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                 )
             })
 
-            .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "PUT",
-                    body: JSON.stringify(
-                        {
-                            message: "crée le _config.yml",
-                            content: Buffer.from(`remote_theme: lechappeebelle/scribouilli-theme`).toString('base64')
-                        }
-                    )
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "crée le _config.yml",
+                                content: Buffer.from(`remote_theme: lechappeebelle/scribouilli-theme`).toString('base64')
+                            }
+                        )
+                    })
                 })
-            })
-            .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "PUT",
-                    body: JSON.stringify(
-                        {
-                            message: "création de la page index",
-                            content: Buffer.from(index_page_content).toString('base64')
-                        }
-                    )
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "création de la page index",
+                                content: Buffer.from(index_page_content).toString('base64')
+                            }
+                        )
+                    })
                 })
-            })
-            .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/contents/activites.md`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "PUT",
-                    body: JSON.stringify(
-                        {
-                            message: "création de la page activites",
-                            content: Buffer.from(activites_page_content).toString('base64')
-                        }
-                    )
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/activites.md`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "création de la page activites",
+                                content: Buffer.from(activites_page_content).toString('base64')
+                            }
+                        )
+                    })
                 })
-            })
-            .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/contents/contact.md`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "PUT",
-                    body: JSON.stringify(
-                        {
-                            message: "création de la page contact",
-                            content: Buffer.from(contact_page_content).toString('base64')
-                        }
-                    )
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/contact.md`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "création de la page contact",
+                                content: Buffer.from(contact_page_content).toString('base64')
+                            }
+                        )
+                    })
                 })
-            })
 
-            .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "POST",
-                    body: JSON.stringify( { source: {branch: 'main' } } )
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "POST",
+                        body: JSON.stringify({ source: { branch: 'main' } })
+                    })
                 })
-            })
 
-            .then(() => {
+                .then(() => {
 
-                return new Promise((resolve, reject) => {
-                    const unsubscribe = buildStatus.subscribe(newStatus => {
-                        if (newStatus === 'built') {
-                            resolve();
-                            unsubscribe();
-                            return;
-                        }
-                        if (newStatus === 'errored') {
-                            reject();
-                            unsubscribe();
-                            return;
-                        }
-                    });
+                    return new Promise((resolve, reject) => {
+                        const unsubscribe = buildStatus.subscribe(newStatus => {
+                            if (newStatus === 'built') {
+                                resolve();
+                                unsubscribe();
+                                return;
+                            }
+                            if (newStatus === 'errored') {
+                                reject();
+                                unsubscribe();
+                                return;
+                            }
+                        });
 
-                    buildStatus.checkStatus();
+                        buildStatus.checkStatus();
+                    })
                 })
-            })
 
-            .then(() => {
-                return publishedWebsiteURL;
-            })
-    
+                .then(() => {
+                    return publishedWebsiteURL;
+                })
+
         )
 }
