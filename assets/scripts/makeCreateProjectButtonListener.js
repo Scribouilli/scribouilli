@@ -1,14 +1,5 @@
 import {json} from 'd3-fetch'
 
-const a_propos_page_content = `---
-title: À propos
----
-## L'Échappée Belle
-
-L'Échappée Belle est **une association** qui a pour objet de soutenir et promouvoir des activités et des personnes qui travaillent autour de **valeurs de consentement, de bien commun et de prendre soin des personnes et de l’environnement**.
-
-`
-
 const activites_page_content = `---
 title: Activités
 ---
@@ -81,18 +72,6 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                         {
                             message: "création de la page index",
                             content: Buffer.from(index_page_content).toString('base64')
-                        }
-                    )
-                })
-            })
-            .then(() => {
-                return json(`https://api.github.com/repos/${login}/${repoName}/contents/a_propos.md`, {
-                    headers: {Authorization: "token " + accessToken},
-                    method: "PUT",
-                    body: JSON.stringify(
-                        {
-                            message: "création de la page à propos",
-                            content: Buffer.from(a_propos_page_content).toString('base64')
                         }
                     )
                 })
