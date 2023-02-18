@@ -40,7 +40,11 @@
           alt="cœur sur toi le temps que ça charge"
         />
         <p>
-          Pendant le chargement, vous pouvez lire cet article pour apprendre à <a href="https://flus.fr/carnet/markdown.html">bidouiller avec du Markdown</a>.
+          Pendant le chargement, vous pouvez :
+          <ul>
+            <li> lire cet article pour apprendre à <a href="https://flus.fr/carnet/markdown.html" target="_blank">bidouiller avec du Markdown</a>.</li>
+            <li> visionner une <a href="https://www.paris-web.fr/2022/conferences/on-se-leve-et-on-se-cassetour-dhorizon-dun-travail-sans-capital.php" target="_blank">vidéo inspirante</a>.</li>
+          </ul>
         </p>
       </section>
     {:then url}
