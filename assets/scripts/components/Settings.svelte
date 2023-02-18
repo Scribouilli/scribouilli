@@ -15,7 +15,7 @@
 
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="settings">
-    <h2>Paramètres</h2>
+    <h2>L'atelier — Paramètres</h2>
     <div class="wrapper delete-zone">
       <label>
         <input
