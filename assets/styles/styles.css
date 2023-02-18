@@ -187,7 +187,7 @@ a[href]:hover {
   --underline-hover-width: var(--underline-max-width);
 }
 
-[href] {
+[href]:not(.btn) {
   background-image: var(--underline-img), var(--underline-img);
   background-position: var(--underline-x) 100%,
     var(--underline-x) calc(100% - 0.0625em);
