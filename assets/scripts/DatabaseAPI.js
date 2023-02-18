@@ -6,6 +6,8 @@ export default class DatabaseAPI {
 
   constructor(accessToken) {
     this.accessToken = accessToken
+    this.commitsEtag = undefined
+    this.lastestCommit = undefined
   }
 
   getAuthenticatedUser() {
@@ -71,17 +73,28 @@ export default class DatabaseAPI {
       }
     )
   }
-  getCommits(login, repoName) {
-    return json(`https://api.github.com/repos/${login}/${repoName}/commits`, {
-      headers: { Authorization: "token " + this.accessToken },
+
+  getLatestCommit(login, repoName) {
+    return fetch(`https://api.github.com/repos/${login}/${repoName}/commits`, {
+      headers: { 
+        Authorization: "token " + this.accessToken,
+        "If-None-Match": this.commitsEtag
+      }
+    }).then((httpResp) => {
+      if (httpResp.status === 304) {
+        return [this.lastestCommit]
+      } else {
+        this.commitsEtag = httpResp.headers.get("etag")
+        return httpResp.json()
+      }
+    }).then(commits => {
+      this.lastestCommit = commits[0]
+      return this.lastestCommit
     })
   }
 
   getPagesList(login, repoName) {
-    return this.getCommits(login, repoName).then((commits) => {
-      const firstCommit = commits[0];
-      const { sha } = firstCommit;
-
+    return this.getLatestCommit(login, repoName).then(({sha}) => {
       return json(
         `https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`,
         {

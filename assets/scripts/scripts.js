@@ -272,10 +272,12 @@ page("/atelier-list-pages", () => {
   });
   replaceComponent(atelierPages, mapStateToProps);
 
-  databaseAPI.getPagesList(state.login, state.repoName).then(
-    store.mutations.setPages
-  );
-
+  Promise.resolve(state.login).then((login) => {
+    databaseAPI.getPagesList(login, state.repoName).then((pages) => {
+      store.mutations.setPages(pages)
+    });  
+  })
+  
 });
 
 page("/atelier-page", ({ querystring }) => {
