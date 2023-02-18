@@ -67,7 +67,14 @@ iframe {
 }
 
 /* DES VRAIS STYLES */
-
+:root {
+  --underline-max-width: 100%;
+  --underline-hover-width: 0;
+  --underline-idle-width: var(--underline-max-width);
+  --underline-x: calc(var(--underline-max-width) * 0);
+  --underline-img: linear-gradient(0deg, currentColor, currentColor);
+  --external-link-content: "";
+}
 @font-face {
   font-family: "Luciole";
   src: url("../fonts/Luciole-Regular.woff") format("woff"),
@@ -173,6 +180,21 @@ h3 {
 
 a {
   color: #912222;
+}
+
+a[href]:active,
+a[href]:hover {
+  --underline-hover-width: var(--underline-max-width);
+}
+
+[href] {
+  background-image: var(--underline-img), var(--underline-img);
+  background-position: var(--underline-x) 100%,
+    var(--underline-x) calc(100% - 0.0625em);
+  background-repeat: no-repeat, no-repeat;
+  background-size: var(--underline-hover-width) 0.125em,
+    var(--underline-idle-width) 0.0625em;
+  transition: background-size 0s;
 }
 
 form {
