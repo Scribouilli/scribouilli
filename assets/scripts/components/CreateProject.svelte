@@ -61,6 +61,10 @@
 </Skeleton>
 
 <style lang="scss">
+  create-project {
+  width: 70%;
+  margin: 0 auto
+  }
   p {
   margin-top: 3rem
   }
