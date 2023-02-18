@@ -8,7 +8,7 @@
 
     <p>
       Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à
-      un compte <a href="https://github.com">Github</a>.
+      un compte <a href="https://github.com" target="_blank">Github</a>.
     </p>
 
     <div>
