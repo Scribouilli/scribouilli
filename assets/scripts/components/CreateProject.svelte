@@ -61,7 +61,7 @@
 </Skeleton>
 
 <style lang="scss">
-  create-project {
+  #create-project {
   width: 70%;
   margin: 0 auto
   }
