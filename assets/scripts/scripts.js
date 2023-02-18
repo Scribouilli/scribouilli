@@ -47,20 +47,25 @@ const store = new Store({
       );
     },
     setPages(state, pages) {
-      state.pages = pages;
+      state.pages = pages.sort((pageA, pageB) => {
+        if (pageA.path < pageB.path) {
+          return -1
+        }
+        if (pageA.path > pageB.path) {
+          return 1
+        }
+        if (pageA.path === pageB.path) {
+          return 0
+        }
+      });
     },
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
     },
-    removeSite(state){
+    removeSite(state) {
       state.pages = undefined
       state.siteRepoConfig = undefined
     },
-    removePage(state, truc) {
-      state.pages = state.pages.filter((page) => {
-        return page.path !== truc
-      })
-    }
 
   },
 });
@@ -275,19 +280,19 @@ page("/atelier-list-pages", () => {
   const state = store.state;
 
   if (state.accessToken) {
-      // @ts-ignore
-      const atelierPages = new AtelierPages({
-        target: svelteTarget,
-        props: mapStateToProps(state),
-      });
-      replaceComponent(atelierPages, mapStateToProps);
+    // @ts-ignore
+    const atelierPages = new AtelierPages({
+      target: svelteTarget,
+      props: mapStateToProps(state),
+    });
+    replaceComponent(atelierPages, mapStateToProps);
 
-      json("https://api.github.com/user", {
-        headers: { Authorization: "token " + state.accessToken },
-      }).then((result) => {
-        // Pour s'assurer qu'il y a un login au moment de faire l'appel pour la liste des pages
-        store.mutations.setLogin(result.login)
-        getPagesList(state.login, state.repoName, state.accessToken).then(
+    json("https://api.github.com/user", {
+      headers: { Authorization: "token " + state.accessToken },
+    }).then((result) => {
+      // Pour s'assurer qu'il y a un login au moment de faire l'appel pour la liste des pages
+      store.mutations.setLogin(result.login)
+      getPagesList(state.login, state.repoName, state.accessToken).then(
         store.mutations.setPages
       );
     });
@@ -384,7 +389,9 @@ page("/atelier-page", ({ querystring }) => {
   pageContenu.$on("delete", ({ detail: { sha } }) => {
 
     Promise.resolve(state.login).then((login) => {
-      store.mutations.removePage(fileName)
+      store.mutations.setPages(state.pages.filter((page) => {
+        return page.path !== fileName
+      }))
       deleteFile(login, state, fileName, sha).then(() => {
         page("/atelier-list-pages")
       });
@@ -409,6 +416,13 @@ page("/atelier-page", ({ querystring }) => {
       ).toString("base64"),
     };
 
+    let newPages = state.pages?.filter((page) => {
+      return page.path !== fileName
+    }) || []
+    newPages.push({ path: newFileName })
+
+    store.mutations.setPages(newPages)
+
     if (fileName && (fileName !== newFileName)) {
       // On supprime la référence correspondante à l'ancien nom
       // Nous ne pouvons pas renommer le fichier via l'API
@@ -426,7 +440,7 @@ page("/atelier-page", ({ querystring }) => {
     }
   });
 
-  // To update existing file
+  // Display existing file
   if (fileName) {
     Promise.resolve(store.state.login).then((login) => {
       json(
