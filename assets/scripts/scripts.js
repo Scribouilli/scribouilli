@@ -40,12 +40,6 @@ const store = new Store({
   mutations: {
     setLogin(state, login) {
       state.login = login;
-      // TOUTDOUX déplacer la création de buildStatus qui dépend de mais n'a rien à faire avec le login
-      state.buildStatus = makeBuildStatus(
-        databaseAPI,
-        login,
-        state.repoName
-      );
     },
     setPages(state, pages) {
       state.pages = pages.sort((pageA, pageB) => {
@@ -59,6 +53,9 @@ const store = new Store({
           return 0
         }
       });
+    },
+    setBuildStatus(state, buildStatus) {
+      state.buildStatus = buildStatus
     },
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
@@ -94,6 +91,7 @@ if (store.state.accessToken) {
     });
 
   store.mutations.setLogin(loginP);
+  store.mutations.setBuildStatus(makeBuildStatus(databaseAPI, loginP, store.state.repoName))
 
   const siteRepoConfigP = loginP.then((login) => {
     return databaseAPI.getRepository(login, store.state.repoName)
@@ -272,12 +270,14 @@ page("/atelier-list-pages", () => {
   });
   replaceComponent(atelierPages, mapStateToProps);
 
+  state.buildStatus.checkStatus()
+
   Promise.resolve(state.login).then((login) => {
     databaseAPI.getPagesList(login, state.repoName).then((pages) => {
       store.mutations.setPages(pages)
-    });  
+    });
   })
-  
+
 });
 
 page("/atelier-page", ({ querystring }) => {
@@ -297,7 +297,8 @@ page("/atelier-page", ({ querystring }) => {
       // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
       pagesP: Promise.resolve(state.login).then((login) => databaseAPI.getPagesList(login, state.repoName)),
       sha: "",
-      publishedWebsiteURL: makePublishedWebsiteURL(state)
+      publishedWebsiteURL: makePublishedWebsiteURL(state),
+      buildStatus: state.buildStatus
     },
   });
 

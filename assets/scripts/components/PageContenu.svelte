@@ -6,6 +6,7 @@
   export let previousTitle;
   export let sha;
   export let publishedWebsiteURL;
+  export let buildStatus;
   export let pagesP;
   export let makeFileNameFromTitle;
 
@@ -51,7 +52,7 @@
   };
 </script>
 
-<Skeleton {publishedWebsiteURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen">
     <h3>Édition d'une page</h3>
 
