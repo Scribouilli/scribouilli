@@ -10,7 +10,7 @@
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="atelier-list-pages">
     <div id="pages">
-      <h2>Pages</h2>
+      <h2>L'atelier — Pages</h2>
 
       <div class="mesPages">
         <ul class="pages-list">
