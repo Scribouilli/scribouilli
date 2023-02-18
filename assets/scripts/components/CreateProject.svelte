@@ -63,7 +63,10 @@
 <style lang="scss">
   #loader {
   width: 70%;
-  margin: 0 auto
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   }
   p {
   margin-top: 3rem
