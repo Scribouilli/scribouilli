@@ -35,6 +35,11 @@ L'Échappée Belle est actuellement composée de 5 membres.
 Pour nous contacter : [coucou@lechappeebelle.team](mailto:coucou@lechappeebelle.team)
 `
 
+const index_page_content = `## L'Échappée Belle
+
+L'Échappée Belle est **une association** qui a pour objet de soutenir et promouvoir des activités et des personnes qui travaillent autour de **valeurs de consentement, de bien commun et de prendre soin des personnes et de l’environnement**.
+`
+
 
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
@@ -55,23 +60,6 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     }
                 )
             })
-            .then(() => {
-                return json("https://api.github.com/repos/daktary-team/coup-de-pinceau/contents/index.md", {
-                    headers: {Authorization: "token " + accessToken}
-                })
-                    .then(({content}) => {
-                        return json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
-                            headers: {Authorization: "token " + accessToken},
-                            method: "PUT",
-                            body: JSON.stringify(
-                                {
-                                    message: "crée le index.md",
-                                    content
-                                }
-                            )
-                        })
-                    })
-            })
 
             .then(() => {
                 return json(`https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`, {
@@ -81,6 +69,18 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                         {
                             message: "crée le _config.yml",
                             content: Buffer.from(`remote_theme: lechappeebelle/scribouilli-theme`).toString('base64')
+                        }
+                    )
+                })
+            })
+            .then(() => {
+                return json(`https://api.github.com/repos/${login}/${repoName}/contents/index.md`, {
+                    headers: {Authorization: "token " + accessToken},
+                    method: "PUT",
+                    body: JSON.stringify(
+                        {
+                            message: "création de la page index",
+                            content: Buffer.from(index_page_content).toString('base64')
                         }
                     )
                 })
