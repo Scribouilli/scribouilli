@@ -19,13 +19,13 @@ Types de site :
 - boutique 
 
 Propositions couleur template :
-Vert foret #2a6442 (par défaut pour le moment)
-Bleu foncé #07357d
-Aubergine #753785
-Bleu canard #0E6270
-Rouge sombre #993B1F
-Gris marron #6C5353
-Gris bleu #53606C
+- Vert foret #2a6442 (par défaut pour le moment)
+- Bleu foncé #07357d
+- Aubergine #753785
+- Bleu canard #0E6270
+- Rouge sombre #993B1F
+- Gris marron #6C5353
+- Gris bleu #53606C
 
 Liste de sites qu'on a visité :
 - jekyllthemes.io
