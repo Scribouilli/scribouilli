@@ -90,7 +90,7 @@
 
         {#if sha && title && makeFileNameFromTitle(title).path !== "index.md"}
           <div class="wrapper delete-zone">
-            <h3>Suppression</h3>
+            <h3>Supprimer la page</h3>
             <label>
               <input
                 type="checkbox"
