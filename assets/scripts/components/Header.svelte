@@ -10,7 +10,7 @@
       {#await publishedWebsiteURL}
         (en attente de l'origine)
       {:then url}
-        <a href={url} class="project-name">{url}</a>
+        <a href={url} class="project-name" target="_blank">{url}</a>
       {/await}
 
       <nav>
