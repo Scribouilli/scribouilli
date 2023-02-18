@@ -122,6 +122,19 @@ export default class DatabaseAPI {
     })
   }
 
+  getLastDeployment(login, repoName) {
+    return json(`https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`, {
+      headers: { Authorization: "token " + this.accessToken }
+    // @ts-ignore
+    }).then((deployments) => deployments[0])
+  }
+
+  getDeploymentStatus(deployment) {
+    return json(deployment.statuses_url, {
+      headers: {Authorization: "token " + this.accessToken}
+    })
+  }
+
 }
 
 

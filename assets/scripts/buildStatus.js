@@ -1,42 +1,7 @@
 //@ts-check
-
-/*
-
-Pas d'étoile inutile
-
-Tant que le répo ne déploi pas, le status vaut `null`
-
-Quand un build est annulé par un nouveau commit, 
-l'API de statut retourne d'abord une erreur et plus tard, `building` puis `built`
-
-
-
-Peut-être que l'on pourrait changer de stratégie et utiliser
-
-`await octokit.request('GET /repos/{owner}/{repo}/deployments'` avec un 1 per_page
-
-Puis, récupérer     "statuses_url": "https://api.github.com/repos/octocat/example/deployments/1/statuses", 
-
-pour ensuite faire du polling dessus, et récupérer la propriété state 
-
-    "state": {
-        "description": "The state of the status.",
-        "enum": [
-          "error",
-          "failure",
-          "inactive",
-          "pending",
-          "success",
-          "queued",
-          "in_progress"
-        ]
-    }
-
-
-*/
 export default function (databaseAPI, login, repoName) {
     /** @type {"building" | "built" | "errored"} */
-    let buildStatus;
+    let repoStatus;
     const reactions = new Set();
 
     let timeout
@@ -46,13 +11,13 @@ export default function (databaseAPI, login, repoName) {
             timeout = setTimeout(() => {
                 buildStatusObject.checkStatus()
                 timeout = undefined;
-            }, 5000)
+            }, 10000)
         }
     }
 
     const buildStatusObject = {
         get status() {
-            return buildStatus;
+            return repoStatus;
         },
         subscribe(reaction) {
             reactions.add(reaction);
@@ -63,30 +28,32 @@ export default function (databaseAPI, login, repoName) {
         },
         checkStatus() {
             return Promise.resolve(login).then(login => {
-               
-                databaseAPI.getGitHubPagesSite(login, repoName)
-                    // @ts-ignore
-                    .then(({status}) => {
-                        console.log('build status', status)
-                        buildStatus = status;
+                return databaseAPI.getGitHubPagesSite(login, repoName).then(({ status }) => {
+                    console.log('build status', status)
 
-                        for (const reaction of reactions) {
-                            reaction(status);
-                        }
+                    if (status === "built") {
+                        databaseAPI.getLastDeployment(login, repoName).then(deployment => {
+                            databaseAPI.getDeploymentStatus(deployment).then(deploymentStatus => {
+                                console.debug(deploymentStatus)
 
-                        if (status === 'built' || status === 'errored') {
-                            return;
-                        }
+                                if (!["pending", "queued", "in_progress"].includes(deploymentStatus[0].state)) {
 
-                        scheduleCheck()
-                    })
-                    .catch(error => {
-                        buildStatus = 'errored'
-                        for (const reaction of reactions) {
-                            reaction(buildStatus);
-                        }
-                    })
+                                    console.log("deployment done", deploymentStatus[0].state)
+                                    repoStatus = "built"
+                                    return
+                                }
+                            })
+                        })
+                    }
+                    scheduleCheck()
                 })
+                    .catch(error => {
+                        repoStatus = 'errored'
+                        for (const reaction of reactions) {
+                            reaction(repoStatus);
+                        }
+                    })
+            })
         }
     }
 
