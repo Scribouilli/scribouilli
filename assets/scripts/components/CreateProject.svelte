@@ -73,7 +73,8 @@
     color: darkslategray;
   }
   ul {
-    margin-top: 1.25rem
+    margin-top: 1.25rem;
+    text-align: left
   }
   li {
     list-style: disc;
