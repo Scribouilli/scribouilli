@@ -39,7 +39,7 @@ const store = new Store({
   mutations: {
     setLogin(state, login) {
       state.login = login;
-      // TODO déplacer la création de buildStatus qui dépend de mais n'a rien à faire avec le login
+      // TOUTDOUX déplacer la création de buildStatus qui dépend de mais n'a rien à faire avec le login
       state.buildStatus = makeBuildStatus(
         state.accessToken,
         login,
@@ -55,6 +55,11 @@ const store = new Store({
     removeSite(state){
       state.pages = undefined
       state.siteRepoConfig = undefined
+    },
+    removePage(state, truc) {
+      state.pages = state.pages.filter((page) => {
+        return page.path !== truc
+      })
     }
 
   },
@@ -270,25 +275,21 @@ page("/atelier-list-pages", () => {
   const state = store.state;
 
   if (state.accessToken) {
-    json("https://api.github.com/user", {
-      headers: { Authorization: "token " + state.accessToken },
-    }).then((result) => {
-
-      // TODO Est-ce bien nécessaire ?
-      store.mutations.setLogin(result.login);
-
       // @ts-ignore
       const atelierPages = new AtelierPages({
         target: svelteTarget,
-        props: mapStateToProps(store.state),
+        props: mapStateToProps(state),
       });
-
-      getPagesList(state.login, state.repoName, state.accessToken).then(
-        store.mutations.setPages
-      );
-
       replaceComponent(atelierPages, mapStateToProps);
 
+      json("https://api.github.com/user", {
+        headers: { Authorization: "token " + state.accessToken },
+      }).then((result) => {
+        // Pour s'assurer qu'il y a un login au moment de faire l'appel pour la liste des pages
+        store.mutations.setLogin(result.login)
+        getPagesList(state.login, state.repoName, state.accessToken).then(
+        store.mutations.setPages
+      );
     });
   } else {
     page("/");
@@ -371,7 +372,7 @@ page("/atelier-page", ({ querystring }) => {
       previousTitle: undefined,
       previousContent: undefined,
       makeFileNameFromTitle: makeFileNameFromTitle,
-      // TODO Il se passe un truc bizarre ici quand on recharge la page
+      // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
       pagesP: Promise.resolve(state.login).then((login) => getPagesList(login, state.repoName, state.accessToken)),
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state)
@@ -381,7 +382,9 @@ page("/atelier-page", ({ querystring }) => {
   replaceComponent(pageContenu, mapStateToProps);
 
   pageContenu.$on("delete", ({ detail: { sha } }) => {
+
     Promise.resolve(state.login).then((login) => {
+      store.mutations.removePage(fileName)
       deleteFile(login, state, fileName, sha).then(() => {
         page("/atelier-list-pages")
       });

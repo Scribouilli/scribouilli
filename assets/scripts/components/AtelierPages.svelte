@@ -60,7 +60,7 @@
 
   .pages-list {
     margin-bottom: 4rem;
-    
+
     li {
       font-size: 1.3rem;
       & + li {
