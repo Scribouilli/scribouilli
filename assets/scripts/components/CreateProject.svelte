@@ -65,4 +65,12 @@
     white-space: nowrap;
     color: darkslategray;
   }
+  ul {
+    margin-top: 1.25rem
+  }
+  li {
+    list-style: disc;
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem
+  }
 </style>
