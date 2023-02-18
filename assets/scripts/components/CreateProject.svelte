@@ -39,6 +39,9 @@
           src="./assets/images/hearts.svg"
           alt="cœur sur toi le temps que ça charge"
         />
+        <p>
+          Pendant le chargement, vous pouvez lire cet article pour apprendre à <a href="https://flus.fr/carnet/markdown.html">bidouiller avec du Markdown</a>.
+        </p>
       </section>
     {:then url}
     <section class="screen" id="loader">
