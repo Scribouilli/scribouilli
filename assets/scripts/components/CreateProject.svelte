@@ -62,7 +62,7 @@
 
 <style lang="scss">
   p {
-  margin-top: 1.5rem
+  margin-top: 3rem
   }
   .url {
     white-space: nowrap;
