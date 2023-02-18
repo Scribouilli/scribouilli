@@ -3,7 +3,7 @@
 </script>
 
 <header>
-  <h1><a href="./">Scribouilli</a></h1>
+  <h1><a href="./" class="go-home">Scribouilli</a></h1>
 
   <div>
     {#if publishedWebsiteURL}
