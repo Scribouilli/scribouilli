@@ -170,10 +170,74 @@ function render(state) {
 
 store.subscribe(render);
 
-/**
- *  Par ici, y'a des routes
- */
 
+function makeFileNameFromTitle(title) {
+  const fileName =
+    title
+      .replace(/\/|#|\?/g, "-") // replace url confusing characters
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+      .toLowerCase() +
+    ".md"
+
+  return fileName;
+}
+
+function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
+  return ["---", "title: " + title, "---"].join("\n");
+}
+
+/**
+ * @summary Remove file from github
+ */
+function deleteFile(login, state, fileName, sha) {
+  return json(
+    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
+    {
+      headers: { Authorization: "token " + state.accessToken },
+      method: "DELETE",
+      body: JSON.stringify({
+        sha,
+        message: `suppression du fichier ${fileName}`,
+      }),
+    }
+  )
+}
+
+/**
+ * @summary Update or Create file from github
+ * 
+ * If body contains a SHA ;
+ * it's an update ;
+ * else it's a creation.
+ */
+function updateOrCreateFile(login, state, fileName, body) {
+  return json(
+    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
+    {
+      headers: { Authorization: "token " + state.accessToken },
+      method: "PUT",
+      body: JSON.stringify(body),
+    }
+  ).then(() => {
+    if (body.sha) {
+      console.log("page mise à jour");
+    } else {
+      console.log("nouvelle page créée");
+    }
+    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
+    page("/atelier-list-pages");
+  })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+
+
+/**
+ * Par ici, y'a des routes
+ */
 page("/", () => {
 
   if (store.state.login) {
@@ -301,68 +365,6 @@ page("/atelier-list-pages", () => {
   }
 
 });
-
-function makeFileNameFromTitle(title) {
-  const fileName =
-    title
-      .replace(/\/|#|\?/g, "-") // replace url confusing characters
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
-      .toLowerCase() +
-    ".md"
-
-  return fileName;
-}
-
-function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
-  return ["---", "title: " + title, "---"].join("\n");
-}
-
-/**
- * @summary Remove file from github
- */
-function deleteFile(login, state, fileName, sha) {
-  return json(
-    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
-    {
-      headers: { Authorization: "token " + state.accessToken },
-      method: "DELETE",
-      body: JSON.stringify({
-        sha,
-        message: `suppression du fichier ${fileName}`,
-      }),
-    }
-  )
-}
-
-/**
- * @summary Update or Create file from github
- * 
- * If body contains a SHA ;
- * it's an update ;
- * else it's a creation.
- */
-function updateOrCreateFile(login, state, fileName, body) {
-  return json(
-    `https://api.github.com/repos/${login}/${state.repoName}/contents/${fileName}`,
-    {
-      headers: { Authorization: "token " + state.accessToken },
-      method: "PUT",
-      body: JSON.stringify(body),
-    }
-  ).then(() => {
-    if (body.sha) {
-      console.log("page mise à jour");
-    } else {
-      console.log("nouvelle page créée");
-    }
-    // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
-    page("/atelier-list-pages");
-  })
-    .catch((error) => {
-      console.error(error);
-    });
-}
 
 page("/atelier-page", ({ querystring }) => {
   const state = store.state;
