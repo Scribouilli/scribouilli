@@ -2,29 +2,15 @@
   import Skeleton from "./Skeleton.svelte";
 
   export let publishedWebsiteURL;
-  export let pages;
   export let buildStatus;
+  export let pages;
 
-  let status = buildStatus.status;
-
-  buildStatus.subscribe((s) => {
-    status = s;
-  });
-
-  let buildStatusClass;
-
-  $: buildStatusClass =
-    status === "building"
-      ? "build-ing"
-      : status === "built"
-      ? "build-success"
-      : "build-error";
 </script>
 
-<Skeleton {publishedWebsiteURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="atelier-list-pages">
     <div id="pages">
-      <h2 class={buildStatusClass}>Pages</h2>
+      <h2>Pages</h2>
 
       <div class="mesPages">
         <ul class="pages-list">
@@ -41,25 +27,7 @@
 </Skeleton>
 
 <style lang="scss">
-  [class^="build-"] {
-    &::after {
-      margin-left: 1rem;
-    }
-  }
-
-  .build-ing::after {
-    content: "🕰";
-  }
-
-  .build-success::after {
-    content: "✅";
-  }
-
-  .build-error::after {
-    content: "❌";
-  }
-
-  .pages-list {
+ .pages-list {
     margin-bottom: 4rem;
 
     li {

@@ -18,6 +18,7 @@ import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
 import PageContenu from "./components/PageContenu.svelte";
 import Settings from "./components/Settings.svelte";
+import buildStatus from "./buildStatus.js";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
@@ -173,7 +174,6 @@ page("/", () => {
 
       return databaseAPI.getRepository(login, repoName).then(() => {
         page("/atelier-list-pages");
-        // prepareAtelierPageScreen(accessToken, login, repoName, buildStatus);
       })
 
         .catch((err) => {
@@ -357,7 +357,6 @@ page("/atelier-page", ({ querystring }) => {
             } else {
               console.log("nouvelle page créée");
             }
-            // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
             page("/atelier-list-pages");
           })
             .catch((error) => {
@@ -374,7 +373,6 @@ page("/atelier-page", ({ querystring }) => {
           } else {
             console.log("nouvelle page créée");
           }
-          // prepareAtelierPageScreen(accessToken, login, origin, buildStatus)
           page("/atelier-list-pages");
         })
           .catch((error) => {
@@ -423,13 +421,14 @@ page("/settings", () => {
   function mapStateToProps(state) {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
+      buildStatus: state.buildStatus
     };
   }
 
   // @ts-ignore
   const settings = new Settings({
     target: svelteTarget,
-    props: { publishedWebsiteURL: makePublishedWebsiteURL(store.state) }
+    props: mapStateToProps(store.state)
 
   });
 
@@ -444,7 +443,7 @@ page("/settings", () => {
     });
   });
 
-  replaceComponent(settings, () => { });
+  replaceComponent(settings, mapStateToProps);
 });
 
 page.base(store.state.basePath)

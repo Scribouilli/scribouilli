@@ -6,13 +6,14 @@
   $: enabled = false;
 
   export let publishedWebsiteURL;
+  export let buildStatus;
 
   const temporaire = () => {
     dispatch("delete-site");
   };
 </script>
 
-<Skeleton {publishedWebsiteURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="settings">
     <h2>Paramètres</h2>
     <div class="wrapper delete-zone">

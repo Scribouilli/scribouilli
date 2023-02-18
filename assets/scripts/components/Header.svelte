@@ -1,5 +1,21 @@
 <script>
   export let publishedWebsiteURL;
+  export let buildStatus;
+
+  let status = buildStatus?.status;
+
+  buildStatus?.subscribe((s) => {
+    status = s;
+  });
+
+  let buildStatusClass;
+
+  $: buildStatusClass =
+    status === "building"
+      ? "build-ing"
+      : status === "built"
+      ? "build-success"
+      : "build-error";
 </script>
 
 <header>
@@ -10,7 +26,10 @@
       {#await publishedWebsiteURL}
         (en attente de l'origine)
       {:then url}
-        <a href={url} class="project-name" target="_blank">{url}</a>
+        <div>
+          <a href={url} class="project-name" target="_blank">{url}</a>
+          <span class= {buildStatusClass}></span>
+        </div>
       {/await}
 
       <nav>
@@ -22,3 +41,25 @@
     {/if}
   </div>
 </header>
+
+
+<style lang="scss">
+  [class^="build-"] {
+    &::after {
+      margin-left: 1rem;
+    }
+  }
+
+  .build-ing::after {
+    content: "🕰";
+  }
+
+  .build-success::after {
+    content: "✅";
+  }
+
+  .build-error::after {
+    content: "❌";
+  }
+
+</style>
