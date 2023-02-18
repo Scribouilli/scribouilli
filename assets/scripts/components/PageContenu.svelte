@@ -1,4 +1,5 @@
 <script>
+  export let fileName
   export let title;
   export let content;
   export let previousContent;
@@ -39,9 +40,10 @@
 
     if (e.target.checkValidity()) {
       dispatch("save", {
+        fileName: fileName,
         content: content.trim(),
         previousContent,
-        title: title.trim(),
+        title: title?.trim(),
         previousTitle,
         sha,
       });
@@ -55,19 +57,21 @@
 
     {#await pagesP}
       <img src="./assets/images/oval.svg" alt="Chargement du contenu" />
-    {/await}
 
+    {:then}
     <div class="wrapper">
       <form on:submit={onSubmit}>
-        <div>
-          <label for="title">Titre</label>
-          <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
-        </div>
+        {#if title && makeFileNameFromTitle(title).path !== "index.md"}
+          <div>
+            <label for="title">Titre</label>
+            <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
+          </div>
 
-        <p>
-          Attention, si le titre contient <code>/</code>, <code>#</code> ou
-          <code>?</code>, ça peut ne pas marcher
-        </p>
+          <p>
+            Attention, si le titre contient <code>/</code>, <code>#</code> ou
+            <code>?</code>, ça peut ne pas marcher
+          </p>
+        {/if}
 
         <div class="content">
           <label for="content">Contenu</label>
@@ -83,7 +87,7 @@
           <button type="submit" class="btn__medium btn">Enregistrer la page</button>
         </div>
 
-        {#if sha}
+        {#if sha && title && makeFileNameFromTitle(title).path !== "index.md"}
           <div class="wrapper delete-zone">
             <h3>Suppression</h3>
             <label>
@@ -107,6 +111,7 @@
         {/if}
       </form>
     </div>
+    {/await}
   </section>
 </Skeleton>
 

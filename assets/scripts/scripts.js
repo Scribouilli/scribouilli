@@ -372,6 +372,7 @@ page("/atelier-page", ({ querystring }) => {
   const pageContenu = new PageContenu({
     target: svelteTarget,
     props: {
+      fileName: undefined,
       title: "",
       content: "",
       previousTitle: undefined,
@@ -398,7 +399,7 @@ page("/atelier-page", ({ querystring }) => {
     });
   });
 
-  pageContenu.$on("save", ({ detail: { content, previousContent, title, previousTitle, sha } }) => {
+  pageContenu.$on("save", ({ detail: { fileName, content, previousContent, title, previousTitle, sha } }) => {
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
 
@@ -408,11 +409,15 @@ page("/atelier-page", ({ querystring }) => {
       return
     }
 
-    const newFileName = makeFileNameFromTitle(title);
+    let newFileName = fileName
+    if (fileName !== "index.md") {
+      newFileName = makeFileNameFromTitle(title);
+    }
+
     const body = {
-      message: `création de la page ${title}`,
+      message: `création de la page ${title || "index.md"}`,
       content: Buffer.from(
-        `${makeFrontMatterYAMLJsaisPasQuoiLa(title)}\n${content}`
+        `${title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""}${content}`
       ).toString("base64"),
     };
 
@@ -459,6 +464,7 @@ page("/atelier-page", ({ querystring }) => {
             errors,
           } = parseMarkdown(contenu);
           pageContenu.$set({
+            fileName: fileName,
             content: markdownContent,
             previousContent: markdownContent,
             title: data.title,
