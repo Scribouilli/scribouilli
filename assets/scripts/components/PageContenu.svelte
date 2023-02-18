@@ -61,7 +61,7 @@
     {:then}
     <div class="wrapper">
       <form on:submit={onSubmit}>
-        {#if title && makeFileNameFromTitle(title).path !== "index.md"}
+        {#if (!sha && !title) || (title && makeFileNameFromTitle(title).path !== "index.md")}
           <div>
             <label for="title">Titre</label>
             <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
