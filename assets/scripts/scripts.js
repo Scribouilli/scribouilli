@@ -388,7 +388,16 @@ page("/atelier-page", ({ querystring }) => {
     });
   });
 
-  pageContenu.$on("save", ({ detail: { content, title, sha } }) => {
+  pageContenu.$on("save", ({ detail: { content, previousContent, title, previousTitle, sha } }) => {
+    const hasContentChanged = content !== previousContent
+    const hasTitleChanged = title !== previousTitle
+
+    // If no content changed, just redirect
+    if (!hasTitleChanged && !hasContentChanged) {
+      page("/atelier-list-pages")
+      return
+    }
+
     const newFileName = makeFileNameFromTitle(title);
     const body = {
       message: `création de la page ${title}`,

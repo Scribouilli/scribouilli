@@ -12,36 +12,39 @@
   import Skeleton from "./Skeleton.svelte";
 
   $: deleteDisabled = true;
-  $: submitDisabled = true;
+
   let filesPath = undefined;
 
   const dispatch = createEventDispatcher();
 
   pagesP.then((pages) => {
     filesPath = pages.map((page) => page.path);
-    submitDisabled = false;
   });
+
+  const validateTitle = (e) => {
+    const titleChanged = (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
+    if (titleChanged && filesPath.includes(makeFileNameFromTitle(title))) {
+      e.target.setCustomValidity(
+        "Vous avez déjà utilisé ce nom pour une autre page. Veuillez en choisir un autre."
+      );
+
+      return;
+    }
+
+    e.target.setCustomValidity("");
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (filesPath.includes(makeFileNameFromTitle(title))) {
-      // TODO afficher un message
-      console.log("Fichier existant");
-      submitDisabled = true;
-      return;
-    }
-    submitDisabled = false;
-
-    const titleChanged =
-      (sha === "" || previousTitle) && previousTitle !== title.trim();
-    const contentChanged =
-      (sha === "" || previousContent) && previousContent !== content.trim();
-
-    if (title !== "" && (titleChanged || contentChanged)) {
-      dispatch("save", { content, title, sha });
-    } else {
-      console.log("no change, no save");
+    if (e.target.checkValidity()) {
+      dispatch("save", {
+        content: content.trim(),
+        previousContent,
+        title: title.trim(),
+        previousTitle,
+        sha,
+      });
     }
   };
 </script>
@@ -50,11 +53,15 @@
   <section class="screen">
     <h3>Édition d'une page</h3>
 
+    {#await pagesP}
+      <img src="./assets/images/oval.svg" alt="Chargement du contenu" />
+    {/await}
+
     <div class="wrapper">
       <form on:submit={onSubmit}>
         <div>
           <label for="title">Titre</label>
-          <input bind:value={title} type="text" id="title" required />
+          <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
         </div>
 
         <p>
@@ -73,13 +80,7 @@
         <div class="actions-zone">
           <a href="./atelier-list-pages" class="btn__retour">Retour</a>
 
-          <button
-            type="submit"
-            class=" btn__medium btn"
-            disabled={submitDisabled}
-          >
-            Enregistrer la page
-          </button>
+          <button type="submit" class="btn__medium btn">Enregistrer la page</button>
         </div>
 
         {#if sha}
