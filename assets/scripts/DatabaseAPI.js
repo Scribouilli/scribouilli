@@ -76,7 +76,7 @@ export default class DatabaseAPI {
 
   getLatestCommit(login, repoName) {
     return fetch(`https://api.github.com/repos/${login}/${repoName}/commits`, {
-      headers: { 
+      headers: {
         Authorization: "token " + this.accessToken,
         "If-None-Match": this.commitsEtag
       }
@@ -94,7 +94,7 @@ export default class DatabaseAPI {
   }
 
   getPagesList(login, repoName) {
-    return this.getLatestCommit(login, repoName).then(({sha}) => {
+    return this.getLatestCommit(login, repoName).then(({ sha }) => {
       return json(
         `https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`,
         {
@@ -115,6 +115,13 @@ export default class DatabaseAPI {
       );
     });
   }
+
+  getGitHubPagesSite(login, repoName) {
+    return json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+      headers: { Authorization: "token " + this.accessToken }
+    })
+  }
+
 }
 
 

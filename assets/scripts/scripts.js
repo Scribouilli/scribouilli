@@ -42,7 +42,7 @@ const store = new Store({
       state.login = login;
       // TOUTDOUX déplacer la création de buildStatus qui dépend de mais n'a rien à faire avec le login
       state.buildStatus = makeBuildStatus(
-        state.accessToken,
+        databaseAPI,
         login,
         state.repoName
       );
