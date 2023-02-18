@@ -265,24 +265,16 @@ page("/atelier-list-pages", () => {
 
   const state = store.state;
 
-  if (state.accessToken) {
-    // @ts-ignore
-    const atelierPages = new AtelierPages({
-      target: svelteTarget,
-      props: mapStateToProps(state),
-    });
-    replaceComponent(atelierPages, mapStateToProps);
+  // @ts-ignore
+  const atelierPages = new AtelierPages({
+    target: svelteTarget,
+    props: mapStateToProps(state),
+  });
+  replaceComponent(atelierPages, mapStateToProps);
 
-    databaseAPI.getAuthenticatedUser().then((result) => {
-      // Pour s'assurer qu'il y a un login au moment de faire l'appel pour la liste des pages
-      store.mutations.setLogin(result.login)
-      databaseAPI.getPagesList(state.login, state.repoName).then(
-        store.mutations.setPages
-      );
-    });
-  } else {
-    page("/");
-  }
+  databaseAPI.getPagesList(state.login, state.repoName).then(
+    store.mutations.setPages
+  );
 
 });
 
