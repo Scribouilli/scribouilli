@@ -76,10 +76,20 @@
 
         <div class="content">
           <label for="content">Contenu</label>
-          <p>
+          <details>
+            <summary>Mettre en forme le contenu</summary>
+            <p>
             Pour mettre en forme votre contenu, vous pouvez bidouiller
             <a href="https://flus.fr/carnet/markdown.html" target="_blank">avec du Markdown</a>… ou <a href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics" target="_blank">apprendre le HTML.</a>
           </p>
+          </details>
+          <!-- <details>
+            <summary>Héberger des images</summary>
+            <p>
+            Pour héberger des images, nous vous avons créé <a href="#ToDo" target="_blank">un petit dossier.</a> Vous pouvez y déposer vos images, et récupérer le lien grâce au Markdown avec `![Texte décrivant l'image](https://ladressedemonimage.png)`
+          </p>
+          </details> -->
+          
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
         <div class="actions-zone">
