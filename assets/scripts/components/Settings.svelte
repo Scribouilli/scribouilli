@@ -24,7 +24,7 @@
             enabled = !enabled;
           }}
         />
-        Afficher le bouton de suppression
+        Afficher le bouton de suppression du site
       </label>
       <button on:click={temporaire} disabled={!enabled} class="btn btn__medium">Supprimer le site</button>
     </div>
