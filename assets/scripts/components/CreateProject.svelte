@@ -35,7 +35,7 @@
     {#await projectCreationProgressP}
       <section class="screen" id="loader">
         <h2>Nous sommes en train de créer le site&nbsp;!</h2>
-        <h3>Cela peut prendre 2-3minutes ...</h3>
+        <h4>Cela peut prendre 2-3 minutes...</h4>
         <img
           src="./assets/images/hearts.svg"
           alt="cœur sur toi le temps que ça charge"
