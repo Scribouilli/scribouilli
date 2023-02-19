@@ -207,8 +207,8 @@ page("/account", () => {
 
 page("/login", () => {
   const destination = location.origin + store.state.basePath + "/create-project";
-  const client_id = "a6302f0a0c8199ef730b";
-  const redirect_url = "http://toctoctoc.dreads-unlock.fr/github-callback";
+  const client_id = "64ecce0b01397c2499a6";
+  const redirect_url = "https://toctoctoc.dreads-unlock.fr/github-callback";
   const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,delete_repo&redirect_uri=${redirect_url}?destination=${destination}`;
 
   // @ts-ignore
