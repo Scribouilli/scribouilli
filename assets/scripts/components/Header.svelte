@@ -2,14 +2,12 @@
   export let publishedWebsiteURL;
   export let buildStatus;
 
-  buildStatus?.checkStatus()
-
-  let status = buildStatus?.status;
+  let status = buildStatus.status;
   console.debug("Header buildstatus ", buildStatus);
 
   console.debug("Header status ", status);
 
-  buildStatus?.subscribe((s) => {
+  buildStatus.subscribe((s) => {
       console.debug("Header subscribe ", s);
       if (s) {
         status = s;

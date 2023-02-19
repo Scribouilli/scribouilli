@@ -18,7 +18,6 @@ import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
 import PageContenu from "./components/PageContenu.svelte";
 import Settings from "./components/Settings.svelte";
-import buildStatus from "./buildStatus.js";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
@@ -92,6 +91,12 @@ if (store.state.accessToken) {
 
   store.mutations.setLogin(loginP);
   store.mutations.setBuildStatus(makeBuildStatus(databaseAPI, loginP, store.state.repoName))
+  /*
+   Appel sans vérification, 
+   On suppose qu'au chargement initial,
+   on peut faire confiance à ce que revoit l'API
+  */
+  store.state.buildStatus.checkStatus()
 
   const siteRepoConfigP = loginP.then((login) => {
     return databaseAPI.getRepository(login, store.state.repoName)
@@ -118,22 +123,22 @@ async function makePublishedWebsiteURL(state) {
 const svelteTarget = document.querySelector("body");
 
 let currentComponent;
-let mapStateToProps = (_) => { };
+let currentMapStateToProps = (_) => { };
 
-function replaceComponent(newComponent, _mapStateToProps) {
-  if (!_mapStateToProps) {
+function replaceComponent(newComponent, newMapStateToProps) {
+  if (!newMapStateToProps) {
     throw new Error("Missing _mapStateToProps in replaceComponent");
   }
 
   if (currentComponent) currentComponent.$destroy();
 
   currentComponent = newComponent;
-  mapStateToProps = _mapStateToProps;
+  currentMapStateToProps = newMapStateToProps;
 }
 
 function render(state) {
 
-  const props = mapStateToProps(state);
+  const props = currentMapStateToProps(state);
   // @ts-ignore
   if (props) {
     currentComponent.$set(props);
@@ -282,10 +287,9 @@ page("/atelier-page", ({ querystring }) => {
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("page");
 
-  //@ts-ignore
-  const pageContenu = new PageContenu({
-    target: svelteTarget,
-    props: {
+  function mapStateToProps(state) {
+
+    return {
       fileName: undefined,
       title: "",
       content: "",
@@ -297,7 +301,13 @@ page("/atelier-page", ({ querystring }) => {
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus
-    },
+    };
+  }
+
+  //@ts-ignore
+  const pageContenu = new PageContenu({
+    target: svelteTarget,
+    props: mapStateToProps(store.state),
   });
 
   replaceComponent(pageContenu, mapStateToProps);
