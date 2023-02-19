@@ -63,6 +63,10 @@ const store = new Store({
       state.pages = undefined
       state.siteRepoConfig = undefined
     },
+    invalidateToken(state) {
+      state.accessToken = undefined
+      localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
+    }
 
   },
 });
@@ -87,6 +91,13 @@ if (store.state.accessToken) {
     .then(({ login }) => {
       store.mutations.setLogin(login);
       return login;
+    }).catch((msg) => {
+      console.debug("catching error")
+      if (msg === "INVALIDATE_TOKEN") {
+        console.debug("catching INVALIDATE_TOKEN error")
+        store.mutations.invalidateToken()
+        page("/")
+      }
     });
 
   store.mutations.setLogin(loginP);

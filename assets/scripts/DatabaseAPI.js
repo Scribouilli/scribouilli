@@ -11,14 +11,34 @@ export default class DatabaseAPI {
   }
 
   getAuthenticatedUser() {
-    return json("https://api.github.com/user", {
+    return fetch("https://api.github.com/user", {
       headers: { Authorization: "token " + this.accessToken },
+    }).then((httpResp) => {
+      if (httpResp.status === 401) {
+        this.accessToken = undefined
+        console.debug("this accessToken : ", this)
+        throw "INVALIDATE_TOKEN"
+      }
+      return httpResp
+    }).then((httpResp) => {
+      // @ts-ignore
+      return httpResp.json()
     })
   }
 
   getRepository(login, repoName) {
-    return json(`https://api.github.com/repos/${login}/${repoName}`, {
+    return fetch(`https://api.github.com/repos/${login}/${repoName}`, {
       headers: { Authorization: `token ${this.accessToken}` },
+    }).then((httpResp) => {
+      if (httpResp.status === 401) {
+        this.accessToken = undefined
+        console.debug("this accessToken : ", this)
+        throw "INVALIDATE_TOKEN"
+      }
+      return httpResp
+    }).then((httpResp) => {
+      // @ts-ignore
+      return httpResp.json()
     })
   }
 
@@ -31,12 +51,21 @@ export default class DatabaseAPI {
   }
 
   getFile(login, repoName, fileName) {
-    return json(
+    return fetch(
       `https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`,
       {
         headers: { Authorization: "token " + this.accessToken },
-      }
-    )
+      }).then((httpResp) => {
+        if (httpResp.status === 401) {
+          this.accessToken = undefined
+          console.debug("this accessToken : ", this)
+          throw "INVALIDATE_TOKEN"
+        }
+        return httpResp
+      }).then((httpResp) => {
+        // @ts-ignore
+        return httpResp.json()
+      })
   }
 
   /**
@@ -117,13 +146,20 @@ export default class DatabaseAPI {
   }
 
   getGitHubPagesSite(login, repoName) {
-    return json(`https://api.github.com/repos/${login}/${repoName}/pages`, {
+    return fetch(`https://api.github.com/repos/${login}/${repoName}/pages`, {
       headers: {
         Authorization: "token " + this.accessToken,
       }
-    }).then(pageSite => {
-      console.debug("pageSite dans databaseAPI")
-      return pageSite
+    }).then((httpResp) => {
+      if (httpResp.status === 401) {
+        this.accessToken = undefined
+        console.debug("this accessToken : ", this)
+        throw "INVALIDATE_TOKEN"
+      }
+      return httpResp
+    }).then((httpResp) => {
+      // @ts-ignore
+      return httpResp.json()
     })
   }
 
@@ -137,6 +173,16 @@ export default class DatabaseAPI {
   getDeploymentStatus(deployment) {
     return json(deployment.statuses_url, {
       headers: { Authorization: "token " + this.accessToken }
+    }).then((httpResp) => {
+      if (httpResp.status === 401) {
+        this.accessToken = undefined
+        console.debug("this accessToken : ", this)
+        throw "INVALIDATE_TOKEN"
+      }
+      return httpResp
+    }).then((httpResp) => {
+      // @ts-ignore
+      return httpResp.json()
     })
   }
 
