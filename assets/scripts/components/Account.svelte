@@ -54,6 +54,6 @@
     font-weight: bold;
   }
   #creer_compte_github {
-    margin-top : 6rem;
+    margin-top : 20rem;
   }
 </style>
