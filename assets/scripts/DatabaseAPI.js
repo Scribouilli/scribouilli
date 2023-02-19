@@ -7,7 +7,7 @@ export default class DatabaseAPI {
   constructor(accessToken) {
     this.accessToken = accessToken
     this.commitsEtag = undefined
-    this.lastestCommit = undefined
+    this.latestCommit = undefined
   }
 
   getAuthenticatedUser() {
@@ -82,14 +82,14 @@ export default class DatabaseAPI {
       }
     }).then((httpResp) => {
       if (httpResp.status === 304) {
-        return [this.lastestCommit]
+        return [this.latestCommit]
       } else {
         this.commitsEtag = httpResp.headers.get("etag")
         return httpResp.json()
       }
     }).then(commits => {
-      this.lastestCommit = commits[0]
-      return this.lastestCommit
+      this.latestCommit = commits[0]
+      return this.latestCommit
     })
   }
 
