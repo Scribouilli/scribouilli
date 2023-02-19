@@ -28,6 +28,7 @@
           <option value="#6C5353">Marron volcanique</option>
           <option value="#53606C">Gris souris</option>
         </select>
+      </div>
       <div>
         <button class="btn btn__medium">Sauvegarder</button>
       </div>
