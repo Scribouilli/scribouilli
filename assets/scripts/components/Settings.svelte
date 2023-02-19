@@ -18,9 +18,9 @@
     <h2>L'atelier — Paramètres</h2>
     <div class="theme-select">
       <div>
-        <label for="theme-color-select">Choisir un thème couleur pour mon site :</label>
+        <label for="theme-color-select">Choisir une couleur de thème pour mon site :</label>
         <select class="theme-select-bar">
-          <option value="#2a6442">Vert forêt de sapins</option>
+          <option value="#2a6442">Vert bouteille</option>
           <option value="#07357d">Bleu outre-mer</option>
           <option value="#0E6270">Bleu lagon</option>
           <option value="#753785">Violet aubergine</option>
