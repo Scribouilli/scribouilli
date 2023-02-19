@@ -2,7 +2,7 @@
 export default function (databaseAPI, login, repoName) {
     /** @type {"building" | "built" | "errored"} */
     let repoStatus;
-    const reactions = new Set();
+    let reaction = undefined;
 
     let timeout
 
@@ -19,37 +19,43 @@ export default function (databaseAPI, login, repoName) {
         get status() {
             return repoStatus;
         },
-        subscribe(reaction) {
-            reactions.add(reaction);
-
-            return function unsubscribe() {
-                reactions.delete(reaction);
-            }
+        subscribe(callback) {
+            console.log("subscribe reaction.. ", callback)
+            reaction = callback;
         },
         checkStatus() {
             return Promise.resolve(login).then(login => {
-                return databaseAPI.getGitHubPagesSite(login, repoName).then(({ status }) => {
-                    console.log('build status', status)
+                return databaseAPI.getGitHubPagesSite(login, repoName)
+                    .then(({ status }) => {
+                        console.log('build status', status)
 
-                    if (status === "built") {
-                        databaseAPI.getLastDeployment(login, repoName).then(deployment => {
-                            databaseAPI.getDeploymentStatus(deployment).then(deploymentStatus => {
-                                console.debug(deploymentStatus)
-
-                                if (!["pending", "queued", "in_progress"].includes(deploymentStatus[0].state)) {
-
-                                    console.log("deployment done", deploymentStatus[0].state)
-                                    repoStatus = "built"
-                                    return
-                                }
-                            })
-                        })
-                    }
-                    scheduleCheck()
-                })
+                        if (status === "built") {
+                            console.debug("statut built")
+                            if (reaction) {
+                                reaction(status);
+                            }
+                            return
+                        } else if (status === "errored") {
+                            console.debug("statut erroed")
+                            if (reaction) {
+                                reaction(status);
+                            }
+                            return
+                        } else if (status === "building") {
+                            console.debug("statut building")
+                            if (reaction) {
+                                reaction(status);
+                            }
+                            return
+                        } else {
+                            // null
+                            console.debug("statut not built")
+                            scheduleCheck()
+                        }
+                    })
                     .catch(error => {
                         repoStatus = 'errored'
-                        for (const reaction of reactions) {
+                        if (reaction) {
                             reaction(repoStatus);
                         }
                     })

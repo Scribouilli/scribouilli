@@ -270,8 +270,6 @@ page("/atelier-list-pages", () => {
   });
   replaceComponent(atelierPages, mapStateToProps);
 
-  state.buildStatus.checkStatus()
-
   Promise.resolve(state.login).then((login) => {
     databaseAPI.getPagesList(login, state.repoName).then((pages) => {
       store.mutations.setPages(pages)

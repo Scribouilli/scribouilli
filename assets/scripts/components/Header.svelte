@@ -2,20 +2,21 @@
   export let publishedWebsiteURL;
   export let buildStatus;
 
+  buildStatus?.checkStatus()
+
   let status = buildStatus?.status;
+  console.debug("Header buildstatus ", buildStatus);
+
+  console.debug("Header status ", status);
 
   buildStatus?.subscribe((s) => {
-    status = s;
-  });
+      console.debug("Header subscribe ", s);
+      if (s) {
+        status = s;
+      }
+    });
 
-  let buildStatusClass;
-
-  $: buildStatusClass =
-    status === "building"
-      ? "build-ing"
-      : status === "built"
-      ? "build-success"
-      : "build-error";
+  $: buildStatusClass = `build-${status}`;
 </script>
 
 <header>
@@ -28,7 +29,7 @@
       {:then url}
         <div>
           <a href={url} class="project-name" target="_blank">{url}</a>
-          <span class= {buildStatusClass}></span>
+          <span class={buildStatusClass} />
         </div>
       {/await}
 
@@ -42,7 +43,6 @@
   </div>
 </header>
 
-
 <style lang="scss">
   [class^="build-"] {
     &::after {
@@ -50,16 +50,15 @@
     }
   }
 
-  .build-ing::after {
+  .build-building::after {
     content: "🕰";
   }
 
-  .build-success::after {
+  .build-built::after {
     content: "✅";
   }
 
   .build-error::after {
     content: "❌";
   }
-
 </style>
