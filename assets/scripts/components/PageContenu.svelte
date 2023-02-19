@@ -83,11 +83,8 @@
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
         <div class="actions-zone">
-          <p>Vos modifications seront publiées dans 2-3 minutes sur votre site.</p>
-          <div class="save-zone">
-            <a href="./atelier-list-pages" class="btn__retour">Retour</a>
-            <button type="submit" class="btn__medium btn">Enregistrer la page</button>
-          </div>
+          <a href="./atelier-list-pages" class="btn__retour">Retour</a>
+          <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
         </div>
 
         {#if sha && title && makeFileNameFromTitle(title).path !== "index.md"}
@@ -130,22 +127,15 @@
   }
 
   .actions-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 1rem;
     margin-bottom: 6rem;
     padding-right: 2rem;
     padding-left: 2rem;
   }
-  
-  .save-zone {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  }
-  
-  .actions-zone p {
-  text-align: right;
-  }
+
 
   .btn__retour {
     &::before {
