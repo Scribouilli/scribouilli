@@ -53,4 +53,7 @@
   .theme-select {
     margin-bottom: 3rem;
   }
+  .theme-select-bar {
+    margin-bottom: 1rem;
+  }
 </style>
