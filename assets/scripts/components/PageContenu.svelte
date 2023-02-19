@@ -64,7 +64,7 @@
       <form on:submit={onSubmit}>
         {#if (!sha && !title) || (title && makeFileNameFromTitle(title).path !== "index.md")}
           <div>
-            <label for="title">Titre</label>
+            <label for="title">Titre du menu</label>
             <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
           </div>
 
