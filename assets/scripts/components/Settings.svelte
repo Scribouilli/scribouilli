@@ -19,13 +19,13 @@
     <div class="theme-select">
       <label for="theme-color-select">Choisir un thème couleur pour mon site :</label>
       <select class="theme-select-bar">
-        <option value="#2a6442">Vert foncé</option>
-        <option value="#07357d">Bleu foncé</option>
-        <option value="#0E6270">Bleu</option>
-        <option value="#753785">Violet</option>
-        <option value="#993B1F">Rouge foncé</option>
-        <option value="#6C5353">Marron</option>
-        <option value="#53606C">Gris bleuté</option>
+        <option value="#2a6442">Vert forêt de sapins</option>
+        <option value="#07357d">Bleu outre-mer</option>
+        <option value="#0E6270">Bleu lagon</option>
+        <option value="#753785">Violet aubergine</option>
+        <option value="#993B1F">Rouge brique</option>
+        <option value="#6C5353">Marron volcanique</option>
+        <option value="#53606C">Gris souris</option>
       </select>
       <button class="btn btn__medium">Sauvegarder</button>
     </div>
