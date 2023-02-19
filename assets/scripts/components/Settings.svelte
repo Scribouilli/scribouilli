@@ -16,9 +16,9 @@
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
-    <div>
-      <label for="theme-color-select">Choisir un thème couleur :</label>
-      <select>
+    <div class="theme-select">
+      <label for="theme-color-select">Choisir un thème couleur pour mon site :</label>
+      <select class="theme-select-bar">
         <option value="#2a6442">Vert foncé</option>
         <option value="#07357d">Bleu foncé</option>
         <option value="#0E6270">Bleu</option>
@@ -42,3 +42,9 @@
     </div>
   </section>
 </Skeleton>
+
+
+<style lang="scss">
+  .theme-select {
+  margin-bottom: 3rem;
+  }
