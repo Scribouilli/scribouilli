@@ -78,7 +78,7 @@
           <label for="content">Contenu</label>
           <p>
             Pour mettre en forme votre contenu, vous pouvez bidouiller
-            <a href="https://flus.fr/carnet/markdown.html">avec du Markdown</a>… ou <a href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics">apprendre le HTML.</a>
+            <a href="https://flus.fr/carnet/markdown.html" target="_blank">avec du Markdown</a>… ou <a href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics" target="_blank">apprendre le HTML.</a>
           </p>
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
