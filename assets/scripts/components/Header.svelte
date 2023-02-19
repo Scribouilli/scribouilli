@@ -2,19 +2,20 @@
   export let publishedWebsiteURL;
   export let buildStatus;
 
-  let status = buildStatus.status;
-  console.debug("Header buildstatus ", buildStatus);
+  let status = undefined;
 
-  console.debug("Header status ", status);
+  if (buildStatus) {
+    let status = buildStatus.status;
 
-  buildStatus.subscribe((s) => {
+    buildStatus.subscribe((s) => {
       console.debug("Header subscribe ", s);
       if (s) {
         status = s;
       }
     });
+  }
 
-  $: buildStatusClass = `build-${status}`;
+  $: buildStatusClass = status ? `build-${status}` : undefined;
 </script>
 
 <header>
@@ -27,7 +28,9 @@
       {:then url}
         <div>
           <a href={url} class="project-name" target="_blank">{url}</a>
-          <span class={buildStatusClass} />
+          {#if buildStatusClass}
+            <span class={buildStatusClass} />
+          {/if}
         </div>
       {/await}
 
