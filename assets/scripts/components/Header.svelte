@@ -56,10 +56,10 @@
   }
 
   .build-built::after {
-    content: "✅ Site à jour";
+    content: "✅ Site à jour (sinon pensez à actualiser)";
   }
 
   .build-errored::after {
-    content: "❌ Oups il y a un souci, tentez de faire une nouvelle modification";
+    content: "❌ Oups il y a peut-être un souci";
   }
 </style>
