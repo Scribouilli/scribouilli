@@ -27,7 +27,7 @@
       <p>Elle comporte 3 étapes :</p>
       <ol>
         <li>Rentrez votre mail, mot de passe, et votre nom d'utilisateur·ice</li>
-        <li>Ouvrez le mail que Github vous as envoyé, et copiez le code pour confirmer votre compte</li>
+        <li>Ouvrez le mail que Github vous a envoyé, et copiez le code pour confirmer votre compte</li>
         <li>Dès que le code est validé, <em>revenez sur Scribouilli</em> et cliquez sur <a href="./login">"J'ai créé un compte"</a></li>
       </ol>
       
