@@ -13,7 +13,16 @@
 
     <div>
       <a href="./login" class="btn">Oui, je me connecte</a>
-      <a href="https://github.com/signup" target="_blank" class="btn">Non, je veux en créer un</a>
+    </div>
+    <div>
+      <h2>Non, je veux créer un compte</h2>
+      <p>La création va se passer sur le site de Github. Elle comporte 3 étapes :</p>
+      <ol>
+        <li>Rentrez votre mail, mot de passe, et votre nom d'utilisateur·ice</li>
+        <li>Ouvrez le mail que Github vous as envoyé, et copiez le code pour confirmer votre compte</li>
+        <li>Dès que le code est validé, <em>revenez sur Scribouilli</em> et cliquez sur <a href="./login">"Oui, je me connecte"</a></li>
+      </ol>
+      <a href="https://github.com/signup" target="_blank" class="btn">Créer un compte Github</a>
     </div>
   </section>
 </Skeleton>
