@@ -34,6 +34,11 @@ L'Échappée Belle est actuellement composée de 5 membres.
 Pour nous contacter : [coucou@lechappeebelle.team](mailto:coucou@lechappeebelle.team)
 `
 
+const images_readme_content = `
+Dans ce dossier, vous pouvez glisser vos images.\
+Ensuite, vous pouvez faire un clic droit sur l'image pour récupérer son lien et ensuite l'affiche en Markdown.
+`
+
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
 
@@ -98,6 +103,18 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                             {
                                 message: "création de la page contact",
                                 content: Buffer.from(contact_page_content).toString('base64')
+                            }
+                        )
+                    })
+                })
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/images/readme.md`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "création du dossier images",
+                                content: Buffer.from(images_readme_content).toString('base64')
                             }
                         )
                     })
