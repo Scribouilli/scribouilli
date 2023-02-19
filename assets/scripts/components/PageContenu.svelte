@@ -107,7 +107,7 @@
             <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
           </div>
 
-          {#if sha && title && makeFileNameFromTitle(title).path !== "Accueil"}
+          {#if sha && title && makeFileNameFromTitle(title).path !== "index.md"}
             <div class="wrapper delete-zone">
               <h3>Supprimer la page</h3>
               <label>
