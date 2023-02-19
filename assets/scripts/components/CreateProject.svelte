@@ -34,13 +34,13 @@
   {:else}
     {#await projectCreationProgressP}
       <section class="screen" id="loader">
-        <h2>Nous sommes en train de créer le site !</h2>
+        <h2>Nous sommes en train de créer le site&nbsp;!</h2>
         <img
           src="./assets/images/hearts.svg"
           alt="cœur sur toi le temps que ça charge"
         />
         <div>
-          <p> Pendant le chargement, vous pouvez : </p>
+          <p> Pendant le chargement, vous pouvez&nbsp;: </p>
           <ul>
             <li> lire un article pour apprendre à <a href="https://flus.fr/carnet/markdown.html" target="_blank">bidouiller avec du Markdown</a>.</li>
             <li> ou chanter une petite chanson.
@@ -49,10 +49,10 @@
       </section>
     {:then url}
     <section class="screen" id="loader">
-        <h2>Youpiiiiiiiiiii !!</h2>
-        <p>Le site est publié par ici : <a href={url} target="_blank">{url}</a></p>
+        <h2>Youpiiiiiiiiiii&nbsp;!!</h2>
+        <p>Le site est publié par ici&nbsp;: <a href={url} target="_blank">{url}</a></p>
         <p>
-          Pour éditer les pages, rendez-vous dans l'atelier :
+          Pour éditer les pages, rendez-vous dans l'atelier&nbsp;:
         </p>
         <a href="./atelier-list-pages" class="btn">Découvrir l'atelier</a>
       </section>
