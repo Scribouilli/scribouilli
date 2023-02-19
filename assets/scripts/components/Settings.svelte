@@ -51,7 +51,5 @@
 <style lang="scss">
   .theme-select {
     margin-bottom: 3rem;
-    display: flex;
-    align-items: center;
   }
 </style>
