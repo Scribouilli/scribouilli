@@ -52,14 +52,14 @@
   }
 
   .build-building::after {
-    content: "🕰";
+    content: "🕰 En cours de publication";
   }
 
   .build-built::after {
-    content: "✅";
+    content: "✅ Site à jour";
   }
 
   .build-errored::after {
-    content: "❌";
+    content: "❌ Oups il y a un souci, tentez de faire une nouvelle modification";
   }
 </style>
