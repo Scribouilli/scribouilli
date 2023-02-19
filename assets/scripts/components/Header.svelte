@@ -15,7 +15,7 @@
     });
   }
 
-  $: buildStatusClass = status ? `build-${status}` : undefined;
+  $: buildStatusClass = buildStatus ? `build-${status}` : undefined;
 </script>
 
 <header>
