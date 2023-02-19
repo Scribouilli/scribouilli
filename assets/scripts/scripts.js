@@ -71,6 +71,15 @@ const store = new Store({
   },
 });
 
+const handleErrors = (error) => {
+  console.debug("catching error")
+  if (error === "INVALIDATE_TOKEN") {
+    console.debug("catching INVALIDATE_TOKEN error")
+    store.mutations.invalidateToken()
+    page("/account")
+  }
+}
+
 // Store access_token in browser
 const url = new URL(location.href)
 if (url.searchParams.has("access_token")) {
@@ -91,14 +100,7 @@ if (store.state.accessToken) {
     .then(({ login }) => {
       store.mutations.setLogin(login);
       return login;
-    }).catch((msg) => {
-      console.debug("catching error")
-      if (msg === "INVALIDATE_TOKEN") {
-        console.debug("catching INVALIDATE_TOKEN error")
-        store.mutations.invalidateToken()
-        page("/")
-      }
-    });
+    }).catch(msg => handleErrors(msg));
 
   store.mutations.setLogin(loginP);
   store.mutations.setBuildStatus(makeBuildStatus(databaseAPI, loginP, store.state.repoName))
@@ -110,7 +112,7 @@ if (store.state.accessToken) {
   store.state.buildStatus.checkStatus()
 
   const siteRepoConfigP = loginP.then((login) => {
-    return databaseAPI.getRepository(login, store.state.repoName)
+    return databaseAPI.getRepository(login, store.state.repoName).catch(msg => handleErrors(msg));
   })
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP)
@@ -190,12 +192,10 @@ page("/", () => {
 
       return databaseAPI.getRepository(login, repoName).then(() => {
         page("/atelier-list-pages");
-      })
-
-        .catch((err) => {
-          // ToutDoux : gérer les erreurs autres que le repo n'existe po
-          page("/create-project");
-        });
+      }).catch(msg => handleErrors(msg)).catch((err) => {
+        // ToutDoux : gérer les erreurs autres que le repo n'existe po
+        page("/create-project");
+      });
     });
   }
 
@@ -291,7 +291,7 @@ page("/atelier-list-pages", () => {
   Promise.resolve(state.login).then((login) => {
     databaseAPI.getPagesList(login, state.repoName).then((pages) => {
       store.mutations.setPages(pages)
-    });
+    }).catch(msg => handleErrors(msg))
   })
 
 });
@@ -310,7 +310,7 @@ page("/atelier-page", ({ querystring }) => {
       previousContent: undefined,
       makeFileNameFromTitle: makeFileNameFromTitle,
       // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
-      pagesP: Promise.resolve(state.login).then((login) => databaseAPI.getPagesList(login, state.repoName)),
+      pagesP: Promise.resolve(state.login).then((login) => databaseAPI.getPagesList(login, state.repoName).catch(msg => handleErrors(msg))),
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus
@@ -334,7 +334,7 @@ page("/atelier-page", ({ querystring }) => {
       databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
         page("/atelier-list-pages")
-      });
+      }).catch(msg => handleErrors(msg))
     });
   });
 
@@ -382,11 +382,8 @@ page("/atelier-page", ({ querystring }) => {
             }
             state.buildStatus.setBuildingAndCheckStatusLater()
             page("/atelier-list-pages");
-          })
-            .catch((error) => {
-              console.error(error);
-            });
-        });
+          }).catch(msg => handleErrors(msg))
+        }).catch(msg => handleErrors(msg))
       });
     } else {
       Promise.resolve(state.login).then((login) => {
@@ -399,10 +396,7 @@ page("/atelier-page", ({ querystring }) => {
           }
           state.buildStatus.setBuildingAndCheckStatusLater()
           page("/atelier-list-pages");
-        })
-          .catch((error) => {
-            console.error(error);
-          });
+        }).catch(msg => handleErrors(msg))
       });
     }
   });
@@ -432,10 +426,7 @@ page("/atelier-page", ({ querystring }) => {
             previousTitle: data.title,
             sha: sha,
           });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+        }).catch(msg => handleErrors(msg))
     });
   }
 
@@ -464,7 +455,7 @@ page("/settings", () => {
       databaseAPI.deleteRepository(login, store.state.repoName).then(() => {
         store.mutations.removeSite(store.state)
         page("/create-project")
-      });
+      }).catch(msg => handleErrors(msg))
     });
   });
 
