@@ -4,7 +4,7 @@
 
 <Skeleton>
   <section class="screen" id="account">
-    <h2>Avez-vous un compte Github ?</h2>
+    <h2>Avez-vous un compte Github&nbsp;?</h2>
 
     <p>
       Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à
@@ -13,9 +13,14 @@
 
     <div>
       <a href="./login" class="btn">Oui, je me connecte</a>
+      <a href="#creer_compte_github" class="btn">Non, je veux créer un compte</a>
     </div>
-    <div>
-      <h2>Non, je veux créer un compte</h2>
+    <div id="creer_compte_github">
+      <h2>Créer un compte Github</h2>
+      <p>
+        Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte à
+      un compte <a href="https://github.com" target="_blank">Github</a>.
+      </p>
       <p>La création va se passer sur le site de Github. Elle comporte 3 étapes :</p>
       <ol>
         <li>Rentrez votre mail, mot de passe, et votre nom d'utilisateur·ice</li>
@@ -44,5 +49,11 @@
   p {
     font-size: 1.5rem;
     margin-bottom: 4rem;
+  }
+  em {
+    font-weight: bold;
+  }
+  .creer_compte_github {
+    margin-top : 6rem;
   }
 </style>
