@@ -140,10 +140,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
   }
   
   .actions-zone p {
-  text-align: center;
+  text-align: right;
   }
 
   .btn__retour {
