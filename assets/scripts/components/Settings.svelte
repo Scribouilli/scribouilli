@@ -16,7 +16,7 @@
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
-    <div class="theme-select">
+    <!--<div class="theme-select">
       <div>
         <label for="theme-color-select">Choisir une couleur de thème pour mon site :</label>
         <select class="theme-select-bar">
@@ -32,7 +32,7 @@
       <div>
         <button class="btn btn__medium">Sauvegarder</button>
       </div>
-    </div>
+    </div>-->
     <div class="wrapper delete-zone">
       <label>
         <input
