@@ -306,6 +306,7 @@ page("/atelier-page", ({ querystring }) => {
       fileName: undefined,
       title: "",
       content: "",
+      imageDirUrl: "",
       previousTitle: undefined,
       previousContent: undefined,
       makeFileNameFromTitle: makeFileNameFromTitle,
@@ -325,6 +326,10 @@ page("/atelier-page", ({ querystring }) => {
 
   replaceComponent(pageContenu, mapStateToProps);
 
+  Promise.resolve(state.login).then((login) => {
+    // @ts-ignore
+    pageContenu.$set({imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images`}) 
+  })
   // @ts-ignore
   pageContenu.$on("delete", ({ detail: { sha } }) => {
     Promise.resolve(state.login).then((login) => {
