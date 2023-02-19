@@ -38,7 +38,17 @@ pour ensuite faire du polling dessus, et récupérer la propriété state
     }
 
 
-Mais les déploiements ne nous informe pas du build, mais uniquement du déploiement.
+
+NOTE
+   
+Nous pensons que Github laisse mourrir l'API github pages.
+
+Un refactoring à faire plus tard serait d'utilise les API de déploiement qui sont plus riche en information.
+
+Nous pourirons essayer de suivre un commit pour s'assurer que nous allons à la fin du déploiement.
+
+Voir `databaseAPI.getLastDeployment(login, repoName)` et `databaseAPI.getDeploymentStatus(deployment)`
+
 
 */
 export default function (databaseAPI, login, repoName) {
@@ -72,116 +82,18 @@ export default function (databaseAPI, login, repoName) {
                     .then(({ status }) => {
                         console.log('build status', status)
 
-                        if (status === "built") {
-                            console.debug("statut built")
-                            repoStatus = "built"
-                            if (reaction) {
-                                reaction(repoStatus);
-                            }
-                            return
-                        } else if (status === "errored") {
-                            console.debug("statut erroed")
-                            repoStatus = "errored"
-                            if (reaction) {
-                                reaction(repoStatus);
-                            }
-                            return
-                        } else if (status === "building") {
-                            console.debug("statut building")
-                            repoStatus = "building"
-                            if (reaction) {
-                                reaction(repoStatus);
-                            }
-                            return
+                        if (["built", "errored", "building"].includes(status)) {
+                            repoStatus = status
                         } else {
-                            // null
-                            console.debug("statut not built")
+                            // status === null
                             repoStatus = "building"
-                            if (reaction) {
-                                reaction(repoStatus);
-                            }
-                            scheduleCheck()
                         }
-                    })
-                    .catch(error => {
-                        repoStatus = 'errored'
+
                         if (reaction) {
                             reaction(repoStatus);
                         }
-                    })
 
-            })
-        },
-        checkStatusWithConfirmation() {
-            return Promise.resolve(login).then(login => {
-                return databaseAPI.getGitHubPagesSite(login, repoName)
-                    .then(({ status }) => {
-                        console.log('build status', status)
-
-                        if (status === "built") {
-                            console.debug("statut built")
-
-                            if (!lastSuccessCheck) {
-                                lastSuccessCheck = true
-                                if (reaction) {
-                                    /*
-                                        Parce que parfois on check trop vite après un commit
-                                        le nouveau build n'est pas commencé
-                                        et l'API répond `built` parce qu'elle n'est pas encore au courant du nouveau build
-
-                                        Donc on reçoit `built` mais on informe de `building` en attendant une confirmation
-                                    */
-                                    reaction("building");
-                                }
-                                scheduleCheck(10000)
-                            } else {
-                                lastSuccessCheck = undefined
-                                if (reaction) {
-                                    /*
-                                        Après deux succès consécutif, on pense que c'est bon, que c'est « bien » built
-                                    */
-                                    reaction(status);
-                                }
-                            }
-                            return
-                        } else if (status === "errored") {
-                            console.debug("statut erroed")
-
-
-                            if (!lastErrorCheck) {
-                                lastErrorCheck = true
-                                if (reaction) {
-                                    /*
-                                        Parce que parfois un build est intérrompu par une nouvelle demande de build
-                                        l'API répond une erreur.
-
-                                        Donc on ment en disant que c'est en cours,
-                                        et on attend un deuxième retour que le build et en erreur
-                                    */
-                                    reaction("building");
-                                }
-                                scheduleCheck(10000)
-                            } else {
-                                lastErrorCheck = undefined
-                                if (reaction) {
-                                    /*
-                                        Après deux erreur consécutives, on pense que c'est bon, que c'est « bien » en erreur
-                                    */
-                                    reaction(status);
-                                }
-                            }
-
-
-                            return
-                        } else if (status === "building") {
-                            console.debug("statut building")
-                            if (reaction) {
-                                reaction(status);
-                            }
-                            return
-                        } else {
-                            // null
-                            console.debug("statut not built")
+                        if (repoStatus === "building") {
                             scheduleCheck()
                         }
                     })

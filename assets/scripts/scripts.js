@@ -319,6 +319,7 @@ page("/atelier-page", ({ querystring }) => {
         return page.path !== fileName
       }))
       databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
+        state.buildStatus.setBuildingAndCheckStatusLater()
         page("/atelier-list-pages")
       });
     });
@@ -366,6 +367,7 @@ page("/atelier-page", ({ querystring }) => {
             } else {
               console.log("nouvelle page créée");
             }
+            state.buildStatus.setBuildingAndCheckStatusLater()
             page("/atelier-list-pages");
           })
             .catch((error) => {
@@ -382,6 +384,7 @@ page("/atelier-page", ({ querystring }) => {
           } else {
             console.log("nouvelle page créée");
           }
+          state.buildStatus.setBuildingAndCheckStatusLater()
           page("/atelier-list-pages");
         })
           .catch((error) => {

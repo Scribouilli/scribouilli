@@ -56,7 +56,7 @@
     content: "✅";
   }
 
-  .build-error::after {
+  .build-errored::after {
     content: "❌";
   }
 </style>
