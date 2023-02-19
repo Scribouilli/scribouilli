@@ -132,6 +132,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 1rem;
+    margin-bottom: 6rem;
     padding-right: 2rem;
     padding-left: 2rem;
   }
