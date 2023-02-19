@@ -5,7 +5,7 @@
   let status = undefined;
 
   if (buildStatus) {
-    let status = buildStatus.status;
+    status = buildStatus.status;
 
     buildStatus.subscribe((s) => {
       console.debug("Header subscribe ", s);

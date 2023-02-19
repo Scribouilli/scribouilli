@@ -104,6 +104,12 @@ export default function (databaseAPI, login, repoName) {
                         }
                     })
             })
+        },
+        setBuildingAndCheckStatusLater() {
+            repoStatus = "building"
+            clearTimeout(timeout)
+            timeout = undefined
+            scheduleCheck(30000)
         }
     }
 
