@@ -114,8 +114,10 @@ if (store.state.accessToken) {
   })
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP)
-  siteRepoConfigP.catch(() => {
-    page("/create-project")
+  siteRepoConfigP.catch((error) => {
+    if (error == "NOT_FOUND") {
+      page("/create-project")
+    }
   })
 } else {
   history.replaceState(undefined, '', store.state.basePath + "/")
