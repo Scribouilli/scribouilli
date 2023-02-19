@@ -83,11 +83,11 @@
           <textarea bind:value={content} id="content" cols="30" rows="10" />
         </div>
         <div class="actions-zone">
+          <p>Vos modifications seront publiées dans 2-3 minutes sur votre site.</p>
           <div class="save-zone">
             <a href="./atelier-list-pages" class="btn__retour">Retour</a>
             <button type="submit" class="btn__medium btn">Enregistrer la page</button>
           </div>
-          <p>Vos modifications seront publiées dans 2-3 minutes sur votre site.</p>
         </div>
 
         {#if sha && title && makeFileNameFromTitle(title).path !== "index.md"}
