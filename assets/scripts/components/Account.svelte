@@ -53,7 +53,7 @@
   em {
     font-weight: bold;
   }
-  .creer_compte_github {
+  #creer_compte_github {
     margin-top : 6rem;
   }
 </style>
