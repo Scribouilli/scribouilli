@@ -27,6 +27,7 @@
         <option value="#6C5353">Marron</option>
         <option value="#53606C">Gris bleuté</option>
       </select>
+      <button class="btn btn__medium">Sauvegarder</button>
     </div>
     <div class="wrapper delete-zone">
       <label>
