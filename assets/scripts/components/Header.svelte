@@ -8,7 +8,6 @@
     status = buildStatus.status;
 
     buildStatus.subscribe((s) => {
-      console.debug("Header subscribe ", s);
       if (s) {
         status = s;
       }
