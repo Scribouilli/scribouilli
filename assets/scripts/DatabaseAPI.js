@@ -94,28 +94,24 @@ export default class DatabaseAPI {
   /**
    * @summary Create a file
    */
-  createFile(login, repoName, fileName, content) {
+  createFile(login, repoName, fileName, body) {
     return this.callGithubAPI(
       `https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`,
       {
         headers: { Authorization: "token " + this.accessToken },
         method: "PUT",
-        body: JSON.stringify(content),
+        body: JSON.stringify(body),
       }
     )
   }
 
   createCustomCSS(login, repoName, content) {
-    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/${this.customCSSPath}`, {
-          headers: { Authorization: "token " + this.accessToken },
-          method: "PUT",
-          body: JSON.stringify(
-              {
-                  message: "création du ficher de styles custom",
-                  content: Buffer.from(content).toString('base64')
-              }
-          )
-      })
+    return this.createFile(login, repoName, this.customCSSPath,
+      {
+        message: "création du ficher de styles custom",
+        content: Buffer.from(content).toString('base64')
+      }
+    )
   }
 
   /**
