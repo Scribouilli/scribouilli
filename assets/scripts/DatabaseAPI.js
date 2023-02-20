@@ -133,7 +133,7 @@ export default class DatabaseAPI {
   updateFile(login, repoName, oldfileName, newFileName, content, sha) {
     if (newFileName === oldfileName) {
       return this.callGithubAPI(
-        `https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`,
+        `https://api.github.com/repos/${login}/${repoName}/contents/${oldfileName}`,
         {
           sha,
           headers: { Authorization: "token " + this.accessToken },
