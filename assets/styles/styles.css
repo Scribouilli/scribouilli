@@ -225,8 +225,17 @@ textarea {
 .white-zone {
   padding: 2rem 1rem;
   width: 500px;
+  text-align: center;
   background: white;
   border-radius: 16px;
+}
+
+.white-zone:first-of-type {
+  margin-bottom: 3rem;
+}
+
+.white-zone h3 {
+  margin-top: 0;
 }
 
 .white-zone label {
@@ -262,5 +271,5 @@ textarea {
 }
 
 .white-zone .radio label {
-  margin-left: .5rem;
+  margin-left: 0.5rem;
 }

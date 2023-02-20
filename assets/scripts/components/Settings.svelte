@@ -121,16 +121,6 @@
 </Skeleton>
 
 <style lang="scss">
-  .white-zone {
-    &:first-of-type {
-      margin-bottom: 3rem;
-    }
-  }
-
-  h3 {
-    margin-top: 0;
-  }
-
   .radios-wrapper {
     width: 70%;
     margin: 0 auto;
