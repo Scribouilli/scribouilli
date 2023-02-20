@@ -10,8 +10,12 @@
   export let themeColor;
   export let deleteRepositoryUrl;
 
+  let notification = "";
+
   const onThemeSave = (e) => {
     dispatch("update-theme-color", { themeColor });
+    notification = "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
+    document.querySelector("#notifications").scrollIntoView();
   };
 
   const setColor = (e) => {
@@ -60,6 +64,8 @@
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
+
+    <div id="notifications">{notification}</div>
 
     <div class="wrapper white-zone">
       <div>

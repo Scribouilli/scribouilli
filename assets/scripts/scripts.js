@@ -481,7 +481,6 @@ page("/settings", () => {
       .then((response) => {
           store.mutations.setThemeColor(store.state.themeColor.color, response.content.sha)
           store.state.buildStatus.setBuildingAndCheckStatusLater()
-          page("/settings")
       }).catch(msg => handleErrors(msg))
     })
   })
