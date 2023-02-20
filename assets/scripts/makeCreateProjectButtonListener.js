@@ -66,7 +66,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                         body: JSON.stringify(
                             {
                                 message: "crée le _config.yml",
-                                content: Buffer.from(`remote_theme: scribouilli/scribouilli-theme`).toString('base64')
+                                content: Buffer.from(`remote_theme: scribouilli/mimoza`).toString('base64')
                             }
                         )
                     })
