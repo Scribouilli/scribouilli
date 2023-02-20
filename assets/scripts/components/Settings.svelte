@@ -9,18 +9,17 @@
   export let publishedWebsiteURL;
   export let buildStatus;
   export let themeColor;
-  export let sha;
 
   const temporaire = () => {
     dispatch("delete-site");
   };
 
   const onThemeSave = (e) => {
-    dispatch("update-theme-color", { color: themeColor, sha });
+    dispatch("update-theme-color", { themeColor });
   };
 
   const setColor = (e) => {
-    themeColor = e.target.value;
+    themeColor.color = e.target.value;
   };
 
   const mesCouleurs = [
@@ -81,7 +80,7 @@
                 name="theme-color-select"
                 {id}
                 value={color}
-                checked={color === themeColor}
+                checked={color === themeColor.color}
               />
               <label for={id}> <span style="background-color: {color}" /> {name}</label>
             </div>
@@ -90,7 +89,8 @@
       </div>
 
       <div>
-        <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~ 2 min.)</button>
+        <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~ 2 min.)</button
+        >
       </div>
     </div>
 

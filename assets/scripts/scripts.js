@@ -34,7 +34,11 @@ const store = new Store({
     pages: undefined,
     buildStatus: undefined,
     basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
-    siteRepoConfig: undefined
+    siteRepoConfig: undefined,
+    themeColor: {
+      color: undefined,
+      sha: undefined
+    }
   },
   mutations: {
     setLogin(state, login) {
@@ -59,6 +63,10 @@ const store = new Store({
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
     },
+    setThemeColor(state, color, sha) {
+      state.themeColor.color = color
+      state.themeColor.sha = sha
+    },
     removeSite(state) {
       state.pages = undefined
       state.siteRepoConfig = undefined
@@ -67,7 +75,6 @@ const store = new Store({
       state.accessToken = undefined
       localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
     }
-
   },
 });
 
@@ -439,8 +446,7 @@ page("/settings", () => {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      themeColor: undefined,
-      sha: undefined
+      themeColor: state.themeColor,
     };
   }
 
@@ -462,15 +468,15 @@ page("/settings", () => {
     });
   });
 
-  settings.$on("update-theme-color", ({detail: { color, sha }}) => {
+  settings.$on("update-theme-color", ({detail: { themeColor }}) => {
     const customCSS = `
     :root {
-        --couleur-primaire : ${color};
+        --couleur-primaire : ${themeColor.color};
     }
     `
 
     Promise.resolve(store.state.login).then((login) => {
-      databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, sha)
+      databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, themeColor.sha)
       .then(() => {
         store.state.buildStatus.setBuildingAndCheckStatusLater()
         page("/settings")
@@ -478,20 +484,22 @@ page("/settings", () => {
     })
   })
 
-  replaceComponent(settings, mapStateToProps);
-
-  Promise.resolve(store.state.login).then((login) => {
-    databaseAPI.getFile(login, store.state.repoName, databaseAPI.customCSSPath)
+  if (!store.state.themeColor.sha) {
+    Promise.resolve(store.state.login).then((login) => {
+      databaseAPI.getFile(login, store.state.repoName, databaseAPI.customCSSPath)
       .then(({content, sha}) => {
+        store.mutations.setThemeColor(Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>"), sha)
+        
         settings.$set({
-          sha,
-          themeColor: Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>")
+          themeColor: store.state.themeColor.color
         })
       }).catch(msg => handleErrors(msg))
-  })
+    })
+  }
+
+  replaceComponent(settings, mapStateToProps);
 });
 
 page.base(store.state.basePath)
 
 page.start();
-
