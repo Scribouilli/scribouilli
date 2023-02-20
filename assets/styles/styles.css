@@ -272,6 +272,15 @@ textarea {
 
 .white-zone .radio label {
   margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.white-zone .radio label span {
+  display: block;
+  width: 4rem;
+  height: 1.8rem;
+  margin-right: .6rem;
 }
 
 .white-zone .radio:last-of-type {

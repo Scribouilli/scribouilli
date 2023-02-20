@@ -1,6 +1,7 @@
 <script>
   import Skeleton from "./Skeleton.svelte";
   import { createEventDispatcher } from "svelte";
+  import { each } from "svelte/internal";
 
   const dispatch = createEventDispatcher();
   $: enabled = false;
@@ -17,6 +18,44 @@
   const onThemeSave = (e) => {
     dispatch("update-theme-color", { color: themeColor, sha });
   };
+
+  const mesCouleurs = [
+    {
+      id: 'vertBooteille', 
+      color: '#2a6442',
+      name: 'Vert Booteille'
+    },
+    {
+      id: 'bleu-outre-mer', 
+      color: '#07357d',
+      name: 'Bleu outre-mer'
+    },
+    {
+      id: 'bleu-lagon', 
+      color: '#0E6270',
+      name: 'Bleu lagon'
+    },
+    {
+      id: 'violet-aubergine', 
+      color: '#753785',
+      name: 'Violet aubergine'
+    },
+    {
+      id: 'rouge-brique', 
+      color: '#993B1F',
+      name: 'Rouge brique'
+    },
+    {
+      id: 'marron-volcanique', 
+      color: '#6C5353',
+      name: 'Marron volcanique'
+    },
+    {
+      id: 'gris-souris', 
+      color: '#53606C',
+      name: 'Gris souris'
+    },
+  ]
 </script>
 
 <Skeleton {publishedWebsiteURL} {buildStatus}>
@@ -30,76 +69,18 @@
         </h3>
 
         <div class="radios-wrapper">
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="vert-booteille"
-              value="#2a6442"
-              checked
-            />
-            <label for="vert-booteille">Vert booteille</label>
-          </div>
-
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="bleu-outre-mer"
-              value="#07357d"
-            />
-            <label for="bleu-outre-mer">Bleu outre-mer</label>
-          </div>
-
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="bleu-lagon"
-              value="#0E6270"
-            />
-            <label for="bleu-lagon">Bleu lagon</label>
-          </div>
-
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="violet-aubergine"
-              value="#753785"
-            />
-            <label for="violet-aubergine">Violet aubergine</label>
-          </div>
-
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="rouge-brique"
-              value="#993B1F"
-            />
-            <label for="rouge-brique">Rouge brique</label>
-          </div>
-
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="marron-volcanique"
-              value="#6C5353"
-            />
-            <label for="marron-volcanique">Marron volcanique</label>
-          </div>
-
-          <div class="radio">
-            <input
-              type="radio"
-              name="theme-color-select"
-              id="gris-souris"
-              value="#53606C"
-            />
-            <label for="gris-souris">Gris souris</label>
-          </div>
+          {#each mesCouleurs as {id, color, name}}
+           <div class="radio">
+              <input
+                type="radio"
+                name="theme-color-select"
+                id={id}
+                value={color}
+                checked
+              />
+              <label for={id}> <span style="background-color: {color}"></span> {name}</label>
+            </div>
+          {/each}
         </div>
       </div>
 
