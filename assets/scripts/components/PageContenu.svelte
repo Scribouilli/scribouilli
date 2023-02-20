@@ -51,6 +51,18 @@
       });
     }
   };
+
+  const onBackClick = (e) => {
+    if (previousContent.trim() !== content.trim() || title?.trim() !== previousTitle?.trim()) {
+      if (
+        !confirm(
+          "Êtes-vous sûr·e de vouloir revenir en arrière ? Toutes vos modifications seront perdues."
+        )
+      ) {
+        e.preventDefault();
+      }
+    }
+  };
 </script>
 
 <Skeleton {publishedWebsiteURL} {buildStatus}>
@@ -92,7 +104,8 @@
                 Pour héberger des images, nous vous avons créé <a href={imageDirUrl} target="_blank"
                   >un petit dossier.</a
                 ><br />
-                Vous pouvez y déposer vos images, récupérer le lien et mettre l'image dans votre page grâce au Markdown avec
+                Vous pouvez y déposer vos images, récupérer le lien et mettre l'image dans votre page
+                grâce au Markdown avec
                 <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                 <figure>![Texte décrivant l'image](https://ladressedemonimage.png)</figure>
               </p>
@@ -101,7 +114,7 @@
             <textarea bind:value={content} id="content" cols="30" rows="10" />
           </div>
           <div class="actions-zone">
-            <a href="./atelier-list-pages" class="btn__retour">Retour</a>
+            <a href="./atelier-list-pages" class="btn__retour" on:click={onBackClick}>Retour</a>
             <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
           </div>
 
