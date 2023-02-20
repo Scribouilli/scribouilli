@@ -72,7 +72,7 @@ const store = new Store({
 });
 
 const handleErrors = (error) => {
-  console.debug("catching error")
+  console.debug("catching error", error)
   if (error === "INVALIDATE_TOKEN") {
     console.debug("catching INVALIDATE_TOKEN error")
     store.mutations.invalidateToken()
@@ -328,7 +328,7 @@ page("/atelier-page", ({ querystring }) => {
 
   Promise.resolve(state.login).then((login) => {
     // @ts-ignore
-    pageContenu.$set({imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images`}) 
+    pageContenu.$set({ imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images` })
   })
   // @ts-ignore
   pageContenu.$on("delete", ({ detail: { sha } }) => {

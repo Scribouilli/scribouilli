@@ -14,9 +14,8 @@
 
       <div class="mesPages">
         <ul class="pages-list">
-          <li>Accueil : <a href="./atelier-page?page=index.md">index.md</a></li>
           {#each pages || [] as page}
-            <li><a href="./atelier-page?page={page.path}">{page.path}</a></li>
+            <li><a href="./atelier-page?page={page.path}">{page.title}</a></li>
           {/each}
         </ul>
 

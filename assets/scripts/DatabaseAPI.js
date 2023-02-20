@@ -1,6 +1,6 @@
 //@ts-check
 
-import { json } from "d3-fetch";
+import parseMarkdown from "@github-docs/frontmatter";
 
 export default class DatabaseAPI {
 
@@ -113,13 +113,24 @@ export default class DatabaseAPI {
           const pageFiles = tree.filter((f) => {
             return (
               f.type === "blob" &&
-              f.path !== "index.md" &&
               (f.path.endsWith(".md") || f.path.endsWith(".html"))
             );
           });
           return pageFiles;
         }
-      );
+      ).then((files) => {
+        const pagePs = files.map((file) => {
+          return this.getFile(login, repoName, file.path)
+            .then((page) => {
+              const contenu = Buffer.from(page.content, "base64").toString();
+              const title = parseMarkdown(contenu).data?.title;
+              return {title: title, path: file.path, content: "kezlkfjez"}
+            }).catch(() => {
+              return {title: file.path, path: file.path, content: ""}
+            })
+        })
+        return Promise.all(pagePs)
+      });
     });
   }
 
