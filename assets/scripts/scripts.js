@@ -471,6 +471,7 @@ page("/settings", () => {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, sha)
       .then(() => {
+        store.state.buildStatus.setBuildingAndCheckStatusLater()
         page("/settings")
       }).catch(msg => handleErrors(msg))
     })
