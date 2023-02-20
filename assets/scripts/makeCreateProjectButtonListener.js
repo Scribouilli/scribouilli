@@ -39,6 +39,12 @@ Dans ce dossier, vous pouvez glisser vos images.\\
 Ensuite, vous pouvez faire un clic droit sur l'image pour récupérer son lien et ensuite l'affiche en Markdown.
 `
 
+const custom_styles_content = `
+:root {
+    --couleur-primaire : #2a6442;
+}
+`
+
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
 
@@ -115,6 +121,18 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                             {
                                 message: "création du dossier images",
                                 content: Buffer.from(images_readme_content).toString('base64')
+                            }
+                        )
+                    })
+                })
+                .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/assets/css/custom.css`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "création du ficher de styles custom",
+                                content: Buffer.from(custom_styles_content).toString('base64')
                             }
                         )
                     })
