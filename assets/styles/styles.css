@@ -230,8 +230,8 @@ textarea {
   border-radius: 16px;
 }
 
-.white-zone:first-of-type {
-  margin-bottom: 3rem;
+.white-zone + .white-zone {
+  margin-top: 3rem;
 }
 
 .white-zone h3 {

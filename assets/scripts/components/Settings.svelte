@@ -95,14 +95,6 @@
     </div>
 
     <div class="wrapper white-zone">
-      <h3>Personnalisation du site</h3>
-      <p>Pour personnaliser le look de votre site, vous pouvez coder en CSS ici !</p>
-      <textarea cols="20" rows="8" />
-    </div>
-    
-    
-    
-    <div class="wrapper white-zone">
       <h3>Supprimer le site</h3>
 
       <label>
