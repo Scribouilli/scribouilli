@@ -154,7 +154,9 @@ export default class DatabaseAPI {
     return this.updateFile(login, repoName, this.customCSSPath, this.customCSSPath, {
       content: Buffer.from(content).toString('base64'),
       message: "mise à jour du thème"
-    }, sha)
+    }, sha).then(response => {
+      return response.json()
+    })
   }
 
   getLatestCommit(login, repoName) {

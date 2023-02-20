@@ -477,9 +477,10 @@ page("/settings", () => {
 
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, themeColor.sha)
-      .then(() => {
-        store.state.buildStatus.setBuildingAndCheckStatusLater()
-        page("/settings")
+      .then((response) => {
+          store.mutations.setThemeColor(store.state.themeColor.color, response.content.sha)
+          store.state.buildStatus.setBuildingAndCheckStatusLater()
+          page("/settings")
       }).catch(msg => handleErrors(msg))
     })
   })
@@ -491,7 +492,7 @@ page("/settings", () => {
         store.mutations.setThemeColor(Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>"), sha)
         
         settings.$set({
-          themeColor: store.state.themeColor.color
+          themeColor: store.state.themeColor
         })
       }).catch(msg => handleErrors(msg))
     })
