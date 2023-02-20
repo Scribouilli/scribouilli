@@ -9,6 +9,7 @@
   export let publishedWebsiteURL;
   export let buildStatus;
   export let themeColor;
+  export let deleteRepositoryUrl;
 
   const temporaire = () => {
     dispatch("delete-site");
@@ -97,8 +98,9 @@
 
     <div class="wrapper white-zone">
       <h3>Supprimer le site</h3>
+      <p>Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a href={deleteRepositoryUrl}>"Settings" de Github</a></p>
 
-      <label>
+      <!--<label>
         <input
           type="checkbox"
           on:change={() => {
@@ -109,7 +111,7 @@
       </label>
       <button on:click={temporaire} disabled={!enabled} class="btn btn__medium"
         >Supprimer le site</button
-      >
+      ><-->
     </div>
   </section>
 </Skeleton>
