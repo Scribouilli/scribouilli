@@ -7,15 +7,22 @@
 
   export let publishedWebsiteURL;
   export let buildStatus;
+  export let themeColor;
+  export let sha;
 
   const temporaire = () => {
     dispatch("delete-site");
+  };
+
+  const onThemeSave = (e) => {
+    dispatch("update-theme-color", { color: themeColor, sha });
   };
 </script>
 
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
+
     <div class="wrapper white-zone">
       <div>
         <h3 for="theme-color-select">
@@ -113,7 +120,7 @@
         />
         Afficher le bouton de suppression du site
       </label>
-      <button on:click={temporaire} disabled={!enabled} class="btn btn__medium btn__danger"
+      <button on:click={temporaire} disabled={!enabled} class="btn btn__medium"
         >Supprimer le site</button
       >
     </div>

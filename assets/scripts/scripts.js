@@ -373,13 +373,10 @@ page("/atelier-page", ({ querystring }) => {
 
     store.mutations.setPages(newPages)
 
+    // If title changed
     if (fileName && (fileName !== newFileName)) {
-      // On supprime la référence correspondante à l'ancien nom
-      // Nous ne pouvons pas renommer le fichier via l'API
-      // https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
       Promise.resolve(state.login).then((login) => {
-        databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
-          databaseAPI.updateOrCreateFile(login, state.repoName, newFileName, body).then(() => {
+        databaseAPI.updateFile(login, state.repoName, fileName, newFileName, body, sha).then(() => {
             if (body.sha) {
               console.log("page mise à jour");
             } else {
@@ -387,13 +384,12 @@ page("/atelier-page", ({ querystring }) => {
             }
             state.buildStatus.setBuildingAndCheckStatusLater()
             page("/atelier-list-pages");
-          }).catch(msg => handleErrors(msg))
         }).catch(msg => handleErrors(msg))
       });
     } else {
       Promise.resolve(state.login).then((login) => {
         body.sha = sha
-        databaseAPI.updateOrCreateFile(login, state.repoName, newFileName, body).then(() => {
+        databaseAPI.createFile(login, state.repoName, newFileName, body).then(() => {
           if (body.sha) {
             console.log("page mise à jour");
           } else {
@@ -442,7 +438,8 @@ page("/settings", () => {
   function mapStateToProps(state) {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
-      buildStatus: state.buildStatus
+      buildStatus: state.buildStatus,
+      sha: undefined
     };
   }
 
@@ -464,7 +461,32 @@ page("/settings", () => {
     });
   });
 
+  settings.$on("update-theme-color", ({detail: { color, sha }}) => {
+    const customCSS = `
+    :root {
+        --couleur-primaire : ${color};
+    }
+    `
+
+    Promise.resolve(store.state.login).then((login) => {
+      databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, sha)
+      .then(() => {
+        page("/settings")
+      }).catch(msg => handleErrors(msg))
+    })
+  })
+
   replaceComponent(settings, mapStateToProps);
+
+  Promise.resolve(store.state.login).then((login) => {
+    databaseAPI.getFile(login, store.state.repoName, databaseAPI.customCSSPath)
+      .then(({content, sha}) => {
+        settings.$set({
+          sha,
+          themeColor: Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>")
+        })
+      }).catch(msg => handleErrors(msg))
+  })
 });
 
 page.base(store.state.basePath)
