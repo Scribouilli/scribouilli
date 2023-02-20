@@ -20,7 +20,7 @@
       <div>
         <label for="theme-color-select">Choisir une couleur de thème pour mon site :</label>
         <select class="theme-select-bar">
-          <option value="#2a6442">Vert bouteille</option>
+          <option value="#2a6442">Vert booteille</option>
           <option value="#07357d">Bleu outre-mer</option>
           <option value="#0E6270">Bleu lagon</option>
           <option value="#753785">Violet aubergine</option>

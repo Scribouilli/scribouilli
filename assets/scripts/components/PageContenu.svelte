@@ -62,7 +62,7 @@
     {:then}
       <div class="wrapper">
         <form on:submit={onSubmit}>
-          {#if (!sha && !title) || (title && makeFileNameFromTitle(title).path !== "index.md")}
+          {#if (!sha && !fileName) || (fileName && fileName !== "index.md")}
             <div>
               <label for="title">Titre du menu</label>
               <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
@@ -107,7 +107,7 @@
             <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
           </div>
 
-          {#if sha && title && makeFileNameFromTitle(title).path !== "index.md"}
+          {#if sha && fileName && fileName !== "index.md"}
             <div class="wrapper delete-zone">
               <h3>Supprimer la page</h3>
               <label>

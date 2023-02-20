@@ -303,7 +303,7 @@ page("/atelier-page", ({ querystring }) => {
   function mapStateToProps(state) {
 
     return {
-      fileName: undefined,
+      fileName: fileName,
       title: "",
       content: "",
       imageDirUrl: "",
