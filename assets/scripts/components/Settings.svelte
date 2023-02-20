@@ -1,7 +1,6 @@
 <script>
   import Skeleton from "./Skeleton.svelte";
   import { createEventDispatcher } from "svelte";
-  import { each } from "svelte/internal";
 
   const dispatch = createEventDispatcher();
   $: enabled = false;
@@ -10,10 +9,6 @@
   export let buildStatus;
   export let themeColor;
   export let deleteRepositoryUrl;
-
-  const temporaire = () => {
-    dispatch("delete-site");
-  };
 
   const onThemeSave = (e) => {
     dispatch("update-theme-color", { themeColor });
@@ -68,9 +63,7 @@
 
     <div class="wrapper white-zone">
       <div>
-        <h3 for="theme-color-select">
-          Couleur principale
-        </h3>
+        <h3 for="theme-color-select">Couleur principale</h3>
 
         <div class="radios-wrapper">
           {#each mesCouleurs as { id, color, name }}
@@ -93,12 +86,19 @@
         <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~ 2 min.)</button
         >
       </div>
-      <p>Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R) après les 2 minutes</p>
+      <p>
+        Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R)
+        après les 2 minutes
+      </p>
     </div>
 
     <div class="wrapper white-zone">
       <h3>Supprimer le site</h3>
-      <p>Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a href={deleteRepositoryUrl}>"Settings" de Github</a></p>
+      <p>
+        Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a
+          href={deleteRepositoryUrl}>"Settings" de Github</a
+        >
+      </p>
     </div>
   </section>
 </Skeleton>
