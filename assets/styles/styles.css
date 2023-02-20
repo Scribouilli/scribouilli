@@ -104,6 +104,10 @@ header > div {
   gap: 2rem;
 }
 
+main {
+  padding-bottom: 2rem;
+}
+
 #pages,
 .wrapper {
   max-width: 100%;
@@ -210,7 +214,7 @@ label {
 textarea {
   width: 100%;
   padding: 0.5rem;
-  font-family: 'Luciole', Arial, Helvetica, sans-serif;
+  font-family: "Luciole", Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
 }
 
@@ -218,29 +222,45 @@ textarea {
   min-height: 32rem;
 }
 
-.delete-zone {
+.white-zone {
   padding: 2rem 1rem;
   width: 500px;
   background: white;
   border-radius: 16px;
 }
 
-.delete-zone label {
+.white-zone label {
   font-weight: normal;
   cursor: pointer;
 }
 
-.delete-zone .btn {
+.white-zone .btn {
   margin-top: 2rem;
-  color: crimson;
   background: none;
-  border-color: crimson;
 }
 
-.delete-zone .btn:disabled {
+.white-zone .btn:disabled {
   display: none;
 }
 
-.delete-zone .btn:hover {
+.white-zone .btn__danger {
+  color: crimson;
+  border-color: crimson;
+}
+
+.white-zone .btn__danger:hover {
   box-shadow: 0 0 0 1px crimson inset;
+}
+
+.white-zone .radio {
+  display: flex;
+  align-items: center;
+}
+
+.white-zone .radio + .radio {
+  margin-top: 0.5rem;
+}
+
+.white-zone .radio label {
+  margin-left: .5rem;
 }
