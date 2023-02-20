@@ -17,7 +17,7 @@
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
     <div class="theme-select">
-      <div>
+      <!-- <div>
         <label for="theme-color-select">Choisir une couleur de thème pour mon site :</label>
         <select class="theme-select-bar">
           <option value="#2a6442">Vert booteille</option>
@@ -28,7 +28,7 @@
           <option value="#6C5353">Marron volcanique</option>
           <option value="#53606C">Gris souris</option>
         </select>
-      </div>
+      </div> -->
       <div>
         <button class="btn btn__medium">Sauvegarder</button>
       </div>
