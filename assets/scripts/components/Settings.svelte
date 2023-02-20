@@ -92,6 +92,7 @@
         <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~ 2 min.)</button
         >
       </div>
+      <p>Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R) après les 2 minutes</p>
     </div>
 
     <div class="wrapper white-zone">
