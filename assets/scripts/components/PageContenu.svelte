@@ -62,17 +62,15 @@
     {:then}
       <div class="wrapper">
         <form on:submit={onSubmit}>
-          {#if (!sha && !fileName) || (fileName && fileName !== "index.md")}
-            <div>
-              <label for="title">Titre du menu</label>
-              <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
-            </div>
+          <div>
+            <label for="title">Titre du menu</label>
+            <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
+          </div>
 
-            <p>
-              Attention, si le titre contient <code>/</code>, <code>#</code> ou
-              <code>?</code>, ça peut ne pas marcher
-            </p>
-          {/if}
+          <p>
+            Attention, si le titre contient <code>/</code>, <code>#</code> ou
+            <code>?</code>, ça peut ne pas marcher
+          </p>
 
           <div class="content">
             <label for="content">Contenu</label>
