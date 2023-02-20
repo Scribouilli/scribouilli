@@ -19,7 +19,7 @@
     <div class="wrapper white-zone">
       <div>
         <h3 for="theme-color-select">
-          Choisir une couleur de thème pour mon site :
+          Couleur principale
         </h3>
 
         <div class="radios-wrapper">
@@ -97,7 +97,7 @@
       </div>
 
       <div>
-        <button class="btn btn__medium">Sauvegarder</button>
+        <button class="btn btn__medium">Changer la couleur</button>
       </div>
     </div>
 

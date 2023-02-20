@@ -267,9 +267,13 @@ textarea {
 }
 
 .white-zone .radio + .radio {
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
 }
 
 .white-zone .radio label {
   margin-left: 0.5rem;
+}
+
+.white-zone .radio:last-of-type {
+  margin-bottom: 1rem;
 }
