@@ -142,9 +142,17 @@ export default class DatabaseAPI {
   }
 
   updateCustomCSS(login, repoName, content, sha) {
-    return this.deleteFile(login, repoName, this.customCSSPath, sha).then(() => {
-      return this.createCustomCSS(login, repoName, content)
-    })
+    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/${this.customCSSPath}`, {
+          headers: { Authorization: "token " + this.accessToken },
+          method: "PUT",
+          body: JSON.stringify(
+              {
+                sha,
+                message: "création du ficher de styles custom",
+                content: Buffer.from(content).toString('base64')
+              }
+          )
+      })
   }
 
   getLatestCommit(login, repoName) {
