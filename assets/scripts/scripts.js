@@ -447,6 +447,7 @@ page("/settings", () => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
       themeColor: state.themeColor,
+      deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`
     };
   }
 
