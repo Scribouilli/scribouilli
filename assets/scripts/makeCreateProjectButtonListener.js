@@ -132,7 +132,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     })
                 })
                 .then(() => {
-                    return databaseAPI.updateCustomCSS(login, repoName, custom_styles_content)
+                    return databaseAPI.createCustomCSS(login, repoName, custom_styles_content)
                 })
 
                 .then(() => {

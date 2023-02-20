@@ -106,7 +106,7 @@
           </div>
 
           {#if sha && fileName && fileName !== "index.md"}
-            <div class="wrapper delete-zone">
+            <div class="wrapper white-zone">
               <h3>Supprimer la page</h3>
               <label>
                 <input
@@ -121,7 +121,7 @@
                 type="button"
                 on:click={dispatch("delete", { sha })}
                 disabled={deleteDisabled}
-                class=" btn__medium btn"
+                class=" btn__medium btn btn__danger"
               >
                 Supprimer la page
               </button>
@@ -158,17 +158,6 @@
     &::before {
       content: "‹";
       margin-right: 0.5rem;
-    }
-  }
-
-  .delete-zone {
-    margin-top: 12rem;
-    margin-bottom: 2rem;
-    background: none;
-    border: 4px solid white;
-
-    h3 {
-      margin-top: 0;
     }
   }
 </style>

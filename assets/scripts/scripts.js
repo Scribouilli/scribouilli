@@ -34,7 +34,11 @@ const store = new Store({
     pages: undefined,
     buildStatus: undefined,
     basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
-    siteRepoConfig: undefined
+    siteRepoConfig: undefined,
+    themeColor: {
+      color: undefined,
+      sha: undefined
+    }
   },
   mutations: {
     setLogin(state, login) {
@@ -59,6 +63,10 @@ const store = new Store({
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
     },
+    setThemeColor(state, color, sha) {
+      state.themeColor.color = color
+      state.themeColor.sha = sha
+    },
     removeSite(state) {
       state.pages = undefined
       state.siteRepoConfig = undefined
@@ -67,7 +75,6 @@ const store = new Store({
       state.accessToken = undefined
       localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
     }
-
   },
 });
 
@@ -373,13 +380,10 @@ page("/atelier-page", ({ querystring }) => {
 
     store.mutations.setPages(newPages)
 
+    // If title changed
     if (fileName && (fileName !== newFileName)) {
-      // On supprime la référence correspondante à l'ancien nom
-      // Nous ne pouvons pas renommer le fichier via l'API
-      // https://stackoverflow.com/questions/31563444/rename-a-file-with-github-api
       Promise.resolve(state.login).then((login) => {
-        databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
-          databaseAPI.updateOrCreateFile(login, state.repoName, newFileName, body).then(() => {
+        databaseAPI.updateFile(login, state.repoName, fileName, newFileName, body, sha).then(() => {
             if (body.sha) {
               console.log("page mise à jour");
             } else {
@@ -387,13 +391,12 @@ page("/atelier-page", ({ querystring }) => {
             }
             state.buildStatus.setBuildingAndCheckStatusLater()
             page("/atelier-list-pages");
-          }).catch(msg => handleErrors(msg))
         }).catch(msg => handleErrors(msg))
       });
     } else {
       Promise.resolve(state.login).then((login) => {
         body.sha = sha
-        databaseAPI.updateOrCreateFile(login, state.repoName, newFileName, body).then(() => {
+        databaseAPI.createFile(login, state.repoName, newFileName, body).then(() => {
           if (body.sha) {
             console.log("page mise à jour");
           } else {
@@ -442,7 +445,8 @@ page("/settings", () => {
   function mapStateToProps(state) {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
-      buildStatus: state.buildStatus
+      buildStatus: state.buildStatus,
+      themeColor: state.themeColor,
     };
   }
 
@@ -464,10 +468,39 @@ page("/settings", () => {
     });
   });
 
+  settings.$on("update-theme-color", ({detail: { themeColor }}) => {
+    const customCSS = `
+    :root {
+        --couleur-primaire : ${themeColor.color};
+    }
+    `
+
+    Promise.resolve(store.state.login).then((login) => {
+      databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, themeColor.sha)
+      .then((response) => {
+          store.mutations.setThemeColor(store.state.themeColor.color, response.content.sha)
+          store.state.buildStatus.setBuildingAndCheckStatusLater()
+          page("/settings")
+      }).catch(msg => handleErrors(msg))
+    })
+  })
+
+  if (!store.state.themeColor.sha) {
+    Promise.resolve(store.state.login).then((login) => {
+      databaseAPI.getFile(login, store.state.repoName, databaseAPI.customCSSPath)
+      .then(({content, sha}) => {
+        store.mutations.setThemeColor(Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>"), sha)
+        
+        settings.$set({
+          themeColor: store.state.themeColor
+        })
+      }).catch(msg => handleErrors(msg))
+    })
+  }
+
   replaceComponent(settings, mapStateToProps);
 });
 
 page.base(store.state.basePath)
 
 page.start();
-
