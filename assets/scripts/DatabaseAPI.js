@@ -39,14 +39,10 @@ export default class DatabaseAPI {
         "If-None-Match": this.getFileEtag
       }
     }).then((httpResp) => {
-      if (httpResp.status === 304) {
-        return this.fileCached
-      } else {
+      if (httpResp.status !== 304) {
         this.getFileEtag = httpResp.headers.get("etag")
-        return httpResp
+        this.fileCached = httpResp.json()
       }
-    }).then((response) => {
-      this.fileCached = response.json()
       return this.fileCached
     })
   }
