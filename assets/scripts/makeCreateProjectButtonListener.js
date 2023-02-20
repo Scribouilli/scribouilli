@@ -1,4 +1,6 @@
 import { json } from 'd3-fetch'
+import DatabaseAPI from './DatabaseAPI'
+
 
 
 const index_page_content = `---
@@ -47,6 +49,8 @@ const custom_styles_content = `
 
 export default function makeCreateProjectButtonListener(accessToken, login, origin, repoName, buildStatus) {
     const publishedWebsiteURL = `https://${origin}/${repoName}`;
+
+    const databaseAPI = new DatabaseAPI(accessToken)
 
     return () => Promise.resolve(login)
         .then(login =>
@@ -126,16 +130,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     })
                 })
                 .then(() => {
-                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/assets/css/custom.css`, {
-                        headers: { Authorization: "token " + accessToken },
-                        method: "PUT",
-                        body: JSON.stringify(
-                            {
-                                message: "création du ficher de styles custom",
-                                content: Buffer.from(custom_styles_content).toString('base64')
-                            }
-                        )
-                    })
+                    return databaseAPI.updateCustomCSS(login, repoName, custom_styles_content)
                 })
 
                 .then(() => {

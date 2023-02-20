@@ -127,6 +127,19 @@ export default class DatabaseAPI {
     return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`).then((deployments) => deployments[0])
   }
 
+  updateCustomCSS(login, repoName, content) {
+    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/assets/css/custom.css`, {
+          headers: { Authorization: "token " + this.accessToken },
+          method: "PUT",
+          body: JSON.stringify(
+              {
+                  message: "création du ficher de styles custom",
+                  content: Buffer.from(content).toString('base64')
+              }
+          )
+      })
+  }
+
   callGithubAPI(url, requestParams = { headers: { Authorization: "token " + this.accessToken } }) {
     return fetch(url, requestParams).then((httpResp) => {
       if (httpResp.status === 404) {
