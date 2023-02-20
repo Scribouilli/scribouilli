@@ -126,7 +126,7 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                     })
                 })
                 .then(() => {
-                    return json(`https://api.github.com/repos/${login}/${repoName}/assets/css/custom.css`, {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/assets/css/custom.css`, {
                         headers: { Authorization: "token " + accessToken },
                         method: "PUT",
                         body: JSON.stringify(
