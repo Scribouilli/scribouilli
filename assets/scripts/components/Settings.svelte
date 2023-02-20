@@ -19,43 +19,47 @@
     dispatch("update-theme-color", { color: themeColor, sha });
   };
 
+  const setColor = (e) => {
+    themeColor = e.target.value;
+  };
+
   const mesCouleurs = [
     {
-      id: 'vertBooteille', 
-      color: '#2a6442',
-      name: 'Vert Booteille'
+      id: "vertBooteille",
+      color: "#2a6442",
+      name: "Vert Booteille",
     },
     {
-      id: 'bleu-outre-mer', 
-      color: '#07357d',
-      name: 'Bleu outre-mer'
+      id: "bleu-outre-mer",
+      color: "#07357d",
+      name: "Bleu outre-mer",
     },
     {
-      id: 'bleu-lagon', 
-      color: '#0E6270',
-      name: 'Bleu lagon'
+      id: "bleu-lagon",
+      color: "#0E6270",
+      name: "Bleu lagon",
     },
     {
-      id: 'violet-aubergine', 
-      color: '#753785',
-      name: 'Violet aubergine'
+      id: "violet-aubergine",
+      color: "#753785",
+      name: "Violet aubergine",
     },
     {
-      id: 'rouge-brique', 
-      color: '#993B1F',
-      name: 'Rouge brique'
+      id: "rouge-brique",
+      color: "#993B1F",
+      name: "Rouge brique",
     },
     {
-      id: 'marron-volcanique', 
-      color: '#6C5353',
-      name: 'Marron volcanique'
+      id: "marron-volcanique",
+      color: "#6C5353",
+      name: "Marron volcanique",
     },
     {
-      id: 'gris-souris', 
-      color: '#53606C',
-      name: 'Gris souris'
+      id: "gris-souris",
+      color: "#53606C",
+      name: "Gris souris",
     },
-  ]
+  ];
 </script>
 
 <Skeleton {publishedWebsiteURL} {buildStatus}>
@@ -69,16 +73,17 @@
         </h3>
 
         <div class="radios-wrapper">
-          {#each mesCouleurs as {id, color, name}}
-           <div class="radio">
+          {#each mesCouleurs as { id, color, name }}
+            <div class="radio">
               <input
+                on:click={setColor}
                 type="radio"
                 name="theme-color-select"
-                id={id}
+                {id}
                 value={color}
-                checked
+                checked={color === themeColor}
               />
-              <label for={id}> <span style="background-color: {color}"></span> {name}</label>
+              <label for={id}> <span style="background-color: {color}" /> {name}</label>
             </div>
           {/each}
         </div>

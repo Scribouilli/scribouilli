@@ -439,6 +439,7 @@ page("/settings", () => {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
+      themeColor: undefined,
       sha: undefined
     };
   }
