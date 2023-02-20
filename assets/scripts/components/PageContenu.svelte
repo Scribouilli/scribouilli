@@ -94,8 +94,8 @@
                 Pour héberger des images, nous vous avons créé <a href={imageDirUrl} target="_blank"
                   >un petit dossier.</a
                 ><br />
-                Vous pouvez y déposer vos images, et récupérer le lien grâce au Markdown avec
-                <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusiuers fois dessus -->
+                Vous pouvez y déposer vos images, récupérer le lien et mettre l'image dans votre page grâce au Markdown avec
+                <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                 <figure>![Texte décrivant l'image](https://ladressedemonimage.png)</figure>
               </p>
             </details>
