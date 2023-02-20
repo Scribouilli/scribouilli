@@ -8,7 +8,7 @@ export default class DatabaseAPI {
     this.accessToken = accessToken
     this.commitsEtag = undefined
     this.latestCommit = undefined
-    this.getFileEtag = undefined
+    this.getFilesCache = new Map()
     this.fileCached = undefined
     this.customCSSPath = "assets/css/custom.css"
   }
@@ -36,14 +36,14 @@ export default class DatabaseAPI {
     return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`, {
       headers: {
         Authorization: "token " + this.accessToken,
-        "If-None-Match": this.getFileEtag
+        "If-None-Match": this.getFilesCache.get(fileName)?.etag
       }
     }).then((httpResp) => {
       if (httpResp.status !== 304) {
-        this.getFileEtag = httpResp.headers.get("etag")
-        this.fileCached = httpResp.json()
+        const file = httpResp.json()
+        this.getFilesCache.set(fileName, {etag: httpResp.headers.get("etag"), file: file}) 
       }
-      return this.fileCached
+      return this.getFilesCache.get(fileName).file
     })
   }
 
@@ -175,10 +175,10 @@ export default class DatabaseAPI {
   }
 
   getPagesList(login, repoName) {
-    return this.getLatestCommit(login, repoName).then(({sha}) => {
+    return this.getLatestCommit(login, repoName).then(({ sha }) => {
       return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`)
-      .then(response => response.json())
-      .then(({ tree }) => {
+        .then(response => response.json())
+        .then(({ tree }) => {
           const pageFiles = tree.filter((f) => {
             return (
               f.type === "blob" &&
@@ -187,19 +187,19 @@ export default class DatabaseAPI {
           });
           return pageFiles;
         }
-      ).then((files) => {
-        const pagePs = files.map((file) => {
-          return this.getFile(login, repoName, file.path)
-            .then((page) => {
-              const contenu = Buffer.from(page.content, "base64").toString();
-              const title = parseMarkdown(contenu).data?.title;
-              return {title: title, path: file.path, content: "kezlkfjez"}
-            }).catch(() => {
-              return {title: file.path, path: file.path, content: ""}
-            })
-        })
-        return Promise.all(pagePs)
-      });
+        ).then((files) => {
+          const pagePs = files.map((file) => {
+            return this.getFile(login, repoName, file.path)
+              .then((page) => {
+                const { data,  content: markdownContent } = parseMarkdown(Buffer.from(page.content, "base64").toString());
+                const title = data?.title;
+                return { title: title, path: file.path, content: markdownContent }
+              }).catch(() => {
+                return { title: file.path, path: file.path, content: "" }
+              })
+          })
+          return Promise.all(pagePs)
+        });
     });
   }
 

@@ -376,7 +376,7 @@ page("/atelier-page", ({ querystring }) => {
     let newPages = state.pages?.filter((page) => {
       return page.path !== fileName
     }) || []
-    newPages.push({ path: newFileName })
+    newPages.push({ title: title, path: newFileName })
 
     store.mutations.setPages(newPages)
 
