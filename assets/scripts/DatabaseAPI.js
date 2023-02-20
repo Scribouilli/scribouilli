@@ -131,10 +131,22 @@ export default class DatabaseAPI {
    *
    */
   updateFile(login, repoName, oldfileName, newFileName, content, sha) {
-    return this.deleteFile(login, repoName, oldfileName, sha)
-      .then(() => {
-        return this.createFile(login, repoName, newFileName, content)
-      })
+    if (newFileName === oldfileName) {
+      return this.callGithubAPI(
+        `https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`,
+        {
+          sha,
+          headers: { Authorization: "token " + this.accessToken },
+          method: "PUT",
+          body: JSON.stringify(content),
+        }
+      )
+    } else {
+      return this.deleteFile(login, repoName, oldfileName, sha)
+        .then(() => {
+          return this.createFile(login, repoName, newFileName, content)
+        })
+    }
   }
 
   updateCustomCSS(login, repoName, content, sha) {
