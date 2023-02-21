@@ -526,7 +526,7 @@ page("/settings", () => {
       databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, themeColor.sha)
         .then((response) => {
           store.mutations.setThemeColor(store.state.themeColor.color, response.content.sha)
-          store.state.buildStatus.setBuildingAndCheckStatusLater(5000)
+          store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
         }).catch(msg => handleErrors(msg))
     })
   })
