@@ -95,6 +95,7 @@
           </p>
 
           <div class="accordion">
+            <h4 class="label">Aide</h4>
             <details>
               <summary>Mettre en forme le contenu</summary>
               <div>
