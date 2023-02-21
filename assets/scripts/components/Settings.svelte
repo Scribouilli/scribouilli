@@ -106,8 +106,7 @@
         >.
       </p>
       <p>
-        Après, rechargez la page après ~ 1min pour que Scribouilli détecte la supression de votre
-        site.
+        Scribouilli saura que le compte est supprimé <em>2 minutes après.</em>
       </p>
     </div>
   </section>
