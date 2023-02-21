@@ -236,10 +236,6 @@ page("/", () => {
 });
 
 page("/account", () => {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
-  });
-
   // @ts-ignore
   const account = new Account({
     target: svelteTarget,
@@ -475,10 +471,6 @@ page("/atelier-page", ({ querystring }) => {
 });
 
 page("/create-github-account",()=> {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
-  });
-
   // @ts-ignore
   const createGithubAccount = new CreateGithubAccount({
     target: svelteTarget,
