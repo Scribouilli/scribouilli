@@ -219,8 +219,6 @@ page("/", () => {
     const repoName = store.state.repoName;
 
     Promise.resolve(store.state.login).then(async (login) => {
-      const origin = await makeOrigin(store.state);
-
       return checkRepositoryAvailability(login, repoName, () => {
         page("/atelier-list-pages");
       })
