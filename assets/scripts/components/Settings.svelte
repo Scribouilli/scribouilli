@@ -106,7 +106,7 @@
         >.
       </p>
       <p>
-        Scribouilli saura que le compte est supprimé <em>2 minutes après.</em>
+        Scribouilli saura que le compte est supprimé <em>2&nbsp;minutes après.</em>
       </p>
     </div>
   </section>
