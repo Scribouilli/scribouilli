@@ -74,16 +74,33 @@ const store = new Store({
     invalidateToken(state) {
       state.accessToken = undefined
       localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
+      console.log("Token has been invalidated")
     }
   },
 });
 
-const handleErrors = (error) => {
-  console.debug("catching error", error)
-  if (error === "INVALIDATE_TOKEN") {
-    console.debug("catching INVALIDATE_TOKEN error")
-    store.mutations.invalidateToken()
-    page("/account")
+/**
+ * @summary Handle errors catched by Promises
+ * @param {string} errorMessage 
+ */
+const handleErrors = (errorMessage) => {
+  switch(errorMessage) {
+    case "INVALIDATE_TOKEN": {
+      store.mutations.invalidateToken()
+      page("/account")
+
+      break
+    }
+    case "REPOSITORY_NOT_FOUND": {
+      page("/create-project")
+    
+      break
+    }
+
+    default:
+
+    console.log(`Error catched: ${errorMessage}`)
+
   }
 }
 
@@ -123,11 +140,7 @@ if (store.state.accessToken) {
   })
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP)
-  siteRepoConfigP.catch((error) => {
-    if (error == "NOT_FOUND") {
-      page("/create-project")
-    }
-  })
+  siteRepoConfigP.catch((error) => handleErrors(error))
 } else {
   history.replaceState(undefined, '', store.state.basePath + "/")
 }
@@ -187,22 +200,30 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
 }
 
 /**
+ * @summary Check the availability of a repository and redirect to project creation
+ *          if it does not exist.
+ * @param {string} login 
+ * @param {string} repoName 
+ * @param {*} thenCallback The callback you'll want to execute if the repository is available
+ * @returns 
+ */
+function checkRepositoryAvailability(login, repoName, thenCallback) {
+  return databaseAPI.getRepository(login, repoName).then(thenCallback).catch(msg => handleErrors(msg))
+}
+
+/**
  * Par ici, y'a des routes
  */
 page("/", () => {
-
   if (store.state.login) {
     const repoName = store.state.repoName;
 
     Promise.resolve(store.state.login).then(async (login) => {
       const origin = await makeOrigin(store.state);
 
-      return databaseAPI.getRepository(login, repoName).then(() => {
+      return checkRepositoryAvailability(login, repoName, () => {
         page("/atelier-list-pages");
-      }).catch(msg => handleErrors(msg)).catch((err) => {
-        // ToutDoux : gérer les erreurs autres que le repo n'existe po
-        page("/create-project");
-      });
+      })
     });
   }
 

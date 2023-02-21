@@ -22,6 +22,12 @@ export default class DatabaseAPI {
   getRepository(login, repoName) {
     return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}`).then((response) => {
       return response.json()
+    }).catch(msg => {
+      if (msg === "NOT_FOUND") {
+        throw "REPOSITORY_NOT_FOUND"
+      }
+
+      throw msg
     })
   }
 
