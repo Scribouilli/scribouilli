@@ -104,6 +104,18 @@ const handleErrors = (errorMessage) => {
   }
 }
 
+/**
+ * @summary Check the availability of a repository and redirect to project creation
+ *          if it does not exist.
+ * @param {string} login
+ * @param {string} repoName
+ * @param {*} thenCallback The callback you'll want to execute if the repository is available
+ * @returns
+ */
+function checkRepositoryAvailabilityThen(login, repoName, thenCallback) {
+  return databaseAPI.getRepository(login, repoName).then(thenCallback).catch(msg => handleErrors(msg))
+}
+
 // Store access_token in browser
 const url = new URL(location.href)
 if (url.searchParams.has("access_token")) {
@@ -197,18 +209,6 @@ function makeFileNameFromTitle(title) {
 
 function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
   return ["---", "title: " + title, "---"].join("\n");
-}
-
-/**
- * @summary Check the availability of a repository and redirect to project creation
- *          if it does not exist.
- * @param {string} login 
- * @param {string} repoName 
- * @param {*} thenCallback The callback you'll want to execute if the repository is available
- * @returns 
- */
-function checkRepositoryAvailabilityThen(login, repoName, thenCallback) {
-  return databaseAPI.getRepository(login, repoName).then(thenCallback).catch(msg => handleErrors(msg))
 }
 
 /**
