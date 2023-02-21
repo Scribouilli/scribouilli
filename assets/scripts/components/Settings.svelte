@@ -10,16 +10,26 @@
   export let themeColor;
   export let deleteRepositoryUrl;
 
-  let notification = "";
+  let colorChanged = false;
 
   const onThemeSave = (e) => {
-    dispatch("update-theme-color", { themeColor });
-    notification = "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
-    document.querySelector("#notifications").scrollIntoView();
+    if (colorChanged) {
+      document.querySelector(".changed").style.display = "block"
+      document.querySelector(".nochange").style.display = "none"
+      dispatch("update-theme-color", { themeColor });
+      colorChanged = false;
+
+    } else {
+      document.querySelector(".nochange").style.display = "block"
+      document.querySelector(".changed").style.display = "none"
+    }
   };
 
   const setColor = (e) => {
-    themeColor.color = e.target.value;
+    if (themeColor.color !== e.target.value) {
+      colorChanged = true;
+      themeColor.color = e.target.value;
+    }
   };
 
   const mesCouleurs = [
@@ -65,8 +75,6 @@
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
 
-    <div id="notifications">{notification}</div>
-
     <div class="wrapper white-zone">
       <div>
         <h3 for="theme-color-select">Couleur principale</h3>
@@ -82,31 +90,40 @@
                 value={color}
                 checked={color === themeColor.color}
               />
-              <label for={id}> <span style="background-color: {color}" /> {name}</label>
+              <label for={id}>
+                <span style="background-color: {color}" /> {name}</label
+              >
             </div>
           {/each}
         </div>
       </div>
 
+      <div class="notifications changed">
+        <p>
+          La modification est enregistrée et en cours de déploiement (~ 2min).
+        </p>
+        <p>
+          Si la couleur ne change pas, essayez d'actualiser la page sans le
+          cache (Ctrl + Maj + R) après les 2 minutes.
+        </p>
+      </div>
+
+      <div class="notifications nochange">
+        <p>C'est déjà la couleur du thème.</p>
+      </div>
+
       <div>
-        <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~&nbsp;2&nbsp;min.)</button
+        <button class="btn btn__medium" on:click={onThemeSave}
+          >Changer la couleur (~ 2 min.)</button
         >
       </div>
-      <p>
-        Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R)
-        après les&nbsp;2&nbsp;minutes
-      </p>
     </div>
 
     <div class="wrapper white-zone">
       <h3>Supprimer le site</h3>
       <p>
-        Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a
-          href={deleteRepositoryUrl}>"Settings" de Github</a
-        >.
-      </p>
-      <p>
-        Scribouilli saura que le compte est supprimé <em>~&nbsp;2&nbsp;minutes après.</em>
+        Pour supprimer le site, cliquez sur le bouton "Delete this repository"
+        en bas de la page <a href={deleteRepositoryUrl}>"Settings" de Github</a>
       </p>
     </div>
   </section>
@@ -116,5 +133,15 @@
   .radios-wrapper {
     width: 70%;
     margin: 0 auto;
+  }
+
+  .notifications {
+    display: none;
+    margin-top: 2rem;
+    p {
+      text-align: left;
+      margin: 0;
+      &+p {margin-top: 1rem;}
+    }
   }
 </style>
