@@ -207,7 +207,7 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
  * @param {*} thenCallback The callback you'll want to execute if the repository is available
  * @returns 
  */
-function checkRepositoryAvailability(login, repoName, thenCallback) {
+function checkRepositoryAvailabilityThen(login, repoName, thenCallback) {
   return databaseAPI.getRepository(login, repoName).then(thenCallback).catch(msg => handleErrors(msg))
 }
 
@@ -219,7 +219,7 @@ page("/", () => {
     const repoName = store.state.repoName;
 
     Promise.resolve(store.state.login).then(async (login) => {
-      return checkRepositoryAvailability(login, repoName, () => {
+      return checkRepositoryAvailabilityThen(login, repoName, () => {
         page("/atelier-list-pages");
       })
     });
