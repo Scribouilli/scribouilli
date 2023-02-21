@@ -89,12 +89,12 @@
       </div>
 
       <div>
-        <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~ 2 min.)</button
+        <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~&nbsp;2&nbsp;min.)</button
         >
       </div>
       <p>
         Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R)
-        après les 2 minutes
+        après les&nbsp;2&nbsp;minutes
       </p>
     </div>
 
@@ -106,7 +106,7 @@
         >.
       </p>
       <p>
-        Scribouilli saura que le compte est supprimé <em>~2&nbsp;minutes après.</em>
+        Scribouilli saura que le compte est supprimé <em>~&nbsp;2&nbsp;minutes après.</em>
       </p>
     </div>
   </section>
