@@ -286,3 +286,8 @@ textarea {
 .white-zone .radio:last-of-type {
   margin-bottom: 1rem;
 }
+
+em {
+  font-style: normal;
+  font-weight: bold;
+}
