@@ -75,7 +75,7 @@
       <div class="wrapper">
         <form on:submit={onSubmit}>
           <div>
-            <label for="title">Titre du menu</label>
+            <label for="title">Titre</label>
             <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
           </div>
 
