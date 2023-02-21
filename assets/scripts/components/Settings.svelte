@@ -103,7 +103,11 @@
       <p>
         Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a
           href={deleteRepositoryUrl}>"Settings" de Github</a
-        >
+        >.
+      </p>
+      <p>
+        Après, rechargez la page après ~ 1min pour que Scribouilli détecte la supression de votre
+        site.
       </p>
     </div>
   </section>
