@@ -13,6 +13,7 @@ import page from "page";
 
 import Welcome from "./components/Welcome.svelte";
 import Account from "./components/Account.svelte";
+import CreateGithubAccount from "./components/CreateGithubAccount.svelte";
 import Login from "./components/Login.svelte";
 import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
@@ -472,6 +473,20 @@ page("/atelier-page", ({ querystring }) => {
   }
 
 });
+
+page("/create-github-account",()=> {
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
+  });
+
+  // @ts-ignore
+  const createGithubAccount = new CreateGithubAccount({
+    target: svelteTarget,
+    props: {},
+  });
+
+  replaceComponent(createGithubAccount, () => { });
+})
 
 page("/settings", () => {
 
