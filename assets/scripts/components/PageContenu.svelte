@@ -42,14 +42,26 @@
     e.preventDefault();
 
     if (e.target.checkValidity()) {
-      dispatch("save", {
-        fileName: fileName,
-        content: content.trim(),
-        previousContent,
-        title: title?.trim(),
-        previousTitle,
-        sha,
-      });
+
+      const titleChanged =
+        (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
+      const contentChanged =
+        (sha === "" || previousContent) &&
+        previousContent?.trim() !== content.trim();
+
+      if (titleChanged || contentChanged) {
+        console.debug("Changement envoyés")
+        dispatch("save", {
+          fileName: fileName,
+          content: content.trim(),
+          previousContent,
+          title: title?.trim(),
+          previousTitle,
+          sha,
+        });
+      } else {
+        console.debug("aucun changement")
+      }
     }
   };
 
