@@ -147,16 +147,15 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
 
                     return new Promise((resolve, reject) => {
                         buildStatus.subscribe((newStatus) => {
-                                console.debug("newStatus", newStatus)
-                                if (newStatus === 'built') {
-                                    resolve();
-                                    return;
-                                }
-                                if (newStatus === 'errored') {
-                                    reject();
-                                    return;
-                                }
+                            if (newStatus === 'built') {
+                                resolve();
+                                return;
                             }
+                            if (newStatus === 'errored') {
+                                reject();
+                                return;
+                            }
+                        }
                         );
                         buildStatus.checkStatus();
                     })

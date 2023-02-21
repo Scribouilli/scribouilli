@@ -19,6 +19,7 @@ import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
 import PageContenu from "./components/PageContenu.svelte";
 import Settings from "./components/Settings.svelte";
+import { select_option } from "svelte/internal";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
@@ -85,6 +86,7 @@ const store = new Store({
  * @param {string} errorMessage 
  */
 const handleErrors = (errorMessage) => {
+  console.error(`Error catched: ${errorMessage}`)
   switch (errorMessage) {
     case "INVALIDATE_TOKEN": {
       store.mutations.invalidateToken()
@@ -97,10 +99,9 @@ const handleErrors = (errorMessage) => {
 
       break
     }
-
     default:
 
-      console.log(`Error catched: ${errorMessage}`)
+      console.error(`Error catched: ${errorMessage}`)
 
   }
 }
@@ -338,7 +339,6 @@ page("/atelier-page", ({ querystring }) => {
   const fileName = new URLSearchParams(querystring).get("page");
 
   function mapStateToProps(state) {
-
     return {
       fileName: fileName,
       title: "",
@@ -387,7 +387,6 @@ page("/atelier-page", ({ querystring }) => {
 
     // If no content changed, just redirect
     if (!hasTitleChanged && !hasContentChanged) {
-      page("/atelier-list-pages")
       return
     }
 
@@ -408,8 +407,6 @@ page("/atelier-page", ({ querystring }) => {
     }) || []
     newPages.push({ title: title, path: newFileName })
 
-    store.mutations.setPages(newPages)
-
     // If title changed
     if (fileName && (fileName !== newFileName)) {
       Promise.resolve(state.login).then((login) => {
@@ -420,7 +417,6 @@ page("/atelier-page", ({ querystring }) => {
             console.log("nouvelle page créée");
           }
           state.buildStatus.setBuildingAndCheckStatusLater()
-          page("/atelier-list-pages");
         }).catch(msg => handleErrors(msg))
       });
     } else {
@@ -433,7 +429,6 @@ page("/atelier-page", ({ querystring }) => {
             console.log("nouvelle page créée");
           }
           state.buildStatus.setBuildingAndCheckStatusLater()
-          page("/atelier-list-pages");
         }).catch(msg => handleErrors(msg))
       });
     }

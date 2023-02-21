@@ -38,11 +38,10 @@
     e.target.setCustomValidity("");
   };
 
-  const onSubmit = (e) => {
+  const onSave = (e) => {
     e.preventDefault();
 
     if (e.target.checkValidity()) {
-
       const titleChanged =
         (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
       const contentChanged =
@@ -50,7 +49,8 @@
         previousContent?.trim() !== content.trim();
 
       if (titleChanged || contentChanged) {
-        console.debug("Changement envoyés")
+        document.querySelector(".changed").style.display = "block";
+        document.querySelector(".nochange").style.display = "none";
         dispatch("save", {
           fileName: fileName,
           content: content.trim(),
@@ -59,8 +59,11 @@
           previousTitle,
           sha,
         });
+        previousContent = content.trim();
+        previousTitle = title?.trim();
       } else {
-        console.debug("aucun changement")
+        document.querySelector(".nochange").style.display = "block";
+        document.querySelector(".changed").style.display = "none";
       }
     }
   };
@@ -89,22 +92,21 @@
       <img src="./assets/images/oval.svg" alt="Chargement du contenu" />
     {:then}
       <div class="wrapper">
-        <form on:submit={onSubmit}>
-          <div>
-            <label for="title">Titre</label>
-            <input
-              bind:value={title}
-              on:change={validateTitle}
-              type="text"
-              id="title"
-              required
-            />
-          </div>
+        <div>
+          <label for="title">Titre</label>
+          <input
+            bind:value={title}
+            on:change={validateTitle}
+            type="text"
+            id="title"
+            required
+          />
+        </div>
 
-          <p>
-            Attention, si le titre contient <code>/</code>, <code>#</code> ou
-            <code>?</code>, ça peut ne pas marcher
-          </p>
+        <p>
+          Attention, si le titre contient <code>/</code>, <code>#</code> ou
+          <code>?</code>, ça peut ne pas marcher
+        </p>
 
           <div class="accordion">
             <h4 class="label">Aide</h4>
@@ -176,11 +178,70 @@
                 disabled={deleteDisabled}
                 class=" btn__medium btn btn__danger"
               >
-                Supprimer la page
-              </button>
-            </div>
-          {/if}
-        </form>
+            </p>
+          </details>
+          <details>
+            <summary>Héberger des images</summary>
+            <p>
+              Pour héberger des images, nous vous avons créé <a
+                href={imageDirUrl}
+                target="_blank">un petit dossier.</a
+              ><br />
+              Vous pouvez y déposer vos images, récupérer le lien et mettre l'image
+              dans votre page grâce au Markdown avec
+              <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
+              <figure>
+                ![Texte décrivant l'image](https://ladressedemonimage.png)
+              </figure>
+            </p>
+          </details>
+
+          <textarea bind:value={content} id="content" cols="30" rows="10" />
+        </div>
+
+        <div class="notifications changed">
+          <p>
+            La modification est enregistrée et en cours de déploiement (~ 2min).
+          </p>
+        </div>
+
+        <div class="notifications nochange">
+          <p>Aucune changement détecté.</p>
+        </div>
+
+        <div class="actions-zone">
+          <a
+            href="./atelier-list-pages"
+            class="btn__retour"
+            on:click={onBackClick}>Retour</a
+          >
+          <button type="button" on:click={onSave} class="btn__medium btn"
+            >Lancer la publication (~ 2 min)</button
+          >
+        </div>
+
+        {#if sha && fileName && fileName !== "index.md"}
+          <div class="wrapper white-zone">
+            <h3>Supprimer la page</h3>
+            <label>
+              <input
+                type="checkbox"
+                on:change={() => {
+                  deleteDisabled = !deleteDisabled;
+                }}
+              />
+              Afficher le bouton de suppression
+            </label>
+            <button
+              type="button"
+              on:click={dispatch("delete", { sha })}
+              disabled={deleteDisabled}
+              class=" btn__medium btn btn__danger"
+            >
+              Supprimer la page
+            </button>
+          </div>
+        {/if}
       </div>
     {/await}
   </section>

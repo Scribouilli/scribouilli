@@ -227,7 +227,6 @@ export default class DatabaseAPI {
 
       if (httpResp.status === 401) {
         this.accessToken = undefined
-        console.debug("this accessToken : ", this)
         throw "INVALIDATE_TOKEN"
       }
       return httpResp
