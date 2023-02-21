@@ -14,7 +14,7 @@
 
       <div>
         <a href="./login" class="btn">Oui, je me connecte</a>
-        <a href="/create-github-account" class="btn"
+        <a href="./create-github-account" class="btn"
           >Non, je veux créer un compte</a
         >
       </div>
