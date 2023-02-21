@@ -84,7 +84,7 @@ const store = new Store({
  * @param {string} errorMessage 
  */
 const handleErrors = (errorMessage) => {
-  switch(errorMessage) {
+  switch (errorMessage) {
     case "INVALIDATE_TOKEN": {
       store.mutations.invalidateToken()
       page("/account")
@@ -93,13 +93,13 @@ const handleErrors = (errorMessage) => {
     }
     case "REPOSITORY_NOT_FOUND": {
       page("/create-project")
-    
+
       break
     }
 
     default:
 
-    console.log(`Error catched: ${errorMessage}`)
+      console.log(`Error catched: ${errorMessage}`)
 
   }
 }
@@ -235,6 +235,10 @@ page("/", () => {
 });
 
 page("/account", () => {
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
+  });
+
   // @ts-ignore
   const account = new Account({
     target: svelteTarget,
@@ -297,6 +301,11 @@ page("/create-project", () => {
 });
 
 page("/atelier-list-pages", () => {
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
+  });
+
+
   function mapStateToProps(state) {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
@@ -315,6 +324,7 @@ page("/atelier-list-pages", () => {
   replaceComponent(atelierPages, mapStateToProps);
 
   Promise.resolve(state.login).then((login) => {
+
     databaseAPI.getPagesList(login, state.repoName).then((pages) => {
       store.mutations.setPages(pages)
     }).catch(msg => handleErrors(msg))
@@ -323,6 +333,10 @@ page("/atelier-list-pages", () => {
 });
 
 page("/atelier-page", ({ querystring }) => {
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
+  });
+
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("page");
 
@@ -403,13 +417,13 @@ page("/atelier-page", ({ querystring }) => {
     if (fileName && (fileName !== newFileName)) {
       Promise.resolve(state.login).then((login) => {
         databaseAPI.updateFile(login, state.repoName, fileName, newFileName, body, sha).then(() => {
-            if (body.sha) {
-              console.log("page mise à jour");
-            } else {
-              console.log("nouvelle page créée");
-            }
-            state.buildStatus.setBuildingAndCheckStatusLater()
-            page("/atelier-list-pages");
+          if (body.sha) {
+            console.log("page mise à jour");
+          } else {
+            console.log("nouvelle page créée");
+          }
+          state.buildStatus.setBuildingAndCheckStatusLater()
+          page("/atelier-list-pages");
         }).catch(msg => handleErrors(msg))
       });
     } else {
@@ -461,6 +475,11 @@ page("/atelier-page", ({ querystring }) => {
 
 page("/settings", () => {
 
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
+  });
+
+
   function mapStateToProps(state) {
     return {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
@@ -488,7 +507,8 @@ page("/settings", () => {
     });
   });
 
-  settings.$on("update-theme-color", ({detail: { themeColor }}) => {
+  // @ts-ignore
+  settings.$on("update-theme-color", ({ detail: { themeColor } }) => {
     const customCSS = `
     :root {
         --couleur-primaire : ${themeColor.color};
@@ -497,23 +517,24 @@ page("/settings", () => {
 
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, themeColor.sha)
-      .then((response) => {
+        .then((response) => {
           store.mutations.setThemeColor(store.state.themeColor.color, response.content.sha)
           store.state.buildStatus.setBuildingAndCheckStatusLater()
-      }).catch(msg => handleErrors(msg))
+        }).catch(msg => handleErrors(msg))
     })
   })
 
   if (!store.state.themeColor.sha) {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI.getFile(login, store.state.repoName, databaseAPI.customCSSPath)
-      .then(({content, sha}) => {
-        store.mutations.setThemeColor(Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>"), sha)
-        
-        settings.$set({
-          themeColor: store.state.themeColor
-        })
-      }).catch(msg => handleErrors(msg))
+        .then(({ content, sha }) => {
+          store.mutations.setThemeColor(Buffer.from(content, "base64").toString().replace(/(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs, "#$<color>"), sha)
+
+          // @ts-ignore
+          settings.$set({
+            themeColor: store.state.themeColor
+          })
+        }).catch(msg => handleErrors(msg))
     })
   }
 
