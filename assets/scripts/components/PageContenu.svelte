@@ -177,7 +177,7 @@
 <style lang="scss">
   div {
     & + p {
-      margin-top: 0.2rem;
+      margin-top: 0.4rem;
     }
   }
 
@@ -203,6 +203,14 @@
     &::before {
       content: "‹";
       margin-right: 0.5rem;
+    }
+  }
+
+  details {
+    figure {
+      padding: 0.4rem;
+      font-family: monospace;
+      background-color: rgba(255,255,255,.4);
     }
   }
 </style>

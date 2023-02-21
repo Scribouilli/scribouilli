@@ -298,9 +298,9 @@ em {
   font-weight: bold;
 }
 details[open] div {
-  margin-left: .8rem;
+  margin-left: 0.8rem;
   padding-left: 1.2rem;
-  border-left: 4px solid #912222 ;
+  border-left: 4px solid #912222;
 }
 details + details {
   margin-top: 0.8rem;
@@ -315,7 +315,7 @@ summary::-webkit-details-marker {
   display: none;
 }
 summary::before {
-  content: '?';
+  content: "?";
   display: flex;
   justify-content: center;
   align-items: center;
@@ -325,4 +325,10 @@ summary::before {
   padding: 0.2rem;
   border: 2px solid #222;
   border-radius: 50%;
+}
+
+code {
+  padding: 0.4rem;
+  font-family: monospace;
+  background-color: rgba(255, 255, 255, 0.4);
 }
