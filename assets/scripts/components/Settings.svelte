@@ -99,6 +99,13 @@
     </div>
 
     <div class="wrapper white-zone">
+      <h3>Personnalisation du site</h3>
+      <p>Pour personnaliser le look de votre site, vous pouvez <a href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/CSS_basics">coder en CSS</a> ici&nbsp;!</p>
+      <textarea cols="20" rows="8" />
+      <button type="button" class="btn btn__medium">Enregistrer le CSS</button>
+    </div>
+
+    <div class="wrapper white-zone">
       <h3>Supprimer le site</h3>
       <p>
         Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a
