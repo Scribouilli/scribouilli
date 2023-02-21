@@ -519,7 +519,7 @@ page("/settings", () => {
       databaseAPI.updateCustomCSS(login, store.state.repoName, customCSS, themeColor.sha)
         .then((response) => {
           store.mutations.setThemeColor(store.state.themeColor.color, response.content.sha)
-          store.state.buildStatus.setBuildingAndCheckStatusLater()
+          store.state.buildStatus.setBuildingAndCheckStatusLater(1000)
         }).catch(msg => handleErrors(msg))
     })
   })

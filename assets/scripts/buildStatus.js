@@ -105,11 +105,11 @@ export default function (databaseAPI, login, repoName) {
                     })
             })
         },
-        setBuildingAndCheckStatusLater() {
+        setBuildingAndCheckStatusLater(t = 30000) {
             repoStatus = "building"
             clearTimeout(timeout)
             timeout = undefined
-            scheduleCheck(30000)
+            scheduleCheck(t)
         }
     }
 
