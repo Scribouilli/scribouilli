@@ -25,7 +25,8 @@
   });
 
   const validateTitle = (e) => {
-    const titleChanged = (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
+    const titleChanged =
+      (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
     if (titleChanged && filesPath.includes(makeFileNameFromTitle(title))) {
       e.target.setCustomValidity(
         "Vous avez déjà utilisé ce nom pour une autre page. Veuillez en choisir un autre."
@@ -53,7 +54,10 @@
   };
 
   const onBackClick = (e) => {
-    if (previousContent.trim() !== content.trim() || title?.trim() !== previousTitle?.trim()) {
+    if (
+      previousContent.trim() !== content.trim() ||
+      title?.trim() !== previousTitle?.trim()
+    ) {
       if (
         !confirm(
           "Êtes-vous sûr·e de vouloir revenir en arrière ? Toutes vos modifications seront perdues."
@@ -76,7 +80,13 @@
         <form on:submit={onSubmit}>
           <div>
             <label for="title">Titre</label>
-            <input bind:value={title} on:change={validateTitle} type="text" id="title" required />
+            <input
+              bind:value={title}
+              on:change={validateTitle}
+              type="text"
+              id="title"
+              required
+            />
           </div>
 
           <p>
@@ -84,38 +94,55 @@
             <code>?</code>, ça peut ne pas marcher
           </p>
 
-          <div class="content">
-            <label for="content">Contenu</label>
+          <div class="accordion">
             <details>
               <summary>Mettre en forme le contenu</summary>
-              <p>
-                Pour mettre en forme votre contenu, vous pouvez bidouiller
-                <a href="https://flus.fr/carnet/markdown.html" target="_blank">avec du Markdown</a>…
-                ou
-                <a
-                  href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics"
-                  target="_blank">apprendre le HTML.</a
-                >
-              </p>
-            </details>
-            <details>
-              <summary>Héberger des images</summary>
-              <p>
-                Pour héberger des images, nous vous avons créé <a href={imageDirUrl} target="_blank"
-                  >un petit dossier.</a
-                ><br />
-                Vous pouvez y déposer vos images, récupérer le lien et mettre l'image dans votre page
-                grâce au Markdown avec
-                <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
-                <figure>![Texte décrivant l'image](https://ladressedemonimage.png)</figure>
-              </p>
+              <div>
+                <p>
+                  Pour mettre en forme votre contenu, vous pouvez bidouiller
+                  <a href="https://flus.fr/carnet/markdown.html" target="_blank">
+                    avec du Markdown
+                  </a>
+                  … ou
+                  <a href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics" target="_blank">
+                    apprendre le HTML
+                  </a>
+                </p>
+              </div>
             </details>
 
+            <details>
+              <summary>Héberger des images</summary>
+              <div>
+                <p>
+                  Pour héberger des images, nous vous avons créé 
+                  <a href={imageDirUrl} target="_blank">
+                    un petit dossier
+                  </a>.
+                  <br />
+                  Vous pouvez y déposer vos images, récupérer le lien et mettre l'image dans votre page grâce au Markdown avec
+                  <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
+                  <figure>
+                    ![Texte décrivant l'image](https://ladressedemonimage.png)
+                  </figure>
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <div class="content">
+            <label for="content">Contenu</label>
             <textarea bind:value={content} id="content" cols="30" rows="10" />
           </div>
           <div class="actions-zone">
-            <a href="./atelier-list-pages" class="btn__retour" on:click={onBackClick}>Retour</a>
-            <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
+            <a
+              href="./atelier-list-pages"
+              class="btn__retour"
+              on:click={onBackClick}>Retour</a
+            >
+            <button type="submit" class="btn__medium btn"
+              >Lancer la publication (~ 2 min)</button
+            >
           </div>
 
           {#if sha && fileName && fileName !== "index.md"}
@@ -153,8 +180,12 @@
     }
   }
 
+  .accordion {
+    margin-top: 3rem;
+  }
+
   .content {
-    margin-top: 4rem;
+    margin-top: 2rem;
   }
 
   .actions-zone {

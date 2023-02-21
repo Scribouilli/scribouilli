@@ -280,7 +280,7 @@ textarea {
   display: block;
   width: 4rem;
   height: 1.8rem;
-  margin-right: .6rem;
+  margin-right: 0.6rem;
 }
 
 .white-zone .radio:last-of-type {
@@ -290,4 +290,33 @@ textarea {
 em {
   font-style: normal;
   font-weight: bold;
+}
+details[open] div {
+  margin-left: .8rem;
+  padding-left: 1.2rem;
+  border-left: 4px solid #912222 ;
+}
+details + details {
+  margin-top: 0.8rem;
+}
+summary {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::before {
+  content: '?';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-right: 0.5rem;
+  padding: 0.2rem;
+  border: 2px solid #222;
+  border-radius: 50%;
 }
