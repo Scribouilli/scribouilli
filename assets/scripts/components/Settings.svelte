@@ -54,9 +54,9 @@
       name: "Marron volcanique",
     },
     {
-      id: "gris-souris",
+      id: "gris-breton",
       color: "#53606C",
-      name: "Gris souris",
+      name: "Gris breton",
     },
   ];
 </script>
