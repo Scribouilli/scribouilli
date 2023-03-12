@@ -103,7 +103,7 @@
               </div>
             {/each}
           {:else}
-            <div><img src="/assets/images/oval.svg" alt="" /></div>
+            <div><img src="./assets/images/oval.svg" alt="" /></div>
           {/if}
         </div>
       </div>

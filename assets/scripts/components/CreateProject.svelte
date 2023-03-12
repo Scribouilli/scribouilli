@@ -20,7 +20,7 @@
       <h2>Créez un site</h2>
 
       {#await siteRepoConfig}
-        <div><img src="/assets/images/oval.svg" alt="" /></div>
+        <div><img src="./assets/images/oval.svg" alt="" /></div>
       {:then}
         {#await publishedWebsiteURL}
           <p>En attente de récupération du nom d'utilisateur·ice</p>
