@@ -24,7 +24,7 @@
   const saveTheme = (e) => {
     dispatch("update-theme", { theme });
     notification = "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
-    document.querySelector("#notifications").scrollIntoView();
+    document.querySelector("body").scrollIntoView();
   };
 
   const setColor = (e) => {
