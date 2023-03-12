@@ -7,19 +7,35 @@
 
   export let publishedWebsiteURL;
   export let buildStatus;
-  export let themeColor;
+  export let theme;
   export let deleteRepositoryUrl;
 
   let notification = "";
 
-  const onThemeSave = (e) => {
-    dispatch("update-theme-color", { themeColor });
+  const checkThemeColor = (color) => {
+    const themeColor = theme.css?.replace(
+      /(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs,
+      "#$<color>"
+    );
+
+    return themeColor === color;
+  };
+
+  const saveTheme = (e) => {
+    dispatch("update-theme", { theme });
     notification = "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
-    document.querySelector("#notifications").scrollIntoView();
+    document.querySelector("body").scrollIntoView();
   };
 
   const setColor = (e) => {
-    themeColor.color = e.target.value;
+    theme.css = theme.css.replace(
+      /(?<before>(.*)--couleur-primaire(.*))(#[a-fA-F0-9]{6})(?<after>;(.*))/gs,
+      `$<before>${e.target.value}$<after>`
+    );
+  };
+
+  const setTheme = (e) => {
+    theme.css = e.target.value;
   };
 
   const mesCouleurs = [
@@ -72,30 +88,49 @@
         <h3 for="theme-color-select">Couleur principale</h3>
 
         <div class="radios-wrapper">
-          {#each mesCouleurs as { id, color, name }}
-            <div class="radio">
-              <input
-                on:click={setColor}
-                type="radio"
-                name="theme-color-select"
-                {id}
-                value={color}
-                checked={color === themeColor.color}
-              />
-              <label for={id}> <span style="background-color: {color}" /> {name}</label>
-            </div>
-          {/each}
+          {#if theme.css}
+            {#each mesCouleurs as { id, color, name }}
+              <div class="radio">
+                <input
+                  on:click={setColor}
+                  type="radio"
+                  name="theme-color-select"
+                  {id}
+                  value={color}
+                  checked={checkThemeColor(color)}
+                />
+                <label for={id}> <span style="background-color: {color}" /> {name}</label>
+              </div>
+            {/each}
+          {:else}
+            <div><img src="/assets/images/oval.svg" alt="" /></div>
+          {/if}
         </div>
       </div>
 
       <div>
-        <button class="btn btn__medium" on:click={onThemeSave}>Changer la couleur (~&nbsp;2&nbsp;min.)</button
+        <button class="btn btn__medium" on:click={saveTheme}
+          >Changer la couleur (~&nbsp;2&nbsp;min.)</button
         >
       </div>
       <p>
         Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R)
         après les&nbsp;2&nbsp;minutes
       </p>
+    </div>
+
+    <div class="wrapper white-zone">
+      <h3>Personnalisation du site</h3>
+      <p>
+        Pour personnaliser le look de votre site, vous pouvez <a
+          href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/CSS_basics"
+          >coder en CSS</a
+        > ici&nbsp;!
+      </p>
+      <textarea cols="20" rows="8" on:change={setTheme}
+        >{theme.css || "Chargement du thème personnalisé..."}</textarea
+      >
+      <button type="button" class="btn btn__medium" on:click={saveTheme}>Enregistrer le CSS</button>
     </div>
 
     <div class="wrapper white-zone">
