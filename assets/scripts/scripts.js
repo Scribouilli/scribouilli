@@ -202,6 +202,7 @@ function makeFileNameFromTitle(title) {
       .replace(/\/|#|\?/g, "-") // replace url confusing characters
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+      .split('.').join("") // Remove dot to avoid issues
       .toLowerCase() +
     ".md"
 
