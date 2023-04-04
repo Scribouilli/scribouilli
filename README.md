@@ -64,3 +64,14 @@ Pour rendre accessible une nouvelle route :
 - créer la route dans [assets/scripts/scripts.js]
 
 
+## Développement
+
+- Forker le repo
+- modifier les settings
+  - donner les droits en écriture a _github action_
+  - pour déployer la branche `online`
+- ajouter votre url (ex: yaf.github.io) dans [Scribouilli/toctoctoc/allowlist.csv](https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv)
+
+Voilà à quoi ça peut ressembler :  [github.com/yaf/scribouilli](https://github.com/yaf/scribouilli)
+
+Une fois les développements réalisé, vous pouvez faire une PR dans Scribouilli, en précisant votre url de développement pour que l'on puisse tester la modification.
