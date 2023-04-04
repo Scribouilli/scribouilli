@@ -22,13 +22,14 @@ import Settings from "./components/Settings.svelte";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
-const ACCESS_TOKEN_STORAGE_KEY = "access_token"
+const ACCESS_TOKEN_STORAGE_KEY = "scribouilli_access_token"
+const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = "access_token"
 
 // @ts-ignore
 const store = new Store({
   state: {
     // @ts-ignore
-    accessToken: new URL(location).searchParams.get("access_token") || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+    accessToken: new URL(location).searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
     login: undefined, // Promise<string> | string
     origin: undefined, // Promise<string> | string
     repoName: "test-website-repo-3796",
@@ -119,8 +120,8 @@ function checkRepositoryAvailabilityThen(login, repoName, thenCallback) {
 
 // Store access_token in browser
 const url = new URL(location.href)
-if (url.searchParams.has("access_token")) {
-  url.searchParams.delete("access_token")
+if (url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)) {
+  url.searchParams.delete(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)
   history.replaceState(undefined, '', url)
 
   localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken)
