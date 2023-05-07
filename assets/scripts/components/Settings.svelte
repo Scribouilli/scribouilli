@@ -121,13 +121,13 @@
 
     <div class="wrapper white-zone">
       <h3>Personnalisation du site</h3>
-      <p>
+      <p id="customCSS">
         Pour personnaliser le look de votre site, vous pouvez <a
           href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/CSS_basics"
           >coder en CSS</a
         > ici&nbsp;!
       </p>
-      <textarea cols="20" rows="8" on:change={setTheme}
+      <textarea aria-labelledby="customCSS" cols="20" rows="8" on:change={setTheme}
         >{theme.css || "Chargement du thème personnalisé..."}</textarea
       >
       <button type="button" class="btn btn__medium" on:click={saveTheme}>Enregistrer le CSS</button>
