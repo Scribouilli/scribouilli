@@ -1,6 +1,7 @@
 <script>
   export let publishedWebsiteURL;
   export let buildStatus;
+  export let repositoryURL;
 
   let status = undefined;
 
@@ -37,6 +38,13 @@
         <ul>
           <li><a href="./atelier-list-pages">Pages</a></li>
           <li><a href="./settings">Paramètres</a></li>
+          <li>
+            {#if repositoryURL}
+              {#await repositoryURL then urlrepository}
+                <a href={urlrepository} target="_blank">Github</a>
+              {/await}
+            {/if}
+          </li>
         </ul>
       </nav>
     {/if}

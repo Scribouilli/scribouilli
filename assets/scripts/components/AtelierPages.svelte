@@ -4,10 +4,10 @@
   export let publishedWebsiteURL;
   export let buildStatus;
   export let pages;
-
+  export let repositoryURL;
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
   <section class="screen" id="atelier-list-pages">
     <div id="pages">
       <h2>L'atelier — Pages</h2>
@@ -15,7 +15,11 @@
       <div class="mesPages">
         <ul class="pages-list">
           {#each (pages || []).sort() as page}
-            <li>{#if page.path === "index.md"}Accueil : {/if}<a href="./atelier-page?page={page.path}">{page.title}</a></li>
+            <li>
+              {#if page.path === "index.md"}Accueil : {/if}<a
+                href="./atelier-page?page={page.path}">{page.title}</a
+              >
+            </li>
           {/each}
         </ul>
 
@@ -26,7 +30,7 @@
 </Skeleton>
 
 <style lang="scss">
- .pages-list {
+  .pages-list {
     margin-bottom: 4rem;
 
     li {

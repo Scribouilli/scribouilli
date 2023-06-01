@@ -169,6 +169,11 @@ async function makePublishedWebsiteURL(state) {
   return `https://${origin}/${state.repoName}`;
 }
 
+async function makeRepositoryURL(state) {
+  const login = await Promise.resolve(state.login);
+  return `https://github.com/${login}/${state.repoName}`;
+}
+
 const svelteTarget = document.querySelector("body");
 
 let currentComponent;
@@ -310,6 +315,7 @@ page("/atelier-list-pages", () => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       pages: state.pages,
       buildStatus: state.buildStatus,
+      repositoryURL: makeRepositoryURL(state),
     };
   }
 
@@ -353,7 +359,8 @@ page("/atelier-page", ({ querystring }) => {
       pagesP: Promise.resolve(state.login).then((login) => databaseAPI.getPagesList(login, state.repoName).catch(msg => handleErrors(msg))),
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state),
-      buildStatus: state.buildStatus
+      buildStatus: state.buildStatus,
+      repositoryURL: makeRepositoryURL(state),
     };
   }
 
@@ -492,7 +499,8 @@ page("/settings", () => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
       theme: state.theme,
-      deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`
+      deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
+      repositoryURL: makeRepositoryURL(state),
     };
   }
 
