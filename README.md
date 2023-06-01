@@ -7,13 +7,15 @@
 - Rentrer dans le dossier `scribouilli`
 - Faire `npm install`
 - Builder le projet avec `npm run dev` (?)
-- Lancer le projet avec `npm start`
+- Lancer le projet avec `npm start` dans un autre terminal
 - Ouvrir dans votre navigateur préféré `http://localhost:8080/`
 
-## Intention 
+## Intention
+
 0/
-Permettre à des non-informaticiennes 
-- de créer un petit site rapidement / facilement 
+Permettre à des non-informaticiennes
+
+- de créer un petit site rapidement / facilement
 - avoir une relation saine et sereine avec son contenu
 
 ## Schema
@@ -32,7 +34,9 @@ sequenceDiagram;
 ```
 
 ## Benchmark (-->Wix/Wordpress)
+
 ### Wix = logiciel privateur
+
 - "liberté de créer, gérer et développer"
 - "site professionnel" (boutique, blog, réservation)
 - "personnalisable", "sur-mesure" (mais "template"), "questionnaire", "modèle design"
@@ -46,6 +50,7 @@ sequenceDiagram;
 - "Plus de 180 millions de personnes dans le monde ont déjà choisi Wix pour créer un site Web gratuit."
 
 ### Wordpress = logiciel libre dont le format nécessite une machine pour être lu
+
 - en anglais
 - "Create a place for your business, your interests, or anything else—with the open source platform that powers the web."
 - "dream it, build it", "custom", "flexible design tools"
@@ -59,10 +64,10 @@ sequenceDiagram;
 ## Note
 
 Pour rendre accessible une nouvelle route :
+
 - créer un lien symbolique qui pointe vers `index.html` ;
   - `ln -s index.html <ma-route.html>`
 - créer la route dans [assets/scripts/scripts.js]
-
 
 ## Développement
 
@@ -72,6 +77,6 @@ Pour rendre accessible une nouvelle route :
   - pour déployer la branche `online`
 - ajouter votre url (ex: yaf.github.io) dans [Scribouilli/toctoctoc/allowlist.csv](https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv)
 
-Voilà à quoi ça peut ressembler :  [github.com/yaf/scribouilli](https://github.com/yaf/scribouilli)
+Voilà à quoi ça peut ressembler : [github.com/yaf/scribouilli](https://github.com/yaf/scribouilli)
 
 Une fois les développements réalisé, vous pouvez faire une PR dans Scribouilli, en précisant votre url de développement pour que l'on puisse tester la modification.
