@@ -9,6 +9,7 @@
   export let buildStatus;
   export let theme;
   export let deleteRepositoryUrl;
+  export let repositoryURL;
 
   let notification = "";
 
@@ -23,7 +24,8 @@
 
   const saveTheme = (e) => {
     dispatch("update-theme", { theme });
-    notification = "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
+    notification =
+      "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
     document.querySelector("body").scrollIntoView();
   };
 
@@ -77,7 +79,7 @@
   ];
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
 
@@ -99,7 +101,9 @@
                   value={color}
                   checked={checkThemeColor(color)}
                 />
-                <label for={id}> <span style="background-color: {color}" /> {name}</label>
+                <label for={id}>
+                  <span style="background-color: {color}" /> {name}</label
+                >
               </div>
             {/each}
           {:else}
@@ -114,8 +118,8 @@
         >
       </div>
       <p>
-        Si la couleur ne change pas, essayez d'actualiser la page sans le cache (Ctrl + Maj + R)
-        après les&nbsp;2&nbsp;minutes
+        Si la couleur ne change pas, essayez d'actualiser la page sans le cache
+        (Ctrl + Maj + R) après les&nbsp;2&nbsp;minutes
       </p>
     </div>
 
@@ -130,18 +134,22 @@
       <textarea cols="20" rows="8" on:change={setTheme}
         >{theme.css || "Chargement du thème personnalisé..."}</textarea
       >
-      <button type="button" class="btn btn__medium" on:click={saveTheme}>Enregistrer le CSS</button>
+      <button type="button" class="btn btn__medium" on:click={saveTheme}
+        >Enregistrer le CSS</button
+      >
     </div>
 
     <div class="wrapper white-zone">
       <h3>Supprimer le site</h3>
       <p>
-        Pour supprimer le site, cliquez sur le bouton "Delete this repository" en bas de la page <a
-          href={deleteRepositoryUrl}>"Settings" de Github</a
+        Pour supprimer le site, cliquez sur le bouton "Delete this repository"
+        en bas de la page <a href={deleteRepositoryUrl}>"Settings" de Github</a
         >.
       </p>
       <p>
-        Scribouilli saura que le compte est supprimé <em>~&nbsp;2&nbsp;minutes après.</em>
+        Scribouilli saura que le compte est supprimé <em
+          >~&nbsp;2&nbsp;minutes après.</em
+        >
       </p>
     </div>
   </section>
