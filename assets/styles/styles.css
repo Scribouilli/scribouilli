@@ -124,7 +124,8 @@ main {
 
 nav ul {
   display: flex;
-  gap: 4rem;
+  gap: 2rem;
+  align-items: baseline;
 }
 
 .screen {
@@ -331,4 +332,13 @@ code {
   padding: 0.4rem;
   font-family: monospace;
   background-color: rgba(255, 255, 255, 0.4);
+}
+
+a[href]:not(:where(
+  [href^="#"],
+  [href^="/"],
+  [href^="//localhost:8080"],
+  [href^="./"]
+)):after {
+  content: " ➚";
 }
