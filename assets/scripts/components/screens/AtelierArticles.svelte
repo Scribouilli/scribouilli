@@ -1,18 +1,16 @@
 <script>
   import ListContenu from "./intern/ListContenu.svelte";
 
-  export let publishedWebsiteURL;
   export let buildStatus;
   export let articles;
-  export let repositoryURL;
   export let showArticles
+  export let currentRepository;
 </script>
 
 <ListContenu
-  {publishedWebsiteURL}
+  {currentRepository}
   {buildStatus}
   listContenu={articles}
-  {repositoryURL}
   {showArticles}
   title="L'atelier — Articles"
   atelierPrefix="./atelier-article"

@@ -17,7 +17,15 @@ export default new Store({
       ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
     login: undefined, // Promise<string> | string
     origin: undefined, // Promise<string> | string
-    repoName: "test-website-repo-3796",
+    currentRepository: {
+      name: undefined, // Promise<string> | string
+      owner: undefined, // Promise<string> | string
+      publishedWebsiteURL: undefined, // Promise<string> | string
+      repositoryURL: undefined, // Promise<string> | string
+    },
+    reposByAccount: {
+      // [login: string]: Promise<Repository[]>
+    },
     pages: undefined,
     articles: undefined,
     buildStatus: undefined,
@@ -32,6 +40,9 @@ export default new Store({
   mutations: {
     setLogin(state, login) {
       state.login = login;
+    },
+    setCurrentRepository(state, repository) {
+      state.currentRepository = repository;
     },
     setPages(state, pages) {
       state.pages = pages.sort((pageA, pageB) => {
@@ -61,6 +72,12 @@ export default new Store({
     },
     setBuildStatus(state, buildStatus) {
       state.buildStatus = buildStatus;
+    },
+    setReposForAccount(state, { login, repos }) {
+      state.reposByAccount[login] = repos;
+    },
+    setCurrentRepoName(state, repoName) {
+      state.currentRepoName = repoName;
     },
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;

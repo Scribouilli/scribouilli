@@ -2,13 +2,12 @@
   import Header from "./Header.svelte";
   import Footer from "./Footer.svelte";
 
-  export let publishedWebsiteURL = undefined;
   export let buildStatus = undefined;
-  export let repositoryURL = undefined;
   export let showArticles
+  export let currentRepository = undefined;
 </script>
 
-<Header {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles} />
+<Header {showArticles} {currentRepository} {buildStatus} />
 
 <main>
   <slot />

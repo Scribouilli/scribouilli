@@ -34,7 +34,7 @@ export const handleErrors = (errorMessage) => {
       break;
     }
     case "REPOSITORY_NOT_FOUND": {
-      page("/create-project");
+      page("/create-new-site");
 
       break;
     }
@@ -60,8 +60,8 @@ export async function makeRepositoryURL(state) {
 }
 
 /**
- * 
- * @param {string} string 
+ *
+ * @param {string} string
  * @returns {string}
  */
 function makeFilenameCompatibleString(string){
@@ -75,8 +75,8 @@ function makeFilenameCompatibleString(string){
 }
 
 /**
- * 
- * @param {string} title 
+ *
+ * @param {string} title
  * @returns {string}
  */
 export function makeFileNameFromTitle(title) {
@@ -84,9 +84,9 @@ export function makeFileNameFromTitle(title) {
 }
 
 /**
- * 
- * @param {string} title 
- * @param {Date} date 
+ *
+ * @param {string} title
+ * @param {Date} date
  * @returns {string}
  */
 export function makeArticleFileName(title, date) {
@@ -94,8 +94,8 @@ export function makeArticleFileName(title, date) {
 }
 
 /**
- * 
- * @param {string} title 
+ *
+ * @param {string} title
  * @returns {string}
  */
 export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {

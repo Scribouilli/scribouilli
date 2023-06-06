@@ -7,13 +7,12 @@
   const dispatch = createEventDispatcher();
   $: enabled = false;
 
-  export let publishedWebsiteURL;
   export let buildStatus;
   export let theme;
   export let deleteRepositoryUrl;
-  export let repositoryURL;
   export let blogEnabled
   export let showArticles
+  export let currentRepository;
 
   let notification = "";
 
@@ -92,7 +91,7 @@
   ];
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
+<Skeleton {currentRepository} {buildStatus} {showArticles}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
 
@@ -105,7 +104,7 @@
           <input type="checkbox" bind:checked={blogEnabled} on:change={toggleBlog} />
           Ajouter une page articles
         </label>
-      </div>      
+      </div>
 
     <div class="wrapper white-zone">
       <div>

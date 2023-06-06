@@ -14,6 +14,8 @@ class DatabaseAPI {
     this.getFilesCache = new Map();
     this.fileCached = undefined;
     this.customCSSPath = "assets/css/custom.css";
+    this.defaultRepoOwner = "Scribouilli"
+    this.defaultThemeRepoName = "site-template"
   }
 
   getAuthenticatedUser() {
@@ -38,6 +40,45 @@ class DatabaseAPI {
 
         throw msg;
       });
+  }
+
+  getCurrentUserRepositories() {
+    return this.callGithubAPI(
+      `https://api.github.com/user/repos?sort=updated`
+    ).then((response) => {
+      return response.json();
+    });
+  }
+
+  createDefaultRepository(login, newRepoName) {
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          Accept: "application/vnd.github+json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          owner: login,
+          name: newRepoName,
+        }),
+      }
+    )
+  }
+
+  createRepoGithubPages(account, repoName) {
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${account}/${repoName}/pages`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          Accept: "applicatikn/vnd.github+json",
+        },
+        method: "POST",
+        body: JSON.stringify({ source: { branch: 'main' } })
+      }
+    )
   }
 
   /**
@@ -113,7 +154,7 @@ class DatabaseAPI {
 
   /**
    * @summary Create a file
-   * 
+   *
    * @param {{ message: string, content: string, }} body
    */
   createFile(login, repoName, fileName, body) {
@@ -370,13 +411,13 @@ const init = async () => {
         store.state.repoName,
         'blog.md'
       )
-      store.mutations.setBlogIndexSha(blogIndexSha)  
+      store.mutations.setBlogIndexSha(blogIndexSha)
     } catch (err) {
       if (err !== 'NOT_FOUND') {
         throw err
       }
     }
-    
+
     const articles = await databaseAPI.getArticlesList(await store.state.login, store.state.repoName)
     store.mutations.setArticles(articles)
   } else {

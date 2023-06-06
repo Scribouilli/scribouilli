@@ -4,12 +4,8 @@ import { svelteTarget } from "../config";
 import databaseAPI from "../databaseAPI";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
-import {
-  checkRepositoryAvailabilityThen,
-  handleErrors,
-  makePublishedWebsiteURL,
-  makeRepositoryURL,
-} from "../utils";
+import { setCurrentRepositoryFromQuerystring } from "../actions";
+import { handleErrors } from "../utils";
 import Settings from "../components/screens/Settings.svelte";
 
 const blogMdContent =
@@ -36,24 +32,17 @@ permalink: /articles/
 
 function mapStateToProps(state) {
   return {
-    publishedWebsiteURL: makePublishedWebsiteURL(state),
     buildStatus: state.buildStatus,
     theme: state.theme,
     deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
-    repositoryURL: makeRepositoryURL(state),
     blogEnabled: state.blogIndexSha !== undefined,
     showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+    currentRepository: state.currentRepository,
   };
 }
 
-export default () => {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(
-      login,
-      store.state.repoName,
-      () => {}
-    );
-  });
+export default ({ querystring }) => {
+    setCurrentRepositoryFromQuerystring(querystring);
 
   const settings = new Settings({
     target: svelteTarget,
@@ -86,7 +75,7 @@ export default () => {
 
   settings.$on("toggle-blog", async ({ detail: { activated } }) => {
     const login = await store.state.login
-    
+
     try {
       if (activated) {
         const resp = await databaseAPI.createFile(

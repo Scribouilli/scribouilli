@@ -1,9 +1,7 @@
 <script>
   // @ts-check
-
-  export let publishedWebsiteURL;
   export let buildStatus;
-  export let repositoryURL;
+  export let currentRepository;
   export let showArticles
 
   let status = undefined;
@@ -19,6 +17,11 @@
   }
 
   $: buildStatusClass = buildStatus ? `build-${status}` : undefined;
+
+  let publishedWebsiteURL = currentRepository?.publishedWebsiteURL
+  let repositoryURL = currentRepository?.repositoryURL
+  let repoName = currentRepository?.name
+  let account = currentRepository?.owner
 </script>
 
 <header>
@@ -39,15 +42,29 @@
 
       <nav>
         <ul>
-          <li><a href="./atelier-list-pages">Pages</a></li>
+          <li>
+            <a href="./atelier-list-pages?repoName={repoName}&account={account}">
+              Pages
+            </a>
+          </li>
+
           {#if showArticles}
-            <li><a href="./atelier-list-articles">Articles</a></li>            
+          <li>
+            <a href="./atelier-list-articles?repoName={repoName}&account={account}">
+              Articles
+            </a>
+          </li>
           {/if}
-          <li><a href="./settings">Paramètres</a></li>
+
+          <li>
+            <a href="./settings?repoName={repoName}&account={account}">
+              Paramètres
+            </a>
+          </li>
           <li>
             {#if repositoryURL}
               {#await repositoryURL then urlrepository}
-                <a href={urlrepository} target="_blank">Github</a>
+                <a href={urlrepository} target="_blank">GitHub</a>
               {/await}
             {/if}
           </li>
