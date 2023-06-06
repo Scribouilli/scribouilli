@@ -21,8 +21,8 @@
 <header>
   <h1><a href="./" class="go-home">Scribouilli</a></h1>
 
-  <div>
-    {#if publishedWebsiteURL}
+  {#if publishedWebsiteURL}
+    <div>
       {#await publishedWebsiteURL}
         (en attente de l'origine)
       {:then url}
@@ -47,8 +47,8 @@
           </li>
         </ul>
       </nav>
-    {/if}
-  </div>
+    </div>
+  {/if}
 </header>
 
 <style lang="scss">

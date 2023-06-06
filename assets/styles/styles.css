@@ -106,6 +106,13 @@ header > div {
 
 main {
   padding-bottom: 2rem;
+  min-height: 83vh;
+}
+
+footer {
+  padding-right: 2rem;
+  padding-left: 2rem;
+  text-align: right;
 }
 
 #pages,
