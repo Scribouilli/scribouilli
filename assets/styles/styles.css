@@ -110,8 +110,7 @@ main {
 }
 
 footer {
-  padding-right: 2rem;
-  padding-left: 2rem;
+  padding: 1rem 2rem;
   text-align: right;
 }
 
