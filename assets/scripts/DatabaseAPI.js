@@ -215,26 +215,26 @@ export default class DatabaseAPI {
         .then(response => response.json())
         .then(({ tree }) => {
           console.log(tree)
-          const pageFiles = tree.filter((f) => {
+          const articleFiles = tree.filter((f) => {
             return (
               f.type === "blob" &&
               (f.path.endsWith(".md") || f.path.endsWith(".html"))
             );
           });
-          return pageFiles;
+          return articleFiles;
         }
         ).then((files) => {
-          const pagePs = files.map((file) => {
+          const articlePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
-              .then((page) => {
-                const { data,  content: markdownContent } = parseMarkdown(Buffer.from(page.content, "base64").toString());
+              .then((article) => {
+                const { data,  content: markdownContent } = parseMarkdown(Buffer.from(article.content, "base64").toString());
                 const title = data?.title;
                 return { title: title, path: file.path, content: markdownContent }
               }).catch(() => {
                 return { title: file.path, path: file.path, content: "" }
               })
           })
-          return Promise.all(pagePs)
+          return Promise.all(articlePs)
         });
     });
 
