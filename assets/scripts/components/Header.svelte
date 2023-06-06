@@ -29,7 +29,7 @@
         <div>
           <a href={url} class="project-name" target="_blank">{url}</a>
           {#if buildStatusClass}
-            <span class={buildStatusClass} />
+            <p class={buildStatusClass} />
           {/if}
         </div>
       {/await}
@@ -53,9 +53,7 @@
 
 <style lang="scss">
   [class^="build-"] {
-    &::after {
-      margin-left: 1rem;
-    }
+    margin-top: 0.3rem;
   }
 
   .build-building::after {
