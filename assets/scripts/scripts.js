@@ -17,9 +17,7 @@ import databaseAPI from "./databaseAPI.js";
 
 import page from "page";
 
-import Account from "./components/Account.svelte";
 import CreateGithubAccount from "./components/CreateGithubAccount.svelte";
-import Login from "./components/Login.svelte";
 import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
 import AtelierArticles from "./components/AtelierArticles.svelte";
@@ -29,8 +27,6 @@ import Settings from "./components/Settings.svelte";
 
 // @ts-ignore
 window.Buffer = buffer.Buffer;
-
-// @ts-ignore
 
 // Store access_token in browser
 const url = new URL(location.href);
@@ -76,34 +72,6 @@ function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
 /**
  * Par ici, y'a des routes
  */
-
-page("/account", () => {
-  // @ts-ignore
-  const account = new Account({
-    target: svelteTarget,
-    props: {},
-  });
-
-  replaceComponent(account, () => {});
-});
-
-page("/login", () => {
-  const destination =
-    location.origin + store.state.basePath + "/create-project";
-  const client_id = "64ecce0b01397c2499a6";
-  const redirect_url = "https://toctoctoc.dreads-unlock.fr/github-callback";
-  const githubLoginHref = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo&redirect_uri=${redirect_url}?destination=${destination}`;
-
-  // @ts-ignore
-  const login = new Login({
-    target: svelteTarget,
-    props: {
-      href: githubLoginHref,
-    },
-  });
-
-  replaceComponent(login, () => {});
-});
 
 page("/create-project", () => {
   Promise.resolve(store.state.siteRepoConfig).then((repo) => {
