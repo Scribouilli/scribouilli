@@ -1,7 +1,7 @@
 // @ts-check
 
 import { svelteTarget } from "../config";
-import databaseAPI from "../databaseAPI";
+import databaseAPI from '../databaseAPI'
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import { checkRepositoryAvailabilityThen, handleErrors, makePublishedWebsiteURL, makeRepositoryURL } from "../utils";

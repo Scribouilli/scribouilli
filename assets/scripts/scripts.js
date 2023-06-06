@@ -38,16 +38,6 @@ if (url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)) {
  * Par ici, y'a des routes
  */
 
-page("/create-github-account", () => {
-  // @ts-ignore
-  const createGithubAccount = new CreateGithubAccount({
-    target: svelteTarget,
-    props: {},
-  });
-
-  replaceComponent(createGithubAccount, () => {});
-});
-
 page("/settings", () => {
   Promise.resolve(store.state.login).then(async (login) => {
     return checkRepositoryAvailabilityThen(

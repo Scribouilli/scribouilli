@@ -45,7 +45,6 @@ export default ({ querystring }) => {
       };
     }
   
-    //@ts-ignore
     const articleContenu = new ArticleContenu({
       target: svelteTarget,
       props: mapStateToProps(store.state),
@@ -54,12 +53,10 @@ export default ({ querystring }) => {
     replaceComponent(articleContenu, mapStateToProps);
   
     Promise.resolve(state.login).then((login) => {
-      // @ts-ignore
       articleContenu.$set({
         imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images`,
       });
     });
-    // @ts-ignore
     articleContenu.$on("delete", ({ detail: { sha } }) => {
       Promise.resolve(state.login).then((login) => {
         store.mutations.setArticles(
