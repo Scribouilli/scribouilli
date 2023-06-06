@@ -40,43 +40,6 @@ if (url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)) {
  * Par ici, y'a des routes
  */
 
-page("/atelier-list-articles", () => {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(
-      login,
-      store.state.repoName,
-      () => {}
-    );
-  });
-
-  function mapStateToProps(state) {
-    return {
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
-      articles: state.articles,
-      buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
-    };
-  }
-
-  const state = store.state;
-
-  // @ts-ignore
-  const atelierArticles = new AtelierArticles({
-    target: svelteTarget,
-    props: mapStateToProps(state),
-  });
-  replaceComponent(atelierArticles, mapStateToProps);
-
-  Promise.resolve(state.login).then((login) => {
-    databaseAPI
-      .getArticlesList(login, state.repoName)
-      .then((articles) => {
-        store.mutations.setArticles(articles);
-      })
-      .catch((msg) => handleErrors(msg));
-  });
-});
-
 page("/atelier-list-pages", () => {
   Promise.resolve(store.state.login).then(async (login) => {
     return checkRepositoryAvailabilityThen(
