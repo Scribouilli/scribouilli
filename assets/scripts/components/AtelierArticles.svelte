@@ -4,10 +4,12 @@
   export let publishedWebsiteURL;
   export let buildStatus;
   export let articles;
+  export let repositoryURL;
 
+  console.log(publishedWebsiteURL, repositoryURL);
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
   <section class="screen" id="atelier-list-articles">
     <div id="articles">
       <h2>L'atelier — Articles</h2>
@@ -15,7 +17,11 @@
       <div class="mesArticles">
         <ul class="articles-list">
           {#each (articles || []).sort() as article}
-            <li><a href="./atelier-article?article={article.path}">{article.title}</a></li>
+            <li>
+              <a href="./atelier-article?article={article.path}"
+                >{article.title}</a
+              >
+            </li>
           {/each}
         </ul>
 
@@ -26,7 +32,7 @@
 </Skeleton>
 
 <style lang="scss">
- .articles-list {
+  .articles-list {
     margin-bottom: 4rem;
 
     li {

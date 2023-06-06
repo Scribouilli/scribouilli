@@ -331,6 +331,7 @@ page("/atelier-list-articles", () => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       articles: state.articles,
       buildStatus: state.buildStatus,
+      repositoryURL: makeRepositoryURL(state)
     };
   }
 
@@ -395,7 +396,6 @@ page("/atelier-page", ({ querystring }) => {
   const fileName = new URLSearchParams(querystring).get("page");
 
   function mapStateToProps(state) {
-
     return {
       fileName: fileName,
       title: "",
@@ -539,7 +539,7 @@ page("/atelier-article", ({ querystring }) => {
   console.log("filename : ", fileName)
 
   function mapStateToProps(state) {
-
+    console.log(makeRepositoryURL(state));
     return {
       fileName: fileName,
       title: "",
@@ -552,7 +552,8 @@ page("/atelier-article", ({ querystring }) => {
       articlesP: Promise.resolve(state.login).then((login) => databaseAPI.getArticlesList(login, state.repoName).catch(msg => handleErrors(msg))),
       sha: "",
       publishedWebsiteURL: makePublishedWebsiteURL(state),
-      buildStatus: state.buildStatus
+      buildStatus: state.buildStatus,
+      repositoryURL: makeRepositoryURL(state)
     };
   }
 
@@ -605,7 +606,8 @@ page("/atelier-article", ({ querystring }) => {
     };
 
     let newArticles = state.articles?.filter((article) => {
-      return article.path !== "_posts/" + fileName
+      console.log(article.path, fileName);
+      return article.path !== fileName
     }) || []
     newArticles.push({ title: title, path: "_posts/" + newFileName })
 

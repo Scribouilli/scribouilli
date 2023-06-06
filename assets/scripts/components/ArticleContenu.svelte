@@ -10,6 +10,7 @@
   export let buildStatus;
   export let articlesP;
   export let makeFileNameFromTitle;
+  export let repositoryURL;
 
   import { createEventDispatcher } from "svelte";
   import Skeleton from "./Skeleton.svelte";
@@ -21,7 +22,7 @@
   const dispatch = createEventDispatcher();
 
   articlesP.then((articles) => {
-    if (articles ) {
+    if (articles) {
       filesPath = articles.map((article) => article.path);
     }
   });
@@ -29,7 +30,11 @@
   const validateTitle = (e) => {
     const titleChanged =
       (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
-    if (titleChanged && filesPath && filesPath.includes(makeFileNameFromTitle(title))) {
+    if (
+      titleChanged &&
+      filesPath &&
+      filesPath.includes(makeFileNameFromTitle(title))
+    ) {
       e.target.setCustomValidity(
         "Vous avez déjà utilisé ce nom pour un autre article. Veuillez en choisir un autre."
       );
@@ -71,7 +76,7 @@
   };
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
   <section class="screen">
     <h3>Édition d'un article</h3>
 
@@ -103,11 +108,17 @@
               <div>
                 <p>
                   Pour mettre en forme votre contenu, vous pouvez bidouiller
-                  <a href="https://flus.fr/carnet/markdown.html" target="_blank">
+                  <a
+                    href="https://flus.fr/carnet/markdown.html"
+                    target="_blank"
+                  >
                     avec du Markdown
                   </a>
                   … ou
-                  <a href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics" target="_blank">
+                  <a
+                    href="https://developer.mozilla.org/fr/docs/Learn/Getting_started_with_the_web/HTML_basics"
+                    target="_blank"
+                  >
                     apprendre le HTML
                   </a>
                 </p>
@@ -118,12 +129,11 @@
               <summary>Héberger des images</summary>
               <div>
                 <p>
-                  Pour héberger des images, nous vous avons créé 
-                  <a href={imageDirUrl} target="_blank">
-                    un petit dossier
-                  </a>.
+                  Pour héberger des images, nous vous avons créé
+                  <a href={imageDirUrl} target="_blank"> un petit dossier </a>.
                   <br />
-                  Vous pouvez y déposer vos images, récupérer le lien et mettre l'image dans votre article grâce au Markdown avec
+                  Vous pouvez y déposer vos images, récupérer le lien et mettre l'image
+                  dans votre article grâce au Markdown avec
                   <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                   <figure>
                     ![Texte décrivant l'image](https://ladressedemonimage.png)
@@ -212,7 +222,7 @@
     figure {
       padding: 0.4rem;
       font-family: monospace;
-      background-color: rgba(255,255,255,.4);
+      background-color: rgba(255, 255, 255, 0.4);
     }
   }
 </style>

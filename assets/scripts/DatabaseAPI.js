@@ -214,7 +214,7 @@ export default class DatabaseAPI {
       return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/_posts`)
         .then(response => response.json())
         .then(( articles ) => {
-          return = articles.filter((f) => {
+          return articles.filter((f) => {
             return (
               f.type === "file" &&
               (f.path.endsWith(".md") || f.path.endsWith(".html"))
