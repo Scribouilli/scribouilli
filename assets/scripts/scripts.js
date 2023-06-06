@@ -451,7 +451,7 @@ page("/atelier-page", ({ querystring }) => {
 
     let newFileName = fileName
     if (fileName !== "index.md") {
-      newFileName = makeFileNameFromTitle(title);
+      newFileName = "_posts/" + makeFileNameFromTitle(title);
     }
 
     const body = {
@@ -470,6 +470,7 @@ page("/atelier-page", ({ querystring }) => {
 
     // If title changed
     if (fileName && (fileName !== newFileName)) {
+
       Promise.resolve(state.login).then((login) => {
         databaseAPI.updateFile(login, state.repoName, fileName, newFileName, body, sha).then(() => {
           if (body.sha) {
@@ -535,6 +536,7 @@ page("/atelier-article", ({ querystring }) => {
 
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("article");
+  console.log("filename : ", fileName)
 
   function mapStateToProps(state) {
 
@@ -569,7 +571,7 @@ page("/atelier-article", ({ querystring }) => {
   // @ts-ignore
   articleContenu.$on("delete", ({ detail: { sha } }) => {
     Promise.resolve(state.login).then((login) => {
-      store.mutations.setArticless(state.articles.filter((article) => {
+      store.mutations.setArticles(state.articles.filter((article) => {
         return article.path !== fileName
       }))
       databaseAPI.deleteFile(login, state.repoName, fileName, sha).then(() => {
@@ -612,7 +614,7 @@ page("/atelier-article", ({ querystring }) => {
     // If title changed
     if (fileName && (fileName !== newFileName)) {
       Promise.resolve(state.login).then((login) => {
-        databaseAPI.updateFile(login, state.repoName, fileName, newFileName, body, sha).then(() => {
+        databaseAPI.updateFile(login, state.repoName, "_posts/" + fileName, "_posts/" + newFileName, body, sha).then(() => {
           if (body.sha) {
             console.log("article mise à jour");
           } else {
@@ -625,7 +627,7 @@ page("/atelier-article", ({ querystring }) => {
     } else {
       Promise.resolve(state.login).then((login) => {
         body.sha = sha
-        databaseAPI.createFile(login, state.repoName, newFileName, body).then(() => {
+        databaseAPI.createFile(login, state.repoName, "_posts/" + newFileName, body).then(() => {
           if (body.sha) {
             console.log("article mise à jour");
           } else {

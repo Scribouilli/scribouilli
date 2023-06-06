@@ -9,13 +9,13 @@
 
 <Skeleton {publishedWebsiteURL} {buildStatus}>
   <section class="screen" id="atelier-list-articles">
-    <div id="pages">
+    <div id="articles">
       <h2>L'atelier — Articles</h2>
 
-      <div class="mesPAges">
+      <div class="mesArticles">
         <ul class="articles-list">
           {#each (articles || []).sort() as article}
-            <li><a href="./atelier-page?page={article.path}">{article.title}</a></li>
+            <li><a href="./atelier-article?article={article.path}">{article.title}</a></li>
           {/each}
         </ul>
 

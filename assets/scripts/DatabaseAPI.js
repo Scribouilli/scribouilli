@@ -213,15 +213,13 @@ export default class DatabaseAPI {
     return this.getLatestCommit(login, repoName).then((_) => {
       return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/_posts`)
         .then(response => response.json())
-        .then(({ tree }) => {
-          console.log(tree)
-          const articleFiles = tree.filter((f) => {
+        .then(( articles ) => {
+          return = articles.filter((f) => {
             return (
-              f.type === "blob" &&
+              f.type === "file" &&
               (f.path.endsWith(".md") || f.path.endsWith(".html"))
             );
           });
-          return articleFiles;
         }
         ).then((files) => {
           const articlePs = files.map((file) => {
