@@ -1,5 +1,7 @@
+//@ts-check
+
 import { json } from "d3-fetch";
-import DatabaseAPI from "./databaseAPI";
+import databaseAPI from "./databaseAPI";
 
 const index_page_content = `---
 title: Accueil
@@ -54,8 +56,6 @@ export default function makeCreateProjectButtonListener(
   buildStatus
 ) {
   const publishedWebsiteURL = `https://${origin}/${repoName}`;
-
-  const databaseAPI = new DatabaseAPI(accessToken);
 
   return () =>
     Promise.resolve(login).then((login) =>

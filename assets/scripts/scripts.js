@@ -1,7 +1,6 @@
 //@ts-check
 
 import parseMarkdown from "@github-docs/frontmatter";
-import DatabaseAPI from "./databaseAPI.js";
 
 import makeCreateProjectButtonListener from "./makeCreateProjectButtonListener.js";
 // import prepareCreatePageScreen from "./prepareCreatePageScreen.js";
@@ -18,7 +17,6 @@ import databaseAPI from "./databaseAPI.js";
 
 import page from "page";
 
-import Welcome from "./components/Welcome.svelte";
 import Account from "./components/Account.svelte";
 import CreateGithubAccount from "./components/CreateGithubAccount.svelte";
 import Login from "./components/Login.svelte";
