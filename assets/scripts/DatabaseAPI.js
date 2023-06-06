@@ -2,33 +2,42 @@
 
 import parseMarkdown from "@github-docs/frontmatter";
 
-export default class DatabaseAPI {
+import { handleErrors } from "./utils.js";
+import makeBuildStatus from "./buildStatus.js";
+import store from "./store.js";
 
+class DatabaseAPI {
   constructor(accessToken) {
-    this.accessToken = accessToken
-    this.commitsEtag = undefined
-    this.latestCommit = undefined
-    this.getFilesCache = new Map()
-    this.fileCached = undefined
-    this.customCSSPath = "assets/css/custom.css"
+    this.accessToken = accessToken;
+    this.commitsEtag = undefined;
+    this.latestCommit = undefined;
+    this.getFilesCache = new Map();
+    this.fileCached = undefined;
+    this.customCSSPath = "assets/css/custom.css";
   }
 
   getAuthenticatedUser() {
-    return this.callGithubAPI("https://api.github.com/user").then((response) => {
-      return response.json()
-    })
+    return this.callGithubAPI("https://api.github.com/user").then(
+      (response) => {
+        return response.json();
+      }
+    );
   }
 
   getRepository(login, repoName) {
-    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}`).then((response) => {
-      return response.json()
-    }).catch(msg => {
-      if (msg === "NOT_FOUND") {
-        throw "REPOSITORY_NOT_FOUND"
-      }
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${repoName}`
+    )
+      .then((response) => {
+        return response.json();
+      })
+      .catch((msg) => {
+        if (msg === "NOT_FOUND") {
+          throw "REPOSITORY_NOT_FOUND";
+        }
 
-      throw msg
-    })
+        throw msg;
+      });
   }
 
   /**
@@ -39,35 +48,43 @@ export default class DatabaseAPI {
    * @returns
    */
   getFile(login, repoName, fileName) {
-    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`, {
-      headers: {
-        Authorization: "token " + this.accessToken,
-        "If-None-Match": this.getFilesCache.get(fileName)?.etag
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          "If-None-Match": this.getFilesCache.get(fileName)?.etag,
+        },
       }
-    }).then((httpResp) => {
+    ).then((httpResp) => {
       if (httpResp.status !== 304) {
-        const file = httpResp.json()
-        this.getFilesCache.set(fileName, {etag: httpResp.headers.get("etag"), file: file})
+        const file = httpResp.json();
+        this.getFilesCache.set(fileName, {
+          etag: httpResp.headers.get("etag"),
+          file: file,
+        });
       }
-      return this.getFilesCache.get(fileName).file
-    })
+      return this.getFilesCache.get(fileName).file;
+    });
   }
 
   getGitHubPagesSite(login, repoName) {
-    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/pages`).then((response) => {
-      return response.json()
-    })
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${repoName}/pages`
+    ).then((response) => {
+      return response.json();
+    });
   }
 
   getDeploymentStatus(deployment) {
     return this.callGithubAPI(deployment.statuses_url).then((response) => {
-      return response.json()
-    })
+      return response.json();
+    });
   }
 
   /**
-  * @summary Remove file from github
-  */
+   * @summary Remove file from github
+   */
   deleteFile(login, repoName, fileName, sha) {
     return this.callGithubAPI(
       `https://api.github.com/repos/${login}/${repoName}/contents/${fileName}`,
@@ -80,8 +97,8 @@ export default class DatabaseAPI {
         }),
       }
     ).then((response) => {
-      return response.json()
-    })
+      return response.json();
+    });
   }
 
   deleteRepository(login, repoName) {
@@ -90,7 +107,8 @@ export default class DatabaseAPI {
       {
         headers: { Authorization: "token " + this.accessToken },
         method: "DELETE",
-      })
+      }
+    );
   }
 
   /**
@@ -104,16 +122,14 @@ export default class DatabaseAPI {
         method: "PUT",
         body: JSON.stringify(body),
       }
-    )
+    );
   }
 
   createCustomCSS(login, repoName, content) {
-    return this.createFile(login, repoName, this.customCSSPath,
-      {
-        message: "création du ficher de styles custom",
-        content: Buffer.from(content).toString('base64')
-      }
-    )
+    return this.createFile(login, repoName, this.customCSSPath, {
+      message: "création du ficher de styles custom",
+      content: Buffer.from(content).toString("base64"),
+    });
   }
 
   /**
@@ -134,7 +150,7 @@ export default class DatabaseAPI {
    */
   updateFile(login, repoName, oldfileName, newFileName, body, sha) {
     if (newFileName === oldfileName) {
-      body.sha = sha
+      body.sha = sha;
 
       return this.callGithubAPI(
         `https://api.github.com/repos/${login}/${repoName}/contents/${oldfileName}`,
@@ -143,47 +159,60 @@ export default class DatabaseAPI {
           method: "PUT",
           body: JSON.stringify(body),
         }
-      )
+      );
     } else {
-      return this.deleteFile(login, repoName, oldfileName, sha)
-        .then(() => {
-          return this.createFile(login, repoName, newFileName, body)
-        })
+      return this.deleteFile(login, repoName, oldfileName, sha).then(() => {
+        return this.createFile(login, repoName, newFileName, body);
+      });
     }
   }
 
   updateCustomCSS(login, repoName, content, sha) {
-    return this.updateFile(login, repoName, this.customCSSPath, this.customCSSPath, {
-      content: Buffer.from(content).toString('base64'),
-      message: "mise à jour du thème"
-    }, sha).then(response => {
-      return response.json()
-    })
+    return this.updateFile(
+      login,
+      repoName,
+      this.customCSSPath,
+      this.customCSSPath,
+      {
+        content: Buffer.from(content).toString("base64"),
+        message: "mise à jour du thème",
+      },
+      sha
+    ).then((response) => {
+      return response.json();
+    });
   }
 
   getLatestCommit(login, repoName) {
-    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/commits`, {
-      headers: {
-        Authorization: "token " + this.accessToken,
-        "If-None-Match": this.commitsEtag
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${repoName}/commits`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          "If-None-Match": this.commitsEtag,
+        },
       }
-    }).then((httpResp) => {
-      if (httpResp.status === 304) {
-        return [this.latestCommit]
-      } else {
-        this.commitsEtag = httpResp.headers.get("etag")
-        return httpResp.json()
-      }
-    }).then(commits => {
-      this.latestCommit = commits[0]
-      return this.latestCommit
-    })
+    )
+      .then((httpResp) => {
+        if (httpResp.status === 304) {
+          return [this.latestCommit];
+        } else {
+          this.commitsEtag = httpResp.headers.get("etag");
+          return httpResp.json();
+        }
+      })
+      .then((commits) => {
+        this.latestCommit = commits[0];
+        return this.latestCommit;
+      });
   }
 
   getPagesList(login, repoName) {
     return this.getLatestCommit(login, repoName).then(({ sha }) => {
-      return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`)
-        .then(response => response.json())
+      return this.callGithubAPI(
+        `https://api.github.com/repos/${login}/${repoName}/git/trees/${sha}`
+      )
+        .then((response) => response.json())
         .then(({ tree }) => {
           const pageFiles = tree.filter((f) => {
             return (
@@ -192,54 +221,71 @@ export default class DatabaseAPI {
             );
           });
           return pageFiles;
-        }
-        ).then((files) => {
+        })
+        .then((files) => {
           const pagePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
               .then((page) => {
-                const { data,  content: markdownContent } = parseMarkdown(Buffer.from(page.content, "base64").toString());
+                const { data, content: markdownContent } = parseMarkdown(
+                  Buffer.from(page.content, "base64").toString()
+                );
                 const title = data?.title;
-                return { title: title, path: file.path, content: markdownContent }
-              }).catch(() => {
-                return { title: file.path, path: file.path, content: "" }
+                return {
+                  title: title,
+                  path: file.path,
+                  content: markdownContent,
+                };
               })
-          })
-          return Promise.all(pagePs)
+              .catch(() => {
+                return { title: file.path, path: file.path, content: "" };
+              });
+          });
+          return Promise.all(pagePs);
         });
     });
   }
 
   getArticlesList(login, repoName) {
     return this.getLatestCommit(login, repoName).then((_) => {
-      return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/_posts`)
-        .then(response => response.json())
-        .then(( articles ) => {
+      return this.callGithubAPI(
+        `https://api.github.com/repos/${login}/${repoName}/contents/_posts`
+      )
+        .then((response) => response.json())
+        .then((articles) => {
           return articles.filter((f) => {
             return (
               f.type === "file" &&
               (f.path.endsWith(".md") || f.path.endsWith(".html"))
             );
           });
-        }
-        ).then((files) => {
+        })
+        .then((files) => {
           const articlePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
               .then((article) => {
-                const { data,  content: markdownContent } = parseMarkdown(Buffer.from(article.content, "base64").toString());
+                const { data, content: markdownContent } = parseMarkdown(
+                  Buffer.from(article.content, "base64").toString()
+                );
                 const title = data?.title;
-                return { title: title, path: file.path, content: markdownContent }
-              }).catch(() => {
-                return { title: file.path, path: file.path, content: "" }
+                return {
+                  title: title,
+                  path: file.path,
+                  content: markdownContent,
+                };
               })
-          })
-          return Promise.all(articlePs)
+              .catch(() => {
+                return { title: file.path, path: file.path, content: "" };
+              });
+          });
+          return Promise.all(articlePs);
         });
     });
-
   }
 
   getLastDeployment(login, repoName) {
-    return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`).then((deployments) => deployments[0])
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`
+    ).then((deployments) => deployments[0]);
   }
 
   /**
@@ -248,19 +294,61 @@ export default class DatabaseAPI {
    * It handles access_token errors
    *
    */
-  callGithubAPI(url, requestParams = { headers: { Authorization: "token " + this.accessToken } }) {
+  callGithubAPI(
+    url,
+    requestParams = { headers: { Authorization: "token " + this.accessToken } }
+  ) {
     return fetch(url, requestParams).then((httpResp) => {
       if (httpResp.status === 404) {
-        throw "NOT_FOUND"
+        throw "NOT_FOUND";
       }
 
       if (httpResp.status === 401) {
-        this.accessToken = undefined
-        console.debug("this accessToken : ", this)
-        throw "INVALIDATE_TOKEN"
+        this.accessToken = undefined;
+        console.debug("this accessToken : ", this);
+        throw "INVALIDATE_TOKEN";
       }
-      return httpResp
-    })
+      return httpResp;
+    });
   }
-
 }
+
+let databaseAPI;
+
+// Retrieve logged in user from access_token
+if (store.state.accessToken) {
+  databaseAPI = new DatabaseAPI(store.state.accessToken);
+
+  const loginP = databaseAPI
+    .getAuthenticatedUser()
+    // @ts-ignore
+    .then(({ login }) => {
+      store.mutations.setLogin(login);
+      return login;
+    })
+    .catch((msg) => handleErrors(msg));
+
+  store.mutations.setLogin(loginP);
+  store.mutations.setBuildStatus(
+    makeBuildStatus(databaseAPI, loginP, store.state.repoName)
+  );
+  /*
+   Appel sans vérification,
+   On suppose qu'au chargement initial,
+   on peut faire confiance à ce que revoit l'API
+   */
+  store.state.buildStatus.checkStatus();
+
+  const siteRepoConfigP = loginP.then((login) => {
+    return databaseAPI
+      .getRepository(login, store.state.repoName)
+      .catch((msg) => handleErrors(msg));
+  });
+
+  store.mutations.setSiteRepoConfig(siteRepoConfigP);
+  siteRepoConfigP.catch((error) => handleErrors(error));
+} else {
+  history.replaceState(undefined, "", store.state.basePath + "/");
+}
+
+export default databaseAPI;
