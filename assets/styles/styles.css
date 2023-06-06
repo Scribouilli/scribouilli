@@ -94,12 +94,13 @@ header {
   margin-bottom: 4rem;
   padding-right: 2rem;
   padding-left: 2rem;
+  border-bottom: 1px solid #4d4646;
 }
 
 header > div {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 2rem;
 }
