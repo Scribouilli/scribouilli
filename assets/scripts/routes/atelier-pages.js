@@ -92,7 +92,7 @@ export default ({ querystring }) => {
   
         let newFileName = fileName;
         if (fileName !== "index.md") {
-          newFileName = "_posts/" + makeFileNameFromTitle(title);
+          newFileName = makeFileNameFromTitle(title);
         }
   
         const body = {
