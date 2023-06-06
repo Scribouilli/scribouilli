@@ -131,6 +131,18 @@ export default function makeCreateProjectButtonListener(accessToken, login, orig
                         )
                     })
                 })
+                 .then(() => {
+                    return json(`https://api.github.com/repos/${login}/${repoName}/contents/_posts/.gitkeep`, {
+                        headers: { Authorization: "token " + accessToken },
+                        method: "PUT",
+                        body: JSON.stringify(
+                            {
+                                message: "création du dossier _posts pour le blog",
+                                content: Buffer.from(images_readme_content).toString('base64')
+                            }
+                        )
+                    })
+                })
                 .then(() => {
                     return databaseAPI.createCustomCSS(login, repoName, custom_styles_content)
                 })

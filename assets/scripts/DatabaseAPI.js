@@ -210,7 +210,34 @@ export default class DatabaseAPI {
   }
 
   getArticlesList(login, repoName) {
-    return this.getPagesList(login, repoName)
+    return this.getLatestCommit(login, repoName).then((_) => {
+      return this.callGithubAPI(`https://api.github.com/repos/${login}/${repoName}/contents/_posts`)
+        .then(response => response.json())
+        .then(({ tree }) => {
+          console.log(tree)
+          const pageFiles = tree.filter((f) => {
+            return (
+              f.type === "blob" &&
+              (f.path.endsWith(".md") || f.path.endsWith(".html"))
+            );
+          });
+          return pageFiles;
+        }
+        ).then((files) => {
+          const pagePs = files.map((file) => {
+            return this.getFile(login, repoName, file.path)
+              .then((page) => {
+                const { data,  content: markdownContent } = parseMarkdown(Buffer.from(page.content, "base64").toString());
+                const title = data?.title;
+                return { title: title, path: file.path, content: markdownContent }
+              }).catch(() => {
+                return { title: file.path, path: file.path, content: "" }
+              })
+          })
+          return Promise.all(pagePs)
+        });
+    });
+
   }
 
   getLastDeployment(login, repoName) {
