@@ -7,6 +7,16 @@ import store from "../store";
 import { checkRepositoryAvailabilityThen, handleErrors, makePublishedWebsiteURL, makeRepositoryURL } from "../utils";
 import Settings from "../components/Settings.svelte";
 
+function mapStateToProps(state) {
+  return {
+    publishedWebsiteURL: makePublishedWebsiteURL(state),
+    buildStatus: state.buildStatus,
+    theme: state.theme,
+    deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
+    repositoryURL: makeRepositoryURL(state),
+  };
+}
+
 export default () => {
     Promise.resolve(store.state.login).then(async (login) => {
       return checkRepositoryAvailabilityThen(
@@ -16,23 +26,11 @@ export default () => {
       );
     });
   
-    function mapStateToProps(state) {
-      return {
-        publishedWebsiteURL: makePublishedWebsiteURL(state),
-        buildStatus: state.buildStatus,
-        theme: state.theme,
-        deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
-        repositoryURL: makeRepositoryURL(state),
-      };
-    }
-  
-    // @ts-ignore
     const settings = new Settings({
       target: svelteTarget,
       props: mapStateToProps(store.state),
     });
   
-    //@ts-ignore
     settings.$on("delete-site", () => {
       Promise.resolve(store.state.login).then((login) => {
         databaseAPI
@@ -45,7 +43,6 @@ export default () => {
       });
     });
   
-    // @ts-ignore
     settings.$on("update-theme", ({ detail: { theme } }) => {
       Promise.resolve(store.state.login).then((login) => {
         databaseAPI

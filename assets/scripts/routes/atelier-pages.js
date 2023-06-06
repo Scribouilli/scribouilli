@@ -9,6 +9,28 @@ import store from "../store";
 import { checkRepositoryAvailabilityThen, handleErrors, makeFileNameFromTitle, makeFrontMatterYAMLJsaisPasQuoiLa, makePublishedWebsiteURL, makeRepositoryURL } from "../utils";
 import PageContenu from "../components/PageContenu.svelte";
 
+const makeMapStateToProps = (fileName) => (state) => {
+  return {
+    fileName: fileName,
+    title: "",
+    content: "",
+    imageDirUrl: "",
+    previousTitle: undefined,
+    previousContent: undefined,
+    makeFileNameFromTitle: makeFileNameFromTitle,
+    // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
+    pagesP: Promise.resolve(state.login).then((login) =>
+      databaseAPI
+        .getPagesList(login, state.repoName)
+        .catch((msg) => handleErrors(msg))
+    ),
+    sha: "",
+    publishedWebsiteURL: makePublishedWebsiteURL(state),
+    buildStatus: state.buildStatus,
+    repositoryURL: makeRepositoryURL(state),
+  };
+}
+
 export default ({ querystring }) => {
     Promise.resolve(store.state.login).then(async (login) => {
       return checkRepositoryAvailabilityThen(
@@ -20,30 +42,8 @@ export default ({ querystring }) => {
   
     const state = store.state;
     const fileName = new URLSearchParams(querystring).get("page");
+    const mapStateToProps = makeMapStateToProps(fileName)
   
-    function mapStateToProps(state) {
-      return {
-        fileName: fileName,
-        title: "",
-        content: "",
-        imageDirUrl: "",
-        previousTitle: undefined,
-        previousContent: undefined,
-        makeFileNameFromTitle: makeFileNameFromTitle,
-        // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
-        pagesP: Promise.resolve(state.login).then((login) =>
-          databaseAPI
-            .getPagesList(login, state.repoName)
-            .catch((msg) => handleErrors(msg))
-        ),
-        sha: "",
-        publishedWebsiteURL: makePublishedWebsiteURL(state),
-        buildStatus: state.buildStatus,
-        repositoryURL: makeRepositoryURL(state),
-      };
-    }
-  
-    //@ts-ignore
     const pageContenu = new PageContenu({
       target: svelteTarget,
       props: mapStateToProps(store.state),

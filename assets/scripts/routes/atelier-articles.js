@@ -8,6 +8,27 @@ import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import ArticleContenu from "../components/ArticleContenu.svelte";
 
+const makeMapStateToProps = (fileName) => (state) => {
+  return {
+    fileName: fileName,
+    title: "",
+    content: "",
+    imageDirUrl: "",
+    previousTitle: undefined,
+    previousContent: undefined,
+    makeFileNameFromTitle: makeFileNameFromTitle,
+    // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
+    articlesP: Promise.resolve(state.login).then((login) =>
+      databaseAPI
+        .getArticlesList(login, state.repoName)
+        .catch((msg) => handleErrors(msg))
+    ),
+    sha: "",
+    publishedWebsiteURL: makePublishedWebsiteURL(state),
+    buildStatus: state.buildStatus,
+    repositoryURL: makeRepositoryURL(state),
+  };
+}
 
 export default ({ querystring }) => {
     Promise.resolve(store.state.login).then(async (login) => {
@@ -20,30 +41,7 @@ export default ({ querystring }) => {
   
     const state = store.state;
     const fileName = new URLSearchParams(querystring).get("article");
-    console.log("filename : ", fileName);
-  
-    function mapStateToProps(state) {
-      console.log(makeRepositoryURL(state));
-      return {
-        fileName: fileName,
-        title: "",
-        content: "",
-        imageDirUrl: "",
-        previousTitle: undefined,
-        previousContent: undefined,
-        makeFileNameFromTitle: makeFileNameFromTitle,
-        // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
-        articlesP: Promise.resolve(state.login).then((login) =>
-          databaseAPI
-            .getArticlesList(login, state.repoName)
-            .catch((msg) => handleErrors(msg))
-        ),
-        sha: "",
-        publishedWebsiteURL: makePublishedWebsiteURL(state),
-        buildStatus: state.buildStatus,
-        repositoryURL: makeRepositoryURL(state),
-      };
-    }
+    const mapStateToProps = makeMapStateToProps(fileName)
   
     const articleContenu = new ArticleContenu({
       target: svelteTarget,

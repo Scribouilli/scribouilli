@@ -7,6 +7,15 @@ import store from "../store";
 import { checkRepositoryAvailabilityThen, handleErrors, makePublishedWebsiteURL, makeRepositoryURL } from "../utils";
 import AtelierPages from "../components/AtelierPages.svelte";
 
+function mapStateToProps(state) {
+  return {
+    publishedWebsiteURL: makePublishedWebsiteURL(state),
+    pages: state.pages,
+    buildStatus: state.buildStatus,
+    repositoryURL: makeRepositoryURL(state),
+  };
+}
+
 export default () => {
     Promise.resolve(store.state.login).then(async (login) => {
       return checkRepositoryAvailabilityThen(
@@ -16,18 +25,8 @@ export default () => {
       );
     });
   
-    function mapStateToProps(state) {
-      return {
-        publishedWebsiteURL: makePublishedWebsiteURL(state),
-        pages: state.pages,
-        buildStatus: state.buildStatus,
-        repositoryURL: makeRepositoryURL(state),
-      };
-    }
-  
     const state = store.state;
   
-    // @ts-ignore
     const atelierPages = new AtelierPages({
       target: svelteTarget,
       props: mapStateToProps(state),

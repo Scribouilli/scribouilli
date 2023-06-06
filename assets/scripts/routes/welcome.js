@@ -18,7 +18,6 @@ export default () => {
     });
   }
 
-  // @ts-ignore
   const welcome = new Welcome({
     target: svelteTarget,
     props: {},
