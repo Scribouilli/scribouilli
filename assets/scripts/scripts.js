@@ -11,14 +11,13 @@ import {
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   svelteTarget,
 } from "./config.js";
-import { checkRepositoryAvailabilityThen, handleErrors } from "./utils.js";
+import { checkRepositoryAvailabilityThen, handleErrors, makeFileNameFromTitle, makeFrontMatterYAMLJsaisPasQuoiLa, makePublishedWebsiteURL, makeRepositoryURL } from "./utils.js";
 import { replaceComponent } from "./routeComponentLifeCycle.js";
-import databaseAPI from "./databaseAPI.js";
+import databaseAPI from './databaseAPI.js'
 
 import page from "page";
 
 import CreateGithubAccount from "./components/CreateGithubAccount.svelte";
-import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
 import AtelierArticles from "./components/AtelierArticles.svelte";
 import PageContenu from "./components/PageContenu.svelte";
@@ -37,76 +36,9 @@ if (url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)) {
   localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, store.state.accessToken);
 }
 
-async function makeOrigin(state) {
-  const login = await Promise.resolve(state.login);
-  return `${login.toLowerCase()}.github.io`;
-}
-
-async function makePublishedWebsiteURL(state) {
-  const origin = await makeOrigin(state);
-  return `https://${origin}/${state.repoName}`;
-}
-
-async function makeRepositoryURL(state) {
-  const login = await Promise.resolve(state.login);
-  return `https://github.com/${login}/${state.repoName}`;
-}
-
-function makeFileNameFromTitle(title) {
-  const fileName =
-    title
-      .replace(/\/|#|\?/g, "-") // replace url confusing characters
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
-      .split(".")
-      .join("") // Remove dot to avoid issues
-      .toLowerCase() + ".md";
-
-  return fileName;
-}
-
-function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
-  return ["---", "title: " + title, "---"].join("\n");
-}
-
 /**
  * Par ici, y'a des routes
  */
-
-page("/create-project", () => {
-  Promise.resolve(store.state.siteRepoConfig).then((repo) => {
-    if (repo) {
-      page.redirect("/atelier-list-pages");
-    }
-  });
-
-  function mapStateToProps(state) {
-    return {
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
-      siteRepoConfig: state.siteRepoConfig,
-      createProject: Promise.all([
-        Promise.resolve(state.login),
-        makeOrigin(state),
-      ]).then(([login, origin]) =>
-        makeCreateProjectButtonListener(
-          state.accessToken,
-          login,
-          origin,
-          state.repoName,
-          state.buildStatus
-        )
-      ),
-    };
-  }
-
-  // @ts-ignore
-  const createProject = new CreateProject({
-    target: svelteTarget,
-    props: mapStateToProps(store.state),
-  });
-
-  replaceComponent(createProject, mapStateToProps);
-});
 
 page("/atelier-list-articles", () => {
   Promise.resolve(store.state.login).then(async (login) => {
