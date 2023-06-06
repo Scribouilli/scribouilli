@@ -17,6 +17,7 @@ import CreateGithubAccount from "./components/CreateGithubAccount.svelte";
 import Login from "./components/Login.svelte";
 import CreateProject from "./components/CreateProject.svelte";
 import AtelierPages from "./components/AtelierPages.svelte";
+import AtelierArticles from "./components/AtelierArticles.svelte";
 import PageContenu from "./components/PageContenu.svelte";
 import Settings from "./components/Settings.svelte";
 
@@ -34,6 +35,7 @@ const store = new Store({
     origin: undefined, // Promise<string> | string
     repoName: "test-website-repo-3796",
     pages: undefined,
+    articles: undefined,
     buildStatus: undefined,
     basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
     siteRepoConfig: undefined,
@@ -59,6 +61,19 @@ const store = new Store({
         }
       });
     },
+    setArticles(state, articles) {
+      state.articles = articles.sort((pageA, pageB) => {
+        if (pageA.path < pageB.path) {
+          return -1
+        }
+        if (pageA.path > pageB.path) {
+          return 1
+        }
+        if (pageA.path === pageB.path) {
+          return 0
+        }
+      });
+    },
     setBuildStatus(state, buildStatus) {
       state.buildStatus = buildStatus
     },
@@ -71,6 +86,7 @@ const store = new Store({
     },
     removeSite(state) {
       state.pages = undefined
+      state.articles = undefined
       state.siteRepoConfig = undefined
     },
     invalidateToken(state) {
@@ -83,7 +99,7 @@ const store = new Store({
 
 /**
  * @summary Handle errors catched by Promises
- * @param {string} errorMessage 
+ * @param {string} errorMessage
  */
 const handleErrors = (errorMessage) => {
   switch (errorMessage) {
@@ -134,7 +150,7 @@ if (store.state.accessToken) {
   databaseAPI = new DatabaseAPI(store.state.accessToken)
 
   const loginP = databaseAPI.getAuthenticatedUser()
-    // @ts-ignore
+  // @ts-ignore
     .then(({ login }) => {
       store.mutations.setLogin(login);
       return login;
@@ -143,10 +159,10 @@ if (store.state.accessToken) {
   store.mutations.setLogin(loginP);
   store.mutations.setBuildStatus(makeBuildStatus(databaseAPI, loginP, store.state.repoName))
   /*
-   Appel sans vérification, 
+   Appel sans vérification,
    On suppose qu'au chargement initial,
    on peut faire confiance à ce que revoit l'API
-  */
+   */
   store.state.buildStatus.checkStatus()
 
   const siteRepoConfigP = loginP.then((login) => {
@@ -205,11 +221,11 @@ store.subscribe(render);
 function makeFileNameFromTitle(title) {
   const fileName =
     title
-      .replace(/\/|#|\?/g, "-") // replace url confusing characters
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
-      .split('.').join("") // Remove dot to avoid issues
-      .toLowerCase() +
+    .replace(/\/|#|\?/g, "-") // replace url confusing characters
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+    .split('.').join("") // Remove dot to avoid issues
+    .toLowerCase() +
     ".md"
 
   return fileName;
@@ -303,6 +319,38 @@ page("/create-project", () => {
 
   replaceComponent(createProject, mapStateToProps);
 });
+
+page("/atelier-list-articles", () => {
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(login, store.state.repoName, () => { })
+  });
+
+  function mapStateToProps(state) {
+    return {
+      publishedWebsiteURL: makePublishedWebsiteURL(state),
+      articles: state.articles,
+      buildStatus: state.buildStatus,
+    };
+  }
+
+  const state = store.state;
+
+  // @ts-ignore
+  const atelierArticles = new AtelierArticles({
+    target: svelteTarget,
+    props: mapStateToProps(state),
+  });
+  replaceComponent(atelierArticles, mapStateToProps);
+
+  Promise.resolve(state.login).then((login) => {
+
+    databaseAPI.getArticlesList(login, state.repoName).then((articles) => {
+      store.mutations.setArticles(articles)
+    }).catch(msg => handleErrors(msg))
+  })
+
+});
+
 
 page("/atelier-list-pages", () => {
   Promise.resolve(store.state.login).then(async (login) => {
@@ -452,7 +500,7 @@ page("/atelier-page", ({ querystring }) => {
   if (fileName) {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI.getFile(login, store.state.repoName, fileName)
-        //@ts-ignore
+      //@ts-ignore
         .then(({ content, sha }) => {
           //@ts-ignore
           const contenu = Buffer.from(content, "base64").toString();

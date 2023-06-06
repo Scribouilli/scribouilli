@@ -37,6 +37,7 @@
       <nav>
         <ul>
           <li><a href="./atelier-list-pages">Pages</a></li>
+          <li><a href="./atelier-list-articles">Articles</a></li>
           <li><a href="./settings">Paramètres</a></li>
           <li>
             {#if repositoryURL}

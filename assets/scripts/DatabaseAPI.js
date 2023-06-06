@@ -47,7 +47,7 @@ export default class DatabaseAPI {
     }).then((httpResp) => {
       if (httpResp.status !== 304) {
         const file = httpResp.json()
-        this.getFilesCache.set(fileName, {etag: httpResp.headers.get("etag"), file: file}) 
+        this.getFilesCache.set(fileName, {etag: httpResp.headers.get("etag"), file: file})
       }
       return this.getFilesCache.get(fileName).file
     })
@@ -207,6 +207,10 @@ export default class DatabaseAPI {
           return Promise.all(pagePs)
         });
     });
+  }
+
+  getArticlesList(login, repoName) {
+    return this.getPagesList(login, repoName)
   }
 
   getLastDeployment(login, repoName) {
