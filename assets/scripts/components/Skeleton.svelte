@@ -3,6 +3,7 @@
   export let publishedWebsiteURL = undefined;
   export let buildStatus = undefined;
   export let repositoryURL = undefined;
+  import Footer from "./Footer.svelte";
 </script>
 
 <Header {publishedWebsiteURL} {buildStatus} {repositoryURL} />
@@ -11,6 +12,4 @@
   <slot />
 </main>
 
-<script>
-  import Footer from "./Footer.svelte";
-</script>
+<Footer/>
