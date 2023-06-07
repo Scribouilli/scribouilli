@@ -1,6 +1,7 @@
 // @ts-check
 
 import parseMarkdown from "@github-docs/frontmatter";
+import page from 'page'
 
 import { svelteTarget } from "../config";
 import databaseAPI from "../databaseAPI";

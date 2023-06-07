@@ -1,5 +1,6 @@
 // @ts-check
 
+import page from 'page'
 import parseMarkdown from "@github-docs/frontmatter";
 import store from "../store";
 import { checkRepositoryAvailabilityThen, handleErrors, makeFileNameFromTitle, makeFrontMatterYAMLJsaisPasQuoiLa, makePublishedWebsiteURL, makeRepositoryURL } from "../utils";
@@ -72,7 +73,6 @@ export default ({ querystring }) => {
       });
     });
   
-    // @ts-ignore
     articleContenu.$on(
       "save",
       ({
@@ -89,7 +89,7 @@ export default ({ querystring }) => {
   
         let newFileName = fileName;
         if (fileName !== "index.md") {
-          newFileName = makeFileNameFromTitle(title);
+          newFileName = `_posts/${makeFileNameFromTitle(title)}`
         }
   
         const body = {
@@ -106,7 +106,7 @@ export default ({ querystring }) => {
             console.log(article.path, fileName);
             return article.path !== fileName;
           }) || [];
-        newArticles.push({ title: title, path: "_posts/" + newFileName });
+        newArticles.push({ title: title, path: newFileName });
   
         store.mutations.setArticles(newArticles);
   
@@ -117,8 +117,8 @@ export default ({ querystring }) => {
               .updateFile(
                 login,
                 state.repoName,
-                "_posts/" + fileName,
-                "_posts/" + newFileName,
+                fileName,
+                newFileName,
                 body,
                 sha
               )
@@ -137,7 +137,7 @@ export default ({ querystring }) => {
           Promise.resolve(state.login).then((login) => {
             body.sha = sha;
             databaseAPI
-              .createFile(login, state.repoName, "_posts/" + newFileName, body)
+              .createFile(login, state.repoName, newFileName, body)
               .then(() => {
                 if (body.sha) {
                   console.log("article mise à jour");
@@ -158,9 +158,7 @@ export default ({ querystring }) => {
       Promise.resolve(store.state.login).then((login) => {
         databaseAPI
           .getFile(login, store.state.repoName, fileName)
-          //@ts-ignore
           .then(({ content, sha }) => {
-            //@ts-ignore
             const contenu = Buffer.from(content, "base64").toString();
             const {
               data,
@@ -168,15 +166,12 @@ export default ({ querystring }) => {
               errors,
             } = parseMarkdown(contenu);
   
-            //@ts-ignore
             articleContenu.$set({
               fileName: fileName,
               content: markdownContent,
               previousContent: markdownContent,
-              // @ts-ignore
-              title: data.title,
-              // @ts-ignore
-              previousTitle: data.title,
+              title: data?.title,
+              previousTitle: data?.title,
               sha: sha,
             });
           })
