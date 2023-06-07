@@ -14,7 +14,7 @@ import {
 import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
-import ArticleContenu from "../components/ArticleContenu.svelte";
+import ArticleContenu from "../components/screens/ArticleContenu.svelte";
 import { format } from "date-fns";
 
 const makeMapStateToProps = (fileName) => (state) => {
@@ -49,7 +49,7 @@ export default ({ querystring }) => {
   });
 
   const state = store.state;
-  const fileName = new URLSearchParams(querystring).get("article");
+  const fileName = new URLSearchParams(querystring).get("path");
   const mapStateToProps = makeMapStateToProps(fileName);
 
   const articleContenu = new ArticleContenu({

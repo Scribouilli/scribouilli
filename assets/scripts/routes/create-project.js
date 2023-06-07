@@ -1,13 +1,13 @@
 // @ts-check
 
-import page from 'page'
+import page from "page";
 
 import { svelteTarget } from "../config";
 import makeCreateProjectButtonListener from "../makeCreateProjectButtonListener";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import { makeOrigin, makePublishedWebsiteURL } from "../utils";
-import CreateProject from '../components/CreateProject.svelte'
+import CreateProject from "../components/screens/CreateProject.svelte";
 
 function mapStateToProps(state) {
   return {
@@ -29,16 +29,16 @@ function mapStateToProps(state) {
 }
 
 export default () => {
-    Promise.resolve(store.state.siteRepoConfig).then((repo) => {
-      if (repo) {
-        page.redirect("/atelier-list-pages");
-      }
-    });
+  Promise.resolve(store.state.siteRepoConfig).then((repo) => {
+    if (repo) {
+      page.redirect("/atelier-list-pages");
+    }
+  });
 
-    const createProject = new CreateProject({
-        target: svelteTarget,
-        props: mapStateToProps(store.state),
-    });
+  const createProject = new CreateProject({
+    target: svelteTarget,
+    props: mapStateToProps(store.state),
+  });
 
-    replaceComponent(createProject, mapStateToProps);
-}
+  replaceComponent(createProject, mapStateToProps);
+};

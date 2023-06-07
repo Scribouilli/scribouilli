@@ -13,7 +13,7 @@
   export let repositoryURL;
 
   import { createEventDispatcher } from "svelte";
-  import Skeleton from "./Skeleton.svelte";
+  import Skeleton from "../Skeleton.svelte";
 
   $: deleteDisabled = true;
 

@@ -1,5 +1,5 @@
 <script>
-  import Skeleton from "./Skeleton.svelte";
+  import Skeleton from "../Skeleton.svelte";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();

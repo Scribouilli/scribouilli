@@ -1,5 +1,5 @@
 <script>
-  import Skeleton from "./Skeleton.svelte";
+  import Skeleton from "../Skeleton.svelte";
 </script>
 
 <Skeleton>
@@ -66,7 +66,7 @@
   .npa {
     text-align: left;
   }
-  
+
   .btn-list {
     display: flex;
     flex-wrap: wrap;

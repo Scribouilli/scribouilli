@@ -1,5 +1,5 @@
 <script>
-  import Skeleton from "../Skeleton.svelte";
+  import Skeleton from "../../Skeleton.svelte";
 
   export let publishedWebsiteURL;
   export let buildStatus;
@@ -19,9 +19,7 @@
         <ul>
           {#each listContenu.sort() as contenu}
             <li>
-              <a href="{atelierPrefix}?article={contenu.path}"
-                >{contenu.title}</a
-              >
+              <a href="{atelierPrefix}?path={contenu.path}">{contenu.title}</a>
             </li>
           {/each}
         </ul>

@@ -5,7 +5,7 @@ import { checkRepositoryAvailabilityThen } from "../utils.js";
 import { svelteTarget } from "../config.js";
 import { replaceComponent } from "../routeComponentLifeCycle.js";
 
-import Welcome from "../components/Welcome.svelte";
+import Welcome from "../components/screens/Welcome.svelte";
 
 export default () => {
   if (store.state.login) {
