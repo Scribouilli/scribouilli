@@ -1,5 +1,5 @@
 <script>
-  import Skeleton from "../Skeleton.svelte";
+  import ListContenu from "./intern/ListContenu.svelte";
 
   export let publishedWebsiteURL;
   export let buildStatus;
@@ -7,41 +7,15 @@
   export let repositoryURL;
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
-  <section class="screen" id="atelier-list-pages">
-    <div id="pages">
-      <h2>L'atelier — Pages</h2>
-
-      <div class="mesPages">
-        <ul class="pages-list">
-          {#each (pages || []).sort() as page}
-            <li>
-              {#if page.path === "index.md"}Accueil : {/if}<a
-                href="./atelier-page?page={page.path}">{page.title}</a
-              >
-            </li>
-          {/each}
-        </ul>
-
-        <a href="./atelier-page" class="btn btn__medium">Nouvelle page</a>
-      </div>
-    </div>
-  </section>
-</Skeleton>
+<ListContenu
+  {publishedWebsiteURL}
+  {buildStatus}
+  listContenu={pages}
+  {repositoryURL}
+  title="L'atelier — Pages"
+  atelierPrefix="./atelier-page"
+  newContentButtonText="Nouvelle page"
+/>
 
 <style lang="scss">
-  .pages-list {
-    margin-bottom: 4rem;
-
-    li {
-      font-size: 1.3rem;
-      & + li {
-        margin-top: 2rem;
-      }
-
-      a {
-        text-transform: capitalize;
-      }
-    }
-  }
 </style>

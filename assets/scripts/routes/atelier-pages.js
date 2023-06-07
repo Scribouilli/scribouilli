@@ -49,7 +49,7 @@ export default ({ querystring }) => {
   });
 
   const state = store.state;
-  const fileName = new URLSearchParams(querystring).get("page");
+  const fileName = new URLSearchParams(querystring).get("path");
   const mapStateToProps = makeMapStateToProps(fileName);
 
   const pageContenu = new PageContenu({
