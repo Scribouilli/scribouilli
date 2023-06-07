@@ -48,6 +48,13 @@ const custom_styles_content = `
 }
 `;
 
+const custom_config_yml =
+`remote_theme: scribouilli/mimoza
+collections:
+  projects:
+    output: true
+`
+
 export default function makeCreateProjectButtonListener(
   accessToken,
   login,
@@ -79,9 +86,7 @@ export default function makeCreateProjectButtonListener(
               method: "PUT",
               body: JSON.stringify({
                 message: "crée le _config.yml",
-                content: Buffer.from(
-                  `remote_theme: scribouilli/mimoza`
-                ).toString("base64"),
+                content: Buffer.from(custom_config_yml).toString("base64"),
               }),
             }
           );
