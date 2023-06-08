@@ -1,5 +1,5 @@
 <script>
-  import Skeleton from "./Skeleton.svelte";
+  import Skeleton from "../Skeleton.svelte";
 
   export let publishedWebsiteURL;
   export let createProject;
@@ -8,8 +8,8 @@
   let projectCreationProgressP = undefined;
 
   function clickListener() {
-    projectCreationProgressP = Promise.resolve(createProject).then((createProject) =>
-      createProject()
+    projectCreationProgressP = Promise.resolve(createProject).then(
+      (createProject) => createProject()
     );
   }
 </script>
@@ -25,7 +25,10 @@
         {#await publishedWebsiteURL}
           <p>En attente de récupération du nom d'utilisateur·ice</p>
         {:then url}
-          <p>Ce site va être créé à l'adresse <br /> <span class="url">{url}</span></p>
+          <p>
+            Ce site va être créé à l'adresse <br />
+            <span class="url">{url}</span>
+          </p>
         {/await}
       {/await}
 
@@ -36,7 +39,10 @@
       <section class="screen" id="loader">
         <h2>Nous sommes en train de créer le site&nbsp;!</h2>
         <p>Cela peut prendre 2-3 minutes...</p>
-        <img src="./assets/images/hearts.svg" alt="cœur sur toi le temps que ça charge" />
+        <img
+          src="./assets/images/hearts.svg"
+          alt="cœur sur toi le temps que ça charge"
+        />
         <div>
           <p>Pendant le chargement, vous pouvez&nbsp;:</p>
           <ul>
@@ -53,7 +59,11 @@
     {:then url}
       <section class="screen" id="loader">
         <h2>Youpiiiiiiiiiii&nbsp;!!</h2>
-        <p>Le site est publié par ici&nbsp;: <a href={url} target="_blank">{url}</a></p>
+        <p>
+          Le site est publié par ici&nbsp;: <a href={url} target="_blank"
+            >{url}</a
+          >
+        </p>
         <p>Pour éditer les pages, rendez-vous dans l'atelier&nbsp;:</p>
         <a href="./atelier-list-pages" class="btn">Découvrir l'atelier</a>
       </section>

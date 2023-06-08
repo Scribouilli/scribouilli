@@ -1,5 +1,7 @@
 <script>
-  import Skeleton from "./Skeleton.svelte";
+  // @ts-check
+
+  import Skeleton from "../Skeleton.svelte";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -10,6 +12,8 @@
   export let theme;
   export let deleteRepositoryUrl;
   export let repositoryURL;
+  export let blogEnabled
+  export let showArticles
 
   let notification = "";
 
@@ -39,6 +43,15 @@
   const setTheme = (e) => {
     theme.css = e.target.value;
   };
+
+  const toggleBlog = e => {
+    dispatch("toggle-blog", { activated: e.target.checked })
+    if (e.target.checked) {
+      notification = 'Une section « Articles » a été ajoutée dans le menu'
+    } else {
+      notification = 'Les articles ont été masqués sur votre site'
+    }
+  }
 
   const mesCouleurs = [
     {
@@ -79,11 +92,20 @@
   ];
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
 
     <div id="notifications">{notification}</div>
+
+      <div class="wrapper white-zone">
+        <h3>Sections supplémentaires</h3>
+
+        <label>
+          <input type="checkbox" bind:checked={blogEnabled} on:change={toggleBlog} />
+          Ajouter une page articles
+        </label>
+      </div>      
 
     <div class="wrapper white-zone">
       <div>

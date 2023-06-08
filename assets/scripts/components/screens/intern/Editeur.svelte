@@ -1,36 +1,50 @@
 <script>
-  export let fileName;
-  export let title;
-  export let content;
+  //@ts-check
+  export let fileP;
   export let imageDirUrl;
-  export let previousContent;
-  export let previousTitle;
-  export let sha;
   export let publishedWebsiteURL;
   export let buildStatus;
-  export let pagesP;
-  export let makeFileNameFromTitle;
+  export let contenus = [];
   export let repositoryURL;
+  export let editionTitle;
+  export let listPrefix;
+  export let deleteTitle;
+  export let showArticles
 
   import { createEventDispatcher } from "svelte";
-  import Skeleton from "./Skeleton.svelte";
+  import Skeleton from "../../Skeleton.svelte";
+  import { makeFileNameFromTitle } from "../../../utils";
 
-  $: deleteDisabled = true;
+  let file = {
+    fileName: "",
+    content: "",
+    previousContent: undefined,
+    title: "",
+    previousTitle: undefined,
+    sha: "",
+  };
 
-  let filesPath = undefined;
+  fileP.then((_file) => {
+    file = _file;
+  });
+
+  let deleteDisabled = true;
+
+  let filesPath = contenus.map((contenu) => contenu.path);
 
   const dispatch = createEventDispatcher();
 
-  pagesP.then((pages) => {
-    filesPath = pages.map((page) => page.path);
-  });
-
   const validateTitle = (e) => {
     const titleChanged =
-      (sha === "" || previousTitle) && previousTitle?.trim() !== title.trim();
-    if (titleChanged && filesPath.includes(makeFileNameFromTitle(title))) {
+      (file.sha === "" || file.previousTitle) &&
+      file.previousTitle?.trim() !== file.title.trim();
+    if (
+      titleChanged &&
+      filesPath &&
+      filesPath.includes(makeFileNameFromTitle(file.title))
+    ) {
       e.target.setCustomValidity(
-        "Vous avez déjà utilisé ce nom pour une autre page. Veuillez en choisir un autre."
+        "Vous avez déjà utilisé ce nom. Veuillez en choisir un autre."
       );
 
       return;
@@ -44,20 +58,20 @@
 
     if (e.target.checkValidity()) {
       dispatch("save", {
-        fileName: fileName,
-        content: content.trim(),
-        previousContent,
-        title: title?.trim(),
-        previousTitle,
-        sha,
+        fileName: file.fileName,
+        content: file.content.trim(),
+        previousContent: file.previousContent,
+        title: file.title.trim(),
+        previousTitle: file.previousTitle,
+        sha: file.sha,
       });
     }
   };
 
   const onBackClick = (e) => {
     if (
-      previousContent.trim() !== content.trim() ||
-      title?.trim() !== previousTitle?.trim()
+      file.previousContent.trim() !== file.content.trim() ||
+      file.title?.trim() !== file.previousTitle?.trim()
     ) {
       if (
         !confirm(
@@ -70,11 +84,11 @@
   };
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
   <section class="screen">
-    <h3>Édition d'une page</h3>
+    <h3>{editionTitle}</h3>
 
-    {#await pagesP}
+    {#await file}
       <img src="./assets/images/oval.svg" alt="Chargement du contenu" />
     {:then}
       <div class="wrapper">
@@ -82,7 +96,7 @@
           <div>
             <label for="title">Titre</label>
             <input
-              bind:value={title}
+              bind:value={file.title}
               on:change={validateTitle}
               type="text"
               id="title"
@@ -127,7 +141,7 @@
                   <a href={imageDirUrl} target="_blank"> un petit dossier </a>.
                   <br />
                   Vous pouvez y déposer vos images, récupérer le lien et mettre l'image
-                  dans votre page grâce au Markdown avec
+                  dans votre site grâce au Markdown avec
                   <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                   <figure>
                     ![Texte décrivant l'image](https://ladressedemonimage.png)
@@ -139,22 +153,25 @@
 
           <div class="content">
             <label for="content">Contenu</label>
-            <textarea bind:value={content} id="content" cols="30" rows="10" />
+            <textarea
+              bind:value={file.content}
+              id="content"
+              cols="30"
+              rows="10"
+            />
           </div>
           <div class="actions-zone">
-            <a
-              href="./atelier-list-pages"
-              class="btn__retour"
-              on:click={onBackClick}>Retour</a
+            <a href={listPrefix} class="btn__retour" on:click={onBackClick}
+              >Retour</a
             >
             <button type="submit" class="btn__medium btn"
               >Lancer la publication (~ 2 min)</button
             >
           </div>
 
-          {#if sha && fileName && fileName !== "index.md"}
+          {#if file.sha && file.fileName && file.fileName !== "index.md"}
             <div class="wrapper white-zone">
-              <h3>Supprimer la page</h3>
+              <h3>{deleteTitle}</h3>
               <label>
                 <input
                   type="checkbox"
@@ -166,11 +183,11 @@
               </label>
               <button
                 type="button"
-                on:click={dispatch("delete", { sha })}
+                on:click={dispatch("delete", { sha: file.sha })}
                 disabled={deleteDisabled}
                 class=" btn__medium btn btn__danger"
               >
-                Supprimer la page
+                {deleteTitle}
               </button>
             </div>
           {/if}

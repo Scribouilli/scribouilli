@@ -1,5 +1,5 @@
 <script>
-  import Skeleton from "./Skeleton.svelte";
+  import Skeleton from "../Skeleton.svelte";
 
   export let href;
 </script>
@@ -13,10 +13,8 @@
 </Skeleton>
 
 <style>
-
-#login {
-  width: 70%;
-  margin: 0 auto;
-}
-
+  #login {
+    width: 70%;
+    margin: 0 auto;
+  }
 </style>
