@@ -27,6 +27,7 @@ export default new Store({
       css: undefined,
       sha: undefined,
     },
+    blogIndexSha: undefined,
   },
   mutations: {
     setLogin(state, login) {
@@ -67,6 +68,9 @@ export default new Store({
     setTheme(state, css, sha) {
       state.theme.css = css;
       state.theme.sha = sha;
+    },
+    setBlogIndexSha(state, sha) {
+      state.blogIndexSha = sha
     },
     removeSite(state) {
       state.pages = undefined;

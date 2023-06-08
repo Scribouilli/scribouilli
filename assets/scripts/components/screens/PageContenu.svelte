@@ -17,7 +17,7 @@
   {repositoryURL}
   {contenus}
   editionTitle="Édition d'une page"
-  listPrefix="./atelier-list-pagess"
+  listPrefix="./atelier-list-pages"
   deleteTitle="Supprimer la page"
   on:save
   on:delete

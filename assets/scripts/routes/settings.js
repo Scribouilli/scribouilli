@@ -19,6 +19,7 @@ function mapStateToProps(state) {
     theme: state.theme,
     deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
     repositoryURL: makeRepositoryURL(state),
+    blogEnabled: state.blogIndexSha !== undefined,
   };
 }
 
@@ -59,6 +60,34 @@ export default () => {
         .catch((msg) => handleErrors(msg));
     });
   });
+
+  settings.$on("toggle-blog", async ({ detail: { activated } }) => {
+    const login = await store.state.login
+    const blogMdContent =
+`---
+layout: blog
+title: Articles
+---
+`
+    try {
+      if (activated) {
+        const { content: { sha } } = await databaseAPI.createFile(
+          login,
+          store.state.repoName,
+          'blog.md',
+          {
+            message: 'Activation du blog',
+            content: blogMdContent,
+          },
+        )
+        store.mutations.setBlogIndexSha(sha)
+      } else {
+
+      }
+    } catch (msg) {
+      handleErrors(msg)
+    }
+  })
 
   if (!store.state.theme.sha) {
     Promise.resolve(store.state.login).then((login) => {

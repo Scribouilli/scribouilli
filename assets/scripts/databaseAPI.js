@@ -113,6 +113,8 @@ class DatabaseAPI {
 
   /**
    * @summary Create a file
+   * 
+   * @param {{ message: string, content: string, }} body
    */
   createFile(login, repoName, fileName, body) {
     return this.callGithubAPI(
@@ -288,6 +290,19 @@ class DatabaseAPI {
     ).then((deployments) => deployments[0]);
   }
 
+  checkFileExistence(login, repoName, path) {
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${repoName}/contents/${path}`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          "If-None-Match": this.getFilesCache.get(path)?.etag,
+        },
+      }
+    ).then(httpResp => httpResp.status !== 404)
+    .catch(_ => false)
+  }
+
   /**
    * @summary This method must be called for each API call.
    *
@@ -347,6 +362,13 @@ if (store.state.accessToken) {
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP);
   siteRepoConfigP.catch((error) => handleErrors(error));
+
+  const { content: { sha: blogIndexSha } } = await databaseAPI.getFile(
+    await loginP,
+    store.state.repoName,
+    'blog.md'
+  )
+  store.mutations.setBlogIndexSha(blogIndexSha)
 } else {
   history.replaceState(undefined, "", store.state.basePath + "/");
 }
