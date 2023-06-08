@@ -12,6 +12,28 @@ import {
 } from "../utils";
 import Settings from "../components/screens/Settings.svelte";
 
+const blogMdContent =
+`---
+layout: default
+title: Articles
+permalink: /articles/
+---
+<h1>
+  Articles
+</h1>
+
+{% for post in site.posts %}
+<article class="blog-item">
+  <h2>
+    <a href="{{post.url | relative_url}}"> {{ post.title }} </a>
+  </h2>
+
+  <a href="{{post.url | relative_url}}"> Lire l'article ➞ </a>
+</article>
+<hr />
+{% endfor %}
+`
+
 function mapStateToProps(state) {
   return {
     publishedWebsiteURL: makePublishedWebsiteURL(state),
@@ -64,12 +86,7 @@ export default () => {
 
   settings.$on("toggle-blog", async ({ detail: { activated } }) => {
     const login = await store.state.login
-    const blogMdContent =
-`---
-layout: blog
-title: Articles
----
-`
+    
     try {
       if (activated) {
         const resp = await databaseAPI.createFile(
