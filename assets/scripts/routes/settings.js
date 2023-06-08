@@ -20,6 +20,7 @@ function mapStateToProps(state) {
     deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
     repositoryURL: makeRepositoryURL(state),
     blogEnabled: state.blogIndexSha !== undefined,
+    showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
   };
 }
 
@@ -71,7 +72,7 @@ title: Articles
 `
     try {
       if (activated) {
-        const { content: { sha } } = await databaseAPI.createFile(
+        const resp = await databaseAPI.createFile(
           login,
           store.state.repoName,
           'blog.md',
@@ -80,6 +81,7 @@ title: Articles
             content: Buffer.from(blogMdContent).toString('base64'),
           },
         )
+        const { content: { sha } } = await resp.json()
         store.mutations.setBlogIndexSha(sha)
       } else {
         await databaseAPI.deleteFile(
@@ -87,7 +89,8 @@ title: Articles
           store.state.repoName,
           'blog.md',
           store.state.blogIndexSha
-          )
+        )
+        store.mutations.setBlogIndexSha(undefined)
       }
     } catch (msg) {
       handleErrors(msg)

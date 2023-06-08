@@ -9,6 +9,7 @@
   export let editionTitle;
   export let listPrefix;
   export let deleteTitle;
+  export let showArticles
 
   import { createEventDispatcher } from "svelte";
   import Skeleton from "../../Skeleton.svelte";
@@ -83,7 +84,7 @@
   };
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
   <section class="screen">
     <h3>{editionTitle}</h3>
 

@@ -364,12 +364,21 @@ const init = async () => {
     store.mutations.setSiteRepoConfig(siteRepoConfigP);
     siteRepoConfigP.catch((error) => handleErrors(error));
 
-    const { sha: blogIndexSha } = await databaseAPI.getFile(
-      await loginP,
-      store.state.repoName,
-      'blog.md'
-    )
-    store.mutations.setBlogIndexSha(blogIndexSha)
+    try {
+      const { sha: blogIndexSha } = await databaseAPI.getFile(
+        await loginP,
+        store.state.repoName,
+        'blog.md'
+      )
+      store.mutations.setBlogIndexSha(blogIndexSha)  
+    } catch (err) {
+      if (err !== 'NOT_FOUND') {
+        throw err
+      }
+    }
+    
+    const articles = await databaseAPI.getArticlesList(await store.state.login, store.state.repoName)
+    store.mutations.setArticles(articles)
   } else {
     history.replaceState(undefined, "", store.state.basePath + "/");
   }

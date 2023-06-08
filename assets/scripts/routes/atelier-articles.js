@@ -51,6 +51,7 @@ const makeMapStateToProps = (fileName) => (state) => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
       repositoryURL: makeRepositoryURL(state),
+      showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
     };
   } else {
     return {
@@ -67,6 +68,7 @@ const makeMapStateToProps = (fileName) => (state) => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
       repositoryURL: makeRepositoryURL(state),
+      showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
     };
   }
 };
@@ -127,9 +129,9 @@ export default ({ querystring }) => {
         return;
       }
 
-      const existingDate = fileName && fileName.slice('_posts/'.length, '_posts/YYYY-MM-DD'.length)
+      const existingDate = fileName.slice('_posts/'.length, '_posts/YYYY-MM-DD'.length)
       let date = new Date()
-      if (existingDate !== undefined) {
+      if (existingDate !== '') {
         date = new Date(existingDate)
       }
 

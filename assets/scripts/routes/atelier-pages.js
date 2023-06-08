@@ -52,6 +52,7 @@ const makeMapStateToProps = (fileName) => (state) => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
       repositoryURL: makeRepositoryURL(state),
+      showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
     }
   } else {
     return {
@@ -69,6 +70,7 @@ const makeMapStateToProps = (fileName) => (state) => {
       publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
       repositoryURL: makeRepositoryURL(state),
+      showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
     };
   }
 };

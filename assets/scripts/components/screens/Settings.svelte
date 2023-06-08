@@ -13,6 +13,7 @@
   export let deleteRepositoryUrl;
   export let repositoryURL;
   export let blogEnabled
+  export let showArticles
 
   let notification = "";
 
@@ -48,7 +49,7 @@
     if (e.target.checked) {
       notification = 'Une section « Articles » a été ajoutée dans le menu'
     } else {
-      notification = 'Les articles ont été masqués'
+      notification = 'Les articles ont été masqués sur votre site'
     }
   }
 
@@ -91,7 +92,7 @@
   ];
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
   <section class="screen" id="settings">
     <h2>L'atelier — Paramètres</h2>
 

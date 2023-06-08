@@ -18,6 +18,7 @@ function mapStateToProps(state) {
     articles: state.articles,
     buildStatus: state.buildStatus,
     repositoryURL: makeRepositoryURL(state),
+    showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
   };
 }
 

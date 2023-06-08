@@ -5,6 +5,7 @@
   export let buildStatus;
   export let pages;
   export let repositoryURL;
+  export let showArticles
 </script>
 
 <ListContenu
@@ -12,6 +13,7 @@
   {buildStatus}
   listContenu={pages}
   {repositoryURL}
+  {showArticles}
   title="L'atelier — Pages"
   atelierPrefix="./atelier-page"
   newContentButtonText="Nouvelle page"

@@ -1,7 +1,10 @@
 <script>
+  // @ts-check
+
   export let publishedWebsiteURL;
   export let buildStatus;
   export let repositoryURL;
+  export let showArticles
 
   let status = undefined;
 
@@ -37,7 +40,9 @@
       <nav>
         <ul>
           <li><a href="./atelier-list-pages">Pages</a></li>
-          <li><a href="./atelier-list-articles">Articles</a></li>
+          {#if showArticles}
+            <li><a href="./atelier-list-articles">Articles</a></li>            
+          {/if}
           <li><a href="./settings">Paramètres</a></li>
           <li>
             {#if repositoryURL}

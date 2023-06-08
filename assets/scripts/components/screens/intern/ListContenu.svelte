@@ -8,9 +8,10 @@
   export let title;
   export let atelierPrefix;
   export let newContentButtonText;
+  export let showArticles
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL}>
+<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
   <section class="screen">
     <div>
       <h2>{title}</h2>
