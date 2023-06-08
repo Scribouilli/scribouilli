@@ -18,25 +18,59 @@ import {
 import PageContenu from "../components/screens/PageContenu.svelte";
 
 const makeMapStateToProps = (fileName) => (state) => {
-  return {
-    fileName: fileName,
-    title: "",
-    content: "",
-    imageDirUrl: "",
-    previousTitle: undefined,
-    previousContent: undefined,
-    makeFileNameFromTitle: makeFileNameFromTitle,
-    // TOUTDOUX Il se passe un truc bizarre ici quand on recharge la page
-    pagesP: Promise.resolve(state.login).then((login) =>
-      databaseAPI
-        .getPagesList(login, state.repoName)
-        .catch((msg) => handleErrors(msg))
-    ),
-    sha: "",
-    publishedWebsiteURL: makePublishedWebsiteURL(state),
-    buildStatus: state.buildStatus,
-    repositoryURL: makeRepositoryURL(state),
-  };
+  // Display existing file
+  if (fileName) {
+    const fileP = async function() {
+      try {
+        const login = await Promise.resolve(store.state.login)
+        const { content, sha } = await databaseAPI.getFile(login, store.state.repoName, fileName)
+        const contenu = Buffer.from(content, "base64").toString();
+        const {
+          data,
+          content: markdownContent,
+          errors,
+        } = parseMarkdown(contenu);
+
+        return {
+          fileName,
+          content: markdownContent,
+          previousContent: markdownContent,
+          title: data?.title,
+          previousTitle: data?.title,
+          sha: sha,
+        }
+      } catch (msg) {
+        console.log('oh nooooo')
+        handleErrors(msg)
+      }
+    };
+
+    return {
+      fileP: fileP(),
+      imageDirUrl: "",
+      contenus: state.articles,
+      publishedWebsiteURL: makePublishedWebsiteURL(state),
+      buildStatus: state.buildStatus,
+      repositoryURL: makeRepositoryURL(state),
+    }
+  } else {
+    return {
+      fileP: Promise.resolve({
+        fileName: "",
+        title: "",
+        content: "",
+        previousTitle: undefined,
+        previousContent: undefined,
+        sha: "",
+      }),
+      imageDirUrl: "",
+      makeFileNameFromTitle: makeFileNameFromTitle,
+      contenus: state.pages,
+      publishedWebsiteURL: makePublishedWebsiteURL(state),
+      buildStatus: state.buildStatus,
+      repositoryURL: makeRepositoryURL(state),
+    };
+  }
 };
 
 export default ({ querystring }) => {
@@ -155,35 +189,4 @@ export default ({ querystring }) => {
       }
     }
   );
-
-  // Display existing file
-  if (fileName) {
-    Promise.resolve(store.state.login).then((login) => {
-      databaseAPI
-        .getFile(login, store.state.repoName, fileName)
-        //@ts-ignore
-        .then(({ content, sha }) => {
-          //@ts-ignore
-          const contenu = Buffer.from(content, "base64").toString();
-          const {
-            data,
-            content: markdownContent,
-            errors,
-          } = parseMarkdown(contenu);
-
-          //@ts-ignore
-          pageContenu.$set({
-            fileName: fileName,
-            content: markdownContent,
-            previousContent: markdownContent,
-            // @ts-ignore
-            title: data.title,
-            // @ts-ignore
-            previousTitle: data.title,
-            sha: sha,
-          });
-        })
-        .catch((msg) => handleErrors(msg));
-    });
-  }
 };
