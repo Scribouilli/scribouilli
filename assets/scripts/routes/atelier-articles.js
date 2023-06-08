@@ -7,6 +7,7 @@ import {
   checkRepositoryAvailabilityThen,
   handleErrors,
   makeFileNameFromTitle,
+  makeArticleFileName,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
   makeRepositoryURL,
@@ -15,7 +16,7 @@ import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import ArticleContenu from "../components/screens/ArticleContenu.svelte";
-import { format } from "date-fns";
+
 
 const makeMapStateToProps = (fileName) => (state) => {
   // Display existing file
@@ -126,14 +127,13 @@ export default ({ querystring }) => {
         return;
       }
 
-      let newFileName = fileName;
-      if (fileName !== "index.md") {
-        const date = new Date();
-        newFileName = `_posts/${format(
-          date,
-          "yyyy-MM-dd"
-        )}-${makeFileNameFromTitle(title)}`;
+      const existingDate = fileName && fileName.slice('_posts/'.length, '_posts/YYYY-MM-DD'.length)
+      let date = new Date()
+      if (existingDate !== undefined) {
+        date = new Date(existingDate)
       }
+
+      const newFileName = makeArticleFileName(title, date);
 
       const body = {
         message: `création de l'article ${title || "index.md"}`,

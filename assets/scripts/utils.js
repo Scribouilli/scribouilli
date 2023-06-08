@@ -1,6 +1,7 @@
 //@ts-check
 
 import page from 'page'
+import { format } from "date-fns";
 
 import databaseAPI from './databaseAPI.js'
 import store from "./store.js";
@@ -58,19 +59,45 @@ export async function makeRepositoryURL(state) {
   return `https://github.com/${login}/${state.repoName}`;
 }
 
-export function makeFileNameFromTitle(title) {
-  const fileName =
-    title
-      .replace(/\/|#|\?/g, "-") // replace url confusing characters
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
-      .split(".")
-      .join("") // Remove dot to avoid issues
-      .toLowerCase() + ".md";
-
-  return fileName;
+/**
+ * 
+ * @param {string} string 
+ * @returns {string}
+ */
+function makeFilenameCompatibleString(string){
+  return string
+    .replace(/\/|#|\?/g, "-") // replace url confusing characters
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
+    .split(".")
+    .join("") // Remove dot to avoid issues
+    .toLowerCase()
 }
 
+/**
+ * 
+ * @param {string} title 
+ * @returns {string}
+ */
+export function makeFileNameFromTitle(title) {
+  return makeFilenameCompatibleString(title) + ".md";
+}
+
+/**
+ * 
+ * @param {string} title 
+ * @param {Date} date 
+ * @returns {string}
+ */
+export function makeArticleFileName(title, date) {
+  return `_posts/${format(date, "yyyy-MM-dd")}-${makeFilenameCompatibleString(title)}.md`
+}
+
+/**
+ * 
+ * @param {string} title 
+ * @returns {string}
+ */
 export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
   return ["---", "title: " + title, "---"].join("\n");
 }

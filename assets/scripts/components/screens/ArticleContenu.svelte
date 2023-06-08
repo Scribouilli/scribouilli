@@ -15,12 +15,10 @@
   {publishedWebsiteURL}
   {buildStatus}
   {repositoryURL}
+  {contenus}
   editionTitle="Édition d'un article"
   listPrefix="./atelier-list-articles"
   deleteTitle="Supprimer l'article"
   on:save
   on:delete
 />
-
-<style lang="scss">
-</style>
