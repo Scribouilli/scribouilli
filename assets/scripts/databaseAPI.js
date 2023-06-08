@@ -330,47 +330,51 @@ class DatabaseAPI {
 
 let databaseAPI;
 
-// Retrieve logged in user from access_token
-if (store.state.accessToken) {
-  databaseAPI = new DatabaseAPI(store.state.accessToken);
+const init = async () => {
+  // Retrieve logged in user from access_token
+  if (store.state.accessToken) {
+    databaseAPI = new DatabaseAPI(store.state.accessToken);
 
-  const loginP = databaseAPI
-    .getAuthenticatedUser()
-    // @ts-ignore
-    .then(({ login }) => {
-      store.mutations.setLogin(login);
-      return login;
-    })
-    .catch((msg) => handleErrors(msg));
-
-  store.mutations.setLogin(loginP);
-  store.mutations.setBuildStatus(
-    makeBuildStatus(databaseAPI, loginP, store.state.repoName)
-  );
-  /*
-   Appel sans vérification,
-   On suppose qu'au chargement initial,
-   on peut faire confiance à ce que revoit l'API
-   */
-  store.state.buildStatus.checkStatus();
-
-  const siteRepoConfigP = loginP.then((login) => {
-    return databaseAPI
-      .getRepository(login, store.state.repoName)
+    const loginP = databaseAPI
+      .getAuthenticatedUser()
+      // @ts-ignore
+      .then(({ login }) => {
+        store.mutations.setLogin(login);
+        return login;
+      })
       .catch((msg) => handleErrors(msg));
-  });
 
-  store.mutations.setSiteRepoConfig(siteRepoConfigP);
-  siteRepoConfigP.catch((error) => handleErrors(error));
+    store.mutations.setLogin(loginP);
+    store.mutations.setBuildStatus(
+      makeBuildStatus(databaseAPI, loginP, store.state.repoName)
+    );
+    /*
+    Appel sans vérification,
+    On suppose qu'au chargement initial,
+    on peut faire confiance à ce que revoit l'API
+    */
+    store.state.buildStatus.checkStatus();
 
-  const { content: { sha: blogIndexSha } } = await databaseAPI.getFile(
-    await loginP,
-    store.state.repoName,
-    'blog.md'
-  )
-  store.mutations.setBlogIndexSha(blogIndexSha)
-} else {
-  history.replaceState(undefined, "", store.state.basePath + "/");
+    const siteRepoConfigP = loginP.then((login) => {
+      return databaseAPI
+        .getRepository(login, store.state.repoName)
+        .catch((msg) => handleErrors(msg));
+    });
+
+    store.mutations.setSiteRepoConfig(siteRepoConfigP);
+    siteRepoConfigP.catch((error) => handleErrors(error));
+
+    const { sha: blogIndexSha } = await databaseAPI.getFile(
+      await loginP,
+      store.state.repoName,
+      'blog.md'
+    )
+    store.mutations.setBlogIndexSha(blogIndexSha)
+  } else {
+    history.replaceState(undefined, "", store.state.basePath + "/");
+  }
 }
+
+init()
 
 export default databaseAPI;

@@ -12,7 +12,6 @@
   export let theme;
   export let deleteRepositoryUrl;
   export let repositoryURL;
-  /** @type {Promise<boolean>} */
   export let blogEnabled
 
   let notification = "";
@@ -45,8 +44,8 @@
   };
 
   const toggleBlog = e => {
-    dispatch("toggle-blog", { activated: e.target.value })
-    if (e.target.value) {
+    dispatch("toggle-blog", { activated: e.target.checked })
+    if (e.target.checked) {
       notification = 'Une section « Articles » a été ajoutée dans le menu'
     } else {
       notification = 'Les articles ont été masqués'
@@ -101,12 +100,10 @@
       <div class="wrapper white-zone">
         <h3>Sections supplémentaires</h3>
 
-        {#await blogEnabled then enabled}
-          <label>
-            <input type="checkbox" checked={enabled} on:change={toggleBlog} />
-            Ajouter une page articles
-          </label>
-        {/await}
+        <label>
+          <input type="checkbox" bind:checked={blogEnabled} on:change={toggleBlog} />
+          Ajouter une page articles
+        </label>
       </div>      
 
     <div class="wrapper white-zone">

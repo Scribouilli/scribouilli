@@ -77,12 +77,17 @@ title: Articles
           'blog.md',
           {
             message: 'Activation du blog',
-            content: blogMdContent,
+            content: Buffer.from(blogMdContent).toString('base64'),
           },
         )
         store.mutations.setBlogIndexSha(sha)
       } else {
-
+        await databaseAPI.deleteFile(
+          login,
+          store.state.repoName,
+          'blog.md',
+          store.state.blogIndexSha
+          )
       }
     } catch (msg) {
       handleErrors(msg)
