@@ -1,6 +1,6 @@
 //@ts-check
 
-import parseMarkdown from "@github-docs/frontmatter";
+import lireFrontMatter from 'front-matter'
 
 import { handleErrors } from "./utils.js";
 import makeBuildStatus from "./buildStatus.js";
@@ -228,7 +228,7 @@ class DatabaseAPI {
           const pagePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
               .then((page) => {
-                const { data, content: markdownContent } = parseMarkdown(
+                const { attributes: data, body: markdownContent } = lireFrontMatter(
                   Buffer.from(page.content, "base64").toString()
                 );
                 const title = data?.title;
@@ -265,7 +265,7 @@ class DatabaseAPI {
           const articlePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
               .then((article) => {
-                const { data, content: markdownContent } = parseMarkdown(
+                const { attributes: data, body: markdownContent } = lireFrontMatter(
                   Buffer.from(article.content, "base64").toString()
                 );
                 const title = data?.title;
@@ -300,7 +300,7 @@ class DatabaseAPI {
         },
       }
     ).then(httpResp => httpResp.status !== 404)
-    .catch(_ => false)
+      .catch(_ => false)
   }
 
   /**
@@ -370,13 +370,13 @@ const init = async () => {
         store.state.repoName,
         'blog.md'
       )
-      store.mutations.setBlogIndexSha(blogIndexSha)  
+      store.mutations.setBlogIndexSha(blogIndexSha)
     } catch (err) {
       if (err !== 'NOT_FOUND') {
         throw err
       }
     }
-    
+
     const articles = await databaseAPI.getArticlesList(await store.state.login, store.state.repoName)
     store.mutations.setArticles(articles)
   } else {
