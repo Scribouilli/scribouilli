@@ -4,7 +4,7 @@
   "description": "scribouilli, c'est cool",
   "main": "index.js",
   "scripts": {
-    "start": "http-server",
+    "start": "echo 'http://localhost:8080/' && http-server -a localhost -s",
     "dev": "rollup -c -w",
     "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
