@@ -6,9 +6,10 @@ import databaseAPI from './databaseAPI.js';
 import store from './store.js';
 import makeBuildStatus from "./buildStatus.js";
 import { handleErrors, logError, delay } from "./utils";
+import 'types.js'
 
 /**
- * @summary Get the current authenticated user login
+ * @summary Fetch the current authenticated user login and set it in the store.
  *
  * @description This function is called on every page that needs authentication.
  * It returns the login of the user or the organization. If the user is not
@@ -47,7 +48,21 @@ export const fetchAuthenticatedUserLogin = () => {
   return loginP;
 }
 
-export const getCurrentUserRepositories = async () => {
+/**
+ * @summary Get the list of repositories for the current user
+ * and set it in the store.
+ *
+ * @description This function is called on every page that needs the list of
+ * repositories for the current user. It returns a promise that resolves to the
+ * list of repositories. If the user is not logged in, it redirects to the
+ * authentication page.
+ *
+ * @returns A promise that resolves to the list of
+ * repositories for the current user.
+ *
+*/
+
+export const fetchCurrentUserRepositories = async () => {
     const login = await fetchAuthenticatedUserLogin();
     const currentUserRepositoriesP = databaseAPI
       .getCurrentUserRepositories()
@@ -107,13 +122,6 @@ export const setBuildStatus = (loginP, repoName) => {
   */
   store.state.buildStatus.checkStatus();
 }
-/**
- * @typedef {Object} CurrentRepository
- * @property {string} name - The name of the repository
- * @property {string} owner - The owner of the repository
- * @property {string} publishedWebsiteURL - The URL of the published website
- * @property {string} repositoryURL - The URL of the repository
- */
 
 /**
  * @summary Set the current repository from the owner and the name

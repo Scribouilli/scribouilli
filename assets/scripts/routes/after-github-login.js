@@ -7,12 +7,12 @@ import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import AfterGithubLogin from '../components/AfterGithubLogin.svelte'
 import {
-  getCurrentUserRepositories,
+  fetchCurrentUserRepositories,
   createRepositoryForCurrentAccount,
 } from '../actions.js'
 
 export default () => {
-    getCurrentUserRepositories().then((repos) => {
+    fetchCurrentUserRepositories().then((repos) => {
       if (repos.length === 0) {
         // If the user has no repository, we automatically create one for them.
         createRepositoryForCurrentAccount(defaultRepositoryName)
