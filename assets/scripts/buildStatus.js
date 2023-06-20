@@ -1,18 +1,19 @@
 //@ts-check
 
 import databaseAPI from './databaseAPI.js'
+import { logError } from './utils.js'
 
 /*
 
-Pas d'étoile 
+Pas d'étoile
 
 
 Tant que le répo ne déploi pas, le status vaut `null`
-Quand un build est annulé par un nouveau commit, 
+Quand un build est annulé par un nouveau commit,
 
 l'API de statut retourne d'abord une erreur et plus tard, `building` puis `built`
 
-Quand on viens de commité et qu'on interroge l'API `/pages` 
+Quand on viens de commité et qu'on interroge l'API `/pages`
 elle nous réponds d'abord que c'est built (parce que le nouveau build n'a pas commencé).
 
 https://docs.github.com/en/rest/pages?apiVersion=2022-11-28#get-a-github-pages-site
@@ -22,8 +23,8 @@ Peut-être que l'on pourrait changer de stratégie et utiliser
 
 Puis, récupérer
 
-"statuses_url": "https://api.github.com/repos/octocat/example/deployments/1/statuses", 
-pour ensuite faire du polling dessus, et récupérer la propriété state 
+"statuses_url": "https://api.github.com/repos/octocat/example/deployments/1/statuses",
+pour ensuite faire du polling dessus, et récupérer la propriété state
 
     "state": {
         "description": "The state of the status.",
@@ -41,7 +42,7 @@ pour ensuite faire du polling dessus, et récupérer la propriété state
 
 
 NOTE
-   
+
 Nous pensons que Github laisse mourrir l'API github pages.
 
 Un refactoring à faire plus tard serait d'utilise les API de déploiement qui sont plus riche en information.
@@ -99,6 +100,16 @@ export default function (login, repoName) {
                         }
                     })
                     .catch(error => {
+                        // If GitHub Pages has not been enabled when the repository was created,
+                        // we create it now.
+                        if (error === "NOT_FOUND") {
+                          const errorMessage = `GitHub Pages site not found for ${login}/${repoName}. Creating it now.`
+
+                          logError(errorMessage, "buildStatus.checkStatus")
+
+                          databaseAPI.createRepoGithubPages(login, repoName)
+                        }
+
                         repoStatus = 'errored'
                         if (reaction) {
                             reaction(repoStatus);
