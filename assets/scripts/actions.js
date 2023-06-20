@@ -6,7 +6,6 @@ import databaseAPI from './databaseAPI.js';
 import store from './store.js';
 import makeBuildStatus from "./buildStatus.js";
 import { handleErrors, logError, delay } from "./utils";
-import 'types.js'
 
 /**
  * @summary Fetch the current authenticated user login and set it in the store.
@@ -49,7 +48,7 @@ export const fetchAuthenticatedUserLogin = () => {
 }
 
 /**
- * @summary Get the list of repositories for the current user
+ * @summary Fetch the list of repositories for the current user
  * and set it in the store.
  *
  * @description This function is called on every page that needs the list of
@@ -124,6 +123,12 @@ export const setBuildStatus = (loginP, repoName) => {
 }
 
 /**
+ * @typedef {Object} CurrentRepository
+ * @property {string} name - The name of the repository
+ * @property {string} owner - The owner of the repository
+ * @property {string} publishedWebsiteURL - The URL of the published website
+ * @property {string} repositoryURL - The URL of the repository
+ *
  * @summary Set the current repository from the owner and the name
  * of the repository in the URL
  *
