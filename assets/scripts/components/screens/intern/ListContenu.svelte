@@ -31,7 +31,7 @@
           {/each}
         </ul>
 
-        <a href={atelierPrefix} class="btn btn__medium"
+        <a href="{atelierPrefix}?repoName={repoName}&account={account}" class="btn btn__medium"
           >{newContentButtonText}</a
         >
       </div>
