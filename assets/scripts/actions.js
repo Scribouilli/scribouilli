@@ -163,6 +163,21 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   return currentRepository;
 }
 
+/**
+ * @summary Create a repository for the current account
+ *
+ * @description This function creates a repository for the current account (user
+ * or organization) and set a Github Pages branch. It redirects to the
+ * list of pages for the atelier.
+ *
+ * @param {string} repoName - The name of the repository to create
+ *
+ * @returns {Promise<void>} A promise that resolves when the repository
+ * is created.
+ *
+ * @throws {string} An error message if the repository cannot be created.
+ *
+ */
 export const createRepositoryForCurrentAccount = async (repoName) => {
   const login = await store.state.login
 
