@@ -3,7 +3,6 @@
 import parseMarkdown from "@github-docs/frontmatter";
 
 import { handleErrors } from "./utils.js";
-import makeBuildStatus from "./buildStatus.js";
 import store from "./store.js";
 
 class DatabaseAPI {
@@ -371,41 +370,29 @@ class DatabaseAPI {
 
 let databaseAPI;
 
-console.log(store)
 const init = async () => {
-  console.log("init");
-  console.log(store)
-  // Retrieve logged in user from access_token
+  // Create the databaseAPI singleton with the logged-in user access token.
   if (store.state.accessToken) {
     databaseAPI = new DatabaseAPI(store.state.accessToken);
 
-    const siteRepoConfigP = loginP.then((login) => {
-      return databaseAPI
-        .getRepository(login, store.state.currentRepository.name)
-        .catch((msg) => handleErrors(msg));
-    });
+    // try {
+      // const { sha: blogIndexSha } = await databaseAPI.getFile(
+        // await loginP,
+        // store.state.currentRepository.name,
+        // 'blog.md'
+      // )
+      // store.mutations.setBlogIndexSha(blogIndexSha)
+    // } catch (errorMessage) {
+      // if (errorMessage !== 'NOT_FOUND') {
+        // throw errorMessage
+      // }
+    // }
 
-    store.mutations.setSiteRepoConfig(siteRepoConfigP);
-    siteRepoConfigP.catch((error) => handleErrors(error));
-
-    try {
-      const { sha: blogIndexSha } = await databaseAPI.getFile(
-        await loginP,
-        store.state.currentRepository.name,
-        'blog.md'
-      )
-      store.mutations.setBlogIndexSha(blogIndexSha)
-    } catch (err) {
-      if (err !== 'NOT_FOUND') {
-        throw err
-      }
-    }
-
-    const articles = await databaseAPI.getArticlesList(
-      await store.state.login,
-      store.state.currentRepository.name
-    )
-    store.mutations.setArticles(articles)
+    // const articles = await databaseAPI.getArticlesList(
+      // await store.state.login,
+      // store.state.currentRepository.name
+    // )
+    // store.mutations.setArticles(articles)
   } else {
     history.replaceState(undefined, "", store.state.basePath + "/");
   }

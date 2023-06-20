@@ -40,7 +40,7 @@ export const handleErrors = (errorMessage) => {
     }
 
     default:
-      console.log(`Error catched: ${errorMessage}`);
+      logError(errorMessage, "handleErrors", "log");
   }
 };
 
@@ -100,4 +100,8 @@ export function makeArticleFileName(title, date) {
  */
 export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
   return ["---", "title: " + title, "---"].join("\n");
+}
+
+export const logError = (errorMessage, caller = "unknown", level = "error") => {
+  console[level](`[${level}] [caller: ${caller}] ${errorMessage}`);
 }

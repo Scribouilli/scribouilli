@@ -4,19 +4,21 @@ import page from 'page'
 
 import databaseAPI from './databaseAPI.js';
 import store from './store.js';
-import { handleErrors } from "./utils";
+import makeBuildStatus from "./buildStatus.js";
+import { handleErrors, logError } from "./utils";
 
 /**
- * @summary Get the current logged-in user
+ * @summary Get the current authenticated user login
  *
  * @description This function is called on every page that needs authentication.
  * It returns the login of the user or the organization. If the user is not
  * logged in, it redirects to the authentication page.
  *
- * @returns {string|Promise<string>} the login of the user or the organization
+ * @returns {Promise<string>} A promise that resolves to the login of the
+ * authenticated user or organization.
  *
  */
-export const getLogin = () => {
+export const getAuthenticatedUserLogin = () => {
   const loginP = databaseAPI
     .getAuthenticatedUser()
     .then(({ login }) => {
@@ -34,11 +36,15 @@ export const getLogin = () => {
         }
 
         default:
-          console.log(`Error catched: ${errorMessage}`);
+          const message = `The access token is invalid. ${errorMessage}`
+
+          logError(message, "getAuthenticatedUserLogin", "log");
       }
     });
 
   store.mutations.setLogin(loginP);
+
+  return loginP;
 }
 
 export const getCurrentUserRepositories = async () => {
@@ -77,6 +83,16 @@ export const getCurrentRepoArticles = () => {
     .catch((msg) => handleErrors(msg));
 }
 
+export const setSiteRepoConfig = (loginP) => {
+  const siteRepoConfigP = loginP
+    .then((login) =>
+      databaseAPI.getRepository(login, store.state.currentRepository.name)
+    )
+    .catch((error) => handleErrors(error));
+
+  store.mutations.setSiteRepoConfig(siteRepoConfigP);
+}
+
 export const setBuildStatus = (loginP, repoName) => {
   store.mutations.setBuildStatus(makeBuildStatus(loginP, repoName));
   /*
@@ -94,9 +110,10 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const publishedWebsiteURL =
     `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
-  const loginP = getLogin();
+  const loginP = getAuthenticatedUserLogin();
 
   setBuildStatus(loginP, repoName);
+  setSiteRepoConfig(loginP);
 
   const currentRepository = {
     name: repoName,
