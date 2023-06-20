@@ -27,9 +27,9 @@ page("/atelier-list-pages", atelierListPages)
 page("/atelier-page", atelierPages)
 page("/atelier-article", atelierArticles)
 page("/create-github-account", createGithubAccount)
-page("/create-your-site", createYourSite)
-page("/create-new-site", createNewSite)
-page("/start-from-existing-site", startFromExistingSite)
+page("/selectionner-un-site", createYourSite)
+page("/creer-un-nouveau-site", createNewSite)
+page("/partir-dun-site-existant", startFromExistingSite)
 page("/settings", settings)
 
 page.base(store.state.basePath);

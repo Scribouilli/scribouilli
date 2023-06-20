@@ -12,8 +12,8 @@
       </p>
 
       <div class="btn-list">
-        <a href="./create-new-site" class="btn">Créer un nouveau site</a>
-        <a href="./start-from-existing-site" class="btn">
+        <a href="./creer-un-nouveau-site" class="btn">Créer un nouveau site</a>
+        <a href="./partir-dun-site-existant" class="btn">
           Partir d'un site existant
         </a>
       </div>

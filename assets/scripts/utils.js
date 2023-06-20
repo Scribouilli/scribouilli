@@ -34,7 +34,7 @@ export const handleErrors = (errorMessage) => {
       break;
     }
     case "REPOSITORY_NOT_FOUND": {
-      page("/create-your-site");
+      page("/selectionner-un-site");
 
       break;
     }

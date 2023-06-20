@@ -20,7 +20,7 @@ export default () => {
           }
         );
 
-        page.redirect("/create-your-site");
+        page.redirect("/selectionner-un-site");
       }
     })
 
