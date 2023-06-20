@@ -6,7 +6,7 @@
 <Skeleton>
   <section class="screen">
     <div id="creer_compte_github">
-      <h2>Créer un site</h2>
+      <h2>Travailler sur votre site</h2>
       <p>
         Vous pouvez créer un nouveau site ou partir d'un site existant.
       </p>
