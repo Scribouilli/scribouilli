@@ -4,7 +4,7 @@
 
 </script>
 
-<Skeleton showArticle={false}>
+<Skeleton>
   <section class="screen" id="loader">
     <h2>Nous sommes en train de créer le site&nbsp;!</h2>
     <p>Cela peut prendre 2-3 minutes...</p>

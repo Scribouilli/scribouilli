@@ -28,7 +28,7 @@
   };
 </script>
 
-<Skeleton showArticles={false}>
+<Skeleton>
   <section class="screen">
     <h3>Créer un nouveau site</h3>
 
