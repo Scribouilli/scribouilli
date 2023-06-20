@@ -2,14 +2,13 @@
   //@ts-check
   export let fileP;
   export let imageDirUrl;
-  export let publishedWebsiteURL;
   export let buildStatus;
   export let contenus = [];
-  export let repositoryURL;
   export let editionTitle;
   export let listPrefix;
   export let deleteTitle;
-  export let showArticles
+  export let showArticles;
+  export let currentRepository;
 
   import { createEventDispatcher } from "svelte";
   import Skeleton from "../../Skeleton.svelte";
@@ -84,7 +83,7 @@
   };
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
+<Skeleton {currentRepository} {buildStatus} {showArticles}>
   <section class="screen">
     <h3>{editionTitle}</h3>
 

@@ -48,10 +48,9 @@ const makeMapStateToProps = (fileName) => (state) => {
       fileP: file,
       imageDirUrl: "",
       contenus: state.articles,
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
       showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      currentRepository: state.currentRepository,
     };
   } else {
     return {
@@ -65,10 +64,9 @@ const makeMapStateToProps = (fileName) => (state) => {
       }),
       imageDirUrl: "",
       contenus: state.articles,
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
       showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      currentRepository: state.currentRepository,
     };
   }
 };
