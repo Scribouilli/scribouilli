@@ -12,25 +12,27 @@ import {
 } from '../actions.js'
 
 export default () => {
-    fetchCurrentUserRepositories().then((repos) => {
-      if (repos.length === 0) {
-        // If the user has no repository, we automatically create one for them.
-        createRepositoryForCurrentAccount(defaultRepositoryName)
-      } else {
-        store.mutations.setReposForAccount(
-          {
-            login: store.state.login,
-            repos
-          }
-        );
+    const currentUserReposP = fetchCurrentUserRepositories().then((repos) => {
+        if (repos.length === 0) {
+          // If the user has no repository, we automatically create one for them.
+          createRepositoryForCurrentAccount(defaultRepositoryName)
+        } else {
+          store.mutations.setReposForAccount(
+            {
+              login: store.state.login,
+              repos
+            }
+          );
 
-        page.redirect("/selectionner-un-site");
-      }
+          page.redirect("/selectionner-un-site");
+        }
     })
 
     const afterGithubLogin = new AfterGithubLogin({
       target: svelteTarget,
-      props: {}
+      props: {
+        currentUserReposP,
+      },
     });
 
     replaceComponent(afterGithubLogin, () => {});
