@@ -34,7 +34,7 @@ function mapStateToProps(state) {
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
-    deleteRepositoryUrl: `https://github.com/${state.login}/${state.repoName}/settings#danger-zone`,
+    deleteRepositoryUrl: `https://github.com/${state.login}/${state.currentRepository.name}/settings#danger-zone`,
     blogEnabled: state.blogIndexSha !== undefined,
     showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
     currentRepository: state.currentRepository,
@@ -52,7 +52,7 @@ export default ({ querystring }) => {
   settings.$on("delete-site", () => {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI
-        .deleteRepository(login, store.state.repoName)
+        .deleteRepository(login, store.state.currentRepository.name)
         .then(() => {
           store.mutations.removeSite(store.state);
           page("/create-project");
@@ -64,7 +64,7 @@ export default ({ querystring }) => {
   settings.$on("update-theme", ({ detail: { theme } }) => {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI
-        .updateCustomCSS(login, store.state.repoName, theme.css, theme.sha)
+        .updateCustomCSS(login, store.state.currentRepository.name, theme.css, theme.sha)
         .then((response) => {
           store.mutations.setTheme(store.state.theme.css, response.content.sha);
           store.state.buildStatus.setBuildingAndCheckStatusLater(10000);
@@ -80,7 +80,7 @@ export default ({ querystring }) => {
       if (activated) {
         const resp = await databaseAPI.createFile(
           login,
-          store.state.repoName,
+          store.state.currentRepository.name,
           'blog.md',
           {
             message: 'Activation du blog',
@@ -92,7 +92,7 @@ export default ({ querystring }) => {
       } else {
         await databaseAPI.deleteFile(
           login,
-          store.state.repoName,
+          store.state.currentRepository.name,
           'blog.md',
           store.state.blogIndexSha
         )
@@ -106,7 +106,7 @@ export default ({ querystring }) => {
   if (!store.state.theme.sha) {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI
-        .getFile(login, store.state.repoName, databaseAPI.customCSSPath)
+        .getFile(login, store.state.currentRepository.name, databaseAPI.customCSSPath)
         .then(({ content, sha }) => {
           store.mutations.setTheme(
             Buffer.from(content, "base64").toString().trim(),

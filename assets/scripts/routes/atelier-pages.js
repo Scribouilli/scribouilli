@@ -94,7 +94,7 @@ export default ({ querystring }) => {
   Promise.resolve(state.login).then((login) => {
     // @ts-ignore
     pageContenu.$set({
-      imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images`,
+      imageDirUrl: `https://github.com/${login}/${state.currentRepository.name}/tree/main/images`,
     });
   });
   // @ts-ignore
@@ -106,7 +106,7 @@ export default ({ querystring }) => {
         })
       );
       databaseAPI
-        .deleteFile(login, state.repoName, fileName, sha)
+        .deleteFile(login, state.currentRepository.name, fileName, sha)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater();
           page("/atelier-list-pages");
@@ -155,7 +155,7 @@ export default ({ querystring }) => {
       if (fileName && fileName !== newFileName) {
         Promise.resolve(state.login).then((login) => {
           databaseAPI
-            .updateFile(login, state.repoName, fileName, newFileName, body, sha)
+            .updateFile(login, state.currentRepository.name, fileName, newFileName, body, sha)
             .then(() => {
               if (body.sha) {
                 console.log("page mise à jour");
@@ -171,7 +171,7 @@ export default ({ querystring }) => {
         Promise.resolve(state.login).then((login) => {
           body.sha = sha;
           databaseAPI
-            .createFile(login, state.repoName, newFileName, body)
+            .createFile(login, state.currentRepository.name, newFileName, body)
             .then(() => {
               if (body.sha) {
                 console.log("page mise à jour");
