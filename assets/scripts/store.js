@@ -77,9 +77,6 @@ export default new Store({
     setReposForAccount(state, { login, repos }) {
       state.reposByAccount[login] = repos;
     },
-    setCurrentRepoName(state, repoName) {
-      state.currentRepoName = repoName;
-    },
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
     },
