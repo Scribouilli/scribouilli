@@ -3,6 +3,7 @@
   import Loader from "../Loader.svelte";
 
   export let showWelcome = false;
+  export let isFetchingCurrentUserRepos = false;
 </script>
 
 <Skeleton>
@@ -11,8 +12,12 @@
       <h2>Créez votre petit site facilement !</h2>
 
       <a href="./account" class="btn">C'est parti !</a>
-    {:else}
-      <Loader />
+    {:else if isFetchingCurrentUserRepos }
+      <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
+      <img
+        src="./assets/images/hearts.svg"
+        alt="cœur sur toi le temps que ça charge"
+      />
     {/if}
   </section>
 </Skeleton>

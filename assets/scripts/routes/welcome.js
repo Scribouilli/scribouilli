@@ -14,6 +14,10 @@ export default () => {
   let props = {};
 
   if (!!store.state.accessToken) {
+    props = {
+      isFetchingCurrentUserRepos: true,
+    };
+
     fetchCurrentUserRepositories()
       .then((repos) => {
         if (repos.length === 1) {
