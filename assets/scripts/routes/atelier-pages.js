@@ -11,6 +11,7 @@ import store from "../store";
 import {
   checkRepositoryAvailabilityThen,
   handleErrors,
+  logError,
   makeFileNameFromTitle,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
@@ -40,9 +41,8 @@ const makeMapStateToProps = (fileName) => (state) => {
           previousTitle: data?.title,
           sha: sha,
         }
-      } catch (msg) {
-        console.log('oh nooooo')
-        handleErrors(msg)
+      } catch (errorMessage) {
+        logError(errorMessage, "atelier-pages route/makeMapStateToProps", "log")
       }
     };
 
