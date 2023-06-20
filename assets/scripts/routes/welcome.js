@@ -10,18 +10,10 @@ import { replaceComponent } from "../routeComponentLifeCycle.js";
 
 import Welcome from "../components/screens/Welcome.svelte";
 
-const mapStateToProps = (state) => {
-  return {
-    showWelcome: typeof state.login !== "string",
-  }
-});
-
 export default () => {
-  let props
+  let props = {};
 
   if (!!store.state.accessToken) {
-    props = mapStateToProps(store.state)
-
     fetchCurrentUserRepositories()
       .then((repos) => {
         if (repos.length === 1) {
