@@ -1,11 +1,11 @@
 <script>
-  export let currentAccount;
-  export let currentAccountRepositories;
-
   import page from "page";
 
-  import Skeleton from "./Skeleton.svelte";
-  import Loader from "./loaders/Loader.svelte";
+  import Skeleton from "./../Skeleton.svelte";
+  import Loader from "./../loaders/Loader.svelte";
+
+  export let currentAccount;
+  export let currentAccountRepositories;
 
   let name = "";
   let loading = false;

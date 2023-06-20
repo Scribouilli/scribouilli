@@ -1,7 +1,7 @@
 <script>
-  import Skeleton from "./Skeleton.svelte";
-  import Loader from "./loaders/Loader.svelte";
-  import { createRepositoryForCurrentAccount } from "../actions.js";
+  import Skeleton from "./../Skeleton.svelte";
+  import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
+  import { createRepositoryForCurrentAccount } from "../../actions.js";
 
   let name = "";
   let loading = false;
@@ -31,6 +31,7 @@
 <Skeleton>
   <section class="screen">
     {#if loading}
+      <SiteCreationLoader />
     {:else}
       <h3>Créer un nouveau site</h3>
 
@@ -65,7 +66,7 @@
             {/if}
           </div>
         </form>
-      <div>
+      </div>
     {/if}
   </section>
 </Skeleton>
@@ -78,4 +79,5 @@
     margin-top: 1rem;
     margin-bottom: 6rem;
   }
+
 </style>
