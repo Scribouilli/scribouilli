@@ -1,17 +1,16 @@
 <script>
   import Skeleton from "../../Skeleton.svelte";
 
-  export let publishedWebsiteURL;
   export let buildStatus;
   export let listContenu = [];
-  export let repositoryURL;
   export let title;
   export let atelierPrefix;
   export let newContentButtonText;
   export let showArticles
+  export let currentRepository = undefined;
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
+<Skeleton {currentRepository} {buildStatus} {showArticles}>
   <section class="screen">
     <div>
       <h2>{title}</h2>

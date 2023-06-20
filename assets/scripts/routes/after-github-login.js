@@ -16,7 +16,7 @@ export default () => {
         store.mutations.setReposForAccount(
           {
             login: store.state.login,
-            repos: new Promise((resolve) => resolve(repos)),
+            repos
           }
         );
 
