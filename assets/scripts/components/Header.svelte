@@ -22,10 +22,16 @@
   let repositoryURL = currentRepository?.repositoryURL
   let repoName = currentRepository?.name
   let account = currentRepository?.owner
+
+  let homeURL = './'
+
+  if(repoName && account) {
+    homeURL = `./atelier-list-pages?repoName=${repoName}&account=${account}`
+  }
 </script>
 
 <header>
-  <h1><a href="./" class="go-home">Scribouilli</a></h1>
+  <h1><a href="{homeURL}" class="go-home">Scribouilli</a></h1>
 
   {#if publishedWebsiteURL}
     <div>

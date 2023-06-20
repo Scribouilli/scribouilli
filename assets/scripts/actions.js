@@ -102,26 +102,6 @@ export const getCurrentRepoArticles = () => {
     .catch((msg) => handleErrors(msg));
 }
 
-export const setSiteRepoConfig = (loginP) => {
-  const siteRepoConfigP = loginP
-    .then((login) =>
-      databaseAPI.getRepository(login, store.state.currentRepository.name)
-    )
-    .catch((error) => handleErrors(error));
-
-  store.mutations.setSiteRepoConfig(siteRepoConfigP);
-}
-
-export const setBuildStatus = (loginP, repoName) => {
-  store.mutations.setBuildStatus(makeBuildStatus(loginP, repoName));
-  /*
-  Appel sans vérification,
-  On suppose qu'au chargement initial,
-  on peut faire confiance à ce que renvoit l'API
-  */
-  store.state.buildStatus.checkStatus();
-}
-
 /**
  * @typedef {Object} CurrentRepository
  * @property {string} name - The name of the repository
@@ -150,6 +130,8 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
 
   setBuildStatus(loginP, repoName);
   setSiteRepoConfig(loginP);
+  setBlogIndexSha(loginP);
+  setArticles(loginP);
 
   const currentRepository = {
     name: repoName,
@@ -161,6 +143,49 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   store.mutations.setCurrentRepository(currentRepository);
 
   return currentRepository;
+}
+
+const setBlogIndexSha = async (loginP) => {
+  try {
+    const { sha: blogIndexSha } = await databaseAPI.getFile(
+      await loginP,
+      store.state.currentRepository.name,
+      'blog.md'
+    )
+    store.mutations.setBlogIndexSha(blogIndexSha)
+  } catch (errorMessage) {
+    if (errorMessage !== 'NOT_FOUND') {
+      throw errorMessage
+    }
+  }
+}
+
+export const setArticles = async (loginP) => {
+  const articles = await databaseAPI.getArticlesList(
+    await loginP,
+    store.state.currentRepository.name
+  )
+  store.mutations.setArticles(articles)
+}
+
+export const setSiteRepoConfig = (loginP) => {
+  const siteRepoConfigP = loginP
+    .then((login) =>
+      databaseAPI.getRepository(login, store.state.currentRepository.name)
+    )
+    .catch((error) => handleErrors(error));
+
+  store.mutations.setSiteRepoConfig(siteRepoConfigP);
+}
+
+export const setBuildStatus = (loginP, repoName) => {
+  store.mutations.setBuildStatus(makeBuildStatus(loginP, repoName));
+  /*
+  Appel sans vérification,
+  On suppose qu'au chargement initial,
+  on peut faire confiance à ce que renvoit l'API
+  */
+  store.state.buildStatus.checkStatus();
 }
 
 /**

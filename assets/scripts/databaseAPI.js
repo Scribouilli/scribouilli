@@ -3,6 +3,7 @@
 import lireFrontMatter from 'front-matter'
 
 import { handleErrors } from "./utils.js";
+import { fetchAuthenticatedUserLogin } from "./actions.js";
 import store from "./store.js";
 
 class DatabaseAPI {
@@ -375,25 +376,6 @@ const init = async () => {
   // Create the databaseAPI singleton with the logged-in user access token.
   if (store.state.accessToken) {
     databaseAPI = new DatabaseAPI(store.state.accessToken);
-
-    try {
-      const { sha: blogIndexSha } = await databaseAPI.getFile(
-        await loginP,
-        store.state.currentRepository.name,
-        'blog.md'
-      )
-      store.mutations.setBlogIndexSha(blogIndexSha)
-    } catch (errorMessage) {
-      if (errorMessage !== 'NOT_FOUND') {
-        throw errorMessage
-      }
-    }
-
-    const articles = await databaseAPI.getArticlesList(
-      await store.state.login,
-      store.state.currentRepository.name
-    )
-    store.mutations.setArticles(articles)
   } else {
     history.replaceState(undefined, "", store.state.basePath + "/");
   }
