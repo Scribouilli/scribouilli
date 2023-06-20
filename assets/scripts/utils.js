@@ -38,6 +38,11 @@ export const handleErrors = (errorMessage) => {
 
       break;
     }
+    case "NOT_FOUND":
+      const message = `databaseAPI call failed: ${errorMessage}`
+      logError(message, "handleErrors", "log");
+
+      break;
 
     default:
       logError(errorMessage, "handleErrors", "log");
