@@ -45,7 +45,7 @@ const makeMapStateToProps = (fileName) => (state) => {
           sha: sha,
         }
       } catch (errorMessage) {
-        logError(errorMessage, "atelier-pages route/makeMapStateToProps", "log")
+        logError(errorMessage, "routes/atelier-pages.js:makeMapStateToProps");
       }
     };
 
@@ -80,17 +80,7 @@ const makeMapStateToProps = (fileName) => (state) => {
 };
 
 export default ({ querystring }) => {
-<<<<<<< HEAD
   setCurrentRepositoryFromQuerystring(querystring);
-=======
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(
-      login,
-      store.state.repoName,
-      () => { }
-    );
-  });
->>>>>>> 9d301c4ef7b8175458962c59d66ca3e3a622a152
 
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("path");
