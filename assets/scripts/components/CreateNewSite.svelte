@@ -5,6 +5,7 @@
 
   let name = "";
   let loading = false;
+  let hasError = false
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -12,11 +13,9 @@
     loading = true;
 
     createRepositoryForCurrentAccount(name)
-      .catch((err) => {
+      .catch(() => {
         loading = false;
-
-        // handle errors on form?
-        console.log(err);
+        hasError = true;
       });
   };
 
@@ -47,17 +46,25 @@
         </div>
 
         <div class="actions-zone">
-          <button
-            type="submit"
-            class="btn__medium btn"
-            disabled={loading}
-          >
-            {#if loading}
-              <Loader />
-            {:else}
-              Créer mon nouveau site
-            {/if}
-          </button>
+          {#if hasError}
+            <div class="error-message">
+              Il y a un <strong>souci de notre côté</strong>. Vous pouvez
+              réessayer dans une heure ou demain. Si le problème persiste,
+              vous pouvez nous contacter.
+            </div>
+          {:else}
+            <button
+              type="submit"
+              class="btn__medium btn"
+              disabled={loading}
+            >
+              {#if loading}
+                <Loader />
+              {:else}
+                Créer mon nouveau site
+              {/if}
+            </button>
+          {/if}
         </div>
       </form>
     <div>

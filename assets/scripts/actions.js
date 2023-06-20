@@ -5,7 +5,7 @@ import page from 'page'
 import databaseAPI from './databaseAPI.js';
 import store from './store.js';
 import makeBuildStatus from "./buildStatus.js";
-import { handleErrors, logError } from "./utils";
+import { handleErrors, logError, delay } from "./utils";
 
 /**
  * @summary Get the current authenticated user login
@@ -152,7 +152,6 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
 
 export const createRepositoryForCurrentAccount = async (repoName) => {
   const login = await store.state.login
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
   return databaseAPI.createDefaultRepository(login, repoName)
     .then(() => {
@@ -163,7 +162,12 @@ export const createRepositoryForCurrentAccount = async (repoName) => {
     .then(() => {
       return databaseAPI.createRepoGithubPages(login, repoName)
     })
-    .finally(() => {
-      page(`/atelier-list-pages?repoName=${repoName}&login=${login}`)
+    .then(() => {
+      page(`/atelier-list-pages?repoName=${repoName}&account=${login}`)
+    })
+    .catch((errorMessage) => {
+      logError(errorMessage, "createRepositoryForCurrentAccount")
+
+      throw errorMessage
     })
 }
