@@ -35,16 +35,14 @@
 
   {#if publishedWebsiteURL}
     <div>
-      {#await publishedWebsiteURL}
-        (en attente de l'origine)
-      {:then url}
-        <div>
-          <a href={url} class="project-name" target="_blank">{url}</a>
-          {#if buildStatusClass}
-            <p class={buildStatusClass} />
-          {/if}
-        </div>
-      {/await}
+      <div>
+        <a href="https://{publishedWebsiteURL}" class="project-name" target="_blank">
+          {publishedWebsiteURL}
+        </a>
+        {#if buildStatusClass}
+          <p class={buildStatusClass} />
+        {/if}
+      </div>
 
       <nav>
         <ul>
