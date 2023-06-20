@@ -371,34 +371,17 @@ class DatabaseAPI {
 
 let databaseAPI;
 
+console.log(store)
 const init = async () => {
+  console.log("init");
+  console.log(store)
   // Retrieve logged in user from access_token
   if (store.state.accessToken) {
     databaseAPI = new DatabaseAPI(store.state.accessToken);
 
-    const loginP = databaseAPI
-      .getAuthenticatedUser()
-      // @ts-ignore
-      .then(({ login }) => {
-        store.mutations.setLogin(login);
-        return login;
-      })
-      .catch((msg) => handleErrors(msg));
-
-    store.mutations.setLogin(loginP);
-    store.mutations.setBuildStatus(
-      makeBuildStatus(databaseAPI, loginP, store.state.repoName)
-    );
-    /*
-    Appel sans vérification,
-    On suppose qu'au chargement initial,
-    on peut faire confiance à ce que revoit l'API
-    */
-    store.state.buildStatus.checkStatus();
-
     const siteRepoConfigP = loginP.then((login) => {
       return databaseAPI
-        .getRepository(login, store.state.repoName)
+        .getRepository(login, store.state.currentRepository.name)
         .catch((msg) => handleErrors(msg));
     });
 
@@ -408,7 +391,7 @@ const init = async () => {
     try {
       const { sha: blogIndexSha } = await databaseAPI.getFile(
         await loginP,
-        store.state.repoName,
+        store.state.currentRepository.name,
         'blog.md'
       )
       store.mutations.setBlogIndexSha(blogIndexSha)
@@ -418,7 +401,10 @@ const init = async () => {
       }
     }
 
-    const articles = await databaseAPI.getArticlesList(await store.state.login, store.state.repoName)
+    const articles = await databaseAPI.getArticlesList(
+      await store.state.login,
+      store.state.currentRepository.name
+    )
     store.mutations.setArticles(articles)
   } else {
     history.replaceState(undefined, "", store.state.basePath + "/");

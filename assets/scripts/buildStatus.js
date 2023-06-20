@@ -1,5 +1,6 @@
 //@ts-check
 
+import databaseAPI from './databaseAPI.js'
 
 /*
 
@@ -51,7 +52,7 @@ Voir `databaseAPI.getLastDeployment(login, repoName)` et `databaseAPI.getDeploym
 
 
 */
-export default function (databaseAPI, login, repoName) {
+export default function (login, repoName) {
     /** @type {"building" | "built" | "errored"} */
     let repoStatus = "building";
     let reaction = undefined;

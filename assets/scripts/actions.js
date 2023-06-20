@@ -6,6 +6,41 @@ import databaseAPI from './databaseAPI.js';
 import store from './store.js';
 import { handleErrors } from "./utils";
 
+/**
+ * @summary Get the current logged-in user
+ *
+ * @description This function is called on every page that needs authentication.
+ * It returns the login of the user or the organization. If the user is not
+ * logged in, it redirects to the authentication page.
+ *
+ * @returns {string|Promise<string>} the login of the user or the organization
+ *
+ */
+export const getLogin = () => {
+  const loginP = databaseAPI
+    .getAuthenticatedUser()
+    .then(({ login }) => {
+      store.mutations.setLogin(login);
+
+      return login;
+    })
+    .catch((errorMessage) => {
+      switch (errorMessage) {
+        case "INVALIDATE_TOKEN": {
+          store.mutations.invalidateToken();
+          page("/account");
+
+          break;
+        }
+
+        default:
+          console.log(`Error catched: ${errorMessage}`);
+      }
+    });
+
+  store.mutations.setLogin(loginP);
+}
+
 export const getCurrentUserRepositories = async () => {
     const { login, reposByAccount } = store.state;
 
@@ -42,16 +77,29 @@ export const getCurrentRepoArticles = () => {
     .catch((msg) => handleErrors(msg));
 }
 
+export const setBuildStatus = (loginP, repoName) => {
+  store.mutations.setBuildStatus(makeBuildStatus(loginP, repoName));
+  /*
+  Appel sans vérification,
+  On suppose qu'au chargement initial,
+  on peut faire confiance à ce que renvoit l'API
+  */
+  store.state.buildStatus.checkStatus();
+}
+
 export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const params = new URLSearchParams(querystring);
-  const name = params.get("repoName");
+  const repoName = params.get("repoName");
   const owner = params.get("account");
   const publishedWebsiteURL =
-    `${owner.toLowerCase()}.github.io/${name.toLowerCase()}`;
-  const repositoryURL = `https://github.com/${owner}/${name}`;
+    `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
+  const repositoryURL = `https://github.com/${owner}/${repoName}`;
+  const loginP = getLogin();
+
+  setBuildStatus(loginP, repoName);
 
   const currentRepository = {
-    name,
+    name: repoName,
     owner,
     publishedWebsiteURL,
     repositoryURL,
