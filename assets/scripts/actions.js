@@ -48,7 +48,7 @@ export const getAuthenticatedUserLogin = () => {
 }
 
 export const getCurrentUserRepositories = async () => {
-    const login = await store.state.login;
+    const login = await getAuthenticatedUserLogin();
     const currentUserRepositoriesP = databaseAPI
       .getCurrentUserRepositories()
       .then((repos) => {
@@ -152,14 +152,17 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
 
 export const createRepositoryForCurrentAccount = async (repoName) => {
   const login = await store.state.login
+  console.log("createRepositoryForCurrentAccount", login, repoName)
 
   return databaseAPI.createDefaultRepository(login, repoName)
     .then(() => {
       // Forks are created asynchronously, so we need to wait a bit
       // before creating the Github Pages branch
+      console.log("Waiting for the fork to be created...")
       return delay(1000)
     })
     .then(() => {
+      console.log("Creating Github Pages branch...")
       return databaseAPI.createRepoGithubPages(login, repoName)
     })
     .then(() => {

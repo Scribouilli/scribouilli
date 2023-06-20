@@ -23,6 +23,7 @@ export default new Store({
       publishedWebsiteURL: undefined, // Promise<string> | string
       repositoryURL: undefined, // Promise<string> | string
     },
+    // We use the term "account" to refer to user or organization.
     reposByAccount: {
       // [login: string]: Promise<Repository[]>
     },
