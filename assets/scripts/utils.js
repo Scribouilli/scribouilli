@@ -40,12 +40,12 @@ export const handleErrors = (errorMessage) => {
     }
     case "NOT_FOUND":
       const message = `databaseAPI call failed: ${errorMessage}`
-      logError(message, "handleErrors");
+      logMessage(message, "handleErrors");
 
       break;
 
     default:
-      logError(errorMessage, "handleErrors");
+      logMessage(errorMessage, "handleErrors");
   }
 };
 
@@ -107,7 +107,7 @@ export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
   return ["---", "title: " + title, "---"].join("\n");
 }
 
-export const logError = (errorMessage, caller = "unknown", level = "log") => {
+export const logMessage = (errorMessage, caller = "unknown", level = "log") => {
   console[level](`[${level}] [caller: ${caller}] ${errorMessage}`);
 }
 

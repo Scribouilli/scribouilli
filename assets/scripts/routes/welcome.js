@@ -3,7 +3,6 @@
 import page from "page";
 
 import store from "../store.js";
-import { logError } from "../utils.js";
 import { fetchCurrentUserRepositories } from "../actions.js";
 import { svelteTarget } from "../config.js";
 import { replaceComponent } from "../routeComponentLifeCycle.js";

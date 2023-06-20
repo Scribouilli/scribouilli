@@ -5,7 +5,7 @@ import page from 'page'
 import databaseAPI from './databaseAPI.js';
 import store from './store.js';
 import makeBuildStatus from "./buildStatus.js";
-import { handleErrors, logError, delay } from "./utils";
+import { handleErrors, logMessage, delay } from "./utils";
 
 /**
  * @summary Fetch the current authenticated user login and set it in the store.
@@ -38,7 +38,7 @@ export const fetchAuthenticatedUserLogin = () => {
         default:
           const message = `The access token is invalid. ${errorMessage}`
 
-          logError(message, "fetchAuthenticatedUserLogin", "log");
+          logMessage(message, "fetchAuthenticatedUserLogin");
       }
     });
 
@@ -219,7 +219,7 @@ export const createRepositoryForCurrentAccount = async (repoName) => {
       page(`/atelier-list-pages?repoName=${repoName}&account=${login}`)
     })
     .catch((errorMessage) => {
-      logError(errorMessage, "createRepositoryForCurrentAccount")
+      logMessage(errorMessage, "createRepositoryForCurrentAccount")
 
       throw errorMessage
     })

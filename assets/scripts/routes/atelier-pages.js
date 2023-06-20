@@ -10,7 +10,7 @@ import store from "../store";
 import {
   checkRepositoryAvailabilityThen,
   handleErrors,
-  logError,
+  logMessage,
   makeFileNameFromTitle,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
@@ -45,7 +45,7 @@ const makeMapStateToProps = (fileName) => (state) => {
           sha: sha,
         }
       } catch (errorMessage) {
-        logError(errorMessage, "routes/atelier-pages.js:makeMapStateToProps");
+        logMessage(errorMessage, "routes/atelier-pages.js:makeMapStateToProps");
       }
     };
 

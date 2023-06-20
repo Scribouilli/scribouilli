@@ -1,7 +1,7 @@
 //@ts-check
 
 import databaseAPI from './databaseAPI.js'
-import { logError } from './utils.js'
+import { logMessage } from './utils.js'
 
 /*
 
@@ -82,7 +82,7 @@ export default function (login, repoName) {
             return Promise.resolve(login).then(login => {
                 return databaseAPI.getGitHubPagesSite(login, repoName)
                     .then(({ status }) => {
-                        console.log('build status', status)
+                        logMessage(`GitHub Pages status is ${status}`, "buildStatus.checkStatus")
 
                         if (["built", "errored", "building"].includes(status)) {
                             repoStatus = status
@@ -105,7 +105,7 @@ export default function (login, repoName) {
                         if (error === "NOT_FOUND") {
                           const errorMessage = `GitHub Pages site not found for ${login}/${repoName}. Creating it now.`
 
-                          logError(errorMessage, "buildStatus.checkStatus")
+                          logMessage(errorMessage, "buildStatus.checkStatus")
 
                           databaseAPI.createRepoGithubPages(login, repoName)
                         }
