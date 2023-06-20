@@ -48,13 +48,18 @@ export const getAuthenticatedUserLogin = () => {
 }
 
 export const getCurrentUserRepositories = async () => {
-    const { login, reposByAccount } = store.state;
+    const login = await store.state.login;
+    const currentUserRepositoriesP = databaseAPI
+      .getCurrentUserRepositories()
+      .then((repos) => {
+        store.mutations.setReposForAccount({ login, repos });
 
-    if (reposByAccount[login] && reposByAccount[login].length > 0) {
-      return reposByAccount[login];
-    }
+        return repos
+      })
 
-    return databaseAPI.getCurrentUserRepositories()
+    store.mutations.setReposForAccount(currentUserRepositoriesP);
+
+    return currentUserRepositoriesP
 }
 
 export const getCurrentRepository = () => {
@@ -102,7 +107,25 @@ export const setBuildStatus = (loginP, repoName) => {
   */
   store.state.buildStatus.checkStatus();
 }
+/**
+ * @typedef {Object} CurrentRepository
+ * @property {string} name - The name of the repository
+ * @property {string} owner - The owner of the repository
+ * @property {string} publishedWebsiteURL - The URL of the published website
+ * @property {string} repositoryURL - The URL of the repository
+ */
 
+/**
+ * @summary Set the current repository from the owner and the name
+ * of the repository in the URL
+ *
+ * @description This function is called on every page that needs a current
+ * repository to be functionnal. It sets the current repository in the store,
+ * but also the build status and the site repo config. If the user is not
+ * logged in, it redirects to the authentication page.
+ *
+ * @returns {CurrentRepository} The current repository
+ */
 export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const params = new URLSearchParams(querystring);
   const repoName = params.get("repoName");
@@ -110,7 +133,7 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const publishedWebsiteURL =
     `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
-  const loginP = getAuthenticatedUserLogin();
+  const loginP = getAuthenticatedUserLogin()
 
   setBuildStatus(loginP, repoName);
   setSiteRepoConfig(loginP);

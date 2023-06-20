@@ -6,8 +6,8 @@
   export let title;
   export let atelierPrefix;
   export let newContentButtonText;
-  export let showArticles
-  export let currentRepository = undefined;
+  export let showArticles;
+  export let currentRepository;
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>

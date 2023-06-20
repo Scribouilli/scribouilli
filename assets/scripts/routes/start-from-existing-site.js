@@ -1,7 +1,10 @@
 import page from 'page'
 
 import store from "../store.js";
-import { getCurrentUserRepositories } from "../actions.js"
+import {
+  getCurrentUserRepositories,
+  getAuthenticatedUserLogin,
+} from "../actions.js"
 import { svelteTarget } from "../config.js";
 import { replaceComponent } from "../routeComponentLifeCycle.js";
 import SelectCurrentSite from '../components/SelectCurrentSite.svelte'
@@ -14,9 +17,10 @@ const mapStateToProps = (state) => {
       currentAccountRepositories: reposByAccount[login],
     };
 }
+
 export default () => {
-    const state = store.state
-    const { login, reposByAccount } = state;
+    getAuthenticatedUserLogin()
+    getCurrentUserRepositories()
 
     const selectCurrentSite = new SelectCurrentSite({
         target: svelteTarget,

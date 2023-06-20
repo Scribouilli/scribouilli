@@ -1,19 +1,14 @@
 <script>
-  export let currentAccount
-  export let currentAccountRepositories = [];
+  export let currentAccount;
+  export let currentAccountRepositories;
 
   import page from "page";
 
   import Skeleton from "./Skeleton.svelte";
   import Loader from "./Loader.svelte";
-  import { getCurrentUserRepositories } from "../actions.js";
 
   let name = "";
   let loading = false;
-
-  getCurrentUserRepositories().then((repos) => {
-    currentAccountRepositories = repos;
-  })
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -30,7 +25,7 @@
   <section class="screen">
     <h3>Choisir le site sur lequel vous souhaitez travailler</h3>
 
-    {#if currentAccountRepositories.length === 0}
+    {#if !currentAccountRepositories}
       <Loader />
     {:else}
       <div class="wrapper">

@@ -17,6 +17,7 @@ import {
   makePublishedWebsiteURL,
   makeRepositoryURL,
 } from "../utils";
+import { setCurrentRepositoryFromQuerystring } from "../actions";
 import PageContenu from "../components/screens/PageContenu.svelte";
 
 const makeMapStateToProps = (fileName) => (state) => {
@@ -25,7 +26,11 @@ const makeMapStateToProps = (fileName) => (state) => {
     const fileP = async function() {
       try {
         const login = await Promise.resolve(store.state.login)
-        const { content, sha } = await databaseAPI.getFile(login, store.state.repoName, fileName)
+        const { content, sha } = await databaseAPI.getFile(
+          login,
+          store.state.currentRepository.name,
+          fileName
+        )
         const contenu = Buffer.from(content, "base64").toString();
         const {
           data,
@@ -77,13 +82,7 @@ const makeMapStateToProps = (fileName) => (state) => {
 };
 
 export default ({ querystring }) => {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(
-      login,
-      store.state.repoName,
-      () => {}
-    );
-  });
+  setCurrentRepositoryFromQuerystring(querystring);
 
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("path");
