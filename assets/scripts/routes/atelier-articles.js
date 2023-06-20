@@ -1,7 +1,8 @@
 // @ts-check
 
+import lireFrontMatter from 'front-matter'
 import page from "page";
-import parseMarkdown from "@github-docs/frontmatter";
+
 import store from "../store";
 import {
   checkRepositoryAvailabilityThen,
@@ -28,10 +29,9 @@ const makeMapStateToProps = (fileName) => (state) => {
         .then(({ content, sha }) => {
           const contenu = Buffer.from(content, "base64").toString();
           const {
-            data,
-            content: markdownContent,
-            errors,
-          } = parseMarkdown(contenu);
+            attributes: data,
+            body: markdownContent,
+          } = lireFrontMatter(contenu);
 
           return {
             fileName: fileName,
@@ -78,7 +78,7 @@ export default ({ querystring }) => {
     return checkRepositoryAvailabilityThen(
       login,
       store.state.repoName,
-      () => {}
+      () => { }
     );
   });
 
@@ -140,8 +140,7 @@ export default ({ querystring }) => {
       const body = {
         message: `création de l'article ${title || "index.md"}`,
         content: Buffer.from(
-          `${
-            title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
+          `${title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
           }${content}`
         ).toString("base64"),
       };

@@ -1,7 +1,6 @@
 // @ts-check
 
-import parseMarkdown from "@github-docs/frontmatter";
-
+import lireFrontMatter from 'front-matter'
 import page from "page";
 
 import { svelteTarget } from "../config";
@@ -23,7 +22,7 @@ import PageContenu from "../components/screens/PageContenu.svelte";
 const makeMapStateToProps = (fileName) => (state) => {
   // Display existing file
   if (fileName) {
-    const fileP = async function() {
+    const fileP = async function () {
       try {
         const login = await Promise.resolve(store.state.login)
         const { content, sha } = await databaseAPI.getFile(
@@ -33,10 +32,9 @@ const makeMapStateToProps = (fileName) => (state) => {
         )
         const contenu = Buffer.from(content, "base64").toString();
         const {
-          data,
-          content: markdownContent,
-          errors,
-        } = parseMarkdown(contenu);
+          attributes: data,
+          body: markdownContent,
+        } = lireFrontMatter(contenu);
 
         return {
           fileName,
@@ -82,7 +80,17 @@ const makeMapStateToProps = (fileName) => (state) => {
 };
 
 export default ({ querystring }) => {
+<<<<<<< HEAD
   setCurrentRepositoryFromQuerystring(querystring);
+=======
+  Promise.resolve(store.state.login).then(async (login) => {
+    return checkRepositoryAvailabilityThen(
+      login,
+      store.state.repoName,
+      () => { }
+    );
+  });
+>>>>>>> 9d301c4ef7b8175458962c59d66ca3e3a622a152
 
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("path");
@@ -142,8 +150,7 @@ export default ({ querystring }) => {
       const body = {
         message: `création de la page ${title || "index.md"}`,
         content: Buffer.from(
-          `${
-            title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
+          `${title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
           }${content}`
         ).toString("base64"),
       };
