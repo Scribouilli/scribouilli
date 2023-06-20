@@ -57,3 +57,18 @@
     {/if}
   </section>
 </Skeleton>
+
+<style lang="scss">
+  select {
+    font-size: 1.2rem;
+    padding: 0.5em;
+  }
+
+  .actions-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 6rem;
+  }
+</style>

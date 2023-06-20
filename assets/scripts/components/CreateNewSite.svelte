@@ -70,3 +70,13 @@
     <div>
   </section>
 </Skeleton>
+
+<style lang="scss">
+  .actions-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 6rem;
+  }
+</style>
