@@ -5,7 +5,7 @@ import page from 'page'
 import { svelteTarget, defaultRepositoryName } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
-import AfterGithubLogin from '../components/AfterGithubLogin.svelte'
+import AfterGithubLogin from '../components/screens/AfterGithubLogin.svelte'
 import {
   fetchCurrentUserRepositories,
   createRepositoryForCurrentAccount,

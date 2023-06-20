@@ -1,0 +1,81 @@
+<script>
+  import Skeleton from "./Skeleton.svelte";
+  import Loader from "./Loader.svelte";
+  import { createRepositoryForCurrentAccount } from "../actions.js";
+
+  let name = "";
+  let loading = false;
+  let hasError = false
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    loading = true;
+
+    createRepositoryForCurrentAccount(name)
+      .catch(() => {
+        loading = false;
+        hasError = true;
+      });
+  };
+
+  const validateName = (e) => {
+    name = e.target.value;
+
+    // add validation here
+
+    return true
+  };
+</script>
+
+<Skeleton>
+  <section class="screen">
+    {#if loading}
+    {:else}
+      <h3>Créer un nouveau site</h3>
+
+      <div class="wrapper">
+        <form on:submit={onSubmit}>
+          <div>
+            <label for="name">Nom de votre site</label>
+            <input
+              bind:value={name}
+              on:change={validateName}
+              type="text"
+              id="name"
+              required
+            />
+          </div>
+
+          <div class="actions-zone">
+            {#if hasError}
+              <div class="error-message">
+                Il y a un <strong>souci de notre côté</strong>. Vous pouvez
+                réessayer dans une heure ou demain. Si le problème persiste,
+                vous pouvez nous contacter.
+              </div>
+            {:else}
+              <button
+                type="submit"
+                class="btn__medium btn"
+                disabled={loading}
+              >
+                Créer mon nouveau site
+              </button>
+            {/if}
+          </div>
+        </form>
+      <div>
+    {/if}
+  </section>
+</Skeleton>
+
+<style lang="scss">
+  .actions-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 6rem;
+  }
+</style>

@@ -7,7 +7,7 @@ import {
 } from "../actions.js"
 import { svelteTarget } from "../config.js";
 import { replaceComponent } from "../routeComponentLifeCycle.js";
-import SelectCurrentSite from '../components/SelectCurrentSite.svelte'
+import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
 
 const mapStateToProps = (state) => {
     const { login, reposByAccount } = state;
