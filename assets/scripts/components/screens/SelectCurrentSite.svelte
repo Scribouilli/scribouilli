@@ -5,7 +5,7 @@
   import page from "page";
 
   import Skeleton from "./Skeleton.svelte";
-  import Loader from "./Loader.svelte";
+  import Loader from "./loaders/Loader.svelte";
 
   let name = "";
   let loading = false;

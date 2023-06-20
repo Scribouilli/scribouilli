@@ -1,6 +1,6 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
-  import Loader from "../Loader.svelte";
+  import Loader from "../loaders/Loader.svelte";
 
   export let showWelcome = false;
   export let isFetchingCurrentUserRepos = false;
