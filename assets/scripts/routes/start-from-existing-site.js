@@ -3,7 +3,7 @@ import page from 'page'
 import store from "../store.js";
 import {
   getCurrentUserRepositories,
-  getAuthenticatedUserLogin,
+  fetchAuthenticatedUserLogin,
 } from "../actions.js"
 import { svelteTarget } from "../config.js";
 import { replaceComponent } from "../routeComponentLifeCycle.js";
@@ -19,7 +19,7 @@ const mapStateToProps = (state) => {
 }
 
 export default () => {
-    getAuthenticatedUserLogin()
+    fetchAuthenticatedUserLogin()
     getCurrentUserRepositories()
 
     const selectCurrentSite = new SelectCurrentSite({

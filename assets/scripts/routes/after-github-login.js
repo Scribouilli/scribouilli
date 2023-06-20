@@ -7,7 +7,6 @@ import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import AfterGithubLogin from '../components/AfterGithubLogin.svelte'
 import {
-  getAuthenticatedUserLogin,
   getCurrentUserRepositories,
   createRepositoryForCurrentAccount,
 } from '../actions.js'

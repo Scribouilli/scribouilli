@@ -18,7 +18,7 @@ import { handleErrors, logError, delay } from "./utils";
  * authenticated user or organization.
  *
  */
-export const getAuthenticatedUserLogin = () => {
+export const fetchAuthenticatedUserLogin = () => {
   const loginP = databaseAPI
     .getAuthenticatedUser()
     .then(({ login }) => {
@@ -38,7 +38,7 @@ export const getAuthenticatedUserLogin = () => {
         default:
           const message = `The access token is invalid. ${errorMessage}`
 
-          logError(message, "getAuthenticatedUserLogin", "log");
+          logError(message, "fetchAuthenticatedUserLogin", "log");
       }
     });
 
@@ -48,7 +48,7 @@ export const getAuthenticatedUserLogin = () => {
 }
 
 export const getCurrentUserRepositories = async () => {
-    const login = await getAuthenticatedUserLogin();
+    const login = await fetchAuthenticatedUserLogin();
     const currentUserRepositoriesP = databaseAPI
       .getCurrentUserRepositories()
       .then((repos) => {
@@ -133,7 +133,7 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const publishedWebsiteURL =
     `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
-  const loginP = getAuthenticatedUserLogin()
+  const loginP = fetchAuthenticatedUserLogin()
 
   setBuildStatus(loginP, repoName);
   setSiteRepoConfig(loginP);
