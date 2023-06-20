@@ -3,13 +3,13 @@ import page from 'page'
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
-import CreateYourSite from '../components/CreateYourSite.svelte'
+import SelectASite from '../components/SelectASite.svelte'
 
 export default () => {
-    const createYourSite = new CreateYourSite({
+    const selectASite = new SelectASite({
       target: svelteTarget,
       props: {},
     });
 
-    replaceComponent(createYourSite, () => {});
+    replaceComponent(selectASite, () => {});
 }
