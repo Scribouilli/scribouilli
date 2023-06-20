@@ -61,6 +61,7 @@ class DatabaseAPI {
         body: JSON.stringify({
           owner: login,
           name: newRepoName,
+          description: "Mon site Scribouilli",
         }),
       }
     )
