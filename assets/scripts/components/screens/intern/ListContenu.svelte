@@ -8,6 +8,9 @@
   export let newContentButtonText;
   export let showArticles;
   export let currentRepository;
+
+  let repoName = currentRepository.name;
+  let account = currentRepository.owner;
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -19,7 +22,11 @@
         <ul>
           {#each listContenu.sort() as contenu}
             <li>
-              <a href="{atelierPrefix}?path={contenu.path}">{contenu.title}</a>
+              <a
+                href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
+              >
+                {contenu.title}
+              </a>
             </li>
           {/each}
         </ul>
