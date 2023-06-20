@@ -3,7 +3,7 @@
   import Loader from "./Loader.svelte";
 </script>
 
-<Skeleton>
+<Skeleton showArticles={false}>
   <section class="screen">
     <div id="creer_compte_github">
       <h2>Créer un site</h2>

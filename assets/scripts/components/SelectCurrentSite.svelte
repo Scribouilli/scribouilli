@@ -21,7 +21,7 @@
   };
 </script>
 
-<Skeleton>
+<Skeleton showArticles={false}>
   <section class="screen">
     <h3>Choisir le site sur lequel vous souhaitez travailler</h3>
 
