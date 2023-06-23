@@ -372,15 +372,11 @@ class DatabaseAPI {
 
 let databaseAPI;
 
-const init = async () => {
-  // Create the databaseAPI singleton with the logged-in user access token.
-  if (store.state.accessToken) {
-    databaseAPI = new DatabaseAPI(store.state.accessToken);
-  } else {
-    history.replaceState(undefined, "", store.state.basePath + "/");
-  }
+// Create the databaseAPI singleton with the logged-in user access token.
+if (store.state.accessToken) {
+  databaseAPI = new DatabaseAPI(store.state.accessToken);
+} else {
+  history.replaceState(undefined, "", store.state.basePath + "/");
 }
-
-init()
 
 export default databaseAPI;
