@@ -18,14 +18,6 @@
         hasError = true;
       });
   };
-
-  const validateName = (e) => {
-    name = e.target.value;
-
-    // add validation here
-
-    return true
-  };
 </script>
 
 <Skeleton>
@@ -41,7 +33,6 @@
             <label for="name">Nom de votre site</label>
             <input
               bind:value={name}
-              on:change={validateName}
               type="text"
               id="name"
               required
