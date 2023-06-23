@@ -100,14 +100,10 @@ export default function (login, repoName) {
                         }
                     })
                     .catch(error => {
-                        // If GitHub Pages has not been enabled when the repository was created,
-                        // we create it now.
                         if (error === "NOT_FOUND") {
                           const errorMessage = `GitHub Pages site not found for ${login}/${repoName}. Creating it now.`
 
                           logMessage(errorMessage, "buildStatus.checkStatus")
-
-                          databaseAPI.createRepoGithubPages(login, repoName)
                         }
 
                         repoStatus = 'errored'
