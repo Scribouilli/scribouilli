@@ -212,8 +212,10 @@ export const createRepositoryForCurrentAccount = async (repoName) => {
 
   return databaseAPI.createDefaultRepository(login, repoName)
     .then(() => {
-      // Forks are created asynchronously, so we need to wait a bit
-      // before creating the Github Pages branch
+      // Generation from a template repository
+      // is asynchronous, so we need to wait a bit
+      // for the new repo to be created
+      // before the setup of the Github Pages branch
       return delay(1000)
     })
     .then(() => {
