@@ -36,7 +36,7 @@
       <h3>Créer un nouveau site</h3>
 
       <div class="wrapper">
-        <form on:submit={onSubmit}>
+        <form on:submit|preventDefault={onSubmit}>
           <div>
             <label for="name">Nom de votre site</label>
             <input
