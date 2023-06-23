@@ -173,6 +173,20 @@
         >
       </p>
     </div>
+
+    <hr />
+
+    <div class="wrapper white-zone">
+      <h3>Autres sites</h3>
+      <p>
+        Vous pouvez <strong>créer un nouveau site</strong> Scribouilli ou
+        retrouver ceux que vous avez <strong>déjà créés</strong>.
+      </p>
+
+      <a class="btn btn__medium">
+        Changer de site
+      </a>
+    </div>
   </section>
 </Skeleton>
 
@@ -180,5 +194,9 @@
   .radios-wrapper {
     width: 70%;
     margin: 0 auto;
+  }
+
+  hr {
+    margin: 3rem 0;
   }
 </style>
