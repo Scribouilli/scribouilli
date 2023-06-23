@@ -11,7 +11,6 @@ import {
   makeArticleFileName,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
-  makeRepositoryURL,
 } from "../utils";
 import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";

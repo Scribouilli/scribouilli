@@ -14,7 +14,6 @@ import {
   makeFileNameFromTitle,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
-  makeRepositoryURL,
 } from "../utils";
 import { setCurrentRepositoryFromQuerystring } from "../actions";
 import PageContenu from "../components/screens/PageContenu.svelte";

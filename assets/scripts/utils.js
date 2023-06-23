@@ -59,11 +59,6 @@ export async function makePublishedWebsiteURL(state) {
   return `https://${origin}/${state.repoName}`;
 }
 
-export async function makeRepositoryURL(state) {
-  const login = await Promise.resolve(state.login);
-  return `https://github.com/${login}/${state.repoName}`;
-}
-
 /**
  *
  * @param {string} string
