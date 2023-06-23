@@ -123,10 +123,14 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const params = new URLSearchParams(querystring);
   const repoName = params.get("repoName");
   const owner = params.get("account");
+
+  if (!repoName || !owner) { page("/") }
+
   const publishedWebsiteURL =
     `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
   const loginP = fetchAuthenticatedUserLogin()
+
 
   setBuildStatus(loginP, repoName);
   setSiteRepoConfig(loginP);
