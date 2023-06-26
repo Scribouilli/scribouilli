@@ -42,6 +42,11 @@ export const fetchAuthenticatedUserLogin = () => {
       }
     });
 
+  databaseAPI.getUserEmails()
+    .then((emails) => {
+      store.mutations.setEmail((emails.find(e => e.primary) ?? emails[0]).email)
+    })
+
   store.mutations.setLogin(loginP);
 
   return loginP;
@@ -62,18 +67,18 @@ export const fetchAuthenticatedUserLogin = () => {
 */
 
 export const fetchCurrentUserRepositories = async () => {
-    const login = await fetchAuthenticatedUserLogin();
-    const currentUserRepositoriesP = databaseAPI
-      .getCurrentUserRepositories()
-      .then((repos) => {
-        store.mutations.setReposForAccount({ login, repos });
+  const login = await fetchAuthenticatedUserLogin();
+  const currentUserRepositoriesP = databaseAPI
+    .getCurrentUserRepositories()
+    .then((repos) => {
+      store.mutations.setReposForAccount({ login, repos });
 
-        return repos
-      })
+      return repos
+    })
 
-    store.mutations.setReposForAccount(currentUserRepositoriesP);
+  store.mutations.setReposForAccount(currentUserRepositoriesP);
 
-    return currentUserRepositoriesP
+  return currentUserRepositoriesP
 }
 
 export const getCurrentRepository = () => {
@@ -81,7 +86,7 @@ export const getCurrentRepository = () => {
 }
 
 export const getCurrentRepoPages = () => {
-  const { owner, name  } = store.state.currentRepository;
+  const { owner, name } = store.state.currentRepository;
 
   return databaseAPI
     .getPagesList(owner, name)
@@ -92,7 +97,7 @@ export const getCurrentRepoPages = () => {
 }
 
 export const getCurrentRepoArticles = () => {
-  const { owner, name  } = store.state.currentRepository;
+  const { owner, name } = store.state.currentRepository;
 
   return databaseAPI
     .getArticlesList(owner, name)
@@ -131,12 +136,6 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
   const loginP = fetchAuthenticatedUserLogin()
 
-
-  setBuildStatus(loginP, repoName);
-  setSiteRepoConfig(loginP);
-  setBlogIndexSha(loginP);
-  setArticles(loginP);
-
   const currentRepository = {
     name: repoName,
     owner,
@@ -146,22 +145,11 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
 
   store.mutations.setCurrentRepository(currentRepository);
 
-  return currentRepository;
-}
+  setBuildStatus(loginP, repoName);
+  setSiteRepoConfig(loginP);
+  setArticles(loginP);
 
-const setBlogIndexSha = async (loginP) => {
-  try {
-    const { sha: blogIndexSha } = await databaseAPI.getFile(
-      await loginP,
-      store.state.currentRepository.name,
-      'blog.md'
-    )
-    store.mutations.setBlogIndexSha(blogIndexSha)
-  } catch (errorMessage) {
-    if (errorMessage !== 'NOT_FOUND') {
-      throw errorMessage
-    }
-  }
+  return currentRepository;
 }
 
 export const setArticles = async (loginP) => {
@@ -180,6 +168,7 @@ export const setSiteRepoConfig = (loginP) => {
     .catch((error) => handleErrors(error));
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP);
+  siteRepoConfigP.then(_ => databaseAPI.setAuthor(store.state.login, store.state.currentRepository.name, store.state.email))
 }
 
 export const setBuildStatus = (loginP, repoName) => {

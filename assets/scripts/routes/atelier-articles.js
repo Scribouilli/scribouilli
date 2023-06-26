@@ -16,6 +16,7 @@ import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import ArticleContenu from "../components/screens/ArticleContenu.svelte";
+import { setCurrentRepositoryFromQuerystring } from '../actions';
 
 
 const makeMapStateToProps = (fileName) => (state) => {
@@ -25,8 +26,7 @@ const makeMapStateToProps = (fileName) => (state) => {
     file = Promise.resolve(store.state.login).then((login) => {
       return databaseAPI
         .getFile(login, store.state.currentRepository.name, fileName)
-        .then(({ content, sha }) => {
-          const contenu = Buffer.from(content, "base64").toString();
+        .then((contenu) => {
           const {
             attributes: data,
             body: markdownContent,
@@ -38,7 +38,6 @@ const makeMapStateToProps = (fileName) => (state) => {
             previousContent: markdownContent,
             title: data?.title,
             previousTitle: data?.title,
-            sha: sha,
           };
         })
         .catch((msg) => handleErrors(msg));
@@ -48,7 +47,7 @@ const makeMapStateToProps = (fileName) => (state) => {
       imageDirUrl: "",
       contenus: state.articles,
       buildStatus: state.buildStatus,
-      showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
       currentRepository: state.currentRepository,
     };
   } else {
@@ -59,12 +58,11 @@ const makeMapStateToProps = (fileName) => (state) => {
         previousContent: undefined,
         title: "",
         previousTitle: undefined,
-        sha: "",
       }),
       imageDirUrl: "",
       contenus: state.articles,
       buildStatus: state.buildStatus,
-      showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
       currentRepository: state.currentRepository,
     };
   }
@@ -98,7 +96,7 @@ export default ({ querystring }) => {
       imageDirUrl: `https://github.com/${login}/${state.currentRepository.name}/tree/main/images`,
     });
   });
-  articleContenu.$on("delete", ({ detail: { sha } }) => {
+  articleContenu.$on("delete", () => {
     Promise.resolve(state.login).then((login) => {
       store.mutations.setArticles(
         state.articles.filter((article) => {
@@ -106,19 +104,19 @@ export default ({ querystring }) => {
         })
       );
       databaseAPI
-        .deleteFile(login, state.currentRepository.name, fileName, sha)
+        .deleteFile(login, state.currentRepository.name, fileName)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater();
-          page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
         })
         .catch((msg) => handleErrors(msg));
     });
+    page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
   });
 
   articleContenu.$on(
     "save",
     ({
-      detail: { fileName, content, previousContent, title, previousTitle, sha },
+      detail: { fileName, content, previousContent, title, previousTitle },
     }) => {
       const hasContentChanged = content !== previousContent;
       const hasTitleChanged = title !== previousTitle;
@@ -137,13 +135,10 @@ export default ({ querystring }) => {
 
       const newFileName = makeArticleFileName(title, date);
 
-      const body = {
-        message: `création de l'article ${title || "index.md"}`,
-        content: Buffer.from(
-          `${title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
-          }${content}`
-        ).toString("base64"),
-      };
+      const message = `création de l'article ${title || "index.md"}`
+      const finalContent =
+        `${title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
+        }${content}`
 
       let newArticles =
         state.articles?.filter((article) => {
@@ -158,13 +153,8 @@ export default ({ querystring }) => {
       if (fileName && fileName !== newFileName) {
         Promise.resolve(state.login).then((login) => {
           databaseAPI
-            .updateFile(login, state.currentRepository.name, fileName, newFileName, body, sha)
+            .updateFile(login, state.currentRepository.name, fileName, newFileName, finalContent, message)
             .then(() => {
-              if (body.sha) {
-                console.log("article mise à jour");
-              } else {
-                console.log("nouvel article créé");
-              }
               state.buildStatus.setBuildingAndCheckStatusLater();
               page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
             })
@@ -172,15 +162,9 @@ export default ({ querystring }) => {
         });
       } else {
         Promise.resolve(state.login).then((login) => {
-          body.sha = sha;
           databaseAPI
-            .createFile(login, state.currentRepository.name, newFileName, body)
+            .createFile(login, state.currentRepository.name, newFileName, finalContent, message)
             .then(() => {
-              if (body.sha) {
-                console.log("article mise à jour");
-              } else {
-                console.log("nouvel article créé");
-              }
               state.buildStatus.setBuildingAndCheckStatusLater();
               page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
             })
