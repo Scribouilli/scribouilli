@@ -10,11 +10,12 @@ import store from "../store";
 import {
   checkRepositoryAvailabilityThen,
   handleErrors,
+  logMessage,
   makeFileNameFromTitle,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
-  makeRepositoryURL,
 } from "../utils";
+import { setCurrentRepositoryFromQuerystring } from "../actions";
 import PageContenu from "../components/screens/PageContenu.svelte";
 
 const makeMapStateToProps = (fileName) => (state) => {
@@ -23,7 +24,11 @@ const makeMapStateToProps = (fileName) => (state) => {
     const fileP = async function () {
       try {
         const login = await Promise.resolve(store.state.login)
-        const { content, sha } = await databaseAPI.getFile(login, store.state.repoName, fileName)
+        const { content, sha } = await databaseAPI.getFile(
+          login,
+          store.state.currentRepository.name,
+          fileName
+        )
         const contenu = Buffer.from(content, "base64").toString();
         const {
           attributes: data,
@@ -38,9 +43,8 @@ const makeMapStateToProps = (fileName) => (state) => {
           previousTitle: data?.title,
           sha: sha,
         }
-      } catch (msg) {
-        console.log('oh nooooo')
-        handleErrors(msg)
+      } catch (errorMessage) {
+        logMessage(errorMessage, "routes/atelier-pages.js:makeMapStateToProps");
       }
     };
 
@@ -48,10 +52,9 @@ const makeMapStateToProps = (fileName) => (state) => {
       fileP: fileP(),
       imageDirUrl: "",
       contenus: state.articles,
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
       showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      currentRepository: state.currentRepository,
     }
   } else {
     return {
@@ -66,22 +69,15 @@ const makeMapStateToProps = (fileName) => (state) => {
       imageDirUrl: "",
       makeFileNameFromTitle: makeFileNameFromTitle,
       contenus: state.pages,
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
       showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      currentRepository: state.currentRepository,
     };
   }
 };
 
 export default ({ querystring }) => {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(
-      login,
-      store.state.repoName,
-      () => { }
-    );
-  });
+  setCurrentRepositoryFromQuerystring(querystring);
 
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("path");
@@ -97,7 +93,7 @@ export default ({ querystring }) => {
   Promise.resolve(state.login).then((login) => {
     // @ts-ignore
     pageContenu.$set({
-      imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images`,
+      imageDirUrl: `https://github.com/${login}/${state.currentRepository.name}/tree/main/images`,
     });
   });
   // @ts-ignore
@@ -109,7 +105,7 @@ export default ({ querystring }) => {
         })
       );
       databaseAPI
-        .deleteFile(login, state.repoName, fileName, sha)
+        .deleteFile(login, state.currentRepository.name, fileName, sha)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater();
           page("/atelier-list-pages");
@@ -158,7 +154,7 @@ export default ({ querystring }) => {
       if (fileName && fileName !== newFileName) {
         Promise.resolve(state.login).then((login) => {
           databaseAPI
-            .updateFile(login, state.repoName, fileName, newFileName, body, sha)
+            .updateFile(login, state.currentRepository.name, fileName, newFileName, body, sha)
             .then(() => {
               if (body.sha) {
                 console.log("page mise à jour");
@@ -174,7 +170,7 @@ export default ({ querystring }) => {
         Promise.resolve(state.login).then((login) => {
           body.sha = sha;
           databaseAPI
-            .createFile(login, state.repoName, newFileName, body)
+            .createFile(login, state.currentRepository.name, newFileName, body)
             .then(() => {
               if (body.sha) {
                 console.log("page mise à jour");

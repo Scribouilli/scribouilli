@@ -1,11 +1,10 @@
 <script>
   export let fileP;
   export let imageDirUrl;
-  export let publishedWebsiteURL;
   export let buildStatus;
   export let contenus;
-  export let repositoryURL;
   export let showArticles
+  export let currentRepository;
 
   import Editeur from "./intern/Editeur.svelte";
 </script>
@@ -13,9 +12,8 @@
 <Editeur
   {fileP}
   {imageDirUrl}
-  {publishedWebsiteURL}
+  {currentRepository}
   {buildStatus}
-  {repositoryURL}
   {contenus}
   {showArticles}
   editionTitle="Édition d'une page"

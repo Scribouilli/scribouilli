@@ -1,17 +1,19 @@
 <script>
   import Skeleton from "../../Skeleton.svelte";
 
-  export let publishedWebsiteURL;
   export let buildStatus;
   export let listContenu = [];
-  export let repositoryURL;
   export let title;
   export let atelierPrefix;
   export let newContentButtonText;
-  export let showArticles
+  export let showArticles;
+  export let currentRepository;
+
+  let repoName = currentRepository.name;
+  let account = currentRepository.owner;
 </script>
 
-<Skeleton {publishedWebsiteURL} {buildStatus} {repositoryURL} {showArticles}>
+<Skeleton {currentRepository} {buildStatus} {showArticles}>
   <section class="screen">
     <div>
       <h2>{title}</h2>
@@ -20,12 +22,16 @@
         <ul>
           {#each listContenu.sort() as contenu}
             <li>
-              <a href="{atelierPrefix}?path={contenu.path}">{contenu.title}</a>
+              <a
+                href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
+              >
+                {contenu.title}
+              </a>
             </li>
           {/each}
         </ul>
 
-        <a href={atelierPrefix} class="btn btn__medium"
+        <a href="{atelierPrefix}?repoName={repoName}&account={account}" class="btn btn__medium"
           >{newContentButtonText}</a
         >
       </div>

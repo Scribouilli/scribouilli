@@ -34,13 +34,18 @@ export const handleErrors = (errorMessage) => {
       break;
     }
     case "REPOSITORY_NOT_FOUND": {
-      page("/create-project");
+      page("/selectionner-un-site");
 
       break;
     }
+    case "NOT_FOUND":
+      const message = `databaseAPI call failed: ${errorMessage}`
+      logMessage(message, "handleErrors");
+
+      break;
 
     default:
-      console.log(`Error catched: ${errorMessage}`);
+      logMessage(errorMessage, "handleErrors");
   }
 };
 
@@ -54,14 +59,9 @@ export async function makePublishedWebsiteURL(state) {
   return `https://${origin}/${state.repoName}`;
 }
 
-export async function makeRepositoryURL(state) {
-  const login = await Promise.resolve(state.login);
-  return `https://github.com/${login}/${state.repoName}`;
-}
-
 /**
- * 
- * @param {string} string 
+ *
+ * @param {string} string
  * @returns {string}
  */
 function makeFilenameCompatibleString(string){
@@ -75,8 +75,8 @@ function makeFilenameCompatibleString(string){
 }
 
 /**
- * 
- * @param {string} title 
+ *
+ * @param {string} title
  * @returns {string}
  */
 export function makeFileNameFromTitle(title) {
@@ -84,9 +84,9 @@ export function makeFileNameFromTitle(title) {
 }
 
 /**
- * 
- * @param {string} title 
- * @param {Date} date 
+ *
+ * @param {string} title
+ * @param {Date} date
  * @returns {string}
  */
 export function makeArticleFileName(title, date) {
@@ -94,10 +94,16 @@ export function makeArticleFileName(title, date) {
 }
 
 /**
- * 
- * @param {string} title 
+ *
+ * @param {string} title
  * @returns {string}
  */
 export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
   return ["---", "title: " + title, "---"].join("\n");
 }
+
+export const logMessage = (errorMessage, caller = "unknown", level = "log") => {
+  console[level](`[${level}] [caller: ${caller}] ${errorMessage}`);
+}
+
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))

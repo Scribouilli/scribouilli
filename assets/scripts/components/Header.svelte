@@ -1,9 +1,7 @@
 <script>
   // @ts-check
-
-  export let publishedWebsiteURL;
   export let buildStatus;
-  export let repositoryURL;
+  export let currentRepository;
   export let showArticles
 
   let status = undefined;
@@ -19,35 +17,58 @@
   }
 
   $: buildStatusClass = buildStatus ? `build-${status}` : undefined;
+
+  let publishedWebsiteURL = currentRepository?.publishedWebsiteURL
+  let repositoryURL = currentRepository?.repositoryURL
+  let repoName = currentRepository?.name
+  let account = currentRepository?.owner
+
+  let homeURL = './'
+
+  if(repoName && account) {
+    homeURL = `./atelier-list-pages?repoName=${repoName}&account=${account}`
+  }
 </script>
 
 <header>
-  <h1><a href="./" class="go-home">Scribouilli</a></h1>
+  <h1><a href="{homeURL}" class="go-home">Scribouilli</a></h1>
 
   {#if publishedWebsiteURL}
     <div>
-      {#await publishedWebsiteURL}
-        (en attente de l'origine)
-      {:then url}
-        <div>
-          <a href={url} class="project-name" target="_blank">{url}</a>
-          {#if buildStatusClass}
-            <p class={buildStatusClass} />
-          {/if}
-        </div>
-      {/await}
+      <div>
+        <a href="https://{publishedWebsiteURL}" class="project-name" target="_blank">
+          {publishedWebsiteURL}
+        </a>
+        {#if buildStatusClass}
+          <p class={buildStatusClass} />
+        {/if}
+      </div>
 
       <nav>
         <ul>
-          <li><a href="./atelier-list-pages">Pages</a></li>
+          <li>
+            <a href="./atelier-list-pages?repoName={repoName}&account={account}">
+              Pages
+            </a>
+          </li>
+
           {#if showArticles}
-            <li><a href="./atelier-list-articles">Articles</a></li>            
+          <li>
+            <a href="./atelier-list-articles?repoName={repoName}&account={account}">
+              Articles
+            </a>
+          </li>
           {/if}
-          <li><a href="./settings">Paramètres</a></li>
+
+          <li>
+            <a href="./settings?repoName={repoName}&account={account}">
+              Paramètres
+            </a>
+          </li>
           <li>
             {#if repositoryURL}
               {#await repositoryURL then urlrepository}
-                <a href={urlrepository} target="_blank">Github</a>
+                <a href={urlrepository} target="_blank">GitHub</a>
               {/await}
             {/if}
           </li>

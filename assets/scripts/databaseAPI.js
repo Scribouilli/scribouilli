@@ -3,7 +3,7 @@
 import lireFrontMatter from 'front-matter'
 
 import { handleErrors } from "./utils.js";
-import makeBuildStatus from "./buildStatus.js";
+import { fetchAuthenticatedUserLogin } from "./actions.js";
 import store from "./store.js";
 
 class DatabaseAPI {
@@ -14,6 +14,8 @@ class DatabaseAPI {
     this.getFilesCache = new Map();
     this.fileCached = undefined;
     this.customCSSPath = "assets/css/custom.css";
+    this.defaultRepoOwner = "Scribouilli"
+    this.defaultThemeRepoName = "site-template"
   }
 
   getAuthenticatedUser() {
@@ -38,6 +40,46 @@ class DatabaseAPI {
 
         throw msg;
       });
+  }
+
+  getCurrentUserRepositories() {
+    return this.callGithubAPI(
+      `https://api.github.com/user/repos?sort=updated`
+    ).then((response) => {
+      return response.json();
+    });
+  }
+
+  createDefaultRepository(login, newRepoName) {
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          Accept: "application/vnd.github+json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          owner: login,
+          name: newRepoName,
+          description: "Mon site Scribouilli",
+        }),
+      }
+    )
+  }
+
+  createRepoGithubPages(account, repoName) {
+    return this.callGithubAPI(
+      `https://api.github.com/repos/${account}/${repoName}/pages`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          Accept: "applicatikn/vnd.github+json",
+        },
+        method: "POST",
+        body: JSON.stringify({ source: { branch: 'main' } })
+      }
+    )
   }
 
   /**
@@ -113,7 +155,7 @@ class DatabaseAPI {
 
   /**
    * @summary Create a file
-   * 
+   *
    * @param {{ message: string, content: string, }} body
    */
   createFile(login, repoName, fileName, body) {
@@ -330,60 +372,11 @@ class DatabaseAPI {
 
 let databaseAPI;
 
-const init = async () => {
-  // Retrieve logged in user from access_token
-  if (store.state.accessToken) {
-    databaseAPI = new DatabaseAPI(store.state.accessToken);
-
-    const loginP = databaseAPI
-      .getAuthenticatedUser()
-      // @ts-ignore
-      .then(({ login }) => {
-        store.mutations.setLogin(login);
-        return login;
-      })
-      .catch((msg) => handleErrors(msg));
-
-    store.mutations.setLogin(loginP);
-    store.mutations.setBuildStatus(
-      makeBuildStatus(databaseAPI, loginP, store.state.repoName)
-    );
-    /*
-    Appel sans vérification,
-    On suppose qu'au chargement initial,
-    on peut faire confiance à ce que revoit l'API
-    */
-    store.state.buildStatus.checkStatus();
-
-    const siteRepoConfigP = loginP.then((login) => {
-      return databaseAPI
-        .getRepository(login, store.state.repoName)
-        .catch((msg) => handleErrors(msg));
-    });
-
-    store.mutations.setSiteRepoConfig(siteRepoConfigP);
-    siteRepoConfigP.catch((error) => handleErrors(error));
-
-    try {
-      const { sha: blogIndexSha } = await databaseAPI.getFile(
-        await loginP,
-        store.state.repoName,
-        'blog.md'
-      )
-      store.mutations.setBlogIndexSha(blogIndexSha)
-    } catch (err) {
-      if (err !== 'NOT_FOUND') {
-        throw err
-      }
-    }
-
-    const articles = await databaseAPI.getArticlesList(await store.state.login, store.state.repoName)
-    store.mutations.setArticles(articles)
-  } else {
-    history.replaceState(undefined, "", store.state.basePath + "/");
-  }
+// Create the databaseAPI singleton with the logged-in user access token.
+if (store.state.accessToken) {
+  databaseAPI = new DatabaseAPI(store.state.accessToken);
+} else {
+  history.replaceState(undefined, "", store.state.basePath + "/");
 }
-
-init()
 
 export default databaseAPI;

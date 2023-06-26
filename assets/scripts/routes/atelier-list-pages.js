@@ -1,50 +1,34 @@
 // @ts-check
 
 import { svelteTarget } from "../config";
-import databaseAPI from "../databaseAPI";
+import databaseAPI from '../databaseAPI'
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import {
-  checkRepositoryAvailabilityThen,
-  handleErrors,
-  makePublishedWebsiteURL,
-  makeRepositoryURL,
-} from "../utils";
+  getCurrentRepoPages,
+  setCurrentRepositoryFromQuerystring,
+} from "../actions";
 import AtelierPages from "../components/screens/AtelierPages.svelte";
 
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   return {
-    publishedWebsiteURL: makePublishedWebsiteURL(state),
     pages: state.pages,
     buildStatus: state.buildStatus,
-    repositoryURL: makeRepositoryURL(state),
+    currentRepository: state.currentRepository,
     showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
   };
 }
 
-export default () => {
-  Promise.resolve(store.state.login).then(async (login) => {
-    return checkRepositoryAvailabilityThen(
-      login,
-      store.state.repoName,
-      () => {}
-    );
-  });
+export default async ({ querystring }) => {
+    setCurrentRepositoryFromQuerystring(querystring);
 
-  const state = store.state;
+    const state = store.state;
+    const atelierPages = new AtelierPages({
+      target: svelteTarget,
+      props: mapStateToProps(state),
+    });
 
-  const atelierPages = new AtelierPages({
-    target: svelteTarget,
-    props: mapStateToProps(state),
-  });
-  replaceComponent(atelierPages, mapStateToProps);
+    replaceComponent(atelierPages, mapStateToProps);
 
-  Promise.resolve(state.login).then((login) => {
-    databaseAPI
-      .getPagesList(login, state.repoName)
-      .then((pages) => {
-        store.mutations.setPages(pages);
-      })
-      .catch((msg) => handleErrors(msg));
-  });
-};
+    Promise.resolve(state.login).then(() => getCurrentRepoPages());
+}

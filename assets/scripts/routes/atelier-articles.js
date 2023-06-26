@@ -11,7 +11,6 @@ import {
   makeArticleFileName,
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
-  makeRepositoryURL,
 } from "../utils";
 import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
@@ -25,7 +24,7 @@ const makeMapStateToProps = (fileName) => (state) => {
   if (fileName) {
     file = Promise.resolve(store.state.login).then((login) => {
       return databaseAPI
-        .getFile(login, store.state.repoName, fileName)
+        .getFile(login, store.state.currentRepository.name, fileName)
         .then(({ content, sha }) => {
           const contenu = Buffer.from(content, "base64").toString();
           const {
@@ -48,10 +47,9 @@ const makeMapStateToProps = (fileName) => (state) => {
       fileP: file,
       imageDirUrl: "",
       contenus: state.articles,
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
       showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      currentRepository: state.currentRepository,
     };
   } else {
     return {
@@ -65,10 +63,9 @@ const makeMapStateToProps = (fileName) => (state) => {
       }),
       imageDirUrl: "",
       contenus: state.articles,
-      publishedWebsiteURL: makePublishedWebsiteURL(state),
       buildStatus: state.buildStatus,
-      repositoryURL: makeRepositoryURL(state),
       showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+      currentRepository: state.currentRepository,
     };
   }
 };
@@ -77,7 +74,7 @@ export default ({ querystring }) => {
   Promise.resolve(store.state.login).then(async (login) => {
     return checkRepositoryAvailabilityThen(
       login,
-      store.state.repoName,
+      store.state.currentRepository.name,
       () => { }
     );
   });
@@ -95,7 +92,7 @@ export default ({ querystring }) => {
 
   Promise.resolve(state.login).then((login) => {
     articleContenu.$set({
-      imageDirUrl: `https://github.com/${login}/${state.repoName}/tree/main/images`,
+      imageDirUrl: `https://github.com/${login}/${state.currentRepository.name}/tree/main/images`,
     });
   });
   articleContenu.$on("delete", ({ detail: { sha } }) => {
@@ -106,7 +103,7 @@ export default ({ querystring }) => {
         })
       );
       databaseAPI
-        .deleteFile(login, state.repoName, fileName, sha)
+        .deleteFile(login, state.currentRepository.name, fileName, sha)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater();
           page("/atelier-list-articles");
@@ -158,7 +155,7 @@ export default ({ querystring }) => {
       if (fileName && fileName !== newFileName) {
         Promise.resolve(state.login).then((login) => {
           databaseAPI
-            .updateFile(login, state.repoName, fileName, newFileName, body, sha)
+            .updateFile(login, state.currentRepository.name, fileName, newFileName, body, sha)
             .then(() => {
               if (body.sha) {
                 console.log("article mise à jour");
@@ -174,7 +171,7 @@ export default ({ querystring }) => {
         Promise.resolve(state.login).then((login) => {
           body.sha = sha;
           databaseAPI
-            .createFile(login, state.repoName, newFileName, body)
+            .createFile(login, state.currentRepository.name, newFileName, body)
             .then(() => {
               if (body.sha) {
                 console.log("article mise à jour");
