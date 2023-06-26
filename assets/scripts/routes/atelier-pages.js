@@ -82,6 +82,7 @@ export default ({ querystring }) => {
   const state = store.state;
   const fileName = new URLSearchParams(querystring).get("path");
   const mapStateToProps = makeMapStateToProps(fileName);
+  const currentRepository = state.currentRepository;
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
@@ -108,7 +109,7 @@ export default ({ querystring }) => {
         .deleteFile(login, state.currentRepository.name, fileName, sha)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater();
-          page("/atelier-list-pages");
+          page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
         })
         .catch((msg) => handleErrors(msg));
     });
@@ -125,7 +126,7 @@ export default ({ querystring }) => {
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page("/atelier-list-pages");
+        page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
         return;
       }
 
@@ -162,7 +163,7 @@ export default ({ querystring }) => {
                 console.log("nouvelle page créée");
               }
               state.buildStatus.setBuildingAndCheckStatusLater();
-              page("/atelier-list-pages");
+              page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
             })
             .catch((msg) => handleErrors(msg));
         });
@@ -178,7 +179,7 @@ export default ({ querystring }) => {
                 console.log("nouvelle page créée");
               }
               state.buildStatus.setBuildingAndCheckStatusLater();
-              page("/atelier-list-pages");
+              page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
             })
             .catch((msg) => handleErrors(msg));
         });
