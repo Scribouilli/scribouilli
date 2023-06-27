@@ -216,8 +216,12 @@ export const setBuildStatus = (loginP, repoName) => {
  */
 export const createRepositoryForCurrentAccount = async (repoName) => {
   const login = await store.state.login
+  const escapedRepoName = repoName
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+    .toLowerCase()
 
-  return databaseAPI.createDefaultRepository(login, repoName)
+  return databaseAPI.createDefaultRepository(login, escapedRepoName)
     .then(() => {
       // Generation from a template repository
       // is asynchronous, so we need to wait a bit
@@ -226,10 +230,10 @@ export const createRepositoryForCurrentAccount = async (repoName) => {
       return delay(1000)
     })
     .then(() => {
-      return databaseAPI.createRepoGithubPages(login, repoName)
+      return databaseAPI.createRepoGithubPages(login, escapedRepoName)
     })
     .then(() => {
-      page(`/atelier-list-pages?repoName=${repoName}&account=${login}`)
+      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
     })
     .catch((errorMessage) => {
       logMessage(errorMessage, "createRepositoryForCurrentAccount")

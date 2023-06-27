@@ -183,7 +183,7 @@
         retrouver ceux que vous avez <strong>déjà créés</strong>.
       </p>
 
-      <a class="btn btn__medium" href="/selectionner-un-site">
+      <a class="btn btn__medium" href="selectionner-un-site">
         Changer de site
       </a>
     </div>
