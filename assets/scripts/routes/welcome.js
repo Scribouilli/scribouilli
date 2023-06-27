@@ -21,7 +21,7 @@ export default () => {
       .then((repos) => {
         if (repos.length === 1) {
             const repoName = repos[0].name;
-            const account = repos[0].owner;
+            const account = repos[0].owner.login;
 
             page(`/atelier-list-pages?repoName=${repoName}&account=${account}`);
         } else {
