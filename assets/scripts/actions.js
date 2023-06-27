@@ -119,23 +119,24 @@ export const getCurrentRepoArticles = () => {
  *
  * @returns {CurrentRepository} The current repository
  */
-export const setCurrentRepositoryFromQuerystring = async (querystring) => {
+export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const params = new URLSearchParams(querystring);
   const repoName = params.get("repoName");
   const owner = params.get("account");
 
   if (!repoName || !owner) { page("/") }
 
-  const authenticatedUserLogin = await fetchAuthenticatedUserLogin();
+  const loginP = fetchAuthenticatedUserLogin()
 
-  if (authenticatedUserLogin !== owner) {
-    page("/");
-  }
+  const currentRepositoryP = loginP.then((login) => {
+    if (login !== owner) {
+      return page("/");
+    }
+  });
 
   const publishedWebsiteURL =
     `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
-  const loginP = fetchAuthenticatedUserLogin()
 
 
   setBuildStatus(loginP, repoName);
