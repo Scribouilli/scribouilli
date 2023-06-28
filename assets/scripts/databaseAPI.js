@@ -113,6 +113,9 @@ class DatabaseAPI {
         dir: repoDir,
         url: `https://github.com/${login}/${repoName}.git`,
         corsProxy: 'https://cors.isomorphic-git.org',
+        ref: 'main',
+        singleBranch: true,
+        depth: 5
       })
     }
   }
