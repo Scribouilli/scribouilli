@@ -170,7 +170,7 @@ class DatabaseAPI {
     });
   }
 
-  async sync(login, repoName) {
+  async push(login, repoName) {
     await git.push({
       fs: this.fs,
       http,
@@ -204,7 +204,7 @@ class DatabaseAPI {
       dir: this.repoDir(login, repoName),
       message: `suppression du fichier ${fileName}`
     })
-    this.sync(login, repoName)
+    this.push(login, repoName)
   }
 
   async deleteRepository(login, repoName) {
@@ -236,7 +236,7 @@ class DatabaseAPI {
     await this.fs.promises.writeFile(this.path(login, repoName, fileName), content)
     await git.add({ fs: this.fs, filepath: fileName, dir: this.repoDir(login, repoName) })
     await git.commit({ fs: this.fs, dir: this.repoDir(login, repoName), message })
-    this.sync(login, repoName)
+    this.push(login, repoName)
   }
 
   async writeCustomCSS(login, repoName, content) {
