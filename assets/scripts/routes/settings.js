@@ -65,7 +65,7 @@ export default ({ querystring }) => {
   settings.$on("update-theme", ({ detail: { theme } }) => {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI
-        .updateCustomCSS(login, store.state.currentRepository.name, theme.css)
+        .writeCustomCSS(login, store.state.currentRepository.name, theme.css)
         .then((_) => {
           store.mutations.setTheme(store.state.theme.css);
           store.state.buildStatus.setBuildingAndCheckStatusLater(10000);
@@ -79,7 +79,7 @@ export default ({ querystring }) => {
 
     try {
       if (activated) {
-        await databaseAPI.createFile(
+        await databaseAPI.writeFile(
           login,
           store.state.currentRepository.name,
           'blog.md',

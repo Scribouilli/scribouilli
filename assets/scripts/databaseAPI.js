@@ -225,10 +225,9 @@ class DatabaseAPI {
    * @param {string} message
    * @param {string | { old: string, new: string }} fileName
    */
-  async createFile(login, repoName, fileName, content, message) {
+  async writeFile(login, repoName, fileName, content, message) {
     await this.cloneIfNeeded(login, repoName)
 
-    console.log(fileName, typeof fileName)
     if (typeof fileName !== 'string') {
       await this.deleteFile(login, repoName, fileName.old)
       fileName = fileName.new
@@ -240,8 +239,8 @@ class DatabaseAPI {
     this.sync(login, repoName)
   }
 
-  async createCustomCSS(login, repoName, content) {
-    return this.createFile(login, repoName, this.customCSSPath, content, "mise à jour du ficher de styles custom");
+  async writeCustomCSS(login, repoName, content) {
+    return this.writeFile(login, repoName, this.customCSSPath, content, "mise à jour du ficher de styles custom");
   }
 
   async getPagesList(login, repoName, dir = '') {
