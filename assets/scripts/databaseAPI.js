@@ -7,6 +7,8 @@ import http from 'isomorphic-git/http/web'
 
 import store from "./store.js";
 
+const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
+
 class DatabaseAPI {
   constructor(accessToken) {
     this.accessToken = accessToken;
@@ -112,7 +114,7 @@ class DatabaseAPI {
         http,
         dir: repoDir,
         url: `https://github.com/${login}/${repoName}.git`,
-        corsProxy: 'https://cors.isomorphic-git.org',
+        corsProxy: CORS_PROXY_URL,
         ref: 'main',
         singleBranch: true,
         depth: 5
@@ -178,7 +180,7 @@ class DatabaseAPI {
       fs: this.fs,
       http,
       dir: this.repoDir(login, repoName),
-      corsProxy: 'https://cors.isomorphic-git.org',
+      corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
         return {
