@@ -118,7 +118,6 @@ class DatabaseAPI {
   }
 
   async setAuthor(login, repoName, email) {
-    console.log(login, repoName, email)
     if (!login || !repoName || !email) {
       return
     }
