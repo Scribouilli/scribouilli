@@ -223,9 +223,16 @@ class DatabaseAPI {
    *
    * @param {string} content
    * @param {string} message
+   * @param {string | { old: string, new: string }} fileName
    */
   async createFile(login, repoName, fileName, content, message) {
     await this.cloneIfNeeded(login, repoName)
+
+    console.log(fileName, typeof fileName)
+    if (typeof fileName !== 'string') {
+      await this.deleteFile(login, repoName, fileName.old)
+      fileName = fileName.new
+    }
 
     await this.fs.promises.writeFile(this.path(login, repoName, fileName), content)
     await git.add({ fs: this.fs, filepath: fileName, dir: this.repoDir(login, repoName) })
@@ -234,40 +241,7 @@ class DatabaseAPI {
   }
 
   async createCustomCSS(login, repoName, content) {
-    return this.createFile(login, repoName, this.customCSSPath, content, "création du ficher de styles custom");
-  }
-
-  /**
-   * @summary Update a file
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @param {string} oldfileName Name of the file
-   * @param {string} newFileName Name of the file after modification
-   * @param {string} content
-   * @param {string} message
-   * @returns
-   *
-   */
-  async updateFile(login, repoName, oldfileName, newFileName, content, message) {
-    await this.cloneIfNeeded(login, repoName)
-
-    if (newFileName !== oldfileName) {
-      await this.deleteFile(login, repoName, oldfileName)
-    }
-
-    return await this.createFile(login, repoName, oldfileName, content, message)
-  }
-
-  updateCustomCSS(login, repoName, content) {
-    return this.updateFile(
-      login,
-      repoName,
-      this.customCSSPath,
-      this.customCSSPath,
-      content,
-      "mise à jour du thème",
-    )
+    return this.createFile(login, repoName, this.customCSSPath, content, "mise à jour du ficher de styles custom");
   }
 
   async getPagesList(login, repoName, dir = '') {

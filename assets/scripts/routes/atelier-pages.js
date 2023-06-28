@@ -146,28 +146,22 @@ export default ({ querystring }) => {
       store.mutations.setPages(newPages);
 
       // If title changed
-      // TODO: maybe this code can be merged now
       if (fileName && fileName !== newFileName) {
-        Promise.resolve(state.login).then((login) => {
-          databaseAPI
-            .updateFile(login, state.currentRepository.name, fileName, newFileName, finalContent, message)
-            .then(() => {
-              state.buildStatus.setBuildingAndCheckStatusLater();
-              page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
-            })
-            .catch((msg) => handleErrors(msg));
-        });
-      } else {
-        Promise.resolve(state.login).then((login) => {
-          databaseAPI
-            .createFile(login, state.currentRepository.name, newFileName, finalContent, message)
-            .then(() => {
-              state.buildStatus.setBuildingAndCheckStatusLater();
-              page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
-            })
-            .catch((msg) => handleErrors(msg));
-        });
+        fileName = {
+          old: fileName,
+          new: newFileName,
+        }
       }
+
+      Promise.resolve(state.login).then((login) => {
+        databaseAPI
+          .createFile(login, state.currentRepository.name, fileName, finalContent, message)
+          .then(() => {
+            state.buildStatus.setBuildingAndCheckStatusLater();
+            page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+          })
+          .catch((msg) => handleErrors(msg));
+      });
     }
   );
 };
