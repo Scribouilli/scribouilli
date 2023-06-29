@@ -1,6 +1,6 @@
 //@ts-check
 
-import lireFrontMatter from 'front-matter'
+import lireFrontMatter from "front-matter";
 
 import { handleErrors } from "./utils.js";
 import { fetchAuthenticatedUserLogin } from "./actions.js";
@@ -14,8 +14,8 @@ class DatabaseAPI {
     this.getFilesCache = new Map();
     this.fileCached = undefined;
     this.customCSSPath = "assets/css/custom.css";
-    this.defaultRepoOwner = "Scribouilli"
-    this.defaultThemeRepoName = "site-template"
+    this.defaultRepoOwner = "Scribouilli";
+    this.defaultThemeRepoName = "site-template";
   }
 
   getAuthenticatedUser() {
@@ -50,8 +50,8 @@ class DatabaseAPI {
     });
   }
 
-  createDefaultRepository(login, newRepoName) {
-    return this.callGithubAPI(
+  async createDefaultRepository(login, newRepoName) {
+    let res = await this.callGithubAPI(
       `https://api.github.com/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
       {
         headers: {
@@ -65,7 +65,25 @@ class DatabaseAPI {
           description: "Mon site Scribouilli",
         }),
       }
-    )
+    );
+
+    let test = await this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${newRepoName}/topics`,
+      {
+        headers: {
+          Authorization: "token " + this.accessToken,
+          Accept: "application/vnd.github+json",
+        },
+        method: "PUT",
+        body: JSON.stringify({
+          owner: login,
+          repo: newRepoName,
+          names: ["site-scribouilli"],
+        }),
+      }
+    );
+    console.log(test);
+    return res;
   }
 
   createRepoGithubPages(account, repoName) {
@@ -77,9 +95,9 @@ class DatabaseAPI {
           Accept: "applicatikn/vnd.github+json",
         },
         method: "POST",
-        body: JSON.stringify({ source: { branch: 'main' } })
+        body: JSON.stringify({ source: { branch: "main" } }),
       }
-    )
+    );
   }
 
   /**
@@ -270,9 +288,10 @@ class DatabaseAPI {
           const pagePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
               .then((page) => {
-                const { attributes: data, body: markdownContent } = lireFrontMatter(
-                  Buffer.from(page.content, "base64").toString()
-                );
+                const { attributes: data, body: markdownContent } =
+                  lireFrontMatter(
+                    Buffer.from(page.content, "base64").toString()
+                  );
                 const title = data?.title;
                 return {
                   title: title,
@@ -307,9 +326,10 @@ class DatabaseAPI {
           const articlePs = files.map((file) => {
             return this.getFile(login, repoName, file.path)
               .then((article) => {
-                const { attributes: data, body: markdownContent } = lireFrontMatter(
-                  Buffer.from(article.content, "base64").toString()
-                );
+                const { attributes: data, body: markdownContent } =
+                  lireFrontMatter(
+                    Buffer.from(article.content, "base64").toString()
+                  );
                 const title = data?.title;
                 return {
                   title: title,
@@ -341,8 +361,9 @@ class DatabaseAPI {
           "If-None-Match": this.getFilesCache.get(path)?.etag,
         },
       }
-    ).then(httpResp => httpResp.status !== 404)
-      .catch(_ => false)
+    )
+      .then((httpResp) => httpResp.status !== 404)
+      .catch((_) => false);
   }
 
   /**
