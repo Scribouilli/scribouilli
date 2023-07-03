@@ -12,6 +12,7 @@ import {
   makeFrontMatterYAMLJsaisPasQuoiLa,
   makePublishedWebsiteURL,
 } from "../utils";
+import { setCurrentRepositoryFromQuerystring } from "../actions";
 import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
