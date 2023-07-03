@@ -67,7 +67,13 @@ class DatabaseAPI {
       }
     );
 
-    let test = await this.callGithubAPI(
+    this.createTopicGithubRepository(login, newRepoName);
+
+    return res;
+  }
+
+  createTopicGithubRepository(login, newRepoName) {
+    this.callGithubAPI(
       `https://api.github.com/repos/${login}/${newRepoName}/topics`,
       {
         headers: {
@@ -82,8 +88,6 @@ class DatabaseAPI {
         }),
       }
     );
-    console.log(test);
-    return res;
   }
 
   createRepoGithubPages(account, repoName) {

@@ -1,9 +1,9 @@
 //@ts-check
 
-import page from 'page'
+import page from "page";
 
-import databaseAPI from './databaseAPI.js';
-import store from './store.js';
+import databaseAPI from "./databaseAPI.js";
+import store from "./store.js";
 import makeBuildStatus from "./buildStatus.js";
 import { handleErrors, logMessage, delay } from "./utils";
 
@@ -36,7 +36,7 @@ export const fetchAuthenticatedUserLogin = () => {
         }
 
         default:
-          const message = `The access token is invalid. ${errorMessage}`
+          const message = `The access token is invalid. ${errorMessage}`;
 
           logMessage(message, "fetchAuthenticatedUserLogin");
       }
@@ -45,7 +45,7 @@ export const fetchAuthenticatedUserLogin = () => {
   store.mutations.setLogin(loginP);
 
   return loginP;
-}
+};
 
 /**
  * @summary Fetch the list of repositories for the current user
@@ -59,29 +59,30 @@ export const fetchAuthenticatedUserLogin = () => {
  * @returns A promise that resolves to the list of
  * repositories for the current user.
  *
-*/
+ */
 
 export const fetchCurrentUserRepositories = async () => {
-    const login = await fetchAuthenticatedUserLogin();
-    const currentUserRepositoriesP = databaseAPI
-      .getCurrentUserRepositories()
-      .then((repos) => {
-        store.mutations.setReposForAccount({ login, repos });
+  const login = await fetchAuthenticatedUserLogin();
+  const currentUserRepositoriesP = databaseAPI
+    .getCurrentUserRepositories()
+    .then((repos) => {
+      store.mutations.setReposForAccount({ login, repos });
 
-        return repos
-      })
+      return repos;
+    });
 
-    store.mutations.setReposForAccount(currentUserRepositoriesP);
+  store.mutations.setReposForAccount(currentUserRepositoriesP);
 
-    return currentUserRepositoriesP
-}
+  return currentUserRepositoriesP;
+};
 
 export const getCurrentRepository = () => {
   return store.state.currentRepository;
-}
+};
 
 export const getCurrentRepoPages = () => {
-  const { owner, name  } = store.state.currentRepository;
+  const { owner, name } = store.state.currentRepository;
+  databaseAPI.createTopicGithubRepository(owner, name);
 
   return databaseAPI
     .getPagesList(owner, name)
@@ -89,10 +90,10 @@ export const getCurrentRepoPages = () => {
       store.mutations.setPages(pages);
     })
     .catch((msg) => handleErrors(msg));
-}
+};
 
 export const getCurrentRepoArticles = () => {
-  const { owner, name  } = store.state.currentRepository;
+  const { owner, name } = store.state.currentRepository;
 
   return databaseAPI
     .getArticlesList(owner, name)
@@ -100,7 +101,7 @@ export const getCurrentRepoArticles = () => {
       store.mutations.setArticles(articles);
     })
     .catch((msg) => handleErrors(msg));
-}
+};
 
 /**
  * @typedef {Object} CurrentRepository
@@ -124,9 +125,11 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const repoName = params.get("repoName");
   const owner = params.get("account");
 
-  if (!repoName || !owner) { page("/") }
+  if (!repoName || !owner) {
+    page("/");
+  }
 
-  const loginP = fetchAuthenticatedUserLogin()
+  const loginP = fetchAuthenticatedUserLogin();
 
   const currentRepositoryP = loginP.then((login) => {
     if (login !== owner) {
@@ -134,10 +137,8 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
     }
   });
 
-  const publishedWebsiteURL =
-    `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
+  const publishedWebsiteURL = `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
   const repositoryURL = `https://github.com/${owner}/${repoName}`;
-
 
   setBuildStatus(loginP, repoName);
   setSiteRepoConfig(loginP);
@@ -154,30 +155,30 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   store.mutations.setCurrentRepository(currentRepository);
 
   return currentRepository;
-}
+};
 
 const setBlogIndexSha = async (loginP) => {
   try {
     const { sha: blogIndexSha } = await databaseAPI.getFile(
       await loginP,
       store.state.currentRepository.name,
-      'blog.md'
-    )
-    store.mutations.setBlogIndexSha(blogIndexSha)
+      "blog.md"
+    );
+    store.mutations.setBlogIndexSha(blogIndexSha);
   } catch (errorMessage) {
-    if (errorMessage !== 'NOT_FOUND') {
-      throw errorMessage
+    if (errorMessage !== "NOT_FOUND") {
+      throw errorMessage;
     }
   }
-}
+};
 
 export const setArticles = async (loginP) => {
   const articles = await databaseAPI.getArticlesList(
     await loginP,
     store.state.currentRepository.name
-  )
-  store.mutations.setArticles(articles)
-}
+  );
+  store.mutations.setArticles(articles);
+};
 
 export const setSiteRepoConfig = (loginP) => {
   const siteRepoConfigP = loginP
@@ -187,7 +188,7 @@ export const setSiteRepoConfig = (loginP) => {
     .catch((error) => handleErrors(error));
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP);
-}
+};
 
 export const setBuildStatus = (loginP, repoName) => {
   store.mutations.setBuildStatus(makeBuildStatus(loginP, repoName));
@@ -197,7 +198,7 @@ export const setBuildStatus = (loginP, repoName) => {
   on peut faire confiance à ce que renvoit l'API
   */
   store.state.buildStatus.checkStatus();
-}
+};
 
 /**
  * @summary Create a repository for the current account
@@ -215,29 +216,31 @@ export const setBuildStatus = (loginP, repoName) => {
  *
  */
 export const createRepositoryForCurrentAccount = async (repoName) => {
-  const login = await store.state.login
+  const login = await store.state.login;
   const escapedRepoName = repoName
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-zA-Z0-9_-]+/g, "-")
-    .toLowerCase()
+    .toLowerCase();
 
-  return databaseAPI.createDefaultRepository(login, escapedRepoName)
+  return databaseAPI
+    .createDefaultRepository(login, escapedRepoName)
     .then(() => {
       // Generation from a template repository
       // is asynchronous, so we need to wait a bit
       // for the new repo to be created
       // before the setup of the Github Pages branch
-      return delay(1000)
+      return delay(1000);
     })
     .then(() => {
-      return databaseAPI.createRepoGithubPages(login, escapedRepoName)
+      return databaseAPI.createRepoGithubPages(login, escapedRepoName);
     })
     .then(() => {
-      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
+      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`);
     })
     .catch((errorMessage) => {
-      logMessage(errorMessage, "createRepositoryForCurrentAccount")
+      logMessage(errorMessage, "createRepositoryForCurrentAccount");
 
-      throw errorMessage
-    })
-}
+      throw errorMessage;
+    });
+};
