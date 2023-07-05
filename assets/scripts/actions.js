@@ -11,6 +11,7 @@ const logout = () => {
   store.mutations.setLogin(undefined)
   store.mutations.invalidateToken()
   store.mutations.removeSite()
+  page("/login")
 }
 
 /**
