@@ -12,23 +12,23 @@ import AtelierPages from "../components/screens/AtelierPages.svelte";
 
 const mapStateToProps = (state) => {
   return {
-    pages: state.pages,
+    pages: state.pages.filter(p => p.path !== 'blog.md'),
     buildStatus: state.buildStatus,
     currentRepository: state.currentRepository,
-    showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
+    showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
   };
 }
 
 export default async ({ querystring }) => {
-    setCurrentRepositoryFromQuerystring(querystring);
+  setCurrentRepositoryFromQuerystring(querystring);
 
-    const state = store.state;
-    const atelierPages = new AtelierPages({
-      target: svelteTarget,
-      props: mapStateToProps(state),
-    });
+  const state = store.state;
+  const atelierPages = new AtelierPages({
+    target: svelteTarget,
+    props: mapStateToProps(state),
+  });
 
-    replaceComponent(atelierPages, mapStateToProps);
+  replaceComponent(atelierPages, mapStateToProps);
 
-    Promise.resolve(state.login).then(() => getCurrentRepoPages());
+  Promise.resolve(state.login).then(() => getCurrentRepoPages());
 }

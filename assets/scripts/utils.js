@@ -46,6 +46,7 @@ export const handleErrors = (errorMessage) => {
 
     default:
       logMessage(errorMessage, "handleErrors");
+      throw errorMessage
   }
 };
 
@@ -64,7 +65,7 @@ export async function makePublishedWebsiteURL(state) {
  * @param {string} string
  * @returns {string}
  */
-function makeFilenameCompatibleString(string){
+function makeFilenameCompatibleString(string) {
   return string
     .replace(/\/|#|\?/g, "-") // replace url confusing characters
     .normalize("NFD")
