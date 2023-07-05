@@ -7,6 +7,12 @@ import store from './store.js';
 import makeBuildStatus from "./buildStatus.js";
 import { handleErrors, logMessage, delay } from "./utils";
 
+const logout = () => {
+  store.mutations.setLogin(undefined)
+  store.mutations.invalidateToken()
+  store.mutations.removeSite()
+}
+
 /**
  * @summary Fetch the current authenticated user login and set it in the store.
  *
@@ -45,6 +51,10 @@ export const fetchAuthenticatedUserLogin = () => {
   databaseAPI.getUserEmails()
     .then((emails) => {
       store.mutations.setEmail((emails.find(e => e.primary) ?? emails[0]).email)
+    })
+    .catch(() => {
+      // If we can't get email addresses, we ask the user to login again
+      logout()
     })
 
   store.mutations.setLogin(loginP);
