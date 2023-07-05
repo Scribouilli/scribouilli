@@ -7,12 +7,10 @@ import store from "../store";
 import {
   checkRepositoryAvailabilityThen,
   handleErrors,
-  makeFileNameFromTitle,
   makeArticleFileName,
   makeFrontMatterYAMLJsaisPasQuoiLa,
-  makePublishedWebsiteURL,
 } from "../utils";
-import { setCurrentRepositoryFromQuerystring } from "../actions";
+
 import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
