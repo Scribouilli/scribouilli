@@ -155,7 +155,7 @@ export default ({ querystring }) => {
 
       Promise.resolve(state.login).then((login) => {
         databaseAPI
-          .writeFile(login, state.currentRepository.name, fileName, finalContent, message)
+          .writeFile(login, state.currentRepository.name, newFileName, finalContent, message)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater();
             page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
