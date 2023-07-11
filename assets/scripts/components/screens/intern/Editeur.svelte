@@ -20,6 +20,7 @@
     previousContent: undefined,
     title: "",
     previousTitle: undefined,
+    sha: "",
   };
 
   fileP.then((_file) => {
@@ -33,7 +34,9 @@
   const dispatch = createEventDispatcher();
 
   const validateTitle = (e) => {
-    const titleChanged = file.previousTitle?.trim() !== file.title.trim();
+    const titleChanged =
+      (file.sha === "" || file.previousTitle) &&
+      file.previousTitle?.trim() !== file.title.trim();
     if (
       titleChanged &&
       filesPath &&
@@ -59,6 +62,7 @@
         previousContent: file.previousContent,
         title: file.title.trim(),
         previousTitle: file.previousTitle,
+        sha: file.sha,
       });
     }
   };
@@ -164,7 +168,7 @@
             >
           </div>
 
-          {#if file.fileName && file.fileName !== "index.md"}
+          {#if file.sha && file.fileName && file.fileName !== "index.md"}
             <div class="wrapper white-zone">
               <h3>{deleteTitle}</h3>
               <label>
@@ -178,7 +182,7 @@
               </label>
               <button
                 type="button"
-                on:click={() => dispatch("delete")}
+                on:click={dispatch("delete", { sha: file.sha })}
                 disabled={deleteDisabled}
                 class=" btn__medium btn btn__danger"
               >

@@ -4,12 +4,12 @@ import { svelteTarget } from "../config";
 import databaseAPI from "../databaseAPI";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
-import { getCurrentRepoPages, setArticles, setCurrentRepositoryFromQuerystring } from "../actions";
+import { setCurrentRepositoryFromQuerystring } from "../actions";
 import { handleErrors } from "../utils";
 import Settings from "../components/screens/Settings.svelte";
 
 const blogMdContent =
-  `---
+`---
 layout: default
 title: Articles
 permalink: /articles/
@@ -31,19 +31,18 @@ permalink: /articles/
 `
 
 function mapStateToProps(state) {
-  const blogFile = state.pages.find(p => p.path === 'blog.md')
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
     deleteRepositoryUrl: `https://github.com/${state.login}/${state.currentRepository.name}/settings#danger-zone`,
-    blogEnabled: blogFile !== undefined,
-    showArticles: blogFile !== undefined || state.articles?.length > 0,
+    blogEnabled: state.blogIndexSha !== undefined,
+    showArticles: state.blogIndexSha !== undefined || state.articles?.length > 0,
     currentRepository: state.currentRepository,
   };
 }
 
 export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring);
+    setCurrentRepositoryFromQuerystring(querystring);
 
   const settings = new Settings({
     target: svelteTarget,
@@ -65,9 +64,9 @@ export default ({ querystring }) => {
   settings.$on("update-theme", ({ detail: { theme } }) => {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI
-        .writeCustomCSS(login, store.state.currentRepository.name, theme.css)
-        .then((_) => {
-          store.mutations.setTheme(store.state.theme.css);
+        .updateCustomCSS(login, store.state.currentRepository.name, theme.css, theme.sha)
+        .then((response) => {
+          store.mutations.setTheme(store.state.theme.css, response.content.sha);
           store.state.buildStatus.setBuildingAndCheckStatusLater(10000);
         })
         .catch((msg) => handleErrors(msg));
@@ -79,33 +78,39 @@ export default ({ querystring }) => {
 
     try {
       if (activated) {
-        await databaseAPI.writeFile(
+        const resp = await databaseAPI.createFile(
           login,
           store.state.currentRepository.name,
           'blog.md',
-          blogMdContent,
-          'Activation du blog',
+          {
+            message: 'Activation du blog',
+            content: Buffer.from(blogMdContent).toString('base64'),
+          },
         )
+        const { content: { sha } } = await resp.json()
+        store.mutations.setBlogIndexSha(sha)
       } else {
         await databaseAPI.deleteFile(
           login,
           store.state.currentRepository.name,
           'blog.md',
+          store.state.blogIndexSha
         )
+        store.mutations.setBlogIndexSha(undefined)
       }
-      await setArticles(login)
     } catch (msg) {
       handleErrors(msg)
     }
   })
 
-  if (!store.state.theme.css) {
+  if (!store.state.theme.sha) {
     Promise.resolve(store.state.login).then((login) => {
       databaseAPI
         .getFile(login, store.state.currentRepository.name, databaseAPI.customCSSPath)
-        .then((content) => {
+        .then(({ content, sha }) => {
           store.mutations.setTheme(
-            content
+            Buffer.from(content, "base64").toString().trim(),
+            sha
           );
         })
         .catch((msg) => handleErrors(msg));
@@ -113,6 +118,4 @@ export default ({ querystring }) => {
   }
 
   replaceComponent(settings, mapStateToProps);
-
-  Promise.resolve(store.state.login).then(() => getCurrentRepoPages());
 };
