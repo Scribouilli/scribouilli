@@ -143,15 +143,23 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const repoName = params.get("repoName");
   const owner = params.get("account");
 
-  if (!repoName || !owner) {
-    page("/");
+  if (!repoName || !owner) { 
+    page("/")
+    if(!repoName){
+      throw new Error('Missing repoName in URL')
+    }
+    if(!owner){
+      throw new Error('Missing owner in URL')
+    }
   }
 
   const loginP = fetchAuthenticatedUserLogin();
 
-  const currentRepositoryP = loginP.then((login) => {
+  // protection temporaire contre le fait d'éditer des repo d'un autre compte
+  // PPP à enlever quand on travaillera sur l'édition sur les repos d'organisations
+  loginP.then((login) => {
     if (login !== owner) {
-      return page("/");
+      page("/");
     }
   });
 
