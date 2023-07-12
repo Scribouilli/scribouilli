@@ -46,6 +46,7 @@ export const handleErrors = (errorMessage) => {
 
     default:
       logMessage(errorMessage, "handleErrors");
+      throw errorMessage
   }
 };
 

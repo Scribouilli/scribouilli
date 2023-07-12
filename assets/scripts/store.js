@@ -16,6 +16,7 @@ export default new Store({
         TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER
       ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
     login: undefined, // Promise<string> | string
+    email: undefined, // string
     origin: undefined, // Promise<string> | string
     currentRepository: {
       name: undefined, // Promise<string> | string
@@ -27,20 +28,21 @@ export default new Store({
     reposByAccount: {
       // [login: string]: Promise<Repository[]>
     },
-    pages: undefined,
+    pages: [],
     articles: undefined,
     buildStatus: undefined,
     basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
     siteRepoConfig: undefined,
     theme: {
       css: undefined,
-      sha: undefined,
     },
-    blogIndexSha: undefined,
   },
   mutations: {
     setLogin(state, login) {
       state.login = login;
+    },
+    setEmail(state, email) {
+      state.email = email;
     },
     setCurrentRepository(state, repository) {
       state.currentRepository = repository;
@@ -59,7 +61,7 @@ export default new Store({
       });
     },
     setArticles(state, articles) {
-      state.articles = articles.sort((pageA, pageB) => {
+      state.articles = articles?.sort((pageA, pageB) => {
         if (pageA.path < pageB.path) {
           return -1;
         }
@@ -80,12 +82,8 @@ export default new Store({
     setSiteRepoConfig(state, repo) {
       state.siteRepoConfig = repo;
     },
-    setTheme(state, css, sha) {
+    setTheme(state, css) {
       state.theme.css = css;
-      state.theme.sha = sha;
-    },
-    setBlogIndexSha(state, sha) {
-      state.blogIndexSha = sha
     },
     removeSite(state) {
       state.pages = undefined;
