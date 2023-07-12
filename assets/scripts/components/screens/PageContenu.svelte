@@ -1,4 +1,6 @@
 <script>
+  import {makeAtelierListPageURL} from '../../routes/atelier-list-pages.js'
+
   export let fileP;
   export let imageDirUrl;
   export let buildStatus;
@@ -17,7 +19,7 @@
   {contenus}
   {showArticles}
   editionTitle="Édition d'une page"
-  listPrefix="./atelier-list-pages"
+  listPrefix={makeAtelierListPageURL(currentRepository.owner, currentRepository.name)}
   deleteTitle="Supprimer la page"
   on:save
   on:delete

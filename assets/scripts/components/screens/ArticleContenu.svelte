@@ -1,4 +1,6 @@
 <script>
+  import {makeAtelierListArticlesURL} from '../../routes/atelier-list-articles.js'
+
   export let fileP;
   export let imageDirUrl;
   export let buildStatus;
@@ -17,7 +19,7 @@
   {showArticles}
   {currentRepository}
   editionTitle="Édition d'un article"
-  listPrefix="./atelier-list-articles"
+  listPrefix={makeAtelierListArticlesURL(currentRepository.owner, currentRepository.name)}
   deleteTitle="Supprimer l'article"
   on:save
   on:delete

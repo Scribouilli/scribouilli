@@ -1,7 +1,6 @@
 // @ts-check
 
 import { svelteTarget } from "../config";
-import databaseAPI from '../databaseAPI'
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import {
@@ -31,4 +30,14 @@ export default async ({ querystring }) => {
   replaceComponent(atelierPages, mapStateToProps);
 
   Promise.resolve(state.login).then(() => getCurrentRepoPages());
+}
+
+/**
+ * 
+ * @param {string} account 
+ * @param {string} repoName 
+ * @returns {string}
+ */
+export function makeAtelierListPageURL(account, repoName){
+  return `/atelier-list-pages?account=${account}&repoName=${repoName}`
 }

@@ -8,12 +8,10 @@ import databaseAPI from "../databaseAPI";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import store from "../store";
 import {
-  checkRepositoryAvailabilityThen,
   handleErrors,
   logMessage,
   makeFileNameFromTitle,
   makeFrontMatterYAMLJsaisPasQuoiLa,
-  makePublishedWebsiteURL,
 } from "../utils";
 import { setCurrentRepositoryFromQuerystring } from "../actions";
 import PageContenu from "../components/screens/PageContenu.svelte";
