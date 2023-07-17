@@ -15,7 +15,9 @@ import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import ArticleContenu from "../components/screens/ArticleContenu.svelte";
+import { setCurrentRepositoryFromQuerystring } from "../actions";
 
+const LIST_ARTICLE_URL = '/atelier-list-articles'
 
 const makeMapStateToProps = (fileName) => (state) => {
   // Display existing file
@@ -108,7 +110,7 @@ export default ({ querystring }) => {
         .deleteFile(login, state.currentRepository.name, fileName, sha)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater();
-          page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+          page(`${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
         })
         .catch((msg) => handleErrors(msg));
     });
@@ -124,7 +126,7 @@ export default ({ querystring }) => {
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(`/atelier-list-articles?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+        page(`${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
         return;
       }
 
@@ -165,7 +167,7 @@ export default ({ querystring }) => {
                 console.log("nouvel article créé");
               }
               state.buildStatus.setBuildingAndCheckStatusLater();
-              page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+              page(`${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
             })
             .catch((msg) => handleErrors(msg));
         });
@@ -181,7 +183,7 @@ export default ({ querystring }) => {
                 console.log("nouvel article créé");
               }
               state.buildStatus.setBuildingAndCheckStatusLater();
-              page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+              page(`${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
             })
             .catch((msg) => handleErrors(msg));
         });
