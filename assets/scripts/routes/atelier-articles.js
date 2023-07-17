@@ -15,7 +15,7 @@ import databaseAPI from "../databaseAPI";
 import { svelteTarget } from "../config";
 import { replaceComponent } from "../routeComponentLifeCycle";
 import ArticleContenu from "../components/screens/ArticleContenu.svelte";
-
+import { setCurrentRepositoryFromQuerystring } from "../actions";
 
 const makeMapStateToProps = (fileName) => (state) => {
   // Display existing file
