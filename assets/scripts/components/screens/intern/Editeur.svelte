@@ -104,7 +104,9 @@
           </div>
 
           <p>
-            Attention, si le titre contient <code>/</code>, <code>#</code> ou
+            Attention, si le titre contient <code>/</code>, <code>#</code>,
+            <code>:</code>
+            ou
             <code>?</code>, ça peut ne pas marcher
           </p>
 
