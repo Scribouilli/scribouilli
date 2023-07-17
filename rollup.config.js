@@ -6,8 +6,11 @@ import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import sveltePreprocess from 'svelte-preprocess'
 
-const production = !process.env.ROLLUP_WATCH;
 
+// disable minification for prod for the moment
+// PPP : re-enable when we feel confident about not having to debug in production
+const production = false;		
+//const production = !process.env.ROLLUP_WATCH;
 
 export default {
 	input: 'assets/scripts/scripts.js',
@@ -38,10 +41,6 @@ export default {
 			dedupe: ['svelte']
 		}),
 		commonjs(),
-
-		// Watch the `_site` directory and refresh the
-		// browser on changes when not in production
-		//!production && livereload('_site'),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
