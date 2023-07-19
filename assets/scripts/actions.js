@@ -82,7 +82,6 @@ export const getCurrentRepository = () => {
 
 export const getCurrentRepoPages = () => {
   const { owner, name } = store.state.currentRepository;
-  databaseAPI.createTopicGithubRepository(owner, name);
 
   return databaseAPI
     .getPagesList(owner, name)

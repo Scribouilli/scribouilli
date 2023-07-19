@@ -67,13 +67,17 @@ class DatabaseAPI {
       }
     );
 
+    //On attends pas forcément la fin de cette appel pour return car pas de nécessité d'avoir le topic d'ajouté pour continuer
     this.createTopicGithubRepository(login, newRepoName);
 
     return res;
   }
 
+  /**
+   * @summary Put topic in Github repository to find more easily the websites
+   */
   createTopicGithubRepository(login, newRepoName) {
-    this.callGithubAPI(
+    return this.callGithubAPI(
       `https://api.github.com/repos/${login}/${newRepoName}/topics`,
       {
         headers: {
