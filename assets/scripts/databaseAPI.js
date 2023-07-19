@@ -116,14 +116,37 @@ class DatabaseAPI {
     );
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns {string}
+   */
   repoDir(login, repoName) {
+    if(typeof login !== 'string'){
+      throw new Error('TODO')
+    }
+
     return `/github.com/${login}/${repoName}`
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @param {string} fileName
+   * @returns {string}
+   */
   path(login, repoName, fileName) {
     return `/github.com/${login}/${repoName}/${fileName}`
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns {Promise<void>}
+   */
   async cloneIfNeeded(login, repoName) {
     const repoDir = this.repoDir(login, repoName)
     let dirExists = true
@@ -148,6 +171,13 @@ class DatabaseAPI {
     }
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @param {string} email
+   * @returns {Promise<void>}
+   */
   async setAuthor(login, repoName, email) {
     if (!login || !repoName || !email) {
       return
@@ -176,7 +206,7 @@ class DatabaseAPI {
    * @param {string} login
    * @param {string} repoName
    * @param {string} fileName
-   * @returns
+   * @returns {Promise<string>}
    */
   async getFile(login, repoName, fileName) {
     await this.cloneIfNeeded(login, repoName)
@@ -219,6 +249,11 @@ class DatabaseAPI {
 
   /**
    * @summary Remove file from github
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @param {string} fileName
+   * @returns {Promise<void>}
    */
   async deleteFile(login, repoName, fileName) {
     await this.cloneIfNeeded(login, repoName)
@@ -252,9 +287,13 @@ class DatabaseAPI {
   /**
    * @summary Create a file
    *
+   * @param {string} login
+   * @param {string} repoName
    * @param {string} content
    * @param {string} message
    * @param {string | { old: string, new: string }} fileName
+   * 
+   * @returns {Promise<void>}
    */
   async writeFile(login, repoName, fileName, content, message) {
     await this.cloneIfNeeded(login, repoName)
@@ -274,6 +313,13 @@ class DatabaseAPI {
     return this.writeFile(login, repoName, this.customCSSPath, content, "mise à jour du ficher de styles custom");
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @param {string} dir
+   * @returns 
+   */
   async getPagesList(login, repoName, dir = '') {
     await this.cloneIfNeeded(login, repoName)
 
@@ -306,6 +352,13 @@ class DatabaseAPI {
     ).then((deployments) => deployments[0]);
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @param {string} path 
+   * @returns 
+   */
   async checkFileExistence(login, repoName, path) {
     await this.cloneIfNeeded(login, repoName)
     const stat = await this.fs.promises.stat(this.path(login, repoName, path))
