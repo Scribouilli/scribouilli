@@ -7,10 +7,15 @@ import http from 'isomorphic-git/http/web'
 
 import store from "./store.js";
 
+
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 class DatabaseAPI {
+  /**
+   * @param {string} accessToken
+   */
   constructor(accessToken) {
+    /** @type {string | undefined} */
     this.accessToken = accessToken;
     this.commitsEtag = undefined;
     this.latestCommit = undefined;

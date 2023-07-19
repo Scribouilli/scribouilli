@@ -7,22 +7,54 @@ import {
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
 } from "./config.js";
 
-//@ts-ignore
-export default new Store({
+/**
+ * @typedef {Object} CurrentRepository
+ * @property {Promise<string> | string} owner
+ * @property {Promise<string> | string} name
+ * @property {Promise<string> | string} repositoryURL
+ * @property {Promise<string> | string} publishedWebsiteURL
+ */
+
+/**
+ * @typedef {Object} ScribouilliState
+ * @property {string} [accessToken]
+ * @property {Promise<string> | string} [login]
+ * @property {string} [email]
+ * @property {Promise<string> | string} [origin]
+ * @property {CurrentRepository} currentRepository
+ * @property {any} reposByAccount
+ * @property {any[]} pages
+ * @property {any[]} [articles]
+ * @property {any} buildStatus
+ * @property {string} basePath
+ * @property {any} siteRepoConfig
+ * @property {{css: string}} theme
+ */
+
+/**
+ * @template State
+ * @typedef {Object} BareduxStore
+ * @property {Readonly<State>} state
+ * @property {(subscriber: (state: State) => void) => (() => void)} subscribe
+ * @property {any} mutations
+ */
+
+/** @type { BareduxStore<ScribouilliState> } */
+const store = Store({
   state: {
     // @ts-ignore
     accessToken:
       new URL(location.toString()).searchParams.get(
         TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER
       ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-    login: undefined, // Promise<string> | string
-    email: undefined, // string
-    origin: undefined, // Promise<string> | string
+    login: undefined,
+    email: undefined,
+    origin: undefined,
     currentRepository: {
-      name: undefined, // Promise<string> | string
-      owner: undefined, // Promise<string> | string
-      publishedWebsiteURL: undefined, // Promise<string> | string
-      repositoryURL: undefined, // Promise<string> | string
+      name: undefined,
+      owner: undefined,
+      publishedWebsiteURL: undefined,
+      repositoryURL: undefined,
     },
     // We use the term "account" to refer to user or organization.
     reposByAccount: {
@@ -97,3 +129,6 @@ export default new Store({
     },
   },
 });
+
+
+export default store;
