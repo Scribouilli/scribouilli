@@ -22,6 +22,7 @@ const makeMapStateToProps = (fileName) => (state) => {
     const fileP = async function () {
       try {
         const login = await Promise.resolve(store.state.login)
+        if (!login) return page('/')
         const content = await databaseAPI.getFile(
           login,
           store.state.currentRepository.name,
@@ -75,9 +76,10 @@ export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring);
 
   const state = store.state;
-  const fileName = new URLSearchParams(querystring).get("path");
-  const mapStateToProps = makeMapStateToProps(fileName);
   const currentRepository = state.currentRepository;
+  const fileName = new URLSearchParams(querystring).get("path");
+  if (!fileName) return page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+    const mapStateToProps = makeMapStateToProps(fileName);
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
@@ -95,6 +97,8 @@ export default ({ querystring }) => {
   // @ts-ignore
   pageContenu.$on("delete", () => {
     Promise.resolve(state.login).then((login) => {
+      if (!login) return page('/')
+
       store.mutations.setPages(
         state.pages.filter((page) => {
           return page.path !== fileName;
@@ -152,6 +156,8 @@ export default ({ querystring }) => {
       }
 
       Promise.resolve(state.login).then((login) => {
+        if (!login) return page('/')
+
         databaseAPI
           .writeFile(login, state.currentRepository.name, newFileName, finalContent, message)
           .then(() => {

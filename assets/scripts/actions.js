@@ -92,10 +92,6 @@ export const fetchCurrentUserRepositories = async () => {
   return currentUserRepositoriesP
 }
 
-export const getCurrentRepository = () => {
-  return store.state.currentRepository;
-};
-
 export const getCurrentRepoPages = () => {
   const { owner, name } = store.state.currentRepository;
 
@@ -192,7 +188,8 @@ export const setSiteRepoConfig = (loginP) => {
     .catch((error) => handleErrors(error));
 
   store.mutations.setSiteRepoConfig(siteRepoConfigP);
-  siteRepoConfigP.then(_ => databaseAPI.setAuthor(store.state.login, store.state.currentRepository.name, store.state.email))
+  siteRepoConfigP.then(_ => Promise.all([store.state.login, store.state.email]).then(([login, email]) => {
+    if (login && email) { databaseAPI.setAuthor(login, store.state.currentRepository.name, email) }}))
 }
 
 export const setBuildStatus = (loginP, repoName) => {

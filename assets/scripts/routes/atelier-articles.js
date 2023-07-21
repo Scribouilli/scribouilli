@@ -24,6 +24,11 @@ const makeMapStateToProps = (fileName) => (state) => {
   let file;
   if (fileName) {
     file = Promise.resolve(store.state.login).then((login) => {
+      if (!login) {
+        page('/login')
+        return
+      }
+
       return databaseAPI
         .getFile(login, store.state.currentRepository.name, fileName)
         .then((contenu) => {
@@ -72,6 +77,8 @@ export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring);
 
   Promise.resolve(store.state.login).then(async (login) => {
+    if (!login) return page('/login')
+
     return checkRepositoryAvailabilityThen(
       login,
       store.state.currentRepository.name,
@@ -80,9 +87,10 @@ export default ({ querystring }) => {
   });
 
   const state = store.state;
-  const fileName = new URLSearchParams(querystring).get("path");
-  const mapStateToProps = makeMapStateToProps(fileName);
   const currentRepository = state.currentRepository;
+  const fileName = new URLSearchParams(querystring).get("path");
+  if (!fileName) return page(`${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`)
+  const mapStateToProps = makeMapStateToProps(fileName);
 
   const articleContenu = new ArticleContenu({
     target: svelteTarget,
@@ -98,8 +106,10 @@ export default ({ querystring }) => {
   });
   articleContenu.$on("delete", () => {
     Promise.resolve(state.login).then((login) => {
+    if (!login) return page('/login')
+
       store.mutations.setArticles(
-        state.articles.filter((article) => {
+        (state.articles ?? []).filter((article) => {
           return article.path !== fileName;
         })
       );
@@ -159,6 +169,8 @@ export default ({ querystring }) => {
       }
 
       Promise.resolve(state.login).then((login) => {
+        if (!login) return page('/')
+
         databaseAPI
           .writeFile(login, state.currentRepository.name, fileName, finalContent, message)
           .then(() => {
