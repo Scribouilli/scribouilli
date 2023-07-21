@@ -27,7 +27,6 @@ import {
  * @property {any[]} [articles]
  * @property {any} buildStatus
  * @property {string} basePath
- * @property {any} siteRepoConfig
  * @property {{css: string}} theme
  */
 
@@ -64,7 +63,6 @@ const store = Store({
     articles: undefined,
     buildStatus: undefined,
     basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
-    siteRepoConfig: undefined,
     theme: {
       css: undefined,
     },
@@ -110,9 +108,6 @@ const store = Store({
     },
     setReposForAccount(state, { login, repos }) {
       state.reposByAccount[login] = repos;
-    },
-    setSiteRepoConfig(state, repo) {
-      state.siteRepoConfig = repo;
     },
     setTheme(state, css) {
       state.theme.css = css;
