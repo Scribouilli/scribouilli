@@ -129,7 +129,7 @@ class DatabaseAPI {
    */
   repoDir(login, repoName) {
     if(typeof login !== 'string'){
-      throw new Error('TODO')
+      throw new Error(`login is not a string (${typeof login} - ${Object(login) === login ? login[Symbol.toStringTag] : ''})`)
     }
 
     return `/github.com/${login}/${repoName}`
@@ -353,6 +353,12 @@ class DatabaseAPI {
       }))
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
   async getArticlesList(login, repoName) {
     try {
       return await this.getPagesList(login, repoName, '_posts')

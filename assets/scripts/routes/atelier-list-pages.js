@@ -9,6 +9,11 @@ import {
 } from "../actions";
 import AtelierPages from "../components/screens/AtelierPages.svelte";
 
+/**
+ * 
+ * @param {import("../store").ScribouilliState} state 
+ * @returns 
+ */
 const mapStateToProps = (state) => {
   return {
     pages: state.pages.filter(p => p.path !== 'blog.md'),
@@ -19,7 +24,8 @@ const mapStateToProps = (state) => {
 }
 
 export default async ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring);
+  setCurrentRepositoryFromQuerystring(querystring)
+    .then(getCurrentRepoPages);
 
   const state = store.state;
   const atelierPages = new AtelierPages({
@@ -28,8 +34,6 @@ export default async ({ querystring }) => {
   });
 
   replaceComponent(atelierPages, mapStateToProps);
-
-  Promise.resolve(state.login).then(() => getCurrentRepoPages());
 }
 
 /**

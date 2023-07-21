@@ -29,11 +29,13 @@ export const handleErrors = (errorMessage) => {
   switch (errorMessage) {
     case "INVALIDATE_TOKEN": {
       store.mutations.invalidateToken();
+      console.info('[invalid token] redirecting to /account')
       page("/account");
 
       break;
     }
     case "REPOSITORY_NOT_FOUND": {
+      console.info('[REPOSITORY_NOT_FOUND] redirecting to /selectionner-un-site')
       page("/selectionner-un-site");
 
       break;

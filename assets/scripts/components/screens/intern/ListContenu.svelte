@@ -9,8 +9,11 @@
   export let showArticles;
   export let currentRepository;
 
-  let repoName = currentRepository.name;
-  let account = currentRepository.owner;
+  let repoName;
+  $: repoName = currentRepository.name;
+
+  let account
+  $: account = currentRepository.owner;
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
