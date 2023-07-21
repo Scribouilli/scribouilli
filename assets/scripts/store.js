@@ -9,10 +9,10 @@ import {
 
 /**
  * @typedef {Object} CurrentRepository
- * @property {Promise<string> | string} owner
- * @property {Promise<string> | string} name
- * @property {Promise<string> | string} repositoryURL
- * @property {Promise<string> | string} publishedWebsiteURL
+ * @property {string} owner
+ * @property {string} name
+ * @property {string} repositoryURL
+ * @property {string} publishedWebsiteURL
  */
 
 /**

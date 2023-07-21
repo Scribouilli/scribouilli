@@ -122,12 +122,6 @@ export const addTopicRepo = (login, repo) =>
   databaseAPI.createTopicGithubRepository(login, repo);
 
 /**
- * @typedef {Object} CurrentRepository
- * @property {string} name - The name of the repository
- * @property {string} owner - The owner of the repository
- * @property {string} publishedWebsiteURL - The URL of the published website
- * @property {string} repositoryURL - The URL of the repository
- *
  * @summary Set the current repository from the owner and the name
  * of the repository in the URL
  *
@@ -136,7 +130,7 @@ export const addTopicRepo = (login, repo) =>
  * but also the build status and the site repo config. If the user is not
  * logged in, it redirects to the authentication page.
  *
- * @returns {CurrentRepository} The current repository
+ * @returns {import('./store.js').CurrentRepository} The current repository
  */
 export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const params = new URLSearchParams(querystring);
@@ -156,7 +150,7 @@ export const setCurrentRepositoryFromQuerystring = (querystring) => {
   const loginP = fetchAuthenticatedUserLogin();
 
   // protection temporaire contre le fait d'éditer des repo d'un autre compte
-  // PPP à enlever quand on travaillera sur l'édition sur les repos d'organisations
+  // PPP: à enlever quand on travaillera sur l'édition sur les repos d'organisations
   loginP.then((login) => {
     if (login !== owner) {
       page("/");

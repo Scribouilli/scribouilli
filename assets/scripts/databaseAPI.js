@@ -177,6 +177,16 @@ class DatabaseAPI {
   }
 
   /**
+   * Assigne l'auteur et l'email pour les commits git
+   * 
+   * On voudrait le faire en global, mais ça n'est pas possible actuellement avec isomorphic-git (1.24.2)
+   * > Currently only the local $GIT_DIR/config file can be read or written. However support for the global ~/.gitconfig and system $(prefix)/etc/gitconfig will be added in the future.
+   * Voir https://github.com/isomorphic-git/isomorphic-git/pull/1779 
+   * 
+   *
+   * https://isomorphic-git.org/docs/en/setConfig
+   * 
+   * Alors, on doit passer le repoName
    * 
    * @param {string} login 
    * @param {string} repoName 
