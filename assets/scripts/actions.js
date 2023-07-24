@@ -102,6 +102,9 @@ export const getCurrentRepoArticles = () => {
     .catch((msg) => handleErrors(msg));
 };
 
+export const addTopicRepo = (login, repo) =>
+  databaseAPI.createTopicGithubRepository(login, repo);
+
 /**
  * @typedef {Object} CurrentRepository
  * @property {string} name - The name of the repository

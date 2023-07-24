@@ -1,8 +1,10 @@
 <script>
+  // @ts-check
   import page from "page";
 
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
+  import { addTopicRepo } from "../../actions";
 
   export let currentAccount;
   export let currentAccountRepositories;
@@ -15,7 +17,8 @@
 
     loading = true;
 
-    page(`/atelier-list-pages?repoName=${name}&account=${currentAccount}`)
+    addTopicRepo(currentAccount, name);
+    page(`/atelier-list-pages?repoName=${name}&account=${currentAccount}`);
 
     loading = false;
   };
@@ -40,11 +43,7 @@
           </div>
 
           <div class="actions-zone">
-            <button
-              type="submit"
-              class="btn__medium btn"
-              disabled={loading}
-            >
+            <button type="submit" class="btn__medium btn" disabled={loading}>
               {#if loading}
                 <Loader />
               {:else}
