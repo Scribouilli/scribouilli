@@ -318,6 +318,10 @@ class DatabaseAPI {
       fileName = fileName.new
     }
 
+    if (fileName === '') {
+      throw new TypeError('empty file name')
+    }
+
     await this.fs.promises.writeFile(this.path(login, repoName, fileName), content)
     await git.add({ fs: this.fs, filepath: fileName, dir: this.repoDir(login, repoName) })
     await git.commit({ fs: this.fs, dir: this.repoDir(login, repoName), message })

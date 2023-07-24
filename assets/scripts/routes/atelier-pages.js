@@ -147,6 +147,11 @@ export default ({ querystring }) => {
 
       store.mutations.setPages(newPages);
 
+      // If it is a new page
+      if (fileName === '') {
+        fileName = newFileName
+      }
+
       // If title changed
       if (fileName && fileName !== newFileName) {
         fileName = {
@@ -159,7 +164,7 @@ export default ({ querystring }) => {
         if (!login) return page('/')
 
         databaseAPI
-          .writeFile(login, state.currentRepository.name, newFileName, finalContent, message)
+          .writeFile(login, state.currentRepository.name, fileName, finalContent, message)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater();
             page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);

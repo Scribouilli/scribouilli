@@ -153,12 +153,16 @@ export default ({ querystring }) => {
 
       let newArticles =
         state.articles?.filter((article) => {
-          console.log(article.path, fileName);
           return article.path !== fileName;
         }) || [];
       newArticles.push({ title: title, path: newFileName });
 
       store.mutations.setArticles(newArticles);
+
+      // if creating a new article
+      if (fileName === '') {
+        fileName = newFileName
+      }
 
       // If title changed
       if (fileName && fileName !== newFileName) {
