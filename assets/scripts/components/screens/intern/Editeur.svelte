@@ -103,7 +103,7 @@
             />
           </div>
 
-          <div class="accordion">
+          <div class="accordion aide-editeur">
             <h4 class="label">Aide</h4>
             <details>
               <summary>Mettre en forme le contenu</summary>
@@ -128,19 +128,42 @@
             </details>
 
             <details>
-              <summary>Héberger des images</summary>
+              <summary>Rajouter une image</summary>
               <div>
-                <p>
-                  Pour héberger des images, nous vous avons créé
-                  <a href={imageDirUrl} target="_blank"> un petit dossier </a>.
-                  <br />
-                  Vous pouvez y déposer vos images, récupérer le lien et mettre l'image
-                  dans votre site grâce au Markdown avec
+                <ol>
+                  <li>
+                    (Optionnel) Si votre image n'est pas en ligne, déposez-la
+                    dans <a href={imageDirUrl} target="_blank">
+                      ce petit dossier
+                    </a>.
+                  </li>
+                  <li>Affichez l'image dans votre navigateur</li>
+                  <li>
+                    Faites un clic droit sur l'image : Copier le lien
+                    (l'adresse) de l'image
+                  </li>
+                  <li>Revenez sur votre page Scribouilli</li>
+                  <li>
+                    Insérez la ligne ci-dessous là où vous voulez mettre votre
+                    image, en remplaçant le texte :
+                  </li>
+                  <ul>
+                    <li>
+                      Entre crochets, par une description pour les personnes
+                      malvoyantes
+                    </li>
+                    <li>
+                      Entre parenthèses, par le lien de l'image que vous avez
+                      copié précédemment
+                    </li>
+                  </ul>
+
                   <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                   <figure>
                     ![Texte décrivant l'image](https://ladressedemonimage.png)
                   </figure>
-                </p>
+                  <br />
+                </ol>
               </div>
             </details>
           </div>
@@ -200,6 +223,21 @@
 
   .accordion {
     margin-top: 3rem;
+  }
+
+  .aide-editeur {
+    summary {
+      margin-bottom: 1.2rem;
+    }
+    ul,
+    ol {
+      list-style: revert;
+      padding-left: 2rem;
+    }
+
+    li {
+      margin-bottom: 1rem;
+    }
   }
 
   .content {
