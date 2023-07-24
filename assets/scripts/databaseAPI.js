@@ -318,8 +318,11 @@ class DatabaseAPI {
       fileName = fileName.new
     }
 
+    // This condition is here just in case, but it should not happen in practice
+    // Having an empty file name will not lead immediately to a crash but will result in
+    // some bugs later, see https://github.com/Scribouilli/scribouilli/issues/49#issuecomment-1648226372
     if (fileName === '') {
-      throw new TypeError('empty file name')
+      throw new TypeError('Empty file name')
     }
 
     await this.fs.promises.writeFile(this.path(login, repoName, fileName), content)
