@@ -103,11 +103,6 @@
             />
           </div>
 
-          <p>
-            Attention, si le titre contient <code>/</code>, <code>#</code> ou
-            <code>?</code>, ça peut ne pas marcher
-          </p>
-
           <div class="accordion">
             <h4 class="label">Aide</h4>
             <details>

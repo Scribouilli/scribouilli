@@ -1,9 +1,9 @@
 //@ts-check
 
-import page from 'page'
+import page from "page";
 import { format } from "date-fns";
 
-import databaseAPI from './databaseAPI.js'
+import databaseAPI from "./databaseAPI.js";
 import store from "./store.js";
 
 /**
@@ -39,7 +39,7 @@ export const handleErrors = (errorMessage) => {
       break;
     }
     case "NOT_FOUND":
-      const message = `databaseAPI call failed: ${errorMessage}`
+      const message = `databaseAPI call failed: ${errorMessage}`;
       logMessage(message, "handleErrors");
 
       break;
@@ -64,14 +64,14 @@ export async function makePublishedWebsiteURL(state) {
  * @param {string} string
  * @returns {string}
  */
-function makeFilenameCompatibleString(string){
+function makeFilenameCompatibleString(string) {
   return string
-    .replace(/\/|#|\?/g, "-") // replace url confusing characters
+    .replace(/\/|#|\?|:/g, "-") // replace url confusing characters
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // remove accent because GH pages triggers file download
     .split(".")
     .join("") // Remove dot to avoid issues
-    .toLowerCase()
+    .toLowerCase();
 }
 
 /**
@@ -90,7 +90,9 @@ export function makeFileNameFromTitle(title) {
  * @returns {string}
  */
 export function makeArticleFileName(title, date) {
-  return `_posts/${format(date, "yyyy-MM-dd")}-${makeFilenameCompatibleString(title)}.md`
+  return `_posts/${format(date, "yyyy-MM-dd")}-${makeFilenameCompatibleString(
+    title
+  )}.md`;
 }
 
 /**
@@ -104,6 +106,6 @@ export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
 
 export const logMessage = (errorMessage, caller = "unknown", level = "log") => {
   console[level](`[${level}] [caller: ${caller}] ${errorMessage}`);
-}
+};
 
-export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
