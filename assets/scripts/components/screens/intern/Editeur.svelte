@@ -149,50 +149,30 @@
               <div>
                 <ol>
                   <li>
-                    (Optionnel) Si votre image n'est pas en ligne, déposez-la
-                    dans <a href={imageDirUrl} target="_blank">
-                      ce petit dossier
-                    </a>.
+                    <label for="image">Sélectionnez votre image :</label>
+                    <input
+                      accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
+                      bind:files={image}
+                      id="image"
+                      name="image"
+                      type="file"
+                      on:change={imageSelect}
+                    />
                   </li>
-                  <li>Affichez l'image dans votre navigateur</li>
                   <li>
-                    Faites un clic droit sur l'image : Copier le lien
-                    (l'adresse) de l'image
+                    Insérez la ligne suivante là où vous souhaitez que votre
+                    image apparaisse :
                   </li>
-                  <li>Revenez sur votre page Scribouilli</li>
-                  <li>
-                    Insérez la ligne ci-dessous là où vous voulez mettre votre
-                    image, en remplaçant le texte :
-                  </li>
-                  <ul>
-                    <li>
-                      Entre crochets, par une description pour les personnes
-                      malvoyantes
-                    </li>
-                    <li>
-                      Entre parenthèses, par le lien de l'image que vous avez
-                      copié précédemment
-                    </li>
-                  </ul>
-
-                  <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                   <figure>
-                    ![Texte décrivant l'image](https://ladressedemonimage.png)
+                    {imageMd}
                   </figure>
-                  <br />
+
+                  <li>
+                    Remplacez le texte entre crochets par une description pour
+                    les personnes malvoyantes (il s'affichera si l'image ne
+                    charge pas)
+                  </li>
                 </ol>
-                <label for="image">Importer une image :</label>
-                <input
-                  accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
-                  bind:files={image}
-                  id="image"
-                  name="image"
-                  type="file"
-                  on:change={imageSelect}
-                />
-                <figure>
-                  {imageMd}
-                </figure>
               </div>
             </details>
           </div>
@@ -258,7 +238,7 @@
     summary {
       margin-bottom: 1.2rem;
     }
-    ul,
+
     ol {
       list-style: revert;
       padding-left: 2rem;
@@ -266,6 +246,13 @@
 
     li {
       margin-bottom: 1rem;
+      label {
+        font-weight: normal;
+        display: inline;
+      }
+      input {
+        display: inline;
+      }
     }
   }
 
