@@ -435,6 +435,15 @@ class DatabaseAPI {
     }
   }
 
+  async checkGithubPages(login, repoName) {
+    try {
+      const appel = await this.getGitHubPagesSite(login, repoName)
+      return appel.status === 'built'
+    } catch (error) {
+      return false
+    }
+  }
+
   /**
    * @summary This method must be called for each API call.
    *

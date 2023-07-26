@@ -240,6 +240,16 @@ export const createRepositoryForCurrentAccount = async repoName => {
     }, 1000)
   })
 
+  const waitGithubPages = new Promise((resolve, reject) => {
+    const timer = setInterval(() => {
+      databaseAPI.checkGithubPages(login, escapedRepoName).then(res => {
+        if (res) {
+          clearInterval(timer)
+          resolve()
+        }
+      })
+    }, 5000)
+  })
   return databaseAPI
     .createDefaultRepository(login, escapedRepoName)
     .then(() => {
@@ -253,7 +263,10 @@ export const createRepositoryForCurrentAccount = async repoName => {
       return databaseAPI.createRepoGithubPages(login, escapedRepoName);
     })
     .then(() => {
-      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`);
+      return waitGithubPages
+    })
+    .then(() => {
+      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
     })
     .catch(errorMessage => {
       logMessage(errorMessage, 'createRepositoryForCurrentAccount')
