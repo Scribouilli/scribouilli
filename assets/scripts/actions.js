@@ -154,6 +154,15 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     throw new Error(message)
   }
 
+  const currentRepository = {
+    name: repoName,
+    owner,
+    publishedWebsiteURL: `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`,
+    repositoryURL: `https://github.com/${owner}/${repoName}`,
+  }
+
+  store.mutations.setCurrentRepository(currentRepository)
+
   const { login, email } = await fetchAuthenticatedUserLogin()
 
   // protection temporaire contre le fait d'éditer des repo d'un autre compte
@@ -164,16 +173,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     return
   }
 
-  const currentRepository = {
-    name: repoName,
-    owner,
-    publishedWebsiteURL: `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`,
-    repositoryURL: `https://github.com/${owner}/${repoName}`,
-  }
-
   databaseAPI.setAuthor(login, store.state.currentRepository.name, email)
-
-  store.mutations.setCurrentRepository(currentRepository)
 
   setBuildStatus(login, repoName)
   setArticles(login)
