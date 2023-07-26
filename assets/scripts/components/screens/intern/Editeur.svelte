@@ -93,6 +93,7 @@
         `images/${img.name}`,
         buffer,
         "Ajout d'une image",
+        false, //l'image sera push avec le reste de l'article quand celui-ci sera enregistré
       )
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
     }
