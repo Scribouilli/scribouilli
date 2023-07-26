@@ -23,7 +23,11 @@ class DatabaseAPI {
     this.customCSSPath = 'assets/css/custom.css'
     this.defaultRepoOwner = 'Scribouilli'
     this.defaultThemeRepoName = 'site-template'
-    this.fs = new FS('scribouilli')
+    this.fs = new FS(
+      'scribouilli',
+      // @ts-ignore il y a un problème avec la définition de type dans lightning-fs, db est un paramètre optionnel
+      { wipe: true },
+    )
   }
 
   getAuthenticatedUser() {
