@@ -80,3 +80,6 @@ Pour rendre accessible une nouvelle route :
 Voilà à quoi ça peut ressembler : [github.com/yaf/scribouilli](https://github.com/yaf/scribouilli)
 
 Une fois les développements réalisé, vous pouvez faire une PR dans Scribouilli, en précisant votre url de développement pour que l'on puisse tester la modification.
+
+Des pre-commit hooks sont installés automatiquement avec `husky`. Si jamais il sont trop contraignants,
+il est possible de les ignorer avec l'option `--no-verify` de `git commit`.
