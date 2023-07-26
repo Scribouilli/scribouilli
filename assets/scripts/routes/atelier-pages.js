@@ -77,8 +77,7 @@ export default ({ querystring }) => {
 
   const state = store.state;
   const currentRepository = state.currentRepository;
-  const fileName = new URLSearchParams(querystring).get("path");
-  if (!fileName) return page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+  const fileName = new URLSearchParams(querystring).get("path") ?? '';
     const mapStateToProps = makeMapStateToProps(fileName);
 
   const pageContenu = new PageContenu({

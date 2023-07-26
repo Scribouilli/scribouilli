@@ -88,8 +88,7 @@ export default ({ querystring }) => {
 
   const state = store.state;
   const currentRepository = state.currentRepository;
-  const fileName = new URLSearchParams(querystring).get("path");
-  if (!fileName) return page(`${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`)
+  const fileName = new URLSearchParams(querystring).get("path") ?? '';
   const mapStateToProps = makeMapStateToProps(fileName);
 
   const articleContenu = new ArticleContenu({
