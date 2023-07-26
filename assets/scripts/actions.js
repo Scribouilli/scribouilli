@@ -2,17 +2,17 @@
 
 import page from "page";
 
-import databaseAPI from "./databaseAPI.js";
-import store from "./store.js";
-import makeBuildStatus from "./buildStatus.js";
-import { handleErrors, logMessage, delay } from "./utils";
+import databaseAPI from './databaseAPI.js'
+import store from './store.js'
+import makeBuildStatus from './buildStatus.js'
+import { handleErrors, logMessage, delay } from './utils'
 
 const logout = () => {
   store.mutations.setLogin(undefined)
   store.mutations.invalidateToken()
   store.mutations.removeSite()
   console.info('[logout] redirecting to /login')
-  page("/login")
+  page('/login')
 }
 
 /**
@@ -30,31 +30,32 @@ export const fetchAuthenticatedUserLogin = () => {
   const loginP = databaseAPI
     .getAuthenticatedUser()
     .then(({ login }) => {
-      store.mutations.setLogin(login);
+      store.mutations.setLogin(login)
 
-      return login;
+      return login
     })
-    .catch((errorMessage) => {
+    .catch(errorMessage => {
       switch (errorMessage) {
-        case "INVALIDATE_TOKEN": {
-          store.mutations.invalidateToken();
+        case 'INVALIDATE_TOKEN': {
+          store.mutations.invalidateToken()
           console.info('[token error] redirecting to /account')
-          page("/account");
+          page('/account')
 
-          break;
+          break
         }
 
         default:
           const message = `The access token is invalid. ${errorMessage}`;
 
-          logMessage(message, "fetchAuthenticatedUserLogin");
+          logMessage(message, 'fetchAuthenticatedUserLogin')
       }
 
-      throw errorMessage;
-    });
+      throw errorMessage
+    })
 
-  const emailP = databaseAPI.getUserEmails()
-    .then((emails) => {
+  const emailP = databaseAPI
+    .getUserEmails()
+    .then(emails => {
       const email = (emails.find(e => e.primary) ?? emails[0]).email
       store.mutations.setEmail(email)
       return email
@@ -62,12 +63,15 @@ export const fetchAuthenticatedUserLogin = () => {
     .catch(err => {
       // If we can't get email addresses, we ask the user to login again
       logout()
-      throw err;
+      throw err
     })
 
-  store.mutations.setLogin(loginP);
+  store.mutations.setLogin(loginP)
 
-  return Promise.all([loginP, emailP]).then(([login, email]) => ({login, email}));
+  return Promise.all([loginP, emailP]).then(([login, email]) => ({
+    login,
+    email,
+  }))
 }
 
 /**
@@ -85,40 +89,40 @@ export const fetchAuthenticatedUserLogin = () => {
  */
 
 export const fetchCurrentUserRepositories = async () => {
-  const {login} = await fetchAuthenticatedUserLogin();
+  const { login } = await fetchAuthenticatedUserLogin()
   const currentUserRepositoriesP = databaseAPI
     .getCurrentUserRepositories()
-    .then((repos) => {
-      store.mutations.setReposForAccount({ login, repos });
+    .then(repos => {
+      store.mutations.setReposForAccount({ login, repos })
 
       return repos
     })
 
-  store.mutations.setReposForAccount(currentUserRepositoriesP);
+  store.mutations.setReposForAccount(currentUserRepositoriesP)
 
   return currentUserRepositoriesP
 }
 
 export const getCurrentRepoPages = () => {
-  const { owner, name } = store.state.currentRepository;
+  const { owner, name } = store.state.currentRepository
 
   return databaseAPI
     .getPagesList(owner, name)
-    .then((pages) => {
-      store.mutations.setPages(pages);
+    .then(pages => {
+      store.mutations.setPages(pages)
     })
-    .catch((msg) => handleErrors(msg));
-};
+    .catch(msg => handleErrors(msg))
+}
 
 export const getCurrentRepoArticles = () => {
-  const { owner, name } = store.state.currentRepository;
+  const { owner, name } = store.state.currentRepository
 
   return databaseAPI
     .getArticlesList(owner, name)
-    .then((articles) => {
-      store.mutations.setArticles(articles);
+    .then(articles => {
+      store.mutations.setArticles(articles)
     })
-    .catch((msg) => handleErrors(msg));
+    .catch((msg) => handleErrors(msg))
 };
 
 export const addTopicRepo = (login, repo) =>
@@ -135,49 +139,51 @@ export const addTopicRepo = (login, repo) =>
  *
  * @returns {Promise<void>}
  */
-export const setCurrentRepositoryFromQuerystring = async (querystring) => {
-  const params = new URLSearchParams(querystring);
-  const repoName = params.get("repoName");
-  const owner = params.get("account");
+export const setCurrentRepositoryFromQuerystring = async querystring => {
+  const params = new URLSearchParams(querystring)
+  const repoName = params.get('repoName')
+  const owner = params.get('account')
 
-  if (!repoName || !owner) { 
-    const message = !repoName ? `Missing parameter 'repoName' in URL` : `Missing parameter 'account' in URL`
+  if (!repoName || !owner) {
+    const message = !repoName
+      ? `Missing parameter 'repoName' in URL`
+      : `Missing parameter 'account' in URL`
 
     console.info('[missing URL param] redirecting to /', message)
-    page("/")
+    page('/')
     throw new Error(message)
   }
 
-  const {login, email} = await fetchAuthenticatedUserLogin()
+  const { login, email } = await fetchAuthenticatedUserLogin()
 
   // protection temporaire contre le fait d'éditer des repo d'un autre compte
   // PPP: à enlever quand on travaillera sur l'édition sur les repos d'organisations
   if (login !== owner) {
     console.info('[login !== owner] redirecting to /', login, owner)
-    page("/");
-    return;
+    page('/')
+    return
   }
 
   const currentRepository = {
     name: repoName,
     owner,
     publishedWebsiteURL: `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`,
-    repositoryURL: `https://github.com/${owner}/${repoName}`
-  };
+    repositoryURL: `https://github.com/${owner}/${repoName}`,
+  }
 
   databaseAPI.setAuthor(login, store.state.currentRepository.name, email)
 
-  store.mutations.setCurrentRepository(currentRepository);
+  store.mutations.setCurrentRepository(currentRepository)
 
-  setBuildStatus(login, repoName);
-  setArticles(login);
+  setBuildStatus(login, repoName)
+  setArticles(login)
 }
 
 /**
- * 
- * @param {string} login 
+ *
+ * @param {string} login
  */
-export const setArticles = async (login) => {
+export const setArticles = async login => {
   const articles = await databaseAPI.getArticlesList(
     login,
     store.state.currentRepository.name
@@ -186,12 +192,12 @@ export const setArticles = async (login) => {
 };
 
 /**
- * 
- * @param {string} login 
- * @param {string} repoName 
+ *
+ * @param {string} login
+ * @param {string} repoName
  */
 export const setBuildStatus = (login, repoName) => {
-  store.mutations.setBuildStatus(makeBuildStatus(login, repoName));
+  store.mutations.setBuildStatus(makeBuildStatus(login, repoName))
   /*
   Appel sans vérification,
   On suppose qu'au chargement initial,
@@ -215,14 +221,35 @@ export const setBuildStatus = (login, repoName) => {
  * @throws {string} An error message if the repository cannot be created.
  *
  */
-export const createRepositoryForCurrentAccount = async (repoName) => {
-  const login = await store.state.login;
+export const createRepositoryForCurrentAccount = async repoName => {
+  const login = await store.state.login
   const escapedRepoName = repoName
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9_-]+/g, "-")
-    .toLowerCase();
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .toLowerCase()
 
+  const waitRepoReady = new Promise((resolve, reject) => {
+    const timer = setInterval(() => {
+      databaseAPI.checkRepoReady(login, escapedRepoName).then(res => {
+        if (res) {
+          clearInterval(timer)
+          resolve()
+        }
+      })
+    }, 1000)
+  })
+
+  const waitGithubPages = new Promise((resolve, reject) => {
+    const timer = setInterval(() => {
+      databaseAPI.checkGithubPages(login, escapedRepoName).then(res => {
+        if (res) {
+          clearInterval(timer)
+          resolve()
+        }
+      })
+    }, 5000)
+  })
   return databaseAPI
     .createDefaultRepository(login, escapedRepoName)
     .then(() => {
@@ -230,16 +257,19 @@ export const createRepositoryForCurrentAccount = async (repoName) => {
       // is asynchronous, so we need to wait a bit
       // for the new repo to be created
       // before the setup of the Github Pages branch
-      return delay(1000);
+      return waitRepoReady
     })
     .then(() => {
       return databaseAPI.createRepoGithubPages(login, escapedRepoName);
     })
     .then(() => {
-      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`);
+      return waitGithubPages
     })
-    .catch((errorMessage) => {
-      logMessage(errorMessage, "createRepositoryForCurrentAccount");
+    .then(() => {
+      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
+    })
+    .catch(errorMessage => {
+      logMessage(errorMessage, 'createRepositoryForCurrentAccount')
 
       throw errorMessage;
     });
