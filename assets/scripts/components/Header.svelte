@@ -4,11 +4,11 @@
   export let currentRepository;
   export let showArticles
 
-  let status = undefined;
+  let status
+
+  $: status = buildStatus?.status;
 
   if (buildStatus) {
-    status = buildStatus.status;
-
     buildStatus.subscribe((s) => {
       if (s) {
         status = s;
@@ -18,16 +18,19 @@
 
   $: buildStatusClass = buildStatus ? `build-${status}` : undefined;
 
-  let publishedWebsiteURL = currentRepository?.publishedWebsiteURL
-  let repositoryURL = currentRepository?.repositoryURL
-  let repoName = currentRepository?.name
-  let account = currentRepository?.owner
+  let publishedWebsiteURL
+  $: publishedWebsiteURL = currentRepository?.publishedWebsiteURL
+  let repositoryURL
+  $: repositoryURL = currentRepository?.repositoryURL
+  let repoName
+  $: repoName = currentRepository?.name
+  let account
+  $: account = currentRepository?.owner
 
-  let homeURL = './'
+  $: homeURL = repoName && account ? 
+    `./atelier-list-pages?repoName=${repoName}&account=${account}` :
+    './'
 
-  if(repoName && account) {
-    homeURL = `./atelier-list-pages?repoName=${repoName}&account=${account}`
-  }
 </script>
 
 <header>

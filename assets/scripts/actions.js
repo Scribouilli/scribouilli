@@ -7,6 +7,14 @@ import store from "./store.js";
 import makeBuildStatus from "./buildStatus.js";
 import { handleErrors, logMessage, delay } from "./utils";
 
+const logout = () => {
+  store.mutations.setLogin(undefined)
+  store.mutations.invalidateToken()
+  store.mutations.removeSite()
+  console.info('[logout] redirecting to /login')
+  page("/login")
+}
+
 /**
  * @summary Fetch the current authenticated user login and set it in the store.
  *
@@ -14,7 +22,7 @@ import { handleErrors, logMessage, delay } from "./utils";
  * It returns the login of the user or the organization. If the user is not
  * logged in, it redirects to the authentication page.
  *
- * @returns {Promise<string>} A promise that resolves to the login of the
+ * @returns {Promise<{login: string, email: string}>} A promise that resolves to the login of the
  * authenticated user or organization.
  *
  */
@@ -30,6 +38,7 @@ export const fetchAuthenticatedUserLogin = () => {
       switch (errorMessage) {
         case "INVALIDATE_TOKEN": {
           store.mutations.invalidateToken();
+          console.info('[token error] redirecting to /account')
           page("/account");
 
           break;
@@ -40,12 +49,26 @@ export const fetchAuthenticatedUserLogin = () => {
 
           logMessage(message, "fetchAuthenticatedUserLogin");
       }
+
+      throw errorMessage;
     });
+
+  const emailP = databaseAPI.getUserEmails()
+    .then((emails) => {
+      const email = (emails.find(e => e.primary) ?? emails[0]).email
+      store.mutations.setEmail(email)
+      return email
+    })
+    .catch(err => {
+      // If we can't get email addresses, we ask the user to login again
+      logout()
+      throw err;
+    })
 
   store.mutations.setLogin(loginP);
 
-  return loginP;
-};
+  return Promise.all([loginP, emailP]).then(([login, email]) => ({login, email}));
+}
 
 /**
  * @summary Fetch the list of repositories for the current user
@@ -62,23 +85,19 @@ export const fetchAuthenticatedUserLogin = () => {
  */
 
 export const fetchCurrentUserRepositories = async () => {
-  const login = await fetchAuthenticatedUserLogin();
+  const {login} = await fetchAuthenticatedUserLogin();
   const currentUserRepositoriesP = databaseAPI
     .getCurrentUserRepositories()
     .then((repos) => {
       store.mutations.setReposForAccount({ login, repos });
 
-      return repos;
-    });
+      return repos
+    })
 
   store.mutations.setReposForAccount(currentUserRepositoriesP);
 
-  return currentUserRepositoriesP;
-};
-
-export const getCurrentRepository = () => {
-  return store.state.currentRepository;
-};
+  return currentUserRepositoriesP
+}
 
 export const getCurrentRepoPages = () => {
   const { owner, name } = store.state.currentRepository;
@@ -106,12 +125,6 @@ export const addTopicRepo = (login, repo) =>
   databaseAPI.createTopicGithubRepository(login, repo);
 
 /**
- * @typedef {Object} CurrentRepository
- * @property {string} name - The name of the repository
- * @property {string} owner - The owner of the repository
- * @property {string} publishedWebsiteURL - The URL of the published website
- * @property {string} repositoryURL - The URL of the repository
- *
  * @summary Set the current repository from the owner and the name
  * of the repository in the URL
  *
@@ -120,80 +133,65 @@ export const addTopicRepo = (login, repo) =>
  * but also the build status and the site repo config. If the user is not
  * logged in, it redirects to the authentication page.
  *
- * @returns {CurrentRepository} The current repository
+ * @returns {Promise<void>}
  */
-export const setCurrentRepositoryFromQuerystring = (querystring) => {
+export const setCurrentRepositoryFromQuerystring = async (querystring) => {
   const params = new URLSearchParams(querystring);
   const repoName = params.get("repoName");
   const owner = params.get("account");
 
-  if (!repoName || !owner) {
-    page("/");
+  if (!repoName || !owner) { 
+    const message = !repoName ? `Missing parameter 'repoName' in URL` : `Missing parameter 'account' in URL`
+
+    console.info('[missing URL param] redirecting to /', message)
+    page("/")
+    throw new Error(message)
   }
 
-  const loginP = fetchAuthenticatedUserLogin();
+  const {login, email} = await fetchAuthenticatedUserLogin()
 
-  const currentRepositoryP = loginP.then((login) => {
-    if (login !== owner) {
-      return page("/");
-    }
-  });
-
-  const publishedWebsiteURL = `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`;
-  const repositoryURL = `https://github.com/${owner}/${repoName}`;
-
-  setBuildStatus(loginP, repoName);
-  setSiteRepoConfig(loginP);
-  setBlogIndexSha(loginP);
-  setArticles(loginP);
+  // protection temporaire contre le fait d'éditer des repo d'un autre compte
+  // PPP: à enlever quand on travaillera sur l'édition sur les repos d'organisations
+  if (login !== owner) {
+    console.info('[login !== owner] redirecting to /', login, owner)
+    page("/");
+    return;
+  }
 
   const currentRepository = {
     name: repoName,
     owner,
-    publishedWebsiteURL,
-    repositoryURL,
+    publishedWebsiteURL: `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`,
+    repositoryURL: `https://github.com/${owner}/${repoName}`
   };
+
+  databaseAPI.setAuthor(login, store.state.currentRepository.name, email)
 
   store.mutations.setCurrentRepository(currentRepository);
 
-  return currentRepository;
-};
+  setBuildStatus(login, repoName);
+  setArticles(login);
+}
 
-const setBlogIndexSha = async (loginP) => {
-  try {
-    const { sha: blogIndexSha } = await databaseAPI.getFile(
-      await loginP,
-      store.state.currentRepository.name,
-      "blog.md"
-    );
-    store.mutations.setBlogIndexSha(blogIndexSha);
-  } catch (errorMessage) {
-    if (errorMessage !== "NOT_FOUND") {
-      throw errorMessage;
-    }
-  }
-};
-
-export const setArticles = async (loginP) => {
+/**
+ * 
+ * @param {string} login 
+ */
+export const setArticles = async (login) => {
   const articles = await databaseAPI.getArticlesList(
-    await loginP,
+    login,
     store.state.currentRepository.name
   );
   store.mutations.setArticles(articles);
 };
 
-export const setSiteRepoConfig = (loginP) => {
-  const siteRepoConfigP = loginP
-    .then((login) =>
-      databaseAPI.getRepository(login, store.state.currentRepository.name)
-    )
-    .catch((error) => handleErrors(error));
-
-  store.mutations.setSiteRepoConfig(siteRepoConfigP);
-};
-
-export const setBuildStatus = (loginP, repoName) => {
-  store.mutations.setBuildStatus(makeBuildStatus(loginP, repoName));
+/**
+ * 
+ * @param {string} login 
+ * @param {string} repoName 
+ */
+export const setBuildStatus = (login, repoName) => {
+  store.mutations.setBuildStatus(makeBuildStatus(login, repoName));
   /*
   Appel sans vérification,
   On suppose qu'au chargement initial,

@@ -12,7 +12,7 @@ window.Buffer = buffer.Buffer;
 
 // Store access_token in browser
 const url = new URL(location.href);
-if (url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)) {
+if (url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) && store.state.accessToken) {
   url.searchParams.delete(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER);
   history.replaceState(undefined, "", url);
 

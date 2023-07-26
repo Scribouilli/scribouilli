@@ -7,40 +7,72 @@ import {
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
 } from "./config.js";
 
-//@ts-ignore
-export default new Store({
+/**
+ * @typedef {Object} CurrentRepository
+ * @property {string} owner
+ * @property {string} name
+ * @property {string} repositoryURL
+ * @property {string} publishedWebsiteURL
+ */
+
+/**
+ * @typedef {Object} ScribouilliState
+ * @property {string} [accessToken]
+ * @property {Promise<string> | string} [login]
+ * @property {string} [email]
+ * @property {Promise<string> | string} [origin]
+ * @property {CurrentRepository} currentRepository
+ * @property {any} reposByAccount
+ * @property {any[]} pages
+ * @property {any[]} [articles]
+ * @property {any} buildStatus
+ * @property {string} basePath
+ * @property {{css: string}} theme
+ */
+
+/**
+ * @template State
+ * @typedef {Object} BareduxStore
+ * @property {Readonly<State>} state
+ * @property {(subscriber: (state: State) => void) => (() => void)} subscribe
+ * @property {any} mutations
+ */
+
+/** @type { BareduxStore<ScribouilliState> } */
+const store = Store({
   state: {
     // @ts-ignore
     accessToken:
       new URL(location.toString()).searchParams.get(
         TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER
       ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-    login: undefined, // Promise<string> | string
-    origin: undefined, // Promise<string> | string
+    login: undefined,
+    email: undefined,
+    origin: undefined,
     currentRepository: {
-      name: undefined, // Promise<string> | string
-      owner: undefined, // Promise<string> | string
-      publishedWebsiteURL: undefined, // Promise<string> | string
-      repositoryURL: undefined, // Promise<string> | string
+      name: undefined,
+      owner: undefined,
+      publishedWebsiteURL: undefined,
+      repositoryURL: undefined,
     },
     // We use the term "account" to refer to user or organization.
     reposByAccount: {
       // [login: string]: Promise<Repository[]>
     },
-    pages: undefined,
+    pages: [],
     articles: undefined,
     buildStatus: undefined,
     basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
-    siteRepoConfig: undefined,
     theme: {
       css: undefined,
-      sha: undefined,
     },
-    blogIndexSha: undefined,
   },
   mutations: {
     setLogin(state, login) {
       state.login = login;
+    },
+    setEmail(state, email) {
+      state.email = email;
     },
     setCurrentRepository(state, repository) {
       state.currentRepository = repository;
@@ -59,7 +91,7 @@ export default new Store({
       });
     },
     setArticles(state, articles) {
-      state.articles = articles.sort((pageA, pageB) => {
+      state.articles = articles?.sort((pageA, pageB) => {
         if (pageA.path < pageB.path) {
           return -1;
         }
@@ -77,15 +109,8 @@ export default new Store({
     setReposForAccount(state, { login, repos }) {
       state.reposByAccount[login] = repos;
     },
-    setSiteRepoConfig(state, repo) {
-      state.siteRepoConfig = repo;
-    },
-    setTheme(state, css, sha) {
+    setTheme(state, css) {
       state.theme.css = css;
-      state.theme.sha = sha;
-    },
-    setBlogIndexSha(state, sha) {
-      state.blogIndexSha = sha
     },
     removeSite(state) {
       state.pages = undefined;
@@ -99,3 +124,6 @@ export default new Store({
     },
   },
 });
+
+
+export default store;
