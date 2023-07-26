@@ -1,22 +1,22 @@
 // @ts-check
 
 import lireFrontMatter from 'front-matter'
-import page from "page";
+import page from 'page'
 
-import { svelteTarget } from "../config";
-import databaseAPI from "../databaseAPI";
-import { replaceComponent } from "../routeComponentLifeCycle";
-import store from "../store";
+import { svelteTarget } from '../config'
+import databaseAPI from '../databaseAPI'
+import { replaceComponent } from '../routeComponentLifeCycle'
+import store from '../store'
 import {
   handleErrors,
   logMessage,
   makeFileNameFromTitle,
   makeFrontMatterYAMLJsaisPasQuoiLa,
-} from "../utils";
-import { setCurrentRepositoryFromQuerystring } from "../actions";
-import PageContenu from "../components/screens/PageContenu.svelte";
+} from '../utils'
+import { setCurrentRepositoryFromQuerystring } from '../actions'
+import PageContenu from '../components/screens/PageContenu.svelte'
 
-const makeMapStateToProps = (fileName) => (state) => {
+const makeMapStateToProps = fileName => state => {
   // Display existing file
   if (fileName) {
     const fileP = async function () {
@@ -26,12 +26,10 @@ const makeMapStateToProps = (fileName) => (state) => {
         const content = await databaseAPI.getFile(
           login,
           store.state.currentRepository.name,
-          fileName
+          fileName,
         )
-        const {
-          attributes: data,
-          body: markdownContent,
-        } = lireFrontMatter(content);
+        const { attributes: data, body: markdownContent } =
+          lireFrontMatter(content)
 
         return {
           fileName,
@@ -41,37 +39,41 @@ const makeMapStateToProps = (fileName) => (state) => {
           previousTitle: data?.title,
         }
       } catch (errorMessage) {
-        logMessage(errorMessage, "routes/atelier-pages.js:makeMapStateToProps");
+        logMessage(errorMessage, 'routes/atelier-pages.js:makeMapStateToProps')
       }
-    };
+    }
 
     return {
       fileP: fileP(),
       contenus: state.articles,
       buildStatus: state.buildStatus,
-      showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
+      showArticles:
+        state.pages.find(p => p.path === 'blog.md') !== undefined ||
+        state.articles?.length > 0,
       currentRepository: state.currentRepository,
     }
   } else {
     return {
       fileP: Promise.resolve({
-        fileName: "",
-        title: "",
-        content: "",
+        fileName: '',
+        title: '',
+        content: '',
         previousTitle: undefined,
         previousContent: undefined,
       }),
       makeFileNameFromTitle: makeFileNameFromTitle,
       contenus: state.pages,
       buildStatus: state.buildStatus,
-      showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
+      showArticles:
+        state.pages.find(p => p.path === 'blog.md') !== undefined ||
+        state.articles?.length > 0,
       currentRepository: state.currentRepository,
-    };
+    }
   }
-};
+}
 
 export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring);
+  setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state;
   const currentRepository = state.currentRepository;
@@ -81,9 +83,9 @@ export default ({ querystring }) => {
   const pageContenu = new PageContenu({
     target: svelteTarget,
     props: mapStateToProps(store.state),
-  });
+  })
 
-  replaceComponent(pageContenu, mapStateToProps);
+  replaceComponent(pageContenu, mapStateToProps)
 
   // @ts-ignore
   pageContenu.$on("delete", () => {
@@ -91,52 +93,56 @@ export default ({ querystring }) => {
       if (!login) return page('/')
 
       store.mutations.setPages(
-        state.pages.filter((page) => {
-          return page.path !== fileName;
-        })
-      );
+        state.pages.filter(page => {
+          return page.path !== fileName
+        }),
+      )
       databaseAPI
         .deleteFile(login, state.currentRepository.name, fileName)
         .then(() => {
-          state.buildStatus.setBuildingAndCheckStatusLater();
+          state.buildStatus.setBuildingAndCheckStatusLater()
         })
-        .catch((msg) => handleErrors(msg));
-    });
-    page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
-  });
+        .catch(msg => handleErrors(msg))
+    })
+    page(
+      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+    )
+  })
 
   // @ts-ignore
   pageContenu.$on(
-    "save",
+    'save',
     ({
       detail: { fileName, content, previousContent, title, previousTitle },
     }) => {
-      const hasContentChanged = content !== previousContent;
-      const hasTitleChanged = title !== previousTitle;
+      const hasContentChanged = content !== previousContent
+      const hasTitleChanged = title !== previousTitle
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
-        return;
+        page(
+          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+        )
+        return
       }
 
-      let newFileName = fileName;
-      if (fileName !== "index.md") {
-        newFileName = makeFileNameFromTitle(title);
+      let newFileName = fileName
+      if (fileName !== 'index.md') {
+        newFileName = makeFileNameFromTitle(title)
       }
 
-      const message = `création de la page ${title || "index.md"}`
-      const finalContent =
-        `${title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + "\n" : ""
-        }${content} `
+      const message = `création de la page ${title || 'index.md'}`
+      const finalContent = `${
+        title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + '\n' : ''
+      }${content} `
 
       let newPages =
-        state.pages?.filter((page) => {
-          return page.path !== fileName;
-        }) || [];
-      newPages.push({ title: title, path: newFileName });
+        state.pages?.filter(page => {
+          return page.path !== fileName
+        }) || []
+      newPages.push({ title: title, path: newFileName })
 
-      store.mutations.setPages(newPages);
+      store.mutations.setPages(newPages)
 
       // If it is a new page
       if (fileName === '') {
@@ -155,13 +161,21 @@ export default ({ querystring }) => {
         if (!login) return page('/')
 
         databaseAPI
-          .writeFile(login, state.currentRepository.name, fileName, finalContent, message)
+          .writeFile(
+            login,
+            state.currentRepository.name,
+            fileName,
+            finalContent,
+            message,
+          )
           .then(() => {
-            state.buildStatus.setBuildingAndCheckStatusLater();
-            page(`/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`);
+            state.buildStatus.setBuildingAndCheckStatusLater()
+            page(
+              `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+            )
           })
-          .catch((msg) => handleErrors(msg));
-      });
-    }
-  );
-};
+          .catch(msg => handleErrors(msg))
+      })
+    },
+  )
+}
