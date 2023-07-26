@@ -1,50 +1,50 @@
 <script>
   // @ts-check
 
-  import Skeleton from "../Skeleton.svelte";
-  import { createEventDispatcher } from "svelte";
+  import Skeleton from '../Skeleton.svelte'
+  import { createEventDispatcher } from 'svelte'
 
-  const dispatch = createEventDispatcher();
-  $: enabled = false;
+  const dispatch = createEventDispatcher()
+  $: enabled = false
 
-  export let buildStatus;
-  export let theme;
-  export let deleteRepositoryUrl;
+  export let buildStatus
+  export let theme
+  export let deleteRepositoryUrl
   export let blogEnabled
   export let showArticles
-  export let currentRepository;
+  export let currentRepository
 
-  let notification = "";
+  let notification = ''
 
-  const checkThemeColor = (color) => {
+  const checkThemeColor = color => {
     const themeColor = theme.css?.replace(
       /(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs,
-      "#$<color>"
-    );
+      '#$<color>',
+    )
 
-    return themeColor === color;
-  };
+    return themeColor === color
+  }
 
-  const saveTheme = (e) => {
-    dispatch("update-theme", { theme });
+  const saveTheme = e => {
+    dispatch('update-theme', { theme })
     notification =
-      "Le thème sera mis à jour après le déploiement des modifications (~ 2min)";
-    document.querySelector("body").scrollIntoView();
-  };
+      'Le thème sera mis à jour après le déploiement des modifications (~ 2min)'
+    document.querySelector('body').scrollIntoView()
+  }
 
-  const setColor = (e) => {
+  const setColor = e => {
     theme.css = theme.css.replace(
       /(?<before>(.*)--couleur-primaire(.*))(#[a-fA-F0-9]{6})(?<after>;(.*))/gs,
-      `$<before>${e.target.value}$<after>`
-    );
-  };
+      `$<before>${e.target.value}$<after>`,
+    )
+  }
 
-  const setTheme = (e) => {
-    theme.css = e.target.value;
-  };
+  const setTheme = e => {
+    theme.css = e.target.value
+  }
 
   const toggleBlog = e => {
-    dispatch("toggle-blog", { activated: e.target.checked })
+    dispatch('toggle-blog', { activated: e.target.checked })
     if (e.target.checked) {
       notification = 'Une section « Articles » a été ajoutée dans le menu'
     } else {
@@ -54,41 +54,41 @@
 
   const mesCouleurs = [
     {
-      id: "vertBooteille",
-      color: "#2a6442",
-      name: "Vert Booteille",
+      id: 'vertBooteille',
+      color: '#2a6442',
+      name: 'Vert Booteille',
     },
     {
-      id: "bleu-outre-mer",
-      color: "#07357d",
-      name: "Bleu outre-mer",
+      id: 'bleu-outre-mer',
+      color: '#07357d',
+      name: 'Bleu outre-mer',
     },
     {
-      id: "bleu-lagon",
-      color: "#0E6270",
-      name: "Bleu lagon",
+      id: 'bleu-lagon',
+      color: '#0E6270',
+      name: 'Bleu lagon',
     },
     {
-      id: "violet-aubergine",
-      color: "#753785",
-      name: "Violet aubergine",
+      id: 'violet-aubergine',
+      color: '#753785',
+      name: 'Violet aubergine',
     },
     {
-      id: "rouge-brique",
-      color: "#993B1F",
-      name: "Rouge brique",
+      id: 'rouge-brique',
+      color: '#993B1F',
+      name: 'Rouge brique',
     },
     {
-      id: "marron-volcanique",
-      color: "#6C5353",
-      name: "Marron volcanique",
+      id: 'marron-volcanique',
+      color: '#6C5353',
+      name: 'Marron volcanique',
     },
     {
-      id: "gris-breton",
-      color: "#53606C",
-      name: "Gris breton",
+      id: 'gris-breton',
+      color: '#53606C',
+      name: 'Gris breton',
     },
-  ];
+  ]
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -97,18 +97,22 @@
 
     <div id="notifications">{notification}</div>
 
-      <div class="wrapper white-zone">
-        <h3>Sections supplémentaires</h3>
+    <div class="wrapper white-zone">
+      <h3>Sections supplémentaires</h3>
 
-        <label>
-          <input type="checkbox" bind:checked={blogEnabled} on:change={toggleBlog} />
-          Ajouter une page articles
-        </label>
-      </div>
+      <label>
+        <input
+          type="checkbox"
+          bind:checked={blogEnabled}
+          on:change={toggleBlog}
+        />
+        Ajouter une page articles
+      </label>
+    </div>
 
     <div class="wrapper white-zone">
       <div>
-        <h3 for="theme-color-select">Couleur principale</h3>
+        <h3>Couleur principale</h3>
 
         <div class="radios-wrapper">
           {#if theme.css}
@@ -152,8 +156,12 @@
           >coder en CSS</a
         > ici&nbsp;!
       </p>
-      <textarea aria-labelledby="customCSS" cols="20" rows="8" on:change={setTheme}
-        >{theme.css || "Chargement du thème personnalisé..."}</textarea
+      <textarea
+        aria-labelledby="customCSS"
+        cols="20"
+        rows="8"
+        on:change={setTheme}
+        >{theme.css || 'Chargement du thème personnalisé...'}</textarea
       >
       <button type="button" class="btn btn__medium" on:click={saveTheme}
         >Enregistrer le CSS</button
