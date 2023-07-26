@@ -49,7 +49,6 @@ const makeMapStateToProps = (fileName) => (state) => {
     });
     return {
       fileP: file,
-      imageDirUrl: "",
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
@@ -64,7 +63,6 @@ const makeMapStateToProps = (fileName) => (state) => {
         title: "",
         previousTitle: undefined,
       }),
-      imageDirUrl: "",
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles: state.pages.find(p => p.path === 'blog.md') !== undefined || state.articles?.length > 0,
@@ -98,11 +96,6 @@ export default ({ querystring }) => {
 
   replaceComponent(articleContenu, mapStateToProps);
 
-  Promise.resolve(state.login).then((login) => {
-    articleContenu.$set({
-      imageDirUrl: `https://github.com/${login}/${state.currentRepository.name}/tree/main/images`,
-    });
-  });
   articleContenu.$on("delete", () => {
     Promise.resolve(state.login).then((login) => {
     if (!login) return page('/login')

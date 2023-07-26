@@ -2,7 +2,6 @@
   import {makeAtelierListArticlesURL} from '../../routes/atelier-list-articles.js'
 
   export let fileP;
-  export let imageDirUrl;
   export let buildStatus;
   export let contenus;
   export let showArticles;
@@ -13,7 +12,6 @@
 
 <Editeur
   {fileP}
-  {imageDirUrl}
   {buildStatus}
   {contenus}
   {showArticles}
