@@ -1,7 +1,6 @@
 <script>
   //@ts-check
   export let fileP;
-  export let imageDirUrl;
   export let buildStatus;
   export let contenus = [];
   export let editionTitle;
@@ -13,6 +12,8 @@
   import { createEventDispatcher } from "svelte";
   import Skeleton from "../../Skeleton.svelte";
   import { makeFileNameFromTitle } from "../../../utils";
+
+  const imageDirUrl = `https://github.com/${currentRepository.owner}/${currentRepository.name}/tree/main/images`
 
   let file = {
     fileName: "",
