@@ -76,13 +76,13 @@ class DatabaseAPI {
           name: newRepoName,
           description: 'Mon site Scribouilli',
         }),
-      }
-    );
+      },
+    )
 
     //On attends pas forcément la fin de cette appel pour return car pas de nécessité d'avoir le topic d'ajouté pour continuer
-    this.createTopicGithubRepository(login, newRepoName);
+    this.createTopicGithubRepository(login, newRepoName)
 
-    return res;
+    return res
   }
 
   /**
@@ -93,17 +93,17 @@ class DatabaseAPI {
       `https://api.github.com/repos/${login}/${newRepoName}/topics`,
       {
         headers: {
-          Authorization: "token " + this.accessToken,
-          Accept: "application/vnd.github+json",
+          Authorization: 'token ' + this.accessToken,
+          Accept: 'application/vnd.github+json',
         },
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify({
           owner: login,
           repo: newRepoName,
-          names: ["site-scribouilli"],
+          names: ['site-scribouilli'],
         }),
-      }
-    );
+      },
+    )
   }
 
   createRepoGithubPages(account, repoName) {
@@ -114,10 +114,10 @@ class DatabaseAPI {
           Authorization: 'token ' + this.accessToken,
           Accept: 'applicatikn/vnd.github+json',
         },
-        method: "POST",
-        body: JSON.stringify({ source: { branch: "main" } }),
-      }
-    );
+        method: 'POST',
+        body: JSON.stringify({ source: { branch: 'main' } }),
+      },
+    )
   }
 
   /**
@@ -276,7 +276,7 @@ class DatabaseAPI {
    * @param {string} fileName
    * @returns {Promise<void>}
    */
-  async deleteFile(login, repoName, fileName) {
+  async deleteFile(login, repoName, fileName, push = true) {
     await this.cloneIfNeeded(login, repoName)
 
     const path = this.path(login, repoName, fileName)
@@ -291,7 +291,9 @@ class DatabaseAPI {
       dir: this.repoDir(login, repoName),
       message: `suppression du fichier ${fileName}`,
     })
-    this.push(login, repoName)
+    if (push) {
+      this.push(login, repoName)
+    }
   }
 
   async deleteRepository(login, repoName) {
@@ -316,7 +318,7 @@ class DatabaseAPI {
    *
    * @returns {Promise<void>}
    */
-  async writeFile(login, repoName, fileName, content, message) {
+  async writeFile(login, repoName, fileName, content, message, push = true) {
     await this.cloneIfNeeded(login, repoName)
 
     if (typeof fileName !== 'string') {
@@ -345,7 +347,9 @@ class DatabaseAPI {
       dir: this.repoDir(login, repoName),
       message,
     })
-    this.push(login, repoName)
+    if (push) {
+      this.push(login, repoName)
+    }
   }
 
   async writeCustomCSS(login, repoName, content) {

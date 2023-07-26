@@ -89,15 +89,19 @@ export default ({ querystring }) => {
           'blog.md',
           blogMdContent,
           'Activation du blog',
+          false,
         )
       } else {
         await databaseAPI.deleteFile(
           login,
           store.state.currentRepository.name,
           'blog.md',
+          false,
         )
       }
       await setArticles(login)
+      await getCurrentRepoPages()
+      databaseAPI.push(login, store.state.currentRepository.name)
     } catch (msg) {
       handleErrors(msg)
     }

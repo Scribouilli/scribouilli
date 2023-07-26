@@ -1,6 +1,6 @@
 //@ts-check
 
-import page from "page";
+import page from 'page'
 
 import databaseAPI from './databaseAPI.js'
 import store from './store.js'
@@ -45,7 +45,7 @@ export const fetchAuthenticatedUserLogin = () => {
         }
 
         default:
-          const message = `The access token is invalid. ${errorMessage}`;
+          const message = `The access token is invalid. ${errorMessage}`
 
           logMessage(message, 'fetchAuthenticatedUserLogin')
       }
@@ -122,11 +122,11 @@ export const getCurrentRepoArticles = () => {
     .then(articles => {
       store.mutations.setArticles(articles)
     })
-    .catch((msg) => handleErrors(msg))
-};
+    .catch(msg => handleErrors(msg))
+}
 
 export const addTopicRepo = (login, repo) =>
-  databaseAPI.createTopicGithubRepository(login, repo);
+  databaseAPI.createTopicGithubRepository(login, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
@@ -186,10 +186,10 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 export const setArticles = async login => {
   const articles = await databaseAPI.getArticlesList(
     login,
-    store.state.currentRepository.name
-  );
-  store.mutations.setArticles(articles);
-};
+    store.state.currentRepository.name,
+  )
+  store.mutations.setArticles(articles)
+}
 
 /**
  *
@@ -203,8 +203,8 @@ export const setBuildStatus = (login, repoName) => {
   On suppose qu'au chargement initial,
   on peut faire confiance à ce que renvoit l'API
   */
-  store.state.buildStatus.checkStatus();
-};
+  store.state.buildStatus.checkStatus()
+}
 
 /**
  * @summary Create a repository for the current account
@@ -260,7 +260,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
       return waitRepoReady
     })
     .then(() => {
-      return databaseAPI.createRepoGithubPages(login, escapedRepoName);
+      return databaseAPI.createRepoGithubPages(login, escapedRepoName)
     })
     .then(() => {
       return waitGithubPages
@@ -271,6 +271,6 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .catch(errorMessage => {
       logMessage(errorMessage, 'createRepositoryForCurrentAccount')
 
-      throw errorMessage;
-    });
-};
+      throw errorMessage
+    })
+}
