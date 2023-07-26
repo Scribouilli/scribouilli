@@ -316,7 +316,7 @@ class DatabaseAPI {
    *
    * @param {string} login
    * @param {string} repoName
-   * @param {string} content
+   * @param {string | Uint8Array} content
    * @param {string} message
    * @param {string | { old: string, new: string }} fileName
    *

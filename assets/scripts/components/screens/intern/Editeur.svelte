@@ -1,83 +1,103 @@
 <script>
   //@ts-check
-  export let fileP;
-  export let buildStatus;
-  export let contenus = [];
-  export let editionTitle;
-  export let listPrefix;
-  export let deleteTitle;
-  export let showArticles;
-  export let currentRepository;
+  export let fileP
+  export let buildStatus
+  export let contenus = []
+  export let editionTitle
+  export let listPrefix
+  export let deleteTitle
+  export let showArticles
+  export let currentRepository
 
-  import { createEventDispatcher } from "svelte";
-  import Skeleton from "../../Skeleton.svelte";
-  import { makeFileNameFromTitle } from "../../../utils";
+  import { createEventDispatcher } from 'svelte'
+  import Skeleton from '../../Skeleton.svelte'
+  import { makeFileNameFromTitle } from '../../../utils'
+  import databaseAPI from '../../../databaseAPI'
 
   const imageDirUrl = `https://github.com/${currentRepository.owner}/${currentRepository.name}/tree/main/images`
 
+  let image
+  let imageMd = ''
+
   let file = {
-    fileName: "",
-    content: "",
+    fileName: '',
+    content: '',
     previousContent: undefined,
-    title: "",
+    title: '',
     previousTitle: undefined,
-  };
+  }
 
-  fileP.then((_file) => {
-    file = _file;
-  });
+  fileP.then(_file => {
+    file = _file
+  })
 
-  let deleteDisabled = true;
+  let deleteDisabled = true
 
-  let filesPath = contenus.map((contenu) => contenu.path);
+  let filesPath = contenus.map(contenu => contenu.path)
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
 
-  const validateTitle = (e) => {
-    const titleChanged = file.previousTitle?.trim() !== file.title.trim();
+  const validateTitle = e => {
+    const titleChanged = file.previousTitle?.trim() !== file.title.trim()
     if (
       titleChanged &&
       filesPath &&
       filesPath.includes(makeFileNameFromTitle(file.title))
     ) {
       e.target.setCustomValidity(
-        "Vous avez déjà utilisé ce nom. Veuillez en choisir un autre."
-      );
+        'Vous avez déjà utilisé ce nom. Veuillez en choisir un autre.',
+      )
 
-      return;
+      return
     }
 
-    e.target.setCustomValidity("");
-  };
+    e.target.setCustomValidity('')
+  }
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = e => {
+    e.preventDefault()
 
     if (e.target.checkValidity()) {
-      dispatch("save", {
+      dispatch('save', {
         fileName: file.fileName,
         content: file.content.trim(),
         previousContent: file.previousContent,
         title: file.title.trim(),
         previousTitle: file.previousTitle,
-      });
+      })
     }
-  };
+  }
 
-  const onBackClick = (e) => {
+  const onBackClick = e => {
     if (
       file.previousContent.trim() !== file.content.trim() ||
       file.title?.trim() !== file.previousTitle?.trim()
     ) {
       if (
         !confirm(
-          "Êtes-vous sûr·e de vouloir revenir en arrière ? Toutes vos modifications seront perdues."
+          'Êtes-vous sûr·e de vouloir revenir en arrière ? Toutes vos modifications seront perdues.',
         )
       ) {
-        e.preventDefault();
+        e.preventDefault()
       }
     }
-  };
+  }
+
+  const imageSelect = async e => {
+    for (const img of image) {
+      imageMd = 'Mise en ligne en cours…'
+      const buffer = new Uint8Array(await img.arrayBuffer())
+      await databaseAPI.writeFile(
+        currentRepository.owner,
+        currentRepository.name,
+        `images/${img.name}`,
+        buffer,
+        "Ajout d'une image",
+        false, //l'image sera push avec le reste de l'article quand celui-ci sera enregistré
+      )
+      imageMd = `![Texte décrivant l'image](/images/${img.name})`
+    }
+  }
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -129,37 +149,29 @@
               <div>
                 <ol>
                   <li>
-                    (Optionnel) Si votre image n'est pas en ligne, déposez-la
-                    dans <a href={imageDirUrl} target="_blank">
-                      ce petit dossier
-                    </a>.
+                    <label for="image">Sélectionnez votre image :</label>
+                    <input
+                      accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
+                      bind:files={image}
+                      id="image"
+                      name="image"
+                      type="file"
+                      on:change={imageSelect}
+                    />
                   </li>
-                  <li>Affichez l'image dans votre navigateur</li>
                   <li>
-                    Faites un clic droit sur l'image : Copier le lien
-                    (l'adresse) de l'image
+                    Insérez la ligne suivante là où vous souhaitez que votre
+                    image apparaisse :
                   </li>
-                  <li>Revenez sur votre page Scribouilli</li>
-                  <li>
-                    Insérez la ligne ci-dessous là où vous voulez mettre votre
-                    image, en remplaçant le texte :
-                  </li>
-                  <ul>
-                    <li>
-                      Entre crochets, par une description pour les personnes
-                      malvoyantes
-                    </li>
-                    <li>
-                      Entre parenthèses, par le lien de l'image que vous avez
-                      copié précédemment
-                    </li>
-                  </ul>
-
-                  <!-- Utilisation de Figure pour pouvoir sélectionner facilement le code en cliquant plusieurs fois dessus -->
                   <figure>
-                    ![Texte décrivant l'image](https://ladressedemonimage.png)
+                    {imageMd}
                   </figure>
-                  <br />
+
+                  <li>
+                    Remplacez le texte entre crochets par une description pour
+                    les personnes malvoyantes (il s'affichera si l'image ne
+                    charge pas)
+                  </li>
                 </ol>
               </div>
             </details>
@@ -183,21 +195,21 @@
             >
           </div>
 
-          {#if file.fileName && file.fileName !== "index.md"}
+          {#if file.fileName && file.fileName !== 'index.md'}
             <div class="wrapper white-zone">
               <h3>{deleteTitle}</h3>
               <label>
                 <input
                   type="checkbox"
                   on:change={() => {
-                    deleteDisabled = !deleteDisabled;
+                    deleteDisabled = !deleteDisabled
                   }}
                 />
                 Afficher le bouton de suppression
               </label>
               <button
                 type="button"
-                on:click={() => dispatch("delete")}
+                on:click={() => dispatch('delete')}
                 disabled={deleteDisabled}
                 class=" btn__medium btn btn__danger"
               >
@@ -226,7 +238,7 @@
     summary {
       margin-bottom: 1.2rem;
     }
-    ul,
+
     ol {
       list-style: revert;
       padding-left: 2rem;
@@ -234,6 +246,13 @@
 
     li {
       margin-bottom: 1rem;
+      label {
+        font-weight: normal;
+        display: inline;
+      }
+      input {
+        display: inline;
+      }
     }
   }
 
@@ -253,7 +272,7 @@
 
   .btn__retour {
     &::before {
-      content: "‹";
+      content: '‹';
       margin-right: 0.5rem;
     }
   }
