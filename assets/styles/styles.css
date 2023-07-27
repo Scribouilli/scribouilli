@@ -153,6 +153,7 @@ nav ul {
   display: flex;
   gap: 2rem;
   align-items: baseline;
+  justify-content: flex-end;
 }
 
 .screen {
