@@ -1,19 +1,19 @@
 <script>
-  import Skeleton from "../../Skeleton.svelte";
+  import Skeleton from '../../Skeleton.svelte'
 
-  export let buildStatus;
-  export let listContenu = [];
-  export let title;
-  export let atelierPrefix;
-  export let newContentButtonText;
-  export let showArticles;
-  export let currentRepository;
+  export let buildStatus
+  export let listContenu = []
+  export let title
+  export let atelierPrefix
+  export let newContentButtonText
+  export let showArticles
+  export let currentRepository
 
-  let repoName;
-  $: repoName = currentRepository.name;
+  let repoName
+  $: repoName = currentRepository.name
 
   let account
-  $: account = currentRepository.owner;
+  $: account = currentRepository.owner
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -25,17 +25,20 @@
         <ul>
           {#each listContenu.sort() as contenu}
             <li>
+              <span>{contenu.title}</span>
+
               <a
                 href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
               >
-                {contenu.title}
-              </a>
+                Modifier</a
+              >
             </li>
           {/each}
         </ul>
 
-        <a href="{atelierPrefix}?repoName={repoName}&account={account}" class="btn btn__medium"
-          >{newContentButtonText}</a
+        <a
+          href="{atelierPrefix}?repoName={repoName}&account={account}"
+          class="btn btn__medium">{newContentButtonText}</a
         >
       </div>
     </div>
@@ -44,16 +47,20 @@
 
 <style lang="scss">
   ul {
+    margin: auto;
     margin-bottom: 4rem;
+    text-align: left;
+    width: 22em;
 
     li {
       font-size: 1.3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1em;
+      padding: 1rem;
       & + li {
-        margin-top: 2rem;
-      }
-
-      a {
-        text-transform: capitalize;
+        border-top: 1px solid black;
       }
     }
   }

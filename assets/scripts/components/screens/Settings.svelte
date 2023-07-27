@@ -93,7 +93,7 @@
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
   <section class="screen" id="settings">
-    <h2>L'atelier — Paramètres</h2>
+    <h2>Paramètres</h2>
 
     <div id="notifications">{notification}</div>
 

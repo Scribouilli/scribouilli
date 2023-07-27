@@ -1,10 +1,10 @@
 <script>
-  import ListContenu from "./intern/ListContenu.svelte";
+  import ListContenu from './intern/ListContenu.svelte'
 
-  export let buildStatus;
-  export let articles;
+  export let buildStatus
+  export let articles
   export let showArticles
-  export let currentRepository;
+  export let currentRepository
 </script>
 
 <ListContenu
@@ -12,7 +12,7 @@
   {buildStatus}
   listContenu={articles}
   {showArticles}
-  title="L'atelier — Articles"
+  title="Articles"
   atelierPrefix="./atelier-article"
   newContentButtonText="Nouvel article"
 />

@@ -220,20 +220,26 @@ a {
 }
 
 a[href]:active,
-a[href]:hover {
-  --underline-hover-width: var(--underline-max-width);
+a[href]:hover,
+[href]:not(.btn):not(.go-home):hover,
+[href]:not(.btn):not(.go-home):active {
+  box-shadow: inset 0px -0.2em 0px currentColor;
+  /*--underline-hover-width: var(--underline-max-width);*/
 }
 
 [href]:not(.btn):not(.go-home) {
-  background-image: var(--underline-img), var(--underline-img);
+  display: inline;
+  text-decoration: none;
+  box-shadow: inset 0px -0.1em 0px currentColor;
+  /*background-image: var(--underline-img), var(--underline-img);
   background-position:
     var(--underline-x) 100%,
     var(--underline-x) calc(100% - 0.0625em);
   background-repeat: no-repeat, no-repeat;
   background-size:
     var(--underline-hover-width) 0.125em,
-    var(--underline-idle-width) 0.0625em;
-  transition: background-size 0s;
+    var(--underline-idle-width) 0.0625em;*/
+  transition: box-shadow 0s;
 }
 
 form {
