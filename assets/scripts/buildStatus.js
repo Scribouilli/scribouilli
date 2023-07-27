@@ -43,7 +43,7 @@ pour ensuite faire du polling dessus, et récupérer la propriété state
 
 NOTE
 
-Nous pensons que Github laisse mourrir l'API github pages.
+Nous pensons que GitHub laisse mourrir l'API GitHub Pages
 
 Un refactoring à faire plus tard serait d'utilise les API de déploiement qui sont plus riche en information.
 

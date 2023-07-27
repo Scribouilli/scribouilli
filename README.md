@@ -23,9 +23,9 @@ Permettre à des non-informaticiennes
 ```mermaid
 sequenceDiagram;
     participant A as Scribouilli
-    participant B as Github Auth
+    participant B as GitHub Auth
     participant C as File moi les clefs
-    participant D as Mon Compte Github
+    participant D as Mon Compte GitHub
     A->>B: Demande l'authentification à
     B->>C: Vérifie les clefs auprès de
     C->>B: Montre les infos à

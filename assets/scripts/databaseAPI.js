@@ -90,7 +90,7 @@ class DatabaseAPI {
   }
 
   /**
-   * @summary Put topic in Github repository to find more easily the websites
+   * @summary Put topic in GitHub repository to find more easily the websites
    */
   createTopicGithubRepository(login, newRepoName) {
     return this.callGithubAPI(

@@ -210,7 +210,7 @@ export const setBuildStatus = (login, repoName) => {
  * @summary Create a repository for the current account
  *
  * @description This function creates a repository for the current account (user
- * or organization) and set a Github Pages branch. It redirects to the
+ * or organization) and set a GitHub Pages branch. It redirects to the
  * list of pages for the atelier.
  *
  * @param {string} repoName - The name of the repository to create
@@ -256,7 +256,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
       // Generation from a template repository
       // is asynchronous, so we need to wait a bit
       // for the new repo to be created
-      // before the setup of the Github Pages branch
+      // before the setup of the GitHub Pages branch
       return waitRepoReady
     })
     .then(() => {
