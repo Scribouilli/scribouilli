@@ -91,10 +91,10 @@
   }
 
   .build-built::after {
-    content: "✅ Site à jour (sinon pensez à actualiser)";
+    content: "✅ Site à jour";
   }
 
   .build-errored::after {
-    content: "❌ Oups il y a peut-être un souci";
+    content: "🕰 En cours de publication ⁉️ si cela met + de 15 min, faites-nous signe";
   }
 </style>
