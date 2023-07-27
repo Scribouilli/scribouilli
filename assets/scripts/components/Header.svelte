@@ -87,7 +87,7 @@
   }
 
   .build-building::after {
-    content: "🕰 En cours de publication";
+    content: "🕰 En cours de publication (2-3 min)";
   }
 
   .build-built::after {
@@ -95,6 +95,6 @@
   }
 
   .build-errored::after {
-    content: "🕰 En cours de publication ⁉️ si cela met + de 15 min, faites-nous signe";
+    content: "🕰 En cours de publication (15 min max)";
   }
 </style>
