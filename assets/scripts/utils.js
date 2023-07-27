@@ -71,7 +71,7 @@ export async function makePublishedWebsiteURL(state) {
  */
 function makeFilenameCompatibleString(string) {
   return string
-    .replace(/\/|#|\?/g, '-') // replace url confusing characters
+    .replace(/\/|#|\?|:/g, '-') // replace url confusing characters
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // remove accent because GH pages triggers file download
     .split('.')
