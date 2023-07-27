@@ -19,7 +19,15 @@
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
   <section class="screen">
     <div>
-      <h2>{title}</h2>
+      <header>
+        <h2>
+          {title}
+        </h2>
+        <a
+          href="{atelierPrefix}?repoName={repoName}&account={account}"
+          class="btn btn__medium">{newContentButtonText}</a
+        >
+      </header>
 
       <div>
         <ul>
@@ -35,11 +43,6 @@
             </li>
           {/each}
         </ul>
-
-        <a
-          href="{atelierPrefix}?repoName={repoName}&account={account}"
-          class="btn btn__medium">{newContentButtonText}</a
-        >
       </div>
     </div>
   </section>
@@ -74,6 +77,24 @@
         left: 0;
         right: 0;
       }
+    }
+  }
+
+  header {
+    border: none;
+    gap: 5em;
+    width: 26em;
+    justify-content: space-between;
+    margin: auto;
+    margin-bottom: 1.5rem;
+    padding: 0;
+
+    & > * {
+      flex: 0 1 auto;
+    }
+
+    h2 {
+      margin: 0.2em 0;
     }
   }
 </style>
