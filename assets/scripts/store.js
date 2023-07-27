@@ -1,11 +1,11 @@
 //@ts-check
 
-import Store from "baredux";
+import Store from 'baredux'
 
 import {
   ACCESS_TOKEN_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-} from "./config.js";
+} from './config.js'
 
 /**
  * @typedef {Object} CurrentRepository
@@ -44,7 +44,7 @@ const store = Store({
     // @ts-ignore
     accessToken:
       new URL(location.toString()).searchParams.get(
-        TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER
+        TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
       ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
     login: undefined,
     email: undefined,
@@ -62,68 +62,67 @@ const store = Store({
     pages: [],
     articles: undefined,
     buildStatus: undefined,
-    basePath: location.hostname.endsWith(".github.io") ? "/scribouilli" : "",
+    basePath: location.hostname.endsWith('.github.io') ? '/scribouilli' : '',
     theme: {
       css: undefined,
     },
   },
   mutations: {
     setLogin(state, login) {
-      state.login = login;
+      state.login = login
     },
     setEmail(state, email) {
-      state.email = email;
+      state.email = email
     },
     setCurrentRepository(state, repository) {
-      state.currentRepository = repository;
+      state.currentRepository = repository
     },
     setPages(state, pages) {
       state.pages = pages.sort((pageA, pageB) => {
         if (pageA.path < pageB.path) {
-          return -1;
+          return -1
         }
         if (pageA.path > pageB.path) {
-          return 1;
+          return 1
         }
         if (pageA.path === pageB.path) {
-          return 0;
+          return 0
         }
-      });
+      })
     },
     setArticles(state, articles) {
       state.articles = articles?.sort((pageA, pageB) => {
         if (pageA.path < pageB.path) {
-          return -1;
+          return -1
         }
         if (pageA.path > pageB.path) {
-          return 1;
+          return 1
         }
         if (pageA.path === pageB.path) {
-          return 0;
+          return 0
         }
-      });
+      })
     },
     setBuildStatus(state, buildStatus) {
-      state.buildStatus = buildStatus;
+      state.buildStatus = buildStatus
     },
     setReposForAccount(state, { login, repos }) {
-      state.reposByAccount[login] = repos;
+      state.reposByAccount[login] = repos
     },
     setTheme(state, css) {
-      state.theme.css = css;
+      state.theme.css = css
     },
     removeSite(state) {
-      state.pages = undefined;
-      state.articles = undefined;
-      state.siteRepoConfig = undefined;
+      state.pages = undefined
+      state.articles = undefined
+      state.siteRepoConfig = undefined
     },
     invalidateToken(state) {
-      state.accessToken = undefined;
-      localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
-      console.log("Token has been invalidated");
+      state.accessToken = undefined
+      localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
+      console.log('Token has been invalidated')
     },
   },
-});
+})
 
-
-export default store;
+export default store

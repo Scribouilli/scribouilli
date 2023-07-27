@@ -1,8 +1,8 @@
 <script>
-  import ListContenu from "./intern/ListContenu.svelte";
+  import ListContenu from './intern/ListContenu.svelte'
 
-  export let buildStatus;
-  export let pages;
+  export let buildStatus
+  export let pages
   export let showArticles
   export let currentRepository
 </script>
@@ -12,7 +12,7 @@
   {buildStatus}
   listContenu={pages}
   {showArticles}
-  title="L'atelier — Pages"
+  title="Pages"
   atelierPrefix="./atelier-page"
   newContentButtonText="Nouvelle page"
 />

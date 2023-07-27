@@ -145,7 +145,7 @@
             </details>
 
             <details>
-              <summary>Rajouter une image</summary>
+              <summary>Ajouter une image</summary>
               <div>
                 <ol>
                   <li>
