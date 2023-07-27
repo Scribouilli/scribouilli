@@ -73,12 +73,13 @@ iframe {
   --underline-idle-width: var(--underline-max-width);
   --underline-x: calc(var(--underline-max-width) * 0);
   --underline-img: linear-gradient(0deg, currentColor, currentColor);
-  --external-link-content: "";
+  --external-link-content: '';
 }
 @font-face {
-  font-family: "Luciole";
-  src: url("../fonts/Luciole-Regular.woff") format("woff"),
-    url("../fonts/Luciole-Regular.woff2") format("woff2");
+  font-family: 'Luciole';
+  src:
+    url('../fonts/Luciole-Regular.woff') format('woff'),
+    url('../fonts/Luciole-Regular.woff2') format('woff2');
   font-style: normal;
   font-weight: normal;
   text-rendering: optimizeLegibility;
@@ -95,14 +96,33 @@ header {
   padding-right: 2rem;
   padding-left: 2rem;
   border-bottom: 1px solid #4d4646;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header > * {
+  flex: 1;
 }
 
 header > div {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 2rem;
+}
+
+header > div > p {
+  margin: 0em;
+}
+
+header h1 {
+  text-align: center;
+}
+
+header img {
+  max-height: 3em;
 }
 
 main {
@@ -206,10 +226,12 @@ a[href]:hover {
 
 [href]:not(.btn):not(.go-home) {
   background-image: var(--underline-img), var(--underline-img);
-  background-position: var(--underline-x) 100%,
+  background-position:
+    var(--underline-x) 100%,
     var(--underline-x) calc(100% - 0.0625em);
   background-repeat: no-repeat, no-repeat;
-  background-size: var(--underline-hover-width) 0.125em,
+  background-size:
+    var(--underline-hover-width) 0.125em,
     var(--underline-idle-width) 0.0625em;
   transition: background-size 0s;
 }
@@ -224,11 +246,11 @@ label {
   font-weight: bold;
 }
 
-[type="text"],
+[type='text'],
 textarea {
   width: 100%;
   padding: 0.5rem;
-  font-family: "Luciole", Arial, Helvetica, sans-serif;
+  font-family: 'Luciole', Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
 }
 
@@ -323,7 +345,7 @@ summary::-webkit-details-marker {
   display: none;
 }
 summary::before {
-  content: "?";
+  content: '?';
   display: flex;
   justify-content: center;
   align-items: center;
@@ -347,5 +369,5 @@ a[href]:not(:where(
   [href^="//localhost:8080"],
   [href^="./"]
 )):after {
-  content: " ➚";
+  content: ' ➚';
 }
