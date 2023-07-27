@@ -87,14 +87,14 @@
   }
 
   .build-building::after {
-    content: "🕰 En cours de publication";
+    content: "🕰 En cours de publication (2-3 min)";
   }
 
   .build-built::after {
-    content: "✅ Site à jour (sinon pensez à actualiser)";
+    content: "✅ Site à jour";
   }
 
   .build-errored::after {
-    content: "❌ Oups il y a peut-être un souci";
+    content: "🕰 En cours de publication (15 min max)";
   }
 </style>
