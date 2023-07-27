@@ -59,8 +59,20 @@
       align-items: center;
       gap: 1em;
       padding: 1rem;
+      position: relative;
+
       & + li {
         border-top: 1px solid black;
+      }
+
+      a::before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
       }
     }
   }
