@@ -5,11 +5,11 @@
 <Skeleton>
   <section class="screen" id="account">
     <div id="question_github">
-      <h2>Avez-vous un compte Github&nbsp;?</h2>
+      <h2>Avez-vous un compte GitHub&nbsp;?</h2>
 
       <p>
         Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte
-        à un compte <a href="https://github.com" target="_blank">Github</a>.
+        à un compte <a href="https://github.com" target="_blank">GitHub</a>.
       </p>
 
       <div>

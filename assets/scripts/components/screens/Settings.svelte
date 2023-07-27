@@ -172,7 +172,7 @@
       <h3>Supprimer le site</h3>
       <p>
         Pour supprimer le site, cliquez sur le bouton "Delete this repository"
-        en bas de la page <a href={deleteRepositoryUrl}>"Settings" de Github</a
+        en bas de la page <a href={deleteRepositoryUrl}>"Settings" de GitHub</a
         >.
       </p>
       <p>
