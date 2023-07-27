@@ -106,7 +106,11 @@ export function makeArticleFileName(title, date) {
  * @returns {string}
  */
 export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
-  return ['---', 'title: ' + title, '---'].join('\n')
+  return [
+    '---',
+    'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
+    '---',
+  ].join('\n')
 }
 
 export const logMessage = (errorMessage, caller = 'unknown', level = 'log') => {
