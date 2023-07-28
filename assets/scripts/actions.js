@@ -98,8 +98,6 @@ export const fetchCurrentUserRepositories = async () => {
       return repos
     })
 
-  store.mutations.setReposForAccount(currentUserRepositoriesP)
-
   return currentUserRepositoriesP
 }
 
