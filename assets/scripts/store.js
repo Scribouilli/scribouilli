@@ -79,15 +79,19 @@ const store = Store({
     },
     setPages(state, pages) {
       state.pages = pages.sort((pageA, pageB) => {
-        if (pageA.path < pageB.path) {
-          return -1
+        const diffIndex = pageA.index - pageB.index
+        if (diffIndex === 0) {
+          if (pageA.path < pageB.path) {
+            return -1
+          }
+          if (pageA.path > pageB.path) {
+            return 1
+          }
+          if (pageA.path === pageB.path) {
+            return 0
+          }
         }
-        if (pageA.path > pageB.path) {
-          return 1
-        }
-        if (pageA.path === pageB.path) {
-          return 0
-        }
+        return diffIndex
       })
     },
     setArticles(state, articles) {

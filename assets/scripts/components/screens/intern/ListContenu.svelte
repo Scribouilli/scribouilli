@@ -60,7 +60,7 @@
 
       <div>
         <ul>
-          {#each listContenu.sort() as contenu}
+          {#each listContenu as contenu}
             <li>
               <span>{contenu.title}</span>
               {#if modification}
