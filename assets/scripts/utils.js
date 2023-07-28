@@ -105,7 +105,20 @@ export function makeArticleFileName(title, date) {
  * @param {string} title
  * @returns {string}
  */
-export function makeFrontMatterYAMLJsaisPasQuoiLa(title) {
+export function makeFrontMatterYAMLJsaisPasQuoiLa(
+  title,
+  pages = false,
+  index = 1,
+) {
+  if (pages) {
+    console.log('index : ', index)
+    return [
+      '---',
+      'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
+      'order: ' + index,
+      '---',
+    ].join('\n')
+  }
   return [
     '---',
     'title: ' + '"' + title.replace(/"/g, '\\"') + '"',

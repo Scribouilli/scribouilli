@@ -30,12 +30,14 @@ const makeMapStateToProps = fileName => state => {
         )
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(content)
-
         return {
           fileName,
           content: markdownContent,
           previousContent: markdownContent,
           title: data?.title,
+          index:
+            data?.order ??
+            store.state.pages.findIndex(p => p.path == fileName) + 1,
           previousTitle: data?.title,
         }
       } catch (errorMessage) {
@@ -57,6 +59,7 @@ const makeMapStateToProps = fileName => state => {
       fileP: Promise.resolve({
         fileName: '',
         title: '',
+        index: store.state.pages.length + 1,
         content: '',
         previousTitle: undefined,
         previousContent: undefined,
@@ -75,10 +78,10 @@ const makeMapStateToProps = fileName => state => {
 export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
-  const state = store.state;
-  const currentRepository = state.currentRepository;
-  const fileName = new URLSearchParams(querystring).get("path") ?? '';
-    const mapStateToProps = makeMapStateToProps(fileName);
+  const state = store.state
+  const currentRepository = state.currentRepository
+  const fileName = new URLSearchParams(querystring).get('path') ?? ''
+  const mapStateToProps = makeMapStateToProps(fileName)
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
@@ -88,8 +91,8 @@ export default ({ querystring }) => {
   replaceComponent(pageContenu, mapStateToProps)
 
   // @ts-ignore
-  pageContenu.$on("delete", () => {
-    Promise.resolve(state.login).then((login) => {
+  pageContenu.$on('delete', () => {
+    Promise.resolve(state.login).then(login => {
       if (!login) return page('/')
 
       store.mutations.setPages(
@@ -113,7 +116,14 @@ export default ({ querystring }) => {
   pageContenu.$on(
     'save',
     ({
-      detail: { fileName, content, previousContent, title, previousTitle },
+      detail: {
+        fileName,
+        content,
+        previousContent,
+        title,
+        index,
+        previousTitle,
+      },
     }) => {
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
@@ -132,9 +142,6 @@ export default ({ querystring }) => {
       }
 
       const message = `création de la page ${title || 'index.md'}`
-      const finalContent = `${
-        title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + '\n' : ''
-      }${content} `
 
       let newPages =
         state.pages?.filter(page => {
@@ -157,7 +164,13 @@ export default ({ querystring }) => {
         }
       }
 
-      Promise.resolve(state.login).then((login) => {
+      const finalContent = `${
+        title
+          ? makeFrontMatterYAMLJsaisPasQuoiLa(title, true, index) + '\n'
+          : ''
+      }${content} `
+
+      Promise.resolve(state.login).then(login => {
         if (!login) return page('/')
 
         databaseAPI

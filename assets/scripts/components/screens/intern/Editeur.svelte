@@ -13,6 +13,7 @@
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
   import databaseAPI from '../../../databaseAPI'
+  import store from '../../../store'
 
   const imageDirUrl = `https://github.com/${currentRepository.owner}/${currentRepository.name}/tree/main/images`
 
@@ -24,6 +25,7 @@
     content: '',
     previousContent: undefined,
     title: '',
+    index: store.state.pages.length + 1,
     previousTitle: undefined,
   }
 
@@ -63,6 +65,7 @@
         content: file.content.trim(),
         previousContent: file.previousContent,
         title: file.title.trim(),
+        index: file.index,
         previousTitle: file.previousTitle,
       })
     }
