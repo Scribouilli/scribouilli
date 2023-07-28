@@ -1,5 +1,8 @@
 <script>
+  import databaseAPI from '../../../databaseAPI'
+  import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
+  import { makeFrontMatterYAMLJsaisPasQuoiLa } from '../../../utils'
 
   export let buildStatus
   export let listContenu = []
@@ -8,12 +11,43 @@
   export let newContentButtonText
   export let showArticles
   export let currentRepository
+  export let allowModification
 
   let repoName
   $: repoName = currentRepository.name
 
   let account
   $: account = currentRepository.owner
+
+  let modification = false
+
+  const changeOrder = async e => {
+    if (modification) {
+      for (let page of listContenu) {
+        await databaseAPI.writeFile(
+          store.state.currentRepository.owner,
+          store.state.currentRepository.name,
+          page.path,
+          `${
+            page.title
+              ? makeFrontMatterYAMLJsaisPasQuoiLa(
+                  page.title,
+                  true,
+                  page.index,
+                ) + '\n'
+              : ''
+          }${page.content}`,
+          'Changement index',
+          false,
+        )
+      }
+      await databaseAPI.push(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+      )
+    }
+    modification = !modification
+  }
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -31,18 +65,38 @@
 
       <div>
         <ul>
-          {#each listContenu.sort() as contenu}
+          {#each listContenu as contenu}
             <li>
               <span>{contenu.title}</span>
-
-              <a
-                href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
-              >
-                Modifier</a
-              >
+              {#if modification}
+                <label>
+                  <input
+                    aria-label="Ordre de la page"
+                    type="number"
+                    min="1"
+                    max={store.state.pages.length}
+                    bind:value={contenu.index}
+                  />
+                </label>
+              {:else}
+                <a
+                  href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
+                >
+                  Modifier</a
+                >
+              {/if}
             </li>
           {/each}
         </ul>
+        {#if allowModification}
+          <button class="btn btn_small btn_secondary" on:click={changeOrder}
+            >{#if modification}
+              Enregistrer
+            {:else}
+              Changer l'ordre des pages
+            {/if}</button
+          >
+        {/if}
       </div>
     </div>
   </section>
@@ -76,6 +130,14 @@
         bottom: 0;
         left: 0;
         right: 0;
+      }
+
+      label {
+        width: 3em;
+
+        input {
+          width: 100%;
+        }
       }
     }
   }

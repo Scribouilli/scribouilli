@@ -28,12 +28,14 @@ const makeMapStateToProps = fileName => state => {
         )
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(content)
-
         return {
           fileName,
           content: markdownContent,
           previousContent: markdownContent,
           title: data?.title,
+          index:
+            data?.order ??
+            store.state.pages.findIndex(p => p.path == fileName) + 1,
           previousTitle: data?.title,
         }
       } catch (errorMessage) {
@@ -55,6 +57,7 @@ const makeMapStateToProps = fileName => state => {
       fileP: Promise.resolve({
         fileName: '',
         title: '',
+        index: store.state.pages.length + 1,
         content: '',
         previousTitle: undefined,
         previousContent: undefined,
@@ -113,7 +116,14 @@ export default ({ querystring }) => {
   pageContenu.$on(
     'save',
     ({
-      detail: { fileName, content, previousContent, title, previousTitle },
+      detail: {
+        fileName,
+        content,
+        previousContent,
+        title,
+        index,
+        previousTitle,
+      },
     }) => {
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
@@ -132,9 +142,6 @@ export default ({ querystring }) => {
       }
 
       const message = `création de la page ${title || 'index.md'}`
-      const finalContent = `${
-        title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + '\n' : ''
-      }${content} `
 
       let newPages =
         state.pages?.filter(page => {
@@ -156,6 +163,12 @@ export default ({ querystring }) => {
           new: newFileName,
         }
       }
+
+      const finalContent = `${
+        title
+          ? makeFrontMatterYAMLJsaisPasQuoiLa(title, true, index) + '\n'
+          : ''
+      }${content} `
 
       databaseAPI
         .writeFile(

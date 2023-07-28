@@ -393,6 +393,7 @@ class DatabaseAPI {
           )
           return {
             title: data?.title,
+            index: data?.order,
             path,
             content: markdownContent,
           }

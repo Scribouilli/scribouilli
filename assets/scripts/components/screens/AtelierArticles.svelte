@@ -15,6 +15,7 @@
   title="Articles"
   atelierPrefix="./atelier-article"
   newContentButtonText="Nouvel article"
+  allowModification={false}
 />
 
 <style lang="scss">
