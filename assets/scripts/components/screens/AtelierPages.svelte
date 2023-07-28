@@ -15,6 +15,7 @@
   title="Pages"
   atelierPrefix="./atelier-page"
   newContentButtonText="Nouvelle page"
+  allowModification={true}
 />
 
 <style lang="scss">
