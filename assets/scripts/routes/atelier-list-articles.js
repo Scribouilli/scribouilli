@@ -29,9 +29,9 @@ export default ({ querystring }) => {
     props: mapStateToProps(state),
   })
 
-  replaceComponent(atelierArticles, mapStateToProps)
+  getCurrentRepoArticles()
 
-  Promise.resolve(state.login).then(() => getCurrentRepoArticles())
+  replaceComponent(atelierArticles, mapStateToProps)
 }
 
 /**

@@ -6,19 +6,27 @@
   import Loader from "./../loaders/Loader.svelte";
   import { addTopicRepo } from "../../actions";
 
-  export let currentAccount;
+  export let currentAccount
   export let currentAccountRepositories;
 
-  let name = "";
+  let repo
   let loading = false;
+
+  const displayRepoName = repo => {
+    if (repo.owner.login === currentAccount) {
+      return repo.name
+    } else {
+      return `${repo.owner.login} / ${repo.name}`
+    }
+  }
 
   const onSubmit = (e) => {
     e.preventDefault();
 
     loading = true;
 
-    addTopicRepo(currentAccount, name);
-    page(`/atelier-list-pages?repoName=${name}&account=${currentAccount}`);
+    addTopicRepo(repo.owner.login, repo.name);
+    page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
 
     loading = false;
   };
@@ -35,9 +43,9 @@
         <form on:submit={onSubmit}>
           <div>
             <label for="name">Nom de votre site</label>
-            <select id="name" bind:value={name}>
+            <select id="name" bind:value={repo}>
               {#each currentAccountRepositories as repo}
-                <option value={repo.name}>{repo.name}</option>
+                <option value={repo}>{displayRepoName(repo)}</option>
               {/each}
             </select>
           </div>

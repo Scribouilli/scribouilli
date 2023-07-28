@@ -9,14 +9,14 @@ import store from './store.js'
 /**
  * @summary Check the availability of a repository and redirect to project creation
  *          if it does not exist.
- * @param {string} login
+ * @param {string} owner
  * @param {string} repoName
  * @param {*} thenCallback The callback you'll want to execute if the repository is available
  * @returns
  */
-export function checkRepositoryAvailabilityThen(login, repoName, thenCallback) {
+export function checkRepositoryAvailabilityThen(owner, repoName, thenCallback) {
   return databaseAPI
-    .getRepository(login, repoName)
+    .getRepository(owner, repoName)
     .then(thenCallback)
     .catch(msg => handleErrors(msg))
 }
@@ -52,16 +52,6 @@ export const handleErrors = errorMessage => {
       logMessage(errorMessage, 'handleErrors')
       throw errorMessage
   }
-}
-
-export async function makeOrigin(state) {
-  const login = await Promise.resolve(state.login)
-  return `${login.toLowerCase()}.github.io`
-}
-
-export async function makePublishedWebsiteURL(state) {
-  const origin = await makeOrigin(state)
-  return `https://${origin}/${state.repoName}`
 }
 
 /**

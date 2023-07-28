@@ -12,6 +12,12 @@
 
     loading = true;
 
+    // Pour le moment on crée forcément un dépôt sur son propre compte.
+    // Peut-être dans le futur on permettra de sélectionner une organisation
+    // directement depuis Scribouilli.
+    // Pour le moment on fait comme ça, et on documente comment transférer un
+    // dépôt perso dans une organisation, via l'interface GitHub, pour les
+    // utilisateurices avancé.es
     createRepositoryForCurrentAccount(name)
       .catch(() => {
         loading = false;
