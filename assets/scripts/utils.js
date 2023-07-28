@@ -54,15 +54,6 @@ export const handleErrors = errorMessage => {
   }
 }
 
-export function makeOrigin(state) {
-  return `${state.currentRepository.owner.toLowerCase()}.github.io`
-}
-
-export function makePublishedWebsiteURL(state) {
-  const origin = makeOrigin(state)
-  return `https://${origin}/${state.repoName}`
-}
-
 /**
  *
  * @param {string} string
