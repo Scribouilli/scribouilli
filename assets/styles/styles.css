@@ -202,6 +202,17 @@ h4 {
   font-size: 1.2rem;
 }
 
+.btn_small {
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.btn.btn_secondary,
+.btn.btn_secondary:hover {
+  border-color: #912222;
+  color: #912222;
+}
+
 .btn,
 .btn:hover {
   color: #000;

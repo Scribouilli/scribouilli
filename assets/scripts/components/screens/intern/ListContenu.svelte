@@ -38,8 +38,13 @@
               : ''
           }${page.content}`,
           'Changement index',
+          false,
         )
       }
+      await databaseAPI.push(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+      )
     }
     modification = !modification
   }
@@ -66,6 +71,7 @@
               {#if modification}
                 <label>
                   <input
+                    aria-label="Ordre de la page"
                     type="number"
                     min="1"
                     max={store.state.pages.length}
@@ -83,7 +89,7 @@
           {/each}
         </ul>
         {#if allowModification}
-          <button class="btn btn__medium" on:click={changeOrder}
+          <button class="btn btn_small btn_secondary" on:click={changeOrder}
             >{#if modification}
               Enregistrer
             {:else}
@@ -124,6 +130,14 @@
         bottom: 0;
         left: 0;
         right: 0;
+      }
+
+      label {
+        width: 3em;
+
+        input {
+          width: 100%;
+        }
       }
     }
   }
