@@ -64,8 +64,6 @@ export default function (owner, repoName) {
   /** @type {"building" | "built" | "errored"} */
   let repoStatus = 'building'
   let reaction = undefined
-  let lastSuccessCheck
-  let lastErrorCheck
   let timeout
 
   function scheduleCheck(delay = 5000) {
@@ -109,17 +107,7 @@ export default function (owner, repoName) {
             scheduleCheck()
           }
         })
-        .catch(error => {
-          // If GitHub Pages has not been enabled when the repository was created,
-          // we create it now.
-          if (error === 'NOT_FOUND') {
-            const errorMessage = `GitHub Pages site not found for ${owner}/${repoName}. Creating it now.`
-
-            logMessage(errorMessage, 'buildStatus.checkStatus')
-
-            databaseAPI.createRepoGithubPages(owner, repoName)
-          }
-
+        .catch(_ => {
           repoStatus = 'errored'
           if (reaction) {
             reaction(repoStatus)

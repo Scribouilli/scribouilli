@@ -83,17 +83,19 @@ class DatabaseAPI {
       },
     )
 
-    //On attends pas forcément la fin de cette appel pour return car pas de nécessité d'avoir le topic d'ajouté pour continuer
-    this.createTopicGithubRepository(login, newRepoName)
+    //On attends pas forcément la fin de cette appel pour return car pas de nécessité
+    // d'avoir les options bien configurées pour continuer
+    this.setupRepo(login, newRepoName)
 
     return res
   }
 
   /**
-   * @summary Put topic in GitHub repository to find more easily the websites
+   * @summary Put topic in GitHub repository to find more easily the websites.
+   *          Also configure some other options
    */
-  createTopicGithubRepository(login, newRepoName) {
-    return this.callGithubAPI(
+  async setupRepo(login, newRepoName) {
+    await this.callGithubAPI(
       `https://api.github.com/repos/${login}/${newRepoName}/topics`,
       {
         headers: {
@@ -105,6 +107,22 @@ class DatabaseAPI {
           owner: login,
           repo: newRepoName,
           names: ['site-scribouilli'],
+        }),
+      },
+    )
+    await this.callGithubAPI(
+      `https://api.github.com/repos/${login}/${newRepoName}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'token ' + this.accessToken,
+          Accept: 'application/vnd.github+json',
+        },
+        body: JSON.stringify({
+          homepage: `https://${login.toLowerCase()}.github.io/${newRepoName.toLowerCase()}`,
+          has_issues: false,
+          has_projects: false,
+          has_wiki: false,
         }),
       },
     )
