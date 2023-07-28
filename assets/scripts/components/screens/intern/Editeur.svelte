@@ -10,7 +10,8 @@
   export let currentRepository
 
   import { createEventDispatcher } from 'svelte'
-  import marked from 'marked';
+  import marked from 'marked'
+  import * as DOMPurify from 'dompurify'
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
   import databaseAPI from '../../../databaseAPI'
@@ -20,7 +21,7 @@
   let image
   let imageMd = ''
 
-  let preview = 'dsds';
+  let preview = ''
 
   let file = {
     fileName: '',
@@ -104,13 +105,13 @@
 
   $: {
     try {
-
-      preview = marked.parse(file.content);
+      const html = marked.parse(file.content)
+      preview = DOMPurify.sanitize(html)
     } catch (e) {
-      preview = 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.';
+      preview =
+        'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
     }
   }
-
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
