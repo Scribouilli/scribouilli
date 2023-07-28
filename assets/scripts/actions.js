@@ -125,8 +125,8 @@ export const getCurrentRepoArticles = () => {
     .catch(msg => handleErrors(msg))
 }
 
-export const addTopicRepo = (login, repo) =>
-  databaseAPI.createTopicGithubRepository(login, repo)
+export const addTopicRepo = (owner, repo) =>
+  databaseAPI.createTopicGithubRepository(owner, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
@@ -165,27 +165,15 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  // protection temporaire contre le fait d'éditer des repo d'un autre compte
-  // PPP: à enlever quand on travaillera sur l'édition sur les repos d'organisations
-  if (login !== owner) {
-    console.info('[login !== owner] redirecting to /', login, owner)
-    page('/')
-    return
-  }
+  databaseAPI.setAuthor(login, owner, repoName, email)
 
-  databaseAPI.setAuthor(login, store.state.currentRepository.name, email)
-
-  setBuildStatus(login, repoName)
-  setArticles(login)
+  setBuildStatus(owner, repoName)
+  setArticles()
 }
 
-/**
- *
- * @param {string} login
- */
-export const setArticles = async login => {
+export const setArticles = async () => {
   const articles = await databaseAPI.getArticlesList(
-    login,
+    store.state.currentRepository.owner,
     store.state.currentRepository.name,
   )
   store.mutations.setArticles(articles)
@@ -193,11 +181,11 @@ export const setArticles = async login => {
 
 /**
  *
- * @param {string} login
+ * @param {string} owner
  * @param {string} repoName
  */
-export const setBuildStatus = (login, repoName) => {
-  store.mutations.setBuildStatus(makeBuildStatus(login, repoName))
+export const setBuildStatus = (owner, repoName) => {
+  store.mutations.setBuildStatus(makeBuildStatus(owner, repoName))
   /*
   Appel sans vérification,
   On suppose qu'au chargement initial,
@@ -209,8 +197,8 @@ export const setBuildStatus = (login, repoName) => {
 /**
  * @summary Create a repository for the current account
  *
- * @description This function creates a repository for the current account (user
- * or organization) and set a GitHub Pages branch. It redirects to the
+ * @description This function creates a repository for the current account
+ * and set a GitHub Pages branch. It redirects to the
  * list of pages for the atelier.
  *
  * @param {string} repoName - The name of the repository to create

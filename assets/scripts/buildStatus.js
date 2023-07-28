@@ -53,78 +53,87 @@ Voir `databaseAPI.getLastDeployment(login, repoName)` et `databaseAPI.getDeploym
 
 
 */
-export default function (login, repoName) {
-    /** @type {"building" | "built" | "errored"} */
-    let repoStatus = "building";
-    let reaction = undefined;
-    let lastSuccessCheck;
-    let lastErrorCheck;
-    let timeout
 
-    function scheduleCheck(delay = 5000) {
-        if (!timeout) {
-            timeout = setTimeout(() => {
-                buildStatusObject.checkStatus()
-                timeout = undefined;
-            }, delay)
-        }
+/**
+ *
+ * @param {string} owner
+ * @param {string} repoName
+ * @returns
+ */
+export default function (owner, repoName) {
+  /** @type {"building" | "built" | "errored"} */
+  let repoStatus = 'building'
+  let reaction = undefined
+  let lastSuccessCheck
+  let lastErrorCheck
+  let timeout
+
+  function scheduleCheck(delay = 5000) {
+    if (!timeout) {
+      timeout = setTimeout(() => {
+        buildStatusObject.checkStatus()
+        timeout = undefined
+      }, delay)
     }
+  }
 
-    const buildStatusObject = {
-        get status() {
-            return repoStatus;
-        },
-        subscribe(callback) {
-            console.log("subscribe reaction.. ", callback)
-            reaction = callback;
-        },
-        checkStatus() {
-            return Promise.resolve(login).then(login => {
-                return databaseAPI.getGitHubPagesSite(login, repoName)
-                    .then(({ status }) => {
-                        logMessage(`GitHub Pages status is ${status}`, "buildStatus.checkStatus")
+  const buildStatusObject = {
+    get status() {
+      return repoStatus
+    },
+    subscribe(callback) {
+      console.log('subscribe reaction.. ', callback)
+      reaction = callback
+    },
+    checkStatus() {
+      return databaseAPI
+        .getGitHubPagesSite(owner, repoName)
+        .then(({ status }) => {
+          logMessage(
+            `GitHub Pages status is ${status}`,
+            'buildStatus.checkStatus',
+          )
 
-                        if (["built", "errored", "building"].includes(status)) {
-                            repoStatus = status
-                        } else {
-                            // status === null
-                            repoStatus = "building"
-                        }
+          if (['built', 'errored', 'building'].includes(status)) {
+            repoStatus = status
+          } else {
+            // status === null
+            repoStatus = 'building'
+          }
 
-                        if (reaction) {
-                            reaction(repoStatus);
-                        }
+          if (reaction) {
+            reaction(repoStatus)
+          }
 
-                        if (repoStatus === "building") {
-                            scheduleCheck()
-                        }
-                    })
-                    .catch(error => {
-                        // If GitHub Pages has not been enabled when the repository was created,
-                        // we create it now.
-                        if (error === "NOT_FOUND") {
-                          const errorMessage = `GitHub Pages site not found for ${login}/${repoName}. Creating it now.`
+          if (repoStatus === 'building') {
+            scheduleCheck()
+          }
+        })
+        .catch(error => {
+          // If GitHub Pages has not been enabled when the repository was created,
+          // we create it now.
+          if (error === 'NOT_FOUND') {
+            const errorMessage = `GitHub Pages site not found for ${owner}/${repoName}. Creating it now.`
 
-                          logMessage(errorMessage, "buildStatus.checkStatus")
+            logMessage(errorMessage, 'buildStatus.checkStatus')
 
-                          databaseAPI.createRepoGithubPages(login, repoName)
-                        }
+            databaseAPI.createRepoGithubPages(owner, repoName)
+          }
 
-                        repoStatus = 'errored'
-                        if (reaction) {
-                            reaction(repoStatus);
-                        }
-                    })
-            })
-        },
-        setBuildingAndCheckStatusLater(t = 30000) {
-            repoStatus = "building"
-            clearTimeout(timeout)
-            timeout = undefined
-            scheduleCheck(t)
-        }
-    }
+          repoStatus = 'errored'
+          if (reaction) {
+            reaction(repoStatus)
+          }
+        })
+    },
+    setBuildingAndCheckStatusLater(t = 30000) {
+      repoStatus = 'building'
+      clearTimeout(timeout)
+      timeout = undefined
+      scheduleCheck(t)
+    },
+  }
 
-    buildStatusObject.checkStatus();
-    return buildStatusObject
+  buildStatusObject.checkStatus()
+  return buildStatusObject
 }

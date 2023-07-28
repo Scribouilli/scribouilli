@@ -39,7 +39,7 @@ function mapStateToProps(state) {
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
-    deleteRepositoryUrl: `https://github.com/${state.login}/${state.currentRepository.name}/settings#danger-zone`,
+    deleteRepositoryUrl: `https://github.com/${state.currentRepository.owner}/${state.currentRepository.name}/settings#danger-zone`,
     blogEnabled: blogFile !== undefined,
     showArticles: blogFile !== undefined || state.articles?.length > 0,
     currentRepository: state.currentRepository,
@@ -55,36 +55,37 @@ export default ({ querystring }) => {
   })
 
   settings.$on('delete-site', () => {
-    Promise.resolve(store.state.login).then(login => {
-      databaseAPI
-        .deleteRepository(login, store.state.currentRepository.name)
-        .then(() => {
-          store.mutations.removeSite(store.state)
-          page('/create-project')
-        })
-        .catch(msg => handleErrors(msg))
-    })
+    databaseAPI
+      .deleteRepository(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+      )
+      .then(() => {
+        store.mutations.removeSite(store.state)
+        page('/create-project')
+      })
+      .catch(msg => handleErrors(msg))
   })
 
   settings.$on('update-theme', ({ detail: { theme } }) => {
-    Promise.resolve(store.state.login).then(login => {
-      databaseAPI
-        .writeCustomCSS(login, store.state.currentRepository.name, theme.css)
-        .then(_ => {
-          store.mutations.setTheme(store.state.theme.css)
-          store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
-        })
-        .catch(msg => handleErrors(msg))
-    })
+    databaseAPI
+      .writeCustomCSS(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+        theme.css,
+      )
+      .then(_ => {
+        store.mutations.setTheme(store.state.theme.css)
+        store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
+      })
+      .catch(msg => handleErrors(msg))
   })
 
   settings.$on('toggle-blog', async ({ detail: { activated } }) => {
-    const login = await store.state.login
-
     try {
       if (activated) {
         await databaseAPI.writeFile(
-          login,
+          store.state.currentRepository.owner,
           store.state.currentRepository.name,
           'blog.md',
           blogMdContent,
@@ -93,36 +94,37 @@ export default ({ querystring }) => {
         )
       } else {
         await databaseAPI.deleteFile(
-          login,
+          store.state.currentRepository.owner,
           store.state.currentRepository.name,
           'blog.md',
           false,
         )
       }
-      await setArticles(login)
+      await setArticles()
       await getCurrentRepoPages()
-      databaseAPI.push(login, store.state.currentRepository.name)
+      databaseAPI.push(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+      )
     } catch (msg) {
       handleErrors(msg)
     }
   })
 
   if (!store.state.theme.css) {
-    Promise.resolve(store.state.login).then(login => {
-      databaseAPI
-        .getFile(
-          login,
-          store.state.currentRepository.name,
-          databaseAPI.customCSSPath,
-        )
-        .then(content => {
-          store.mutations.setTheme(content)
-        })
-        .catch(msg => handleErrors(msg))
-    })
+    databaseAPI
+      .getFile(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+        databaseAPI.customCSSPath,
+      )
+      .then(content => {
+        store.mutations.setTheme(content)
+      })
+      .catch(msg => handleErrors(msg))
   }
 
-  replaceComponent(settings, mapStateToProps)
+  getCurrentRepoPages()
 
-  Promise.resolve(store.state.login).then(() => getCurrentRepoPages())
+  replaceComponent(settings, mapStateToProps)
 }
