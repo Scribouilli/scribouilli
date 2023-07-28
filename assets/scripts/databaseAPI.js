@@ -60,7 +60,7 @@ class DatabaseAPI {
 
   getCurrentUserRepositories() {
     return this.callGithubAPI(
-      `https://api.github.com/user/repos?sort=updated&affiliation=owner&visibility=public`,
+      `https://api.github.com/user/repos?sort=updated&visibility=public`,
     ).then(response => {
       return response.json()
     })
