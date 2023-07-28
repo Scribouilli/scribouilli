@@ -4,7 +4,7 @@
 
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
-  import { addTopicRepo } from "../../actions";
+  import { setupRepo } from "../../actions";
 
   export let currentAccount
   export let currentAccountRepositories;
@@ -25,7 +25,7 @@
 
     loading = true;
 
-    addTopicRepo(repo.owner.login, repo.name);
+    setupRepo(repo.owner.login, repo.name);
     page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
 
     loading = false;

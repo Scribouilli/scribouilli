@@ -123,8 +123,7 @@ export const getCurrentRepoArticles = () => {
     .catch(msg => handleErrors(msg))
 }
 
-export const addTopicRepo = (owner, repo) =>
-  databaseAPI.createTopicGithubRepository(owner, repo)
+export const setupRepo = (owner, repo) => databaseAPI.setupRepo(owner, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
