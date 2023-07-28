@@ -21,10 +21,8 @@ const makeMapStateToProps = fileName => state => {
   if (fileName) {
     const fileP = async function () {
       try {
-        const login = await Promise.resolve(store.state.login)
-        if (!login) return page('/')
         const content = await databaseAPI.getFile(
-          login,
+          store.state.currentRepository.owner,
           store.state.currentRepository.name,
           fileName,
         )
@@ -75,10 +73,10 @@ const makeMapStateToProps = fileName => state => {
 export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
-  const state = store.state;
-  const currentRepository = state.currentRepository;
-  const fileName = new URLSearchParams(querystring).get("path") ?? '';
-    const mapStateToProps = makeMapStateToProps(fileName);
+  const state = store.state
+  const currentRepository = state.currentRepository
+  const fileName = new URLSearchParams(querystring).get('path') ?? ''
+  const mapStateToProps = makeMapStateToProps(fileName)
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
@@ -88,22 +86,24 @@ export default ({ querystring }) => {
   replaceComponent(pageContenu, mapStateToProps)
 
   // @ts-ignore
-  pageContenu.$on("delete", () => {
-    Promise.resolve(state.login).then((login) => {
-      if (!login) return page('/')
+  pageContenu.$on('delete', () => {
+    store.mutations.setPages(
+      state.pages.filter(page => {
+        return page.path !== fileName
+      }),
+    )
 
-      store.mutations.setPages(
-        state.pages.filter(page => {
-          return page.path !== fileName
-        }),
+    databaseAPI
+      .deleteFile(
+        state.currentRepository.owner,
+        state.currentRepository.name,
+        fileName,
       )
-      databaseAPI
-        .deleteFile(login, state.currentRepository.name, fileName)
-        .then(() => {
-          state.buildStatus.setBuildingAndCheckStatusLater()
-        })
-        .catch(msg => handleErrors(msg))
-    })
+      .then(() => {
+        state.buildStatus.setBuildingAndCheckStatusLater()
+      })
+      .catch(msg => handleErrors(msg))
+
     page(
       `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
     )
@@ -157,25 +157,21 @@ export default ({ querystring }) => {
         }
       }
 
-      Promise.resolve(state.login).then((login) => {
-        if (!login) return page('/')
-
-        databaseAPI
-          .writeFile(
-            login,
-            state.currentRepository.name,
-            fileName,
-            finalContent,
-            message,
+      databaseAPI
+        .writeFile(
+          state.currentRepository.owner,
+          state.currentRepository.name,
+          fileName,
+          finalContent,
+          message,
+        )
+        .then(() => {
+          state.buildStatus.setBuildingAndCheckStatusLater()
+          page(
+            `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
           )
-          .then(() => {
-            state.buildStatus.setBuildingAndCheckStatusLater()
-            page(
-              `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-            )
-          })
-          .catch(msg => handleErrors(msg))
-      })
+        })
+        .catch(msg => handleErrors(msg))
     },
   )
 }

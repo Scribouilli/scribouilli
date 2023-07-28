@@ -60,7 +60,7 @@ class DatabaseAPI {
 
   getCurrentUserRepositories() {
     return this.callGithubAPI(
-      `https://api.github.com/user/repos?sort=updated&affiliation=owner&visibility=public`,
+      `https://api.github.com/user/repos?sort=updated&visibility=public`,
     ).then(response => {
       return response.json()
     })
@@ -196,18 +196,19 @@ class DatabaseAPI {
    * Alors, on doit passer le repoName
    *
    * @param {string} login
+   * @param {string} owner
    * @param {string} repoName
    * @param {string} email
    * @returns {Promise<void>}
    */
-  async setAuthor(login, repoName, email) {
-    if (!login || !repoName || !email) {
+  async setAuthor(login, owner, repoName, email) {
+    if (!login || !owner || !repoName || !email) {
       return
     }
 
-    const repoDir = this.repoDir(login, repoName)
+    const repoDir = this.repoDir(owner, repoName)
 
-    await this.cloneIfNeeded(login, repoName)
+    await this.cloneIfNeeded(owner, repoName)
 
     await git.setConfig({
       fs: this.fs,
