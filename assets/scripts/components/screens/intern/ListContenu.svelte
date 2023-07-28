@@ -2,7 +2,7 @@
   import databaseAPI from '../../../databaseAPI'
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
-  import { makeFrontMatterYAMLJsaisPasQuoiLa } from '../../../utils'
+  import { makePageFrontMatter } from '../../../utils'
 
   export let buildStatus
   export let listContenu = []
@@ -21,7 +21,7 @@
 
   let modification = false
 
-  const changeOrder = async e => {
+  const editClick = async e => {
     if (modification) {
       for (let page of listContenu) {
         await databaseAPI.writeFile(
@@ -30,10 +30,10 @@
           page.path,
           `${
             page.title
-              ? makeFrontMatterYAMLJsaisPasQuoiLa(
+              ? makePageFrontMatter(
                   page.title,
-                  true,
                   page.index,
+                  page.inMenu,
                 ) + '\n'
               : ''
           }${page.content}`,
@@ -67,6 +67,15 @@
         <ul>
           {#each listContenu as contenu}
             <li>
+              {#if modification}
+                <label>
+                  <input
+                    aria-label="Activation de la page"
+                    type="checkbox"
+                    bind:checked={contenu.inMenu}
+                  />
+                </label>
+              {/if}
               <span>{contenu.title}</span>
               {#if modification}
                 <label>
@@ -89,11 +98,11 @@
           {/each}
         </ul>
         {#if allowModification}
-          <button class="btn btn_small btn_secondary" on:click={changeOrder}
+          <button class="btn btn_small btn_secondary" on:click={editClick}
             >{#if modification}
               Enregistrer
             {:else}
-              Changer l'ordre des pages
+              Gérer les pages
             {/if}</button
           >
         {/if}
