@@ -10,6 +10,7 @@
   export let currentRepository
 
   import { createEventDispatcher } from 'svelte'
+  import marked from 'marked';
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
   import databaseAPI from '../../../databaseAPI'
@@ -18,6 +19,8 @@
 
   let image
   let imageMd = ''
+
+  let preview = 'dsds';
 
   let file = {
     fileName: '',
@@ -98,6 +101,16 @@
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
     }
   }
+
+  $: {
+    try {
+
+      preview = marked.parse(file.content);
+    } catch (e) {
+      preview = 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.';
+    }
+  }
+
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -186,6 +199,12 @@
               rows="10"
             />
           </div>
+          {#if preview}
+            <div class="preview">
+              <h4>Aperçu</h4>
+              <div>{@html preview}</div>
+            </div>
+          {/if}
           <div class="actions-zone">
             <a href={listPrefix} class="btn__retour" on:click={onBackClick}
               >Retour</a
@@ -258,6 +277,11 @@
 
   .content {
     margin-top: 2rem;
+  }
+  .preview > div {
+    margin: 0.5em 0;
+    padding: 0.5em;
+    background-color: white;
   }
 
   .actions-zone {
