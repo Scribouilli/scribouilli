@@ -106,8 +106,26 @@ const store = Store({
     setBuildStatus(state, buildStatus) {
       state.buildStatus = buildStatus
     },
+    /**
+     * @param {ScribouilliState} state
+     * @param {{ login: string, repos: any[] }} params
+     */
     setReposForAccount(state, { login, repos }) {
       state.reposByAccount[login] = repos
+        // on place ses propres dépôts avant les dépôts des autres
+        .sort((a, b) => {
+          if (state.login && typeof state.login === 'string') {
+            if (a.owner.login != b.owner.login) {
+              if (a.owner.login === state.login) {
+                return -1
+              } else {
+                return 1
+              }
+            }
+          }
+
+          return 0
+        })
     },
     setTheme(state, css) {
       state.theme.css = css
