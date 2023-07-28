@@ -22,9 +22,8 @@ permalink: /articles/
   Articles
 </h1>
 <aside>
-  <a href="{{ '/feed.xml' | relative_url }}">S'abonner via le flux RSS</a>
-  &mdash;
-  <a href="https://flus.fr/carnet/a-quoi-servent-les-flux.html">C'est quoi ?</a>
+  S'abonner via le <a href="{{ '/feed.xml' | relative_url }}">flux RSS</a>
+  (<a href="https://flus.fr/carnet/a-quoi-servent-les-flux.html">c'est quoi ?</a>)
 </aside>
 
 {% for post in site.posts %}
