@@ -35,7 +35,7 @@ const makeMapStateToProps = fileName => state => {
           title: data?.title,
           index: data?.order,
           previousTitle: data?.title,
-          inMenu: true,
+          hideMenu: false,
         }
       } catch (errorMessage) {
         logMessage(errorMessage, 'routes/atelier-pages.js:makeMapStateToProps')
@@ -60,7 +60,7 @@ const makeMapStateToProps = fileName => state => {
         content: '',
         previousTitle: undefined,
         previousContent: undefined,
-        inMenu: true,
+        hideMenu: false,
       }),
       makeFileNameFromTitle: makeFileNameFromTitle,
       contenus: state.pages,

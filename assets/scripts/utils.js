@@ -94,18 +94,19 @@ export function makeArticleFileName(title, date) {
  * 
  * @param {string} title 
  * @param {number?} index 
- * @param {boolean} inMenu 
+ * @param {boolean} hideMenu 
  * @returns {string}
  */
 export function makePageFrontMatter(
   title,
-  index = null,
-  inMenu = true){
+  index = 1,
+  hideMenu = false,
+) {
     return [
       '---',
       'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
       'order: ' + index,
-      'in_menu: ' + inMenu,
+      'hide_menu: ' + hideMenu,
       '---',
     ].join('\n')
 }

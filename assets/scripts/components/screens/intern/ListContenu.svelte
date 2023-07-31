@@ -33,7 +33,7 @@
               ? makePageFrontMatter(
                   page.title,
                   page.index,
-                  page.inMenu,
+                  page.hideMenu,
                 ) + '\n'
               : ''
           }${page.content}`,
@@ -67,26 +67,29 @@
         <ul>
           {#each listContenu as contenu}
             <li>
-              {#if modification}
-                <label>
-                  <input
-                    aria-label="Activation de la page"
-                    type="checkbox"
-                    bind:checked={contenu.inMenu}
-                  />
-                </label>
-              {/if}
               <span>{contenu.title}</span>
               {#if modification}
-                <label>
-                  <input
-                    aria-label="Ordre de la page"
-                    type="number"
-                    min="1"
-                    max={store.state.pages.length}
-                    bind:value={contenu.index}
-                  />
-                </label>
+                <div class="gestionMenu">
+                  <label>
+                    <input
+                      class="order"
+                      aria-label="Ordre de la page"
+                      type="number"
+                      min="1"
+                      max={store.state.pages.length}
+                      bind:value={contenu.index}
+                    />
+                  </label>
+                  <label>
+                    <input
+                      class="inMenu"
+                      aria-label="Activation de la page"
+                      type="checkbox"
+                      bind:checked={contenu.hideMenu}
+                    />
+                    Cacher dans le menu
+                  </label>
+                </div>
               {:else}
                 <a
                   href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
@@ -131,6 +134,26 @@
         border-top: 1px solid black;
       }
 
+      .gestionMenu {
+        label {
+          display: flex;
+          align-items: center;
+          font-weight: normal;
+          font-size: 1rem;
+          justify-content: center;
+        }
+        .order {
+          max-width: 3em;
+        }
+
+        .inMenu {
+          display: block;
+          width: auto;
+          margin-right: 0.5em;
+          margin-top: 0.5em;
+        }
+      }
+
       a::before {
         content: ' ';
         display: block;
@@ -142,8 +165,6 @@
       }
 
       label {
-        width: 3em;
-
         input {
           width: 100%;
         }
