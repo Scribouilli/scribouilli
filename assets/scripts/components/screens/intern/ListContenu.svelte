@@ -67,15 +67,6 @@
         <ul>
           {#each listContenu as contenu}
             <li>
-              {#if modification}
-                <label>
-                  <input
-                    aria-label="Activation de la page"
-                    type="checkbox"
-                    bind:checked={contenu.inMenu}
-                  />
-                </label>
-              {/if}
               <span>{contenu.title}</span>
               {#if modification}
                 <div class="gestionMenu">
