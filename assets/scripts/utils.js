@@ -98,10 +98,17 @@ export function makeArticleFileName(title, date) {
 export function makeFrontMatterYAMLJsaisPasQuoiLa(
   title,
   pages = false,
-  index = 1,
+  index = null,
 ) {
   if (pages) {
-    console.log('index : ', index)
+    //s'il n'y a pas d'order, on n'en rajoute pas automatiquement
+    if (index === null || index === undefined) {
+      return [
+        '---',
+        'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
+        '---',
+      ].join('\n')
+    }
     return [
       '---',
       'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
