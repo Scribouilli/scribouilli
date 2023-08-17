@@ -33,9 +33,7 @@ const makeMapStateToProps = fileName => state => {
           content: markdownContent,
           previousContent: markdownContent,
           title: data?.title,
-          index:
-            data?.order ??
-            store.state.pages.findIndex(p => p.path == fileName) + 1,
+          index: data?.order,
           previousTitle: data?.title,
         }
       } catch (errorMessage) {
