@@ -71,6 +71,7 @@
               {#if modification}
                 <div class="gestionMenu">
                   <label>
+                    Ordre
                     <input
                       class="order"
                       aria-label="Ordre de la page"
@@ -81,13 +82,13 @@
                     />
                   </label>
                   <label>
+                    Cacher dans le menu
                     <input
                       class="inMenu"
                       aria-label="Activation de la page"
                       type="checkbox"
                       bind:checked={contenu.hideMenu}
                     />
-                    Cacher dans le menu
                   </label>
                 </div>
               {:else}
@@ -105,7 +106,7 @@
             >{#if modification}
               Enregistrer
             {:else}
-              Gérer les pages
+              Modifier le menu
             {/if}</button
           >
         {/if}
@@ -119,7 +120,7 @@
     margin: auto;
     margin-bottom: 4rem;
     text-align: left;
-    width: 22em;
+    width: 25em;
 
     li {
       font-size: 1.3rem;
@@ -140,7 +141,7 @@
           align-items: center;
           font-weight: normal;
           font-size: 1rem;
-          justify-content: center;
+          margin-top: 0.5em;
         }
         .order {
           max-width: 3em;
@@ -167,6 +168,7 @@
       label {
         input {
           width: 100%;
+          margin-left: 0.5em;
         }
       }
     }
