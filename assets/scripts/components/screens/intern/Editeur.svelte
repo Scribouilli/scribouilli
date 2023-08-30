@@ -10,6 +10,8 @@
   export let currentRepository
 
   import { createEventDispatcher } from 'svelte'
+  import marked from 'marked'
+  import * as DOMPurify from 'dompurify'
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
   import databaseAPI from '../../../databaseAPI'
@@ -19,6 +21,8 @@
 
   let image
   let imageMd = ''
+
+  let preview = ''
 
   let file = {
     fileName: '',
@@ -99,6 +103,16 @@
         false, //l'image sera push avec le reste de l'article quand celui-ci sera enregistré
       )
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
+    }
+  }
+
+  $: {
+    try {
+      const html = marked.parse(file.content)
+      preview = DOMPurify.sanitize(html)
+    } catch (e) {
+      preview =
+        'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
     }
   }
 </script>
@@ -189,6 +203,12 @@
               rows="10"
             />
           </div>
+          {#if preview}
+            <div class="preview">
+              <h4>Aperçu</h4>
+              <div>{@html preview}</div>
+            </div>
+          {/if}
           <div class="actions-zone">
             <a href={listPrefix} class="btn__retour" on:click={onBackClick}
               >Retour</a
@@ -261,6 +281,11 @@
 
   .content {
     margin-top: 2rem;
+  }
+  .preview > div {
+    margin: 0.5em 0;
+    padding: 0.5em;
+    background-color: white;
   }
 
   .actions-zone {
