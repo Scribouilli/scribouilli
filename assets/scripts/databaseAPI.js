@@ -345,7 +345,7 @@ class DatabaseAPI {
     await this.cloneIfNeeded(login, repoName)
 
     if (typeof fileName !== 'string') {
-      await this.deleteFile(login, repoName, fileName.old)
+      await this.deleteFile(login, repoName, fileName.old, false)
       fileName = fileName.new
     }
 
