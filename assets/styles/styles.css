@@ -66,6 +66,11 @@ iframe {
   border-collapse: collapse;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /* DES VRAIS STYLES */
 :root {
   --underline-max-width: 100%;
