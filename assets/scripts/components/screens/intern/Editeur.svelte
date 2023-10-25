@@ -135,6 +135,7 @@
               id="title"
               required
             />
+            <p>Attention, si le titre contient un <code>/</code>, <code>?</code>, <code>#</code>, ça peut ne pas marcher.</p>
           </div>
 
           <div class="accordion aide-editeur">
