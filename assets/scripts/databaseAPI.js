@@ -7,6 +7,8 @@ import http from 'isomorphic-git/http/web'
 
 import store from './store.js'
 
+import 'types.js'
+
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 class DatabaseAPI {
@@ -36,12 +38,22 @@ class DatabaseAPI {
     })
   }
 
+  /**
+   * 
+   * @returns {Promise<GithubUserEmails[]>}
+   */
   getUserEmails() {
     return this.callGithubAPI('https://api.github.com/user/emails').then(r =>
       r.json(),
     )
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
   getRepository(login, repoName) {
     return this.callGithubAPI(
       `https://api.github.com/repos/${login}/${repoName}`,
@@ -66,6 +78,12 @@ class DatabaseAPI {
     })
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} newRepoName 
+   * @returns 
+   */
   async createDefaultRepository(login, newRepoName) {
     let res = await this.callGithubAPI(
       `https://api.github.com/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
@@ -93,6 +111,10 @@ class DatabaseAPI {
   /**
    * @summary Put topic in GitHub repository to find more easily the websites.
    *          Also configure some other options
+   * 
+   * @param {string} login 
+   * @param {string} newRepoName 
+   * @returns {Promise<any>}
    */
   async setupRepo(login, newRepoName) {
     await this.callGithubAPI(
@@ -128,6 +150,12 @@ class DatabaseAPI {
     )
   }
 
+  /**
+   * 
+   * @param {string} account 
+   * @param {string} repoName 
+   * @returns 
+   */
   createRepoGithubPages(account, repoName) {
     return this.callGithubAPI(
       `https://api.github.com/repos/${account}/${repoName}/pages`,
@@ -261,6 +289,12 @@ class DatabaseAPI {
     return content
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
   getGitHubPagesSite(login, repoName) {
     return this.callGithubAPI(
       `https://api.github.com/repos/${login}/${repoName}/pages`,
@@ -269,12 +303,22 @@ class DatabaseAPI {
     })
   }
 
+  /**
+   * 
+   * @param {GithubDeployment} deployment 
+   * @returns 
+   */
   getDeploymentStatus(deployment) {
     return this.callGithubAPI(deployment.statuses_url).then(response => {
       return response.json()
     })
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   */
   async push(login, repoName) {
     await git.push({
       fs: this.fs,
@@ -319,6 +363,12 @@ class DatabaseAPI {
     }
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
   async deleteRepository(login, repoName) {
     await this.fs.promises.unlink(this.repoDir(login, repoName))
     return await this.callGithubAPI(
@@ -375,6 +425,13 @@ class DatabaseAPI {
     }
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @param {string} content 
+   * @returns 
+   */
   async writeCustomCSS(login, repoName, content) {
     return this.writeFile(
       login,
@@ -435,11 +492,19 @@ class DatabaseAPI {
     }
   }
 
-  getLastDeployment(login, repoName) {
+  /**
+   * Non-utilisée et sûrement fausse pour le moment
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
+  /*getLastDeployment(login, repoName) {
     return this.callGithubAPI(
       `https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`,
-    ).then(deployments => deployments[0])
-  }
+    )
+    .then(deployments => deployments[0])
+  }*/
 
   /**
    *
@@ -454,6 +519,12 @@ class DatabaseAPI {
     return stat.isFile()
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
   async checkRepoReady(login, repoName) {
     try {
       const appel = await this.callGithubAPI(
@@ -465,6 +536,12 @@ class DatabaseAPI {
     }
   }
 
+  /**
+   * 
+   * @param {string} login 
+   * @param {string} repoName 
+   * @returns 
+   */
   async checkGithubPages(login, repoName) {
     try {
       const appel = await this.getGitHubPagesSite(login, repoName)
@@ -479,6 +556,8 @@ class DatabaseAPI {
    *
    * It handles access_token errors
    *
+   * @param {string} url 
+   * @param {RequestInit} requestParams
    */
   callGithubAPI(
     url,
