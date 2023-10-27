@@ -4,3 +4,5 @@
 npx lint-staged
 
 npx svelte-check
+
+npx tsc
