@@ -124,8 +124,19 @@ export function makeArticleFrontMatter(title){
   ].join('\n')
 }
 
+/**
+ * 
+ * @param {string} errorMessage 
+ * @param {string} caller 
+ * @param {'log' | 'warn' | 'error'} level 
+ */
 export const logMessage = (errorMessage, caller = 'unknown', level = 'log') => {
   console[level](`[${level}] [caller: ${caller}] ${errorMessage}`)
 }
 
+/**
+ * 
+ * @param {number} ms 
+ * @returns {Promise<undefined>}
+ */
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
