@@ -137,6 +137,6 @@ export const logMessage = (errorMessage, caller = 'unknown', level = 'log') => {
 /**
  * 
  * @param {number} ms 
- * @returns {Promise<undefined>}
+ * @returns {Promise<void>}
  */
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
