@@ -16,15 +16,18 @@ import AtelierPages from '../components/screens/AtelierPages.svelte'
  */
 const mapStateToProps = state => {
   return {
-    pages: state.pages.filter(p => p.path !== 'blog.md'),
+    pages: state.pages && state.pages.filter(p => p.path !== 'blog.md'),
     buildStatus: state.buildStatus,
     currentRepository: state.currentRepository,
     showArticles:
-      state.pages.find(p => p.path === 'blog.md') !== undefined ||
-      state.articles?.length > 0,
+      state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
+      state.articles && state.articles.length > 0,
   }
 }
 
+/**
+ * @param {import('page').Context} _
+ */
 export default async ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring).then(getCurrentRepoPages)
 
