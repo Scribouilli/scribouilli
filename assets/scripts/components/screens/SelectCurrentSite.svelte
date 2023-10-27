@@ -6,12 +6,19 @@
   import Loader from "./../loaders/Loader.svelte";
   import { setupRepo } from "../../actions";
 
+  /** @type {string | Promise<string> | undefined} */
   export let currentAccount
+
+  /** typedef {import("../../../types").GithubRepository} GithubRepository */
+  /** @type {GithubRepository[]} */
   export let currentAccountRepositories;
 
+
+  /** @type {GithubRepository} */
   let repo
   let loading = false;
 
+  // @ts-ignore
   const displayRepoName = repo => {
     if (repo.owner.login === currentAccount) {
       return repo.name
@@ -20,6 +27,7 @@
     }
   }
 
+  // @ts-ignore
   const onSubmit = (e) => {
     e.preventDefault();
 

@@ -1,20 +1,17 @@
 {
-  "include": [
-    "assets/scripts/**/*.js"
-  ],
-  "exclude": [
-      "node_modules"
-  ],
+  "include": ["declarations.d.ts", "assets/scripts/**/*.js"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
-      "allowJs": true,
-      "checkJs": true,
-      "noEmit": true,
-      "module": "esnext",
-      "strict": true,
-      "skipLibCheck": true,
-      "moduleResolution":"bundler",
-      "target": "esnext",
-      "lib": ["ES2022", "dom"],
-      "downlevelIteration": true
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "module": "esnext",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "lib": ["ES2022", "dom", "dom.iterable"],
+    "downlevelIteration": true,
+    "types": ["node"]
   }
 }

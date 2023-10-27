@@ -19,6 +19,11 @@ import { setCurrentRepositoryFromQuerystring } from '../actions'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
 
+/**
+ * 
+ * @param {string} fileName 
+ * @returns {(state: import('../store').ScribouilliState) => any}
+ */
 const makeMapStateToProps = fileName => state => {
   if (fileName) {
     // Display existing file
@@ -46,8 +51,8 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles?.length > 0,
+        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
+        state.articles && state.articles.length > 0,
       currentRepository: state.currentRepository,
     }
   } else {
@@ -63,13 +68,16 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles?.length > 0,
+        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
+        state.articles && state.articles.length > 0,
       currentRepository: state.currentRepository,
     }
   }
 }
 
+/**
+ * @param {import('page').Context} _
+ */
 export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 

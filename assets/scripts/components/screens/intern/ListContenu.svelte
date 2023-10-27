@@ -3,24 +3,44 @@
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils'
+  import '../../../../types.js'
 
+  /** @type any */
   export let buildStatus
+
+  /** @type {FileContenu[]} */
   export let listContenu = []
+
+  /** @type {string} */
   export let title
+
+  /** @type {string} */
   export let atelierPrefix
+
+  /** @type {string} */
   export let newContentButtonText
+
+  /** @type {boolean | undefined} */
   export let showArticles
+
+  /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
+  /** @type ScribouilliState["currentRepository"] */
   export let currentRepository
+
+  /** @type {boolean} */
   export let allowModification
 
+  /** @type {string} */
   let repoName
   $: repoName = currentRepository.name
 
+  /** @type {string} */
   let account
   $: account = currentRepository.owner
 
   let modification = false
 
+  // @ts-ignore
   const editClick = async e => {
     if (modification) {
       for (let page of listContenu) {
@@ -77,7 +97,7 @@
                       aria-label="Ordre de la page dans le menu"
                       type="number"
                       min="1"
-                      max={store.state.pages.length}
+                      max={store.state.pages?.length}
                       bind:value={contenu.index}
                     />
                   </label>
