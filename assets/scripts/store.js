@@ -1,5 +1,6 @@
 //@ts-check
 
+// @ts-ignore
 import Store from 'baredux'
 
 import {
@@ -23,7 +24,7 @@ import {
  * @property {Promise<string> | string} [origin]
  * @property {CurrentRepository} currentRepository
  * @property {any} reposByAccount
- * @property {any[]} pages
+ * @property {any[]} [pages]
  * @property {any[]} [articles]
  * @property {any} buildStatus
  * @property {string} basePath
@@ -68,15 +69,35 @@ const store = Store({
     },
   },
   mutations: {
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {string} login 
+     */
     setLogin(state, login) {
       state.login = login
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {string} email 
+     */
     setEmail(state, email) {
       state.email = email
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {CurrentRepository} repository 
+     */
     setCurrentRepository(state, repository) {
       state.currentRepository = repository
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {any[]} pages 
+     */
     setPages(state, pages) {
       state.pages = pages.sort((pageA, pageB) => {
         const diffIndex = pageA.index - pageB.index
@@ -94,6 +115,11 @@ const store = Store({
         return diffIndex
       })
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {any[]} articles 
+     */
     setArticles(state, articles) {
       state.articles = articles?.sort((pageA, pageB) => {
         if (pageA.path < pageB.path) {
@@ -102,11 +128,16 @@ const store = Store({
         if (pageA.path > pageB.path) {
           return 1
         }
-        if (pageA.path === pageB.path) {
-          return 0
-        }
+        
+        // pageA.path === pageB.path
+        return 0
       })
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {any} buildStatus 
+     */
     setBuildStatus(state, buildStatus) {
       state.buildStatus = buildStatus
     },
@@ -131,14 +162,26 @@ const store = Store({
           return 0
         })
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     * @param {string} css 
+     */
     setTheme(state, css) {
       state.theme.css = css
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     */
     removeSite(state) {
       state.pages = undefined
       state.articles = undefined
-      state.siteRepoConfig = undefined
     },
+    /**
+     * 
+     * @param {ScribouilliState} state 
+     */
     invalidateToken(state) {
       state.accessToken = undefined
       localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
