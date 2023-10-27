@@ -55,15 +55,21 @@ Voir `databaseAPI.getLastDeployment(login, repoName)` et `databaseAPI.getDeploym
 */
 
 /**
+ * @typedef {"building" | "built" | "errored"} BuildStatus
+ */
+
+/**
  *
  * @param {string} owner
  * @param {string} repoName
  * @returns
  */
 export default function (owner, repoName) {
-  /** @type {"building" | "built" | "errored"} */
+  /** @type {BuildStatus} */
   let repoStatus = 'building'
-  let reaction = undefined
+  /** @type {(status: BuildStatus) => any} */
+  let reaction
+  /** @type {ReturnType<setTimeout> | undefined} */
   let timeout
 
   function scheduleCheck(delay = 5000) {
@@ -79,6 +85,10 @@ export default function (owner, repoName) {
     get status() {
       return repoStatus
     },
+    /**
+     * 
+     * @param {(status: BuildStatus) => any} callback 
+     */
     subscribe(callback) {
       console.log('subscribe reaction.. ', callback)
       reaction = callback
@@ -116,6 +126,7 @@ export default function (owner, repoName) {
     },
     setBuildingAndCheckStatusLater(t = 30000) {
       repoStatus = 'building'
+      // @ts-ignore
       clearTimeout(timeout)
       timeout = undefined
       scheduleCheck(t)
