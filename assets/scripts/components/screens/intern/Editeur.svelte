@@ -248,12 +248,6 @@
 </Skeleton>
 
 <style lang="scss">
-  div {
-    & + p {
-      margin-top: 0.4rem;
-    }
-  }
-
   .accordion {
     margin-top: 3rem;
   }

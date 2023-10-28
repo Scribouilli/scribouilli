@@ -71,11 +71,11 @@ Pour rendre accessible une nouvelle route :
 
 ## Développement
 
-- Forker le repo
-- modifier les settings
-  - donner les droits en écriture a _github action_
-  - pour déployer la branche `online`
-- ajouter votre url (ex: yaf.github.io) dans [Scribouilli/toctoctoc/allowlist.csv](https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv)
+- Forker le repo sur votre compte
+- Modifier les settings
+  - Donner les droits en écriture a _github action_
+  - Pour déployer la branche `online`
+- Ajouter votre origine github pages (ex: `yaf.github.io``) dans [Scribouilli/toctoctoc/allowlist.csv](https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv)
 
 Voilà à quoi ça peut ressembler : [github.com/yaf/scribouilli](https://github.com/yaf/scribouilli)
 
