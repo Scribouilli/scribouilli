@@ -71,10 +71,10 @@
               {#if modification}
                 <div class="gestionMenu">
                   <label>
-                    Ordre
+                    Ordre de la page dans le menu
                     <input
                       class="order"
-                      aria-label="Ordre de la page"
+                      aria-label="Ordre de la page dans le menu"
                       type="number"
                       min="1"
                       max={store.state.pages.length}
@@ -82,10 +82,10 @@
                     />
                   </label>
                   <label>
-                    Cacher dans le menu
+                    Afficher dans le menu
                     <input
                       class="inMenu"
-                      aria-label="Activation de la page"
+                      aria-label="Affichage de la page dans le menu"
                       type="checkbox"
                       bind:checked={contenu.inMenu}
                     />
