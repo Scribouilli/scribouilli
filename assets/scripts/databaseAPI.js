@@ -412,6 +412,8 @@ class DatabaseAPI {
           return {
             title: data?.title,
             index: data?.order,
+            // no `in_menu` proprerty is interpreted as the page should be in the menu
+            inMenu: data?.in_menu === true || data?.in_menu === undefined,
             path,
             content: markdownContent,
           }

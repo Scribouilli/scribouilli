@@ -11,7 +11,7 @@ import {
   handleErrors,
   logMessage,
   makeFileNameFromTitle,
-  makeFrontMatterYAMLJsaisPasQuoiLa,
+  makePageFrontMatter,
 } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
@@ -35,6 +35,7 @@ const makeMapStateToProps = fileName => state => {
           title: data?.title,
           index: data?.order,
           previousTitle: data?.title,
+          inMenu: true,
         }
       } catch (errorMessage) {
         logMessage(errorMessage, 'routes/atelier-pages.js:makeMapStateToProps')
@@ -59,6 +60,7 @@ const makeMapStateToProps = fileName => state => {
         content: '',
         previousTitle: undefined,
         previousContent: undefined,
+        inMenu: true,
       }),
       makeFileNameFromTitle: makeFileNameFromTitle,
       contenus: state.pages,
@@ -164,7 +166,7 @@ export default ({ querystring }) => {
 
       const finalContent = `${
         title
-          ? makeFrontMatterYAMLJsaisPasQuoiLa(title, true, index) + '\n'
+          ? makePageFrontMatter(title, index) + '\n'
           : ''
       }${content} `
 

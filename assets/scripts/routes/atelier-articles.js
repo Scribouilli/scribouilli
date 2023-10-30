@@ -8,7 +8,7 @@ import {
   checkRepositoryAvailabilityThen,
   handleErrors,
   makeArticleFileName,
-  makeFrontMatterYAMLJsaisPasQuoiLa,
+  makeArticleFrontMatter,
 } from '../utils'
 
 import databaseAPI from '../databaseAPI'
@@ -145,7 +145,7 @@ export default ({ querystring }) => {
 
       const message = `création de l'article ${title || 'index.md'}`
       const finalContent = `${
-        title ? makeFrontMatterYAMLJsaisPasQuoiLa(title) + '\n' : ''
+        title ? makeArticleFrontMatter(title) + '\n' : ''
       }${content}`
 
       let newArticles =

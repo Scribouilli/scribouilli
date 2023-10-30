@@ -91,31 +91,32 @@ export function makeArticleFileName(title, date) {
 }
 
 /**
- *
- * @param {string} title
+ * 
+ * @param {string} title 
+ * @param {number?} index 
+ * @param {boolean} inMenu 
  * @returns {string}
  */
-export function makeFrontMatterYAMLJsaisPasQuoiLa(
+export function makePageFrontMatter(
   title,
-  pages = false,
-  index = null,
+  index = 1,
+  inMenu = true,
 ) {
-  if (pages) {
-    //s'il n'y a pas d'order, on n'en rajoute pas automatiquement
-    if (index === null || index === undefined) {
-      return [
-        '---',
-        'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
-        '---',
-      ].join('\n')
-    }
     return [
       '---',
       'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
       'order: ' + index,
+      'in_menu: ' + inMenu,
       '---',
     ].join('\n')
-  }
+}
+
+/**
+ * 
+ * @param {string} title 
+ * @returns {string}
+ */
+export function makeArticleFrontMatter(title){
   return [
     '---',
     'title: ' + '"' + title.replace(/"/g, '\\"') + '"',

@@ -2,7 +2,7 @@
   import databaseAPI from '../../../databaseAPI'
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
-  import { makeFrontMatterYAMLJsaisPasQuoiLa } from '../../../utils'
+  import { makePageFrontMatter } from '../../../utils'
 
   export let buildStatus
   export let listContenu = []
@@ -21,7 +21,7 @@
 
   let modification = false
 
-  const changeOrder = async e => {
+  const editClick = async e => {
     if (modification) {
       for (let page of listContenu) {
         await databaseAPI.writeFile(
@@ -30,10 +30,10 @@
           page.path,
           `${
             page.title
-              ? makeFrontMatterYAMLJsaisPasQuoiLa(
+              ? makePageFrontMatter(
                   page.title,
-                  true,
                   page.index,
+                  page.inMenu,
                 ) + '\n'
               : ''
           }${page.content}`,
@@ -69,15 +69,28 @@
             <li>
               <span>{contenu.title}</span>
               {#if modification}
-                <label>
-                  <input
-                    aria-label="Ordre de la page"
-                    type="number"
-                    min="1"
-                    max={store.state.pages.length}
-                    bind:value={contenu.index}
-                  />
-                </label>
+                <div class="gestionMenu">
+                  <label>
+                    Ordre de la page dans le menu
+                    <input
+                      class="order"
+                      aria-label="Ordre de la page dans le menu"
+                      type="number"
+                      min="1"
+                      max={store.state.pages.length}
+                      bind:value={contenu.index}
+                    />
+                  </label>
+                  <label>
+                    Afficher dans le menu
+                    <input
+                      class="inMenu"
+                      aria-label="Affichage de la page dans le menu"
+                      type="checkbox"
+                      bind:checked={contenu.inMenu}
+                    />
+                  </label>
+                </div>
               {:else}
                 <a
                   href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
@@ -89,11 +102,11 @@
           {/each}
         </ul>
         {#if allowModification}
-          <button class="btn btn_small btn_secondary" on:click={changeOrder}
+          <button class="btn btn_small btn_secondary" on:click={editClick}
             >{#if modification}
               Enregistrer
             {:else}
-              Changer l'ordre des pages
+              Modifier le menu
             {/if}</button
           >
         {/if}
@@ -107,7 +120,7 @@
     margin: auto;
     margin-bottom: 4rem;
     text-align: left;
-    width: 22em;
+    width: 25em;
 
     li {
       font-size: 1.3rem;
@@ -122,6 +135,26 @@
         border-top: 1px solid black;
       }
 
+      .gestionMenu {
+        label {
+          display: flex;
+          align-items: center;
+          font-weight: normal;
+          font-size: 1rem;
+          margin-top: 0.5em;
+        }
+        .order {
+          max-width: 3em;
+        }
+
+        .inMenu {
+          display: block;
+          width: auto;
+          margin-right: 0.5em;
+          margin-top: 0.5em;
+        }
+      }
+
       a::before {
         content: ' ';
         display: block;
@@ -133,10 +166,9 @@
       }
 
       label {
-        width: 3em;
-
         input {
           width: 100%;
+          margin-left: 0.5em;
         }
       }
     }
