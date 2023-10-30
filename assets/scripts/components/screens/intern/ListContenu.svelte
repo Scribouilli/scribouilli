@@ -33,7 +33,7 @@
               ? makePageFrontMatter(
                   page.title,
                   page.index,
-                  page.hideMenu,
+                  page.inMenu,
                 ) + '\n'
               : ''
           }${page.content}`,
@@ -87,7 +87,7 @@
                       class="inMenu"
                       aria-label="Activation de la page"
                       type="checkbox"
-                      bind:checked={contenu.hideMenu}
+                      bind:checked={contenu.inMenu}
                     />
                   </label>
                 </div>

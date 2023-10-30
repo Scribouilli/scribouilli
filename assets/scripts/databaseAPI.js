@@ -412,7 +412,7 @@ class DatabaseAPI {
           return {
             title: data?.title,
             index: data?.order,
-            hideMenu: data?.hide_menu,
+            inMenu: data?.in_menu,
             path,
             content: markdownContent,
           }
