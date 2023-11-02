@@ -31,7 +31,6 @@
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/dompurify": "^3.0.4",
-    "@types/marked": "^6.0.0",
     "@types/page": "^1.11.8",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
