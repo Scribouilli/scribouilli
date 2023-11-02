@@ -1,6 +1,7 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
 
+  /** @type {string} */
   export let href;
 </script>
 

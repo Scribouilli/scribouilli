@@ -123,6 +123,12 @@ export const getCurrentRepoArticles = () => {
     .catch(msg => handleErrors(msg))
 }
 
+/**
+ * 
+ * @param {string} owner 
+ * @param {string} repo 
+ * @returns {Promise<any>}
+ */
 export const setupRepo = (owner, repo) => databaseAPI.setupRepo(owner, repo)
 
 /**
@@ -134,6 +140,7 @@ export const setupRepo = (owner, repo) => databaseAPI.setupRepo(owner, repo)
  * but also the build status and the site repo config. If the user is not
  * logged in, it redirects to the authentication page.
  *
+ * @param {string} querystring
  * @returns {Promise<void>}
  */
 export const setCurrentRepositoryFromQuerystring = async querystring => {
@@ -208,13 +215,18 @@ export const setBuildStatus = (owner, repoName) => {
  */
 export const createRepositoryForCurrentAccount = async repoName => {
   const login = await store.state.login
+
+  if(!login){
+    throw new TypeError(`login manquant dans createRepositoryForCurrentAccount`)
+  }
+
   const escapedRepoName = repoName
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
-  const waitRepoReady = new Promise((resolve, reject) => {
+  const waitRepoReady = /** @type {Promise<void>} */(new Promise((resolve) => {
     const timer = setInterval(() => {
       databaseAPI.checkRepoReady(login, escapedRepoName).then(res => {
         if (res) {
@@ -223,9 +235,9 @@ export const createRepositoryForCurrentAccount = async repoName => {
         }
       })
     }, 1000)
-  })
+  }))
 
-  const waitGithubPages = new Promise((resolve, reject) => {
+  const waitGithubPages = /** @type {Promise<void>} */(new Promise((resolve) => {
     const timer = setInterval(() => {
       databaseAPI.checkGithubPages(login, escapedRepoName).then(res => {
         if (res) {
@@ -234,7 +246,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
         }
       })
     }, 5000)
-  })
+  }))
   return databaseAPI
     .createDefaultRepository(login, escapedRepoName)
     .then(() => {

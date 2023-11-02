@@ -3,19 +3,36 @@
 
   import Skeleton from '../Skeleton.svelte'
   import { createEventDispatcher } from 'svelte'
+  import '../../../types.js'
 
   const dispatch = createEventDispatcher()
   $: enabled = false
 
+  /** @type any */
   export let buildStatus
+
+  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
+  /** @type ScribouilliState["theme"] */
   export let theme
+
+  /** @type string} */
   export let deleteRepositoryUrl
+
+  /** @type boolean */
   export let blogEnabled
+
+  /** @type {boolean|undefined} */
   export let showArticles
+
+  /** @type ScribouilliState["currentRepository"] */
   export let currentRepository
 
   let notification = ''
 
+  /**
+   * @param {string} color
+   * @returns {boolean}
+   */
   const checkThemeColor = color => {
     const themeColor = theme.css?.replace(
       /(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs,
@@ -25,13 +42,17 @@
     return themeColor === color
   }
 
+  // @ts-ignore
   const saveTheme = e => {
     dispatch('update-theme', { theme })
     notification =
       'Le thème sera mis à jour après le déploiement des modifications (~ 2min)'
+
+    // @ts-ignore
     document.querySelector('body').scrollIntoView()
   }
 
+  // @ts-ignore
   const setColor = e => {
     theme.css = theme.css.replace(
       /(?<before>(.*)--couleur-primaire(.*))(#[a-fA-F0-9]{6})(?<after>;(.*))/gs,
@@ -39,10 +60,12 @@
     )
   }
 
+  // @ts-ignore
   const setTheme = e => {
     theme.css = e.target.value
   }
 
+  // @ts-ignore
   const toggleBlog = e => {
     dispatch('toggle-blog', { activated: e.target.checked })
     if (e.target.checked) {

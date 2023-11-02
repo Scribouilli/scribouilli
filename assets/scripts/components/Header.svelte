@@ -1,14 +1,22 @@
 <script>
-  // @ts-check
+
+  /** @type {any} */
   export let buildStatus
+
+  /** @typedef {import("./../store.js").ScribouilliState} ScribouilliState */
+  /** @type {ScribouilliState["currentRepository"] | undefined} */
   export let currentRepository
+
+  /** @type {boolean} */
   export let showArticles
 
+  /** @type {string} */
   let status
 
   $: status = buildStatus?.status
 
   if (buildStatus) {
+    // @ts-ignore
     buildStatus.subscribe(s => {
       if (s) {
         status = s
@@ -18,15 +26,23 @@
 
   $: buildStatusClass = buildStatus ? `build-${status}` : undefined
 
+  /** @type {string | undefined} */
   let publishedWebsiteURL
   $: publishedWebsiteURL = currentRepository?.publishedWebsiteURL
+
+  /** @type {string | undefined} */
   let repositoryURL
   $: repositoryURL = currentRepository?.repositoryURL
+
+  /** @type {string | undefined} */
   let repoName
   $: repoName = currentRepository?.name
+
+  /** @type {string | undefined} */
   let account
   $: account = currentRepository?.owner
 
+  /** @type {string | undefined} */
   $: homeURL =
     repoName && account
       ? `./atelier-list-pages?repoName=${repoName}&account=${account}`

@@ -1,12 +1,29 @@
 <script>
-  //@ts-check
+  import '../../../types.js'
+
+  /** @type Promise<EditeurFile> */
   export let fileP
+
+  /** @type any */
   export let buildStatus
+
+  /** @type {FileContenu[]} */
   export let contenus = []
+
+  /** @type {string} */
   export let editionTitle
+
+  /** @type {string} */
   export let listPrefix
+
+  /** @type {string} */
   export let deleteTitle
+
+  /** @type {boolean} */
   export let showArticles
+
+  /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
+  /** @type ScribouilliState["currentRepository"] */
   export let currentRepository
 
   import { createEventDispatcher } from 'svelte'
@@ -19,16 +36,19 @@
 
   const imageDirUrl = `https://github.com/${currentRepository.owner}/${currentRepository.name}/tree/main/images`
 
+  /** @type {FileList} */
   let image
   let imageMd = ''
 
   let preview = ''
 
+  /** @type {EditeurFile} */
   let file = {
     fileName: '',
     content: '',
     previousContent: undefined,
     title: '',
+    // @ts-ignore
     index: store.state.pages.length + 1,
     previousTitle: undefined,
   }
@@ -43,6 +63,7 @@
 
   const dispatch = createEventDispatcher()
 
+  // @ts-ignore
   const validateTitle = e => {
     const titleChanged = file.previousTitle?.trim() !== file.title.trim()
     if (
@@ -60,6 +81,7 @@
     e.target.setCustomValidity('')
   }
 
+  // @ts-ignore
   const onSubmit = e => {
     e.preventDefault()
 
@@ -75,9 +97,10 @@
     }
   }
 
+  // @ts-ignore
   const onBackClick = e => {
     if (
-      file.previousContent.trim() !== file.content.trim() ||
+      file.previousContent?.trim() !== file.content.trim() ||
       file.title?.trim() !== file.previousTitle?.trim()
     ) {
       if (
@@ -90,7 +113,8 @@
     }
   }
 
-  const imageSelect = async e => {
+  // @ts-ignore
+  const imageSelect = async () => {
     for (const img of image) {
       imageMd = 'Mise en ligne en cours…'
       const buffer = new Uint8Array(await img.arrayBuffer())

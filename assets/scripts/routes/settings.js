@@ -38,18 +38,26 @@ permalink: /articles/
 {% endfor %}
 `
 
+/**
+ * 
+ * @param {import('../store').ScribouilliState} state 
+ * @returns 
+ */
 function mapStateToProps(state) {
-  const blogFile = state.pages.find(p => p.path === 'blog.md')
+  const blogFile = state.pages && state.pages.find(p => p.path === 'blog.md')
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
     deleteRepositoryUrl: `https://github.com/${state.currentRepository.owner}/${state.currentRepository.name}/settings#danger-zone`,
     blogEnabled: blogFile !== undefined,
-    showArticles: blogFile !== undefined || state.articles?.length > 0,
+    showArticles: blogFile !== undefined || state.articles && state.articles?.length > 0,
     currentRepository: state.currentRepository,
   }
 }
 
+/**
+ * @param {import('page').Context} _
+ */
 export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
@@ -111,6 +119,7 @@ export default ({ querystring }) => {
         store.state.currentRepository.name,
       )
     } catch (msg) {
+      //@ts-ignore
       handleErrors(msg)
     }
   })

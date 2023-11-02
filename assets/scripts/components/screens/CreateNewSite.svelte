@@ -7,6 +7,7 @@
   let loading = false;
   let hasError = false
 
+  // @ts-ignore
   const onSubmit = (e) => {
     e.preventDefault();
 

@@ -16,14 +16,20 @@ import {
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
 
+
+/**
+ * 
+ * @param {string} fileName 
+ * @returns {(state: import('../store').ScribouilliState) => any}
+ */
 const makeMapStateToProps = fileName => state => {
   // Display existing file
   if (fileName) {
     const fileP = async function () {
       try {
         const content = await databaseAPI.getFile(
-          store.state.currentRepository.owner,
-          store.state.currentRepository.name,
+          state.currentRepository.owner,
+          state.currentRepository.name,
           fileName,
         )
         const { attributes: data, body: markdownContent } =
@@ -38,6 +44,7 @@ const makeMapStateToProps = fileName => state => {
           inMenu: true,
         }
       } catch (errorMessage) {
+        //@ts-ignore
         logMessage(errorMessage, 'routes/atelier-pages.js:makeMapStateToProps')
       }
     }
@@ -47,8 +54,8 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles?.length > 0,
+        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
+        state.articles && state.articles.length > 0,
       currentRepository: state.currentRepository,
     }
   } else {
@@ -56,7 +63,7 @@ const makeMapStateToProps = fileName => state => {
       fileP: Promise.resolve({
         fileName: '',
         title: '',
-        index: store.state.pages.length + 1,
+        index: state.pages && state.pages.length + 1,
         content: '',
         previousTitle: undefined,
         previousContent: undefined,
@@ -66,13 +73,16 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.pages,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles?.length > 0,
+        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
+        state.articles && state.articles.length > 0,
       currentRepository: state.currentRepository,
     }
   }
 }
 
+/**
+ * @param {import('page').Context} _
+ */
 export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
@@ -83,7 +93,7 @@ export default ({ querystring }) => {
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
-    props: mapStateToProps(store.state),
+    props: mapStateToProps(state),
   })
 
   replaceComponent(pageContenu, mapStateToProps)
@@ -91,7 +101,7 @@ export default ({ querystring }) => {
   // @ts-ignore
   pageContenu.$on('delete', () => {
     store.mutations.setPages(
-      state.pages.filter(page => {
+      state.pages && state.pages.filter(page => {
         return page.path !== fileName
       }),
     )

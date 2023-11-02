@@ -1,4 +1,4 @@
-import page from 'page'
+//@ts-check
 
 import store from "../store.js";
 import {
@@ -9,11 +9,17 @@ import { svelteTarget } from "../config.js";
 import { replaceComponent } from "../routeComponentLifeCycle.js";
 import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
 
+/**
+ * 
+ * @param {import('../store').ScribouilliState} state 
+ * @returns 
+ */
 const mapStateToProps = (state) => {
     const { login, reposByAccount } = state;
 
     return {
       currentAccount: login,
+      // @ts-ignore
       currentAccountRepositories: reposByAccount[login],
     };
 }
