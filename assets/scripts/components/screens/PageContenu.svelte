@@ -1,6 +1,6 @@
 <script>
   import {makeAtelierListPageURL} from '../../routes/atelier-list-pages.js'
-  import '../../../types.js'
+  import './../../types.js'
 
   /** @type {Promise<EditeurFile>} */
   export let fileP;

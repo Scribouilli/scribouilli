@@ -3,7 +3,7 @@
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils'
-  import '../../../../types.js'
+  import './../../../types.js'
 
   /** @type any */
   export let buildStatus
