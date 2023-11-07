@@ -1,7 +1,7 @@
 //@ts-check
 
 import store from './../store.js'
-import { deleteFileAndSaveChanges } from './file.js'
+import { deleteFileAndPushChanges } from './file.js'
 
 /**
  * @param {string} fileName
@@ -18,5 +18,5 @@ export const deleteArticle = fileName => {
     }),
   )
 
-  return deleteFileAndSaveChanges(fileName)
+  return deleteFileAndPushChanges(fileName)
 }

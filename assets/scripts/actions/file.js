@@ -8,11 +8,15 @@ import { handleErrors } from '../utils'
  * @param {object} fileOptions
  * @param {string} fileOptions.fileName
  * @param {string} fileOptions.content
- * @param {string} fileOptions.title
+ * @param {string} [fileOptions.message]
  *
  * @returns {Promise<void>}
  */
-export const writeFile = ({ fileName, content, title }) => {
+export const writeFileAndCommit = ({ fileName, content, message = '' }) => {
+  if (message === '') {
+    message = `Modification du fichier ${fileName}`
+  }
+
   const { state } = store
   const { owner, name } = store.state.currentRepository
 
@@ -21,11 +25,7 @@ export const writeFile = ({ fileName, content, title }) => {
     .then(() => {
       state.buildStatus.setBuildingAndCheckStatusLater()
 
-      return databaseAPI.commit(
-        owner,
-        name,
-        `Modification du fichier ${fileName}`,
-      )
+      return databaseAPI.commit(owner, name, message)
     })
     .catch(msg => handleErrors(msg))
 }
@@ -34,15 +34,15 @@ export const writeFile = ({ fileName, content, title }) => {
  * @param {object} fileOptions
  * @param {string} fileOptions.fileName
  * @param {string} fileOptions.content
- * @param {string} fileOptions.title
+ * @param {string} [fileOptions.message]
  *
  * @returns {Promise<void>}
  */
-export const writeFileAndPushChanges = ({ fileName, content, title }) => {
+export const writeFileAndPushChanges = ({ fileName, content, message }) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return writeFile({ fileName, content, title })
+  return writeFileAndCommit({ fileName, content, message })
     .then(() => databaseAPI.push(owner, name))
     .catch(msg => handleErrors(msg))
 }

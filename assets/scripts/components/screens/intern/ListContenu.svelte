@@ -57,7 +57,6 @@
                 ) + '\n'
               : ''
           }${page.content}`,
-          false,
         )
       }
 

@@ -4,7 +4,7 @@ import store from './../store.js'
 import { makeFileNameFromTitle, makePageFrontMatter } from './../utils'
 import {
   deleteFile,
-  deleteFileAndSaveChanges,
+  deleteFileAndPushChanges,
   writeFileAndPushChanges,
 } from './file'
 
@@ -24,7 +24,7 @@ export const deletePage = fileName => {
       }),
   )
 
-  return deleteFileAndSaveChanges(fileName)
+  return deleteFileAndPushChanges(fileName)
 }
 
 /**
@@ -55,7 +55,7 @@ export const createPage = ({ fileName, content, title, index }) => {
   return writeFileAndPushChanges({
     fileName,
     content: finalContent,
-    title,
+    message: `Création de la page ${fileName}`,
   })
 }
 
@@ -74,7 +74,6 @@ export const createOrUpdatePage = async ({
   content,
   index,
 }) => {
-  console.log('createOrUpdatePage', fileName, title, content, index)
   let targetFileName = fileName
 
   if (fileName !== 'index.md') {
@@ -98,6 +97,6 @@ export const createOrUpdatePage = async ({
   return writeFileAndPushChanges({
     fileName: targetFileName,
     content: finalContent,
-    title,
+    message: `Modification de la page ${targetFileName}`,
   })
 }
