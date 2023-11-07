@@ -2,7 +2,6 @@
 
 import databaseAPI from './../databaseAPI.js'
 import store from './../store.js'
-import makeBuildStatus from './../buildStatus.js'
 import { handleErrors } from '../utils'
 
 /**
