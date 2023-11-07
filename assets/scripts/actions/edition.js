@@ -29,9 +29,7 @@ export const deletePage = fileName => {
       }),
   )
 
-  return deleteFile(fileName)
-    .then(() => databaseAPI.push(owner, name))
-    .catch(msg => handleErrors(msg))
+  return deleteFileAndSaveChanges(fileName)
 }
 
 /**
@@ -49,9 +47,7 @@ export const deleteArticle = fileName => {
     }),
   )
 
-  return deleteFile(fileName)
-    .then(() => databaseAPI.push(owner, name))
-    .catch(msg => handleErrors(msg))
+  return deleteFileAndSaveChanges(fileName)
 }
 
 /**
@@ -63,7 +59,6 @@ export const deleteFile = fileName => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  console.log('deleteFile', fileName)
   return databaseAPI
     .removeFile(owner, name, fileName)
     .then(() => {
@@ -75,5 +70,19 @@ export const deleteFile = fileName => {
         `Suppression de la page ${fileName}`,
       )
     })
+    .catch(msg => handleErrors(msg))
+}
+
+/**
+ * @param {string} fileName
+ *
+ * @returns {Promise<Void>}
+ */
+export const deleteFileAndSaveChanges = fileName => {
+  const { state } = store
+  const { owner, name } = state.currentRepository
+
+  return deleteFile(fileName)
+    .then(() => databaseAPI.push(owner, name))
     .catch(msg => handleErrors(msg))
 }
