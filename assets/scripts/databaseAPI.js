@@ -353,21 +353,6 @@ class DatabaseAPI {
   }
 
   /**
-   * @summary Create a commit with the given message
-   *          and push it to the remote repository
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @param {string} message
-   *
-   * @returns {Promise<Void>}
-   */
-  async commitAndPush(login, repoName, message) {
-    await this.commit(login, repoName, message)
-    this.push(login, repoName)
-  }
-
-  /**
    * @summary Remove file from github
    *
    * @param {string} login
