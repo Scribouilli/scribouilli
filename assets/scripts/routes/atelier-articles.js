@@ -16,7 +16,7 @@ import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
-import { deleteArticle } from '../actions/edition'
+import { deleteArticle } from '../actions/file'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
 

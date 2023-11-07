@@ -15,7 +15,7 @@ import {
 } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
-import { deletePage } from './../actions/edition'
+import { deletePage } from './../actions/file'
 
 /**
  *
