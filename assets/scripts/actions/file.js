@@ -20,7 +20,7 @@ export const deletePage = fileName => {
       }),
   )
 
-  return deleteFileAndSaveChanges(fileName)
+  return deleteFileAndPushChanges(fileName)
 }
 
 /**
@@ -38,7 +38,7 @@ export const deleteArticle = fileName => {
     }),
   )
 
-  return deleteFileAndSaveChanges(fileName)
+  return deleteFileAndPushChanges(fileName)
 }
 
 /**
@@ -69,7 +69,7 @@ export const deleteFile = fileName => {
  *
  * @returns {Promise<Void>}
  */
-export const deleteFileAndSaveChanges = fileName => {
+export const deleteFileAndPushChanges = fileName => {
   const { state } = store
   const { owner, name } = state.currentRepository
 

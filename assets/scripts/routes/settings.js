@@ -12,7 +12,7 @@ import {
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
-import { deleteFileAndSaveChanges } from '../actions/file'
+import { deleteFile } from '../actions/file'
 
 const blogMdContent = `---
 layout: default
@@ -107,7 +107,7 @@ export default ({ querystring }) => {
           false,
         )
       } else {
-        deleteFileAndSaveChanges('blog.md')
+        await deleteFile('blog.md')
       }
       await setArticles()
       await getCurrentRepoPages()
