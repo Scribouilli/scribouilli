@@ -20,6 +20,7 @@ import {
  */
 export const deletePage = fileName => {
   const { state } = store
+  const { owner, name } = state.currentRepository
 
   store.mutations.setPages(
     state.pages &&
@@ -29,6 +30,8 @@ export const deletePage = fileName => {
   )
 
   return deleteFile(fileName)
+    .then(() => databaseAPI.push(owner, name))
+    .catch(msg => handleErrors(msg))
 }
 
 /**
@@ -38,6 +41,7 @@ export const deletePage = fileName => {
  */
 export const deleteArticle = fileName => {
   const { state } = store
+  const { owner, name } = state.currentRepository
 
   store.mutations.setArticles(
     (state.articles ?? []).filter(article => {
@@ -46,6 +50,8 @@ export const deleteArticle = fileName => {
   )
 
   return deleteFile(fileName)
+    .then(() => databaseAPI.push(owner, name))
+    .catch(msg => handleErrors(msg))
 }
 
 /**
@@ -63,18 +69,5 @@ export const deleteFile = fileName => {
       databaseAPI.commit(owner, name, `Suppression de la page ${fileName}`)
       state.buildStatus.setBuildingAndCheckStatusLater()
     })
-    .catch(msg => handleErrors(msg))
-}
-
-/**
- * @param {string} fileName
- *
- * @returns {Promise<Void>}
- */
-export const deleteFileAndSaveChanges = fileName => {
-  const { owner, name } = store.state.currentRepository
-
-  return deleteFile(fileName)
-    .then(() => databaseAPI.push(owner, name))
     .catch(msg => handleErrors(msg))
 }
