@@ -63,11 +63,17 @@ export const deleteFile = fileName => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
+  console.log('deleteFile', fileName)
   return databaseAPI
     .removeFile(owner, name, fileName)
     .then(() => {
-      databaseAPI.commit(owner, name, `Suppression de la page ${fileName}`)
       state.buildStatus.setBuildingAndCheckStatusLater()
+
+      return databaseAPI.commit(
+        owner,
+        name,
+        `Suppression de la page ${fileName}`,
+      )
     })
     .catch(msg => handleErrors(msg))
 }
