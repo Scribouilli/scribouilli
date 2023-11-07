@@ -353,7 +353,7 @@ class DatabaseAPI {
   }
 
   /**
-   * @summary Remove file from github
+   * @summary Remove file from git tree and from the file system
    *
    * @param {string} login
    * @param {string} repoName
