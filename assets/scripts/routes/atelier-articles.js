@@ -108,10 +108,6 @@ export default ({ querystring }) => {
         `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
       )
     })
-
-    page(
-      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-    )
   })
 
   articleContenu.$on(
