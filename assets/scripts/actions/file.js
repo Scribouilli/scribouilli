@@ -5,46 +5,46 @@ import store from './../store.js'
 import { handleErrors } from '../utils'
 
 /**
- * @param {string} fileName
+ * @param {object} fileOptions
+ * @param {string} fileOptions.fileName
+ * @param {string} fileOptions.content
+ * @param {string} fileOptions.title
  *
- * @returns {Promise<Void>}
+ * @returns {Promise<void>}
  */
-export const deletePage = fileName => {
+export const writeFile = ({ fileName, content, title }) => {
   const { state } = store
-  const { owner, name } = state.currentRepository
+  const { owner, name } = store.state.currentRepository
 
-  store.mutations.setPages(
-    state.pages &&
-      state.pages.filter(page => {
-        return page.path !== fileName
-      }),
-  )
+  return databaseAPI
+    .writeFile(owner, name, fileName, content)
+    .then(() => {
+      state.buildStatus.setBuildingAndCheckStatusLater()
 
-  return deleteFileAndPushChanges(
-    fileName,
-    `Suppression de la page ${fileName}`,
-  )
+      return databaseAPI.commit(
+        owner,
+        name,
+        `Modification du fichier ${fileName}`,
+      )
+    })
+    .catch(msg => handleErrors(msg))
 }
 
 /**
- * @param {string} fileName
+ * @param {object} fileOptions
+ * @param {string} fileOptions.fileName
+ * @param {string} fileOptions.content
+ * @param {string} fileOptions.title
  *
- * @returns {Promise<Void>}
+ * @returns {Promise<void>}
  */
-export const deleteArticle = fileName => {
+export const writeFileAndPushChanges = ({ fileName, content, title }) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  store.mutations.setArticles(
-    (state.articles ?? []).filter(article => {
-      return article.path !== fileName
-    }),
-  )
-
-  return deleteFileAndPushChanges(
-    fileName,
-    `Suppression de l'article ${fileName}`,
-  )
+  return writeFile({ fileName, content, title })
+    .then(() => databaseAPI.push(owner, name))
+    .catch(msg => handleErrors(msg))
 }
 
 /**
@@ -70,7 +70,7 @@ export const deleteFileAndCommit = (fileName, commitMessage = '') => {
  * @param {string} fileName
  * @param {string} [commitMessage]
  *
- * @returns {Promise<Void>}
+ * @returns {Promise<void>}
  */
 export const deleteFileAndPushChanges = (fileName, commitMessage) => {
   const { state } = store

@@ -57,10 +57,16 @@
                 ) + '\n'
               : ''
           }${page.content}`,
-          'Changement index',
           false,
         )
       }
+
+      await databaseAPI.commit(
+        store.state.currentRepository.owner,
+        store.state.currentRepository.name,
+        'Changement index',
+      )
+
       await databaseAPI.push(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,

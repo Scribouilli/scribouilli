@@ -15,7 +15,7 @@ import {
 } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
-import { deletePage } from './../actions/file'
+import { deletePage, createOrUpdatePage } from './../actions/page'
 
 /**
  *
@@ -121,11 +121,11 @@ export default ({ querystring }) => {
     ({
       detail: {
         fileName,
-        content,
-        previousContent,
         title,
-        index,
+        content,
         previousTitle,
+        previousContent,
+        index,
       },
     }) => {
       const hasContentChanged = content !== previousContent
@@ -139,53 +139,16 @@ export default ({ querystring }) => {
         return
       }
 
-      let newFileName = fileName
-      if (fileName !== 'index.md') {
-        newFileName = makeFileNameFromTitle(title)
-      }
-
-      const message = `création de la page ${title || 'index.md'}`
-
-      let newPages =
-        state.pages?.filter(page => {
-          return page.path !== fileName
-        }) || []
-      newPages.push({ title: title, path: newFileName })
-
-      store.mutations.setPages(newPages)
-
-      // If it is a new page
-      if (fileName === '') {
-        fileName = newFileName
-      }
-
-      // If title changed
-      if (fileName && fileName !== newFileName) {
-        fileName = {
-          old: fileName,
-          new: newFileName,
-        }
-      }
-
-      const finalContent = `${
-        title ? makePageFrontMatter(title, index) + '\n' : ''
-      }${content} `
-
-      databaseAPI
-        .writeFile(
-          state.currentRepository.owner,
-          state.currentRepository.name,
-          fileName,
-          finalContent,
-          message,
+      createOrUpdatePage({
+        fileName,
+        title,
+        content,
+        index,
+      }).then(() => {
+        page(
+          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
         )
-        .then(() => {
-          state.buildStatus.setBuildingAndCheckStatusLater()
-          page(
-            `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-          )
-        })
-        .catch(msg => handleErrors(msg))
+      })
     },
   )
 }

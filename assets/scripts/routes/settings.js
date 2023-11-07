@@ -12,7 +12,7 @@ import {
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
-import { deleteFileAndCommit } from '../actions/file'
+import { writeFile, deleteFileAndCommit } from '../actions/file'
 
 const blogMdContent = `---
 layout: default
