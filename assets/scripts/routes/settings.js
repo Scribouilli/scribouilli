@@ -12,6 +12,7 @@ import {
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
+import { deleteFile } from '../actions/edition'
 
 const blogMdContent = `---
 layout: default
@@ -39,9 +40,9 @@ permalink: /articles/
 `
 
 /**
- * 
- * @param {import('../store').ScribouilliState} state 
- * @returns 
+ *
+ * @param {import('../store').ScribouilliState} state
+ * @returns
  */
 function mapStateToProps(state) {
   const blogFile = state.pages && state.pages.find(p => p.path === 'blog.md')
@@ -50,7 +51,8 @@ function mapStateToProps(state) {
     theme: state.theme,
     deleteRepositoryUrl: `https://github.com/${state.currentRepository.owner}/${state.currentRepository.name}/settings#danger-zone`,
     blogEnabled: blogFile !== undefined,
-    showArticles: blogFile !== undefined || state.articles && state.articles?.length > 0,
+    showArticles:
+      blogFile !== undefined || (state.articles && state.articles?.length > 0),
     currentRepository: state.currentRepository,
   }
 }
@@ -105,12 +107,7 @@ export default ({ querystring }) => {
           false,
         )
       } else {
-        await databaseAPI.deleteFile(
-          store.state.currentRepository.owner,
-          store.state.currentRepository.name,
-          'blog.md',
-          false,
-        )
+        deleteFile('blog.md')
       }
       await setArticles()
       await getCurrentRepoPages()

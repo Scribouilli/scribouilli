@@ -39,7 +39,7 @@ class DatabaseAPI {
   }
 
   /**
-   * 
+   *
    * @returns {Promise<GithubUserEmails[]>}
    */
   getUserEmails() {
@@ -49,10 +49,10 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @returns
    */
   getRepository(login, repoName) {
     return this.callGithubAPI(
@@ -79,10 +79,10 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} newRepoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} newRepoName
+   * @returns
    */
   async createDefaultRepository(login, newRepoName) {
     let res = await this.callGithubAPI(
@@ -111,9 +111,9 @@ class DatabaseAPI {
   /**
    * @summary Put topic in GitHub repository to find more easily the websites.
    *          Also configure some other options
-   * 
-   * @param {string} login 
-   * @param {string} newRepoName 
+   *
+   * @param {string} login
+   * @param {string} newRepoName
    * @returns {Promise<any>}
    */
   async setupRepo(login, newRepoName) {
@@ -151,10 +151,10 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} account 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} account
+   * @param {string} repoName
+   * @returns
    */
   createRepoGithubPages(account, repoName) {
     return this.callGithubAPI(
@@ -290,10 +290,10 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @returns
    */
   getGitHubPagesSite(login, repoName) {
     return this.callGithubAPI(
@@ -304,9 +304,9 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {GithubDeployment} deployment 
-   * @returns 
+   *
+   * @param {GithubDeployment} deployment
+   * @returns
    */
   getDeploymentStatus(deployment) {
     return this.callGithubAPI(deployment.statuses_url).then(response => {
@@ -315,9 +315,9 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
+   *
+   * @param {string} login
+   * @param {string} repoName
    */
   async push(login, repoName) {
     await git.push({
@@ -336,6 +336,38 @@ class DatabaseAPI {
   }
 
   /**
+   * @summary Create a commit with the given message.
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @param {string} message
+   *
+   * @returns {Promise<Void>}
+   */
+  async commit(login, repoName, message) {
+    await git.commit({
+      fs: this.fs,
+      dir: this.repoDir(login, repoName),
+      message,
+    })
+  }
+
+  /**
+   * @summary Create a commit with the given message
+   *          and push it to the remote repository
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @param {string} message
+   *
+   * @returns {Promise<Void>}
+   */
+  async commitAndPush(login, repoName, message) {
+    await this.commit(login, repoName, message)
+    this.push(login, repoName)
+  }
+
+  /**
    * @summary Remove file from github
    *
    * @param {string} login
@@ -343,7 +375,7 @@ class DatabaseAPI {
    * @param {string} fileName
    * @returns {Promise<void>}
    */
-  async deleteFile(login, repoName, fileName, push = true) {
+  async removeFile(login, repoName, fileName) {
     await this.cloneIfNeeded(login, repoName)
 
     const path = this.path(login, repoName, fileName)
@@ -353,21 +385,13 @@ class DatabaseAPI {
       dir: this.repoDir(login, repoName),
       filepath: fileName,
     })
-    await git.commit({
-      fs: this.fs,
-      dir: this.repoDir(login, repoName),
-      message: `suppression du fichier ${fileName}`,
-    })
-    if (push) {
-      this.push(login, repoName)
-    }
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @returns
    */
   async deleteRepository(login, repoName) {
     await this.fs.promises.unlink(this.repoDir(login, repoName))
@@ -395,7 +419,12 @@ class DatabaseAPI {
     await this.cloneIfNeeded(login, repoName)
 
     if (typeof fileName !== 'string') {
-      await this.deleteFile(login, repoName, fileName.old)
+      await this.removeFile(login, repoName, fileName.old)
+      await this.commit(
+        login,
+        repoName,
+        `Suppression de la page ${fileName.old}`,
+      )
       fileName = fileName.new
     }
 
@@ -426,11 +455,11 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @param {string} content 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @param {string} content
+   * @returns
    */
   async writeCustomCSS(login, repoName, content) {
     return this.writeFile(
@@ -494,10 +523,10 @@ class DatabaseAPI {
 
   /**
    * Non-utilisée et sûrement fausse pour le moment
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @returns
    */
   /*getLastDeployment(login, repoName) {
     return this.callGithubAPI(
@@ -520,10 +549,10 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @returns
    */
   async checkRepoReady(login, repoName) {
     try {
@@ -537,10 +566,10 @@ class DatabaseAPI {
   }
 
   /**
-   * 
-   * @param {string} login 
-   * @param {string} repoName 
-   * @returns 
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @returns
    */
   async checkGithubPages(login, repoName) {
     try {
@@ -556,7 +585,7 @@ class DatabaseAPI {
    *
    * It handles access_token errors
    *
-   * @param {string} url 
+   * @param {string} url
    * @param {RequestInit} requestParams
    */
   callGithubAPI(

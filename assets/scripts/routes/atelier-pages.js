@@ -15,11 +15,11 @@ import {
 } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
-
+import { deletePage } from './../actions/edition'
 
 /**
- * 
- * @param {string} fileName 
+ *
+ * @param {string} fileName
  * @returns {(state: import('../store').ScribouilliState) => any}
  */
 const makeMapStateToProps = fileName => state => {
@@ -54,8 +54,9 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles && state.articles.length > 0,
+        (state.pages &&
+          state.pages.find(p => p.path === 'blog.md') !== undefined) ||
+        (state.articles && state.articles.length > 0),
       currentRepository: state.currentRepository,
     }
   } else {
@@ -73,8 +74,9 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.pages,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles && state.articles.length > 0,
+        (state.pages &&
+          state.pages.find(p => p.path === 'blog.md') !== undefined) ||
+        (state.articles && state.articles.length > 0),
       currentRepository: state.currentRepository,
     }
   }
@@ -98,28 +100,12 @@ export default ({ querystring }) => {
 
   replaceComponent(pageContenu, mapStateToProps)
 
-  // @ts-ignore
   pageContenu.$on('delete', () => {
-    store.mutations.setPages(
-      state.pages && state.pages.filter(page => {
-        return page.path !== fileName
-      }),
-    )
-
-    databaseAPI
-      .deleteFile(
-        state.currentRepository.owner,
-        state.currentRepository.name,
-        fileName,
+    deletePage(fileName).then(() => {
+      page(
+        `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
       )
-      .then(() => {
-        state.buildStatus.setBuildingAndCheckStatusLater()
-      })
-      .catch(msg => handleErrors(msg))
-
-    page(
-      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-    )
+    })
   })
 
   // @ts-ignore
@@ -175,9 +161,7 @@ export default ({ querystring }) => {
       }
 
       const finalContent = `${
-        title
-          ? makePageFrontMatter(title, index) + '\n'
-          : ''
+        title ? makePageFrontMatter(title, index) + '\n' : ''
       }${content} `
 
       databaseAPI
