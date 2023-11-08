@@ -101,12 +101,14 @@ export default ({ querystring }) => {
   replaceComponent(pageContenu, mapStateToProps)
 
   pageContenu.$on('delete', () => {
-    deletePage(fileName).then(() => {
-      state.buildStatus.setBuildingAndCheckStatusLater()
-      page(
-        `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-      )
-    })
+    deletePage(fileName)
+      .then(() => {
+        state.buildStatus.setBuildingAndCheckStatusLater()
+        page(
+          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+        )
+      })
+      .catch(msg => handleErrors(msg))
 
     page(
       `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,

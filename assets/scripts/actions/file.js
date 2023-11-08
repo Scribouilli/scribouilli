@@ -50,16 +50,9 @@ export const deleteFile = fileName => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return databaseAPI
-    .removeFile(owner, name, fileName)
-    .then(() => {
-      return databaseAPI.commit(
-        owner,
-        name,
-        `Suppression de la page ${fileName}`,
-      )
-    })
-    .catch(msg => handleErrors(msg))
+  return databaseAPI.removeFile(owner, name, fileName).then(() => {
+    return databaseAPI.commit(owner, name, `Suppression de la page ${fileName}`)
+  })
 }
 
 /**
@@ -71,7 +64,5 @@ export const deleteFileAndPushChanges = fileName => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return deleteFile(fileName)
-    .then(() => databaseAPI.push(owner, name))
-    .catch(msg => handleErrors(msg))
+  return deleteFile(fileName).then(() => databaseAPI.push(owner, name))
 }

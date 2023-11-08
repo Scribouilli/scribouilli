@@ -103,12 +103,14 @@ export default ({ querystring }) => {
   replaceComponent(articleContenu, mapStateToProps)
 
   articleContenu.$on('delete', () => {
-    deleteArticle(fileName).then(() => {
-      state.buildStatus.setBuildingAndCheckStatusLater()
-      page(
-        `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-      )
-    })
+    deleteArticle(fileName)
+      .then(() => {
+        state.buildStatus.setBuildingAndCheckStatusLater()
+        page(
+          `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+        )
+      })
+      .catch(msg => handleErrors(msg))
 
     page(
       `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
