@@ -55,7 +55,7 @@ export const createArticle = ({ fileName, content, title }) => {
   return writeFileAndPushChanges({
     fileName: targetFileName,
     content: finalContent,
-    message: `Création de l'article ${targetFileName}`,
+    message: `Création de l'article : ${title}`,
   })
 }
 
@@ -94,6 +94,6 @@ export const createOrUpdateArticle = async ({ fileName, title, content }) => {
   return writeFileAndPushChanges({
     fileName: targetFileName,
     content: finalContent,
-    message: `Modification de l'article ${targetFileName}`,
+    message: `Modification de l'article : ${title}`,
   })
 }

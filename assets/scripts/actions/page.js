@@ -54,7 +54,7 @@ export const createPage = ({ fileName, content, title, index }) => {
   return writeFileAndPushChanges({
     fileName,
     content: finalContent,
-    message: `Création de la page ${fileName}`,
+    message: `Création de la page : ${title}`,
   })
 }
 
@@ -97,6 +97,6 @@ export const createOrUpdatePage = async ({
   return writeFileAndPushChanges({
     fileName: targetFileName,
     content: finalContent,
-    message: `Modification de la page ${targetFileName}`,
+    message: `Modification de la page : ${title}`,
   })
 }
