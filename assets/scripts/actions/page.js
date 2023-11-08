@@ -37,7 +37,6 @@ export const deletePage = fileName => {
  * @returns {Promise<void>}
  */
 export const createPage = ({ fileName, content, title, index }) => {
-  console.log('createPage', fileName, content, title, index)
   const { state } = store
 
   let newPages =
@@ -80,6 +79,7 @@ export const createOrUpdatePage = async ({
     targetFileName = makeFileNameFromTitle(title)
   }
 
+  // If the file name is empty, it means that we are creating a new page.
   if (fileName === '') {
     return createPage({ fileName: targetFileName, content, title, index })
   }

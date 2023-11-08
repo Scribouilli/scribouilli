@@ -390,7 +390,7 @@ class DatabaseAPI {
   }
 
   /**
-   * @summary Create a file
+   * @summary Create or update a file and add it to the git staging area
    *
    * @param {string} login
    * @param {string} repoName

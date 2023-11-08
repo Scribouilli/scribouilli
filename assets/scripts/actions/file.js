@@ -7,7 +7,7 @@ import { handleErrors } from '../utils'
 /**
  * @param {object} fileOptions
  * @param {string} fileOptions.fileName
- * @param {string} fileOptions.content
+ * @param {string|Uint8Array} fileOptions.content
  * @param {string} [fileOptions.message]
  *
  * @returns {Promise<void>}
@@ -33,7 +33,7 @@ export const writeFileAndCommit = ({ fileName, content, message = '' }) => {
 /**
  * @param {object} fileOptions
  * @param {string} fileOptions.fileName
- * @param {string} fileOptions.content
+ * @param {string|Uint8Array} fileOptions.content
  * @param {string} [fileOptions.message]
  *
  * @returns {Promise<void>}

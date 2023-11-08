@@ -119,11 +119,11 @@
     for (const img of image) {
       imageMd = 'Mise en ligne en cours…'
       const buffer = new Uint8Array(await img.arrayBuffer())
-      await writeFileAndCommit(
-        `images/${img.name}`,
-        buffer,
-        `Ajout de ${img.name}`,
-      )
+      await writeFileAndCommit({
+        fileName: `images/${img.name}`,
+        content: buffer,
+        message: `Ajout de ${img.name}`,
+      })
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
     }
   }
