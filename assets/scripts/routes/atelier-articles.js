@@ -136,6 +136,7 @@ export default ({ querystring }) => {
         title,
         content,
       }).then(() => {
+        state.buildStatus.setBuildingAndCheckStatusLater()
         page(articlePageUrl)
       })
     },
