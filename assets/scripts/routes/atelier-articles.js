@@ -135,10 +135,12 @@ export default ({ querystring }) => {
         fileName,
         title,
         content,
-      }).then(() => {
-        state.buildStatus.setBuildingAndCheckStatusLater()
-        page(articlePageUrl)
       })
+        .then(() => {
+          state.buildStatus.setBuildingAndCheckStatusLater()
+          page(articlePageUrl)
+        })
+        .catch(msg => handleErrors(msg))
     },
   )
 }

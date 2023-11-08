@@ -20,14 +20,11 @@ export const writeFileAndCommit = ({ fileName, content, message = '' }) => {
   const { state } = store
   const { owner, name } = store.state.currentRepository
 
-  return databaseAPI
-    .writeFile(owner, name, fileName, content)
-    .then(() => {
-      state.buildStatus.setBuildingAndCheckStatusLater()
+  return databaseAPI.writeFile(owner, name, fileName, content).then(() => {
+    state.buildStatus.setBuildingAndCheckStatusLater()
 
-      return databaseAPI.commit(owner, name, message)
-    })
-    .catch(msg => handleErrors(msg))
+    return databaseAPI.commit(owner, name, message)
+  })
 }
 
 /**
@@ -42,9 +39,9 @@ export const writeFileAndPushChanges = ({ fileName, content, message }) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return writeFileAndCommit({ fileName, content, message })
-    .then(() => databaseAPI.push(owner, name))
-    .catch(msg => handleErrors(msg))
+  return writeFileAndCommit({ fileName, content, message }).then(() =>
+    databaseAPI.push(owner, name),
+  )
 }
 
 /**

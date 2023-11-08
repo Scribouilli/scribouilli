@@ -144,11 +144,14 @@ export default ({ querystring }) => {
         title,
         content,
         index,
-      }).then(() => {
-        page(
-          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
       })
+        .then(() => {
+          state.buildStatus.setBuildingAndCheckStatusLater()
+          page(
+            `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+          )
+        })
+        .catch(msg => handleErrors(msg))
     },
   )
 }
