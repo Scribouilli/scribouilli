@@ -102,10 +102,15 @@ export default ({ querystring }) => {
 
   pageContenu.$on('delete', () => {
     deletePage(fileName).then(() => {
+      state.buildStatus.setBuildingAndCheckStatusLater()
       page(
         `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
       )
     })
+
+    page(
+      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+    )
   })
 
   // @ts-ignore

@@ -104,10 +104,15 @@ export default ({ querystring }) => {
 
   articleContenu.$on('delete', () => {
     deleteArticle(fileName).then(() => {
+      state.buildStatus.setBuildingAndCheckStatusLater()
       page(
         `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
       )
     })
+
+    page(
+      `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+    )
   })
 
   articleContenu.$on(

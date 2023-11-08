@@ -53,8 +53,6 @@ export const deleteFile = fileName => {
   return databaseAPI
     .removeFile(owner, name, fileName)
     .then(() => {
-      state.buildStatus.setBuildingAndCheckStatusLater()
-
       return databaseAPI.commit(
         owner,
         name,
