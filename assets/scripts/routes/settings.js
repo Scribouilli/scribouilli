@@ -107,9 +107,7 @@ export default ({ querystring }) => {
           false,
         )
       } else {
-        await deleteFileAndCommit('blog.md', {
-          commitMessage: 'Désactivation du blog',
-        })
+        await deleteFileAndCommit('blog.md', 'Désactivation du blog')
       }
       await setArticles()
       await getCurrentRepoPages()
