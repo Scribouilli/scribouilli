@@ -54,9 +54,11 @@ export const createArticle = (fileName, content, title) => {
     title ? makeArticleFrontMatter(title) + '\n' : ''
   }${content}`
 
-  return writeFileAndPushChanges(targetFileName, finalContent, {
-    commitMessage: `Création de l'article : ${title}`,
-  })
+  return writeFileAndPushChanges(
+    targetFileName,
+    finalContent,
+    `Création de l'article : ${title}`,
+  )
 }
 
 /**
@@ -93,7 +95,9 @@ export const createOrUpdateArticle = async (fileName, title, content) => {
     title ? makeArticleFrontMatter(title) + '\n' : ''
   }${content}`
 
-  return writeFileAndPushChanges(targetFileName, finalContent, {
-    commitMessage: `Modification de l'article : ${title}`,
-  })
+  return writeFileAndPushChanges(
+    targetFileName,
+    finalContent,
+    `Modification de l'article : ${title}`,
+  )
 }

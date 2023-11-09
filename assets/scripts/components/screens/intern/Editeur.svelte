@@ -122,9 +122,7 @@
       await writeFileAndCommit(
         `images/${img.name}`,
         buffer,
-        {
-          commitMessage: `Ajout de l'image ${img.name}`,
-        }
+        `Ajout de l'image ${img.name}`,
       )
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
     }

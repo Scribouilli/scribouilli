@@ -7,16 +7,11 @@ import { handleErrors } from '../utils'
 /**
  * @param {string} fileName
  * @param {string|Uint8Array} content
- * @param {object} options
- * @param {string} [options.commitMessage]
+ * @param {string} [commitMessage]
  *
  * @returns {Promise<string>}
  */
-export const writeFileAndCommit = (
-  fileName,
-  content,
-  { commitMessage = '' } = {},
-) => {
+export const writeFileAndCommit = (fileName, content, commitMessage = '') => {
   if (commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`
   }
@@ -34,20 +29,19 @@ export const writeFileAndCommit = (
 /**
  * @param {string} fileName
  * @param {string|Uint8Array} content
- * @param {object} options
- * @param {string} [options.commitMessage]
+ * @param {string} [commitMessage]
  *
  * @returns {Promise<void>}
  */
 export const writeFileAndPushChanges = (
   fileName,
   content,
-  { commitMessage },
+  commitMessage = '',
 ) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return writeFileAndCommit(fileName, content, { commitMessage }).then(() =>
+  return writeFileAndCommit(fileName, content, commitMessage).then(() =>
     databaseAPI.push(owner, name),
   )
 }
