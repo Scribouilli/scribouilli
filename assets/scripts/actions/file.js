@@ -20,7 +20,9 @@ export const deletePage = fileName => {
       }),
   )
 
-  return deleteFileAndPushChanges(fileName)
+  return deleteFileAndPushChanges(fileName, {
+    commitMessage: `Suppression de la page ${fileName}`,
+  })
 }
 
 /**
@@ -38,31 +40,46 @@ export const deleteArticle = fileName => {
     }),
   )
 
-  return deleteFileAndPushChanges(fileName)
-}
-
-/**
- * @param {string} fileName
- *
- * @returns {Promise<Void>}
- */
-export const deleteFile = fileName => {
-  const { state } = store
-  const { owner, name } = state.currentRepository
-
-  return databaseAPI.removeFile(owner, name, fileName).then(() => {
-    return databaseAPI.commit(owner, name, `Suppression de la page ${fileName}`)
+  return deleteFileAndPushChanges(fileName, {
+    commitMessage: `Suppression de l'article ${fileName}`,
   })
 }
 
 /**
  * @param {string} fileName
+ * @param {object} options
+ * @param {string} [options.commitMessage]
  *
  * @returns {Promise<Void>}
  */
-export const deleteFileAndPushChanges = fileName => {
+export const deleteFileAndCommit = (fileName, { commitMessage = '' } = {}) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return deleteFile(fileName).then(() => databaseAPI.push(owner, name))
+  if (commitMessage === '') {
+    commitMessage = `Suppression du fichier ${fileName}`
+  }
+
+  return databaseAPI.removeFile(owner, name, fileName).then(() => {
+    return databaseAPI.commit(owner, name, commitMessage)
+  })
+}
+
+/**
+ * @param {string} fileName
+ * @param {object} options
+ * @param {string} [options.commitMessage]
+ *
+ * @returns {Promise<Void>}
+ */
+export const deleteFileAndPushChanges = (
+  fileName,
+  { commitMessage = '' } = {},
+) => {
+  const { state } = store
+  const { owner, name } = state.currentRepository
+
+  return deleteFileAndCommit(fileName, { commitMessage }).then(() =>
+    databaseAPI.push(owner, name),
+  )
 }
