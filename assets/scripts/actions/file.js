@@ -5,16 +5,20 @@ import store from './../store.js'
 import { handleErrors } from '../utils'
 
 /**
- * @param {object} fileOptions
- * @param {string} fileOptions.fileName
- * @param {string|Uint8Array} fileOptions.content
- * @param {string} [fileOptions.message]
+ * @param {string} fileName
+ * @param {string|Uint8Array} content
+ * @param {object} options
+ * @param {string} [options.commitMessage]
  *
  * @returns {Promise<void>}
  */
-export const writeFileAndCommit = ({ fileName, content, message = '' }) => {
-  if (message === '') {
-    message = `Modification du fichier ${fileName}`
+export const writeFileAndCommit = (
+  fileName,
+  content,
+  { commitMessage = '' } = {},
+) => {
+  if (commitMessage === '') {
+    commitMessage = `Modification du fichier ${fileName}`
   }
 
   const { state } = store
@@ -23,23 +27,27 @@ export const writeFileAndCommit = ({ fileName, content, message = '' }) => {
   return databaseAPI.writeFile(owner, name, fileName, content).then(() => {
     state.buildStatus.setBuildingAndCheckStatusLater()
 
-    return databaseAPI.commit(owner, name, message)
+    return databaseAPI.commit(owner, name, commitMessage)
   })
 }
 
 /**
- * @param {object} fileOptions
- * @param {string} fileOptions.fileName
- * @param {string|Uint8Array} fileOptions.content
- * @param {string} [fileOptions.message]
+ * @param {string} fileName
+ * @param {string|Uint8Array} content
+ * @param {object} options
+ * @param {string} [options.commitMessage]
  *
  * @returns {Promise<void>}
  */
-export const writeFileAndPushChanges = ({ fileName, content, message }) => {
+export const writeFileAndPushChanges = (
+  fileName,
+  content,
+  { commitMessage },
+) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  return writeFileAndCommit({ fileName, content, message }).then(() =>
+  return writeFileAndCommit(fileName, content, { commitMessage }).then(() =>
     databaseAPI.push(owner, name),
   )
 }

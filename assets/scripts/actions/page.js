@@ -53,10 +53,8 @@ export const createPage = ({ fileName, content, title, index }) => {
     title ? makePageFrontMatter(title, index) + '\n' : ''
   }${content} `
 
-  return writeFileAndPushChanges({
-    fileName,
-    content: finalContent,
-    message: `Création de la page : ${title}`,
+  return writeFileAndPushChanges(fileName, finalContent, {
+    commitMessage: `Création de la page : ${title}`,
   })
 }
 
@@ -98,9 +96,7 @@ export const createOrUpdatePage = async ({
     title ? makePageFrontMatter(title, index) + '\n' : ''
   }${content} `
 
-  return writeFileAndPushChanges({
-    fileName: targetFileName,
-    content: finalContent,
-    message: `Modification de la page : ${title}`,
+  return writeFileAndPushChanges(targetFileName, finalContent, {
+    commitMessage: `Modification de la page : ${title}`,
   })
 }

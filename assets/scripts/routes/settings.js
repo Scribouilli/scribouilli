@@ -98,10 +98,8 @@ export default ({ querystring }) => {
   settings.$on('toggle-blog', async ({ detail: { activated } }) => {
     try {
       if (activated) {
-        await writeFileAndCommit({
-          fileName: 'blog.md',
-          content: blogMdContent,
-          message: 'Activation du blog',
+        await writeFileAndCommit('blog.md', blogMdContent, {
+          commitMessage: 'Activation du blog',
         })
       } else {
         await deleteFileAndCommit('blog.md', 'Désactivation du blog')
