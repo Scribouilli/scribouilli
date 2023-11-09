@@ -16,12 +16,13 @@ import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
+import { deleteArticle } from '../actions/file'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
 
 /**
- * 
- * @param {string} fileName 
+ *
+ * @param {string} fileName
  * @returns {(state: import('../store').ScribouilliState) => any}
  */
 const makeMapStateToProps = fileName => state => {
@@ -51,8 +52,9 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles && state.articles.length > 0,
+        (state.pages &&
+          state.pages.find(p => p.path === 'blog.md') !== undefined) ||
+        (state.articles && state.articles.length > 0),
       currentRepository: state.currentRepository,
     }
   } else {
@@ -68,8 +70,9 @@ const makeMapStateToProps = fileName => state => {
       contenus: state.articles,
       buildStatus: state.buildStatus,
       showArticles:
-        state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
-        state.articles && state.articles.length > 0,
+        (state.pages &&
+          state.pages.find(p => p.path === 'blog.md') !== undefined) ||
+        (state.articles && state.articles.length > 0),
       currentRepository: state.currentRepository,
     }
   }
@@ -100,17 +103,7 @@ export default ({ querystring }) => {
   replaceComponent(articleContenu, mapStateToProps)
 
   articleContenu.$on('delete', () => {
-    store.mutations.setArticles(
-      (state.articles ?? []).filter(article => {
-        return article.path !== fileName
-      }),
-    )
-    databaseAPI
-      .deleteFile(
-        state.currentRepository.owner,
-        state.currentRepository.name,
-        fileName,
-      )
+    deleteArticle(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
         page(
@@ -120,7 +113,7 @@ export default ({ querystring }) => {
       .catch(msg => handleErrors(msg))
 
     page(
-      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+      `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
     )
   })
 
