@@ -30,13 +30,12 @@ export const deleteArticle = fileName => {
 }
 
 /**
- * @param {string} fileName
  * @param {string} content
  * @param {string} title
  *
  * @returns {Promise<void>}
  */
-export const createArticle = (fileName, content, title) => {
+export const createArticle = (content, title) => {
   const { state } = store
 
   const date = new Date()

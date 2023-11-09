@@ -141,7 +141,7 @@ export default ({ querystring }) => {
       //
       // If the file name is empty, it means that we are creating a new page.
       if (fileName === '') {
-        return createPage(fileName, content, title, index)
+        return createPage(content, title, index)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater()
             page(

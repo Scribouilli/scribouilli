@@ -31,15 +31,15 @@ export const deletePage = fileName => {
 }
 
 /**
- * @param {string} fileName
  * @param {string} content
  * @param {string} title
  * @param {number} index
  *
  * @returns {Promise<void>}
  */
-export const createPage = (fileName, content, title, index) => {
+export const createPage = (content, title, index) => {
   const { state } = store
+  const fileName = makeFileNameFromTitle(title)
 
   let newPages =
     state.pages?.filter(page => {

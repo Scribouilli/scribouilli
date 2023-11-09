@@ -133,7 +133,7 @@ export default ({ querystring }) => {
 
       // If the file name is empty, it means that we are creating a new article.
       if (fileName === '') {
-        return createArticle(fileName, title, content)
+        return createArticle(title, content)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater()
             page(articlePageUrl)
