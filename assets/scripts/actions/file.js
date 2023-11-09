@@ -11,8 +11,8 @@ import { handleErrors } from '../utils'
  *
  * @returns {Promise<string>}
  */
-export const writeFileAndCommit = (fileName, content, commitMessage = '') => {
-  if (commitMessage === '') {
+export const writeFileAndCommit = (fileName, content, commitMessage) => {
+  if (typeof commitMessage !== 'string' || commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`
   }
 
@@ -20,6 +20,7 @@ export const writeFileAndCommit = (fileName, content, commitMessage = '') => {
   const { owner, name } = store.state.currentRepository
 
   return databaseAPI.writeFile(owner, name, fileName, content).then(() => {
+    // @ts-ignore
     return databaseAPI.commit(owner, name, commitMessage)
   })
 }
