@@ -1,12 +1,9 @@
 //@ts-check
 
 import store from './../store.js'
+import databaseAPI from './../databaseAPI.js'
 import { makeFileNameFromTitle, makePageFrontMatter } from './../utils'
-import {
-  deleteFileAndCommit,
-  deleteFileAndPushChanges,
-  writeFileAndPushChanges,
-} from './file'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
 
 /**
  * @param {string} fileName
@@ -69,6 +66,7 @@ export const createPage = (content, title, index) => {
  * @returns {Promise<void>}
  */
 export const updatePage = async (fileName, title, content, index) => {
+  const { owner, name } = store.state.currentRepository
   let targetFileName = fileName
 
   if (fileName !== 'index.md') {
@@ -78,10 +76,7 @@ export const updatePage = async (fileName, title, content, index) => {
   // If the title has changed, we need to delete the old page and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await deleteFileAndCommit(
-      fileName,
-      `Suppression de la page ${fileName} (changement de titre)`,
-    )
+    await databaseAPI.removeFile(owner, name, fileName)
   }
 
   const finalContent = `${

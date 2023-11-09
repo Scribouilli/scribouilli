@@ -1,6 +1,7 @@
 //@ts-check
 
 import store from './../store.js'
+import databaseAPI from './../databaseAPI.js'
 import {
   deleteFileAndCommit,
   deleteFileAndPushChanges,
@@ -68,6 +69,7 @@ export const createArticle = (content, title) => {
  * @returns {Promise<void>}
  */
 export const updateArticle = async (fileName, title, content) => {
+  const { owner, name } = store.state.currentRepository
   const existingDate = fileName.slice(
     '_posts/'.length,
     '_posts/YYYY-MM-DD'.length,
@@ -79,10 +81,7 @@ export const updateArticle = async (fileName, title, content) => {
   // If the title has changed, we need to delete the old article and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await deleteFileAndCommit(
-      fileName,
-      `Suppression de l'article ${fileName} (changement de titre)`,
-    )
+    await databaseAPI.removeFile(owner, name, fileName)
   }
 
   const finalContent = `${
