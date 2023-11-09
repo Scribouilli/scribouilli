@@ -24,9 +24,10 @@ export const deletePage = fileName => {
       }),
   )
 
-  return deleteFileAndPushChanges(fileName, {
-    commitMessage: `Suppression de la page ${fileName}`,
-  })
+  return deleteFileAndPushChanges(
+    fileName,
+    `Suppression de la page ${fileName}`,
+  )
 }
 
 /**
@@ -80,9 +81,10 @@ export const createOrUpdatePage = async (fileName, title, content, index) => {
   // If the title has changed, we need to delete the old page and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await deleteFileAndCommit(fileName, {
-      commitMessage: `Suppression de la page ${fileName} (changement de titre)`,
-    })
+    await deleteFileAndCommit(
+      fileName,
+      `Suppression de la page ${fileName} (changement de titre)`,
+    )
   }
 
   const finalContent = `${

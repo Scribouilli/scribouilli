@@ -23,9 +23,10 @@ export const deleteArticle = fileName => {
     }),
   )
 
-  return deleteFileAndPushChanges(fileName, {
-    commitMessage: `Suppression de l'article ${fileName}`,
-  })
+  return deleteFileAndPushChanges(
+    fileName,
+    `Suppression de l'article ${fileName}`,
+  )
 }
 
 /**
@@ -82,9 +83,10 @@ export const createOrUpdateArticle = async (fileName, title, content) => {
   // If the title has changed, we need to delete the old article and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await deleteFileAndCommit(fileName, {
-      commitMessage: `Suppression de l'article ${fileName} (changement de titre)`,
-    })
+    await deleteFileAndCommit(
+      fileName,
+      `Suppression de l'article ${fileName} (changement de titre)`,
+    )
   }
 
   const finalContent = `${

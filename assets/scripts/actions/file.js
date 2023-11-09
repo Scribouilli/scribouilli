@@ -10,7 +10,7 @@ import { handleErrors } from '../utils'
  * @param {object} options
  * @param {string} [options.commitMessage]
  *
- * @returns {Promise<void>}
+ * @returns {Promise<string>}
  */
 export const writeFileAndCommit = (
   fileName,
