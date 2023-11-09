@@ -68,12 +68,7 @@ export const createArticle = (fileName, content, title) => {
  *
  * @returns {Promise<void>}
  */
-export const createOrUpdateArticle = async (fileName, title, content) => {
-  // If the file name is empty, it means that we are creating a new article.
-  if (fileName === '') {
-    return createArticle(fileName, title, content)
-  }
-
+export const updateArticle = async (fileName, title, content) => {
   const existingDate = fileName.slice(
     '_posts/'.length,
     '_posts/YYYY-MM-DD'.length,

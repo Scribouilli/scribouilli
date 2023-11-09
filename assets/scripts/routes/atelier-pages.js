@@ -15,7 +15,7 @@ import {
 } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
-import { deletePage, createOrUpdatePage } from './../actions/page'
+import { deletePage, createPage, updatePage } from './../actions/page'
 
 /**
  *
@@ -138,8 +138,20 @@ export default ({ querystring }) => {
         )
         return
       }
+      //
+      // If the file name is empty, it means that we are creating a new page.
+      if (fileName === '') {
+        return createPage(fileName, content, title, index)
+          .then(() => {
+            state.buildStatus.setBuildingAndCheckStatusLater()
+            page(
+              `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
+            )
+          })
+          .catch(msg => handleErrors(msg))
+      }
 
-      createOrUpdatePage(fileName, title, content, index)
+      updatePage(fileName, title, content, index)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
           page(

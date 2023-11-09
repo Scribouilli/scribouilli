@@ -68,16 +68,11 @@ export const createPage = (fileName, content, title, index) => {
  *
  * @returns {Promise<void>}
  */
-export const createOrUpdatePage = async (fileName, title, content, index) => {
+export const updatePage = async (fileName, title, content, index) => {
   let targetFileName = fileName
 
   if (fileName !== 'index.md') {
     targetFileName = makeFileNameFromTitle(title)
-  }
-
-  // If the file name is empty, it means that we are creating a new page.
-  if (fileName === '') {
-    return createPage(targetFileName, content, title, index)
   }
 
   // If the title has changed, we need to delete the old page and

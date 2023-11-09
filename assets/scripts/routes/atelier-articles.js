@@ -16,7 +16,7 @@ import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
-import { deleteArticle, createOrUpdateArticle } from '../actions/article'
+import { deleteArticle, createArticle, updateArticle } from '../actions/article'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
 
@@ -131,7 +131,17 @@ export default ({ querystring }) => {
         return page(articlePageUrl)
       }
 
-      createOrUpdateArticle(fileName, title, content)
+      // If the file name is empty, it means that we are creating a new article.
+      if (fileName === '') {
+        return createArticle(fileName, title, content)
+          .then(() => {
+            state.buildStatus.setBuildingAndCheckStatusLater()
+            page(articlePageUrl)
+          })
+          .catch(msg => handleErrors(msg))
+      }
+
+      updateArticle(fileName, title, content)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
           page(articlePageUrl)
