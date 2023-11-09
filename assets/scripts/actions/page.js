@@ -30,15 +30,14 @@ export const deletePage = fileName => {
 }
 
 /**
- * @param {object} fileOptions
- * @param {string} fileOptions.fileName
- * @param {string} fileOptions.content
- * @param {string} fileOptions.title
- * @param {number} fileOptions.index
+ * @param {string} fileName
+ * @param {string} content
+ * @param {string} title
+ * @param {number} index
  *
  * @returns {Promise<void>}
  */
-export const createPage = ({ fileName, content, title, index }) => {
+export const createPage = (fileName, content, title, index) => {
   const { state } = store
 
   let newPages =
@@ -59,20 +58,14 @@ export const createPage = ({ fileName, content, title, index }) => {
 }
 
 /**
- * @param {object} fileOptions
- * @param {string} fileOptions.fileName
- * @param {string} fileOptions.content
- * @param {string} fileOptions.title
- * @param {number} fileOptions.index
+ * @param {string} fileName
+ * @param {string} content
+ * @param {string} title
+ * @param {number} index
  *
  * @returns {Promise<void>}
  */
-export const createOrUpdatePage = async ({
-  fileName,
-  title,
-  content,
-  index,
-}) => {
+export const createOrUpdatePage = async (fileName, title, content, index) => {
   let targetFileName = fileName
 
   if (fileName !== 'index.md') {
@@ -81,7 +74,7 @@ export const createOrUpdatePage = async ({
 
   // If the file name is empty, it means that we are creating a new page.
   if (fileName === '') {
-    return createPage({ fileName: targetFileName, content, title, index })
+    return createPage(targetFileName, content, title, index)
   }
 
   // If the title has changed, we need to delete the old page and

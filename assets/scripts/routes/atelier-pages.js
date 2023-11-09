@@ -139,12 +139,7 @@ export default ({ querystring }) => {
         return
       }
 
-      createOrUpdatePage({
-        fileName,
-        title,
-        content,
-        index,
-      })
+      createOrUpdatePage(fileName, title, content, index)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
           page(

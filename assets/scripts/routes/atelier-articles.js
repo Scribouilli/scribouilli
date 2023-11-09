@@ -131,11 +131,7 @@ export default ({ querystring }) => {
         return page(articlePageUrl)
       }
 
-      createOrUpdateArticle({
-        fileName,
-        title,
-        content,
-      })
+      createOrUpdateArticle(fileName, title, content)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
           page(articlePageUrl)

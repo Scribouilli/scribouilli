@@ -29,14 +29,13 @@ export const deleteArticle = fileName => {
 }
 
 /**
- * @param {object} fileOptions
- * @param {string} fileOptions.fileName
- * @param {string} fileOptions.content
- * @param {string} fileOptions.title
+ * @param {string} fileName
+ * @param {string} content
+ * @param {string} title
  *
  * @returns {Promise<void>}
  */
-export const createArticle = ({ fileName, content, title }) => {
+export const createArticle = (fileName, content, title) => {
   const { state } = store
 
   const date = new Date()
@@ -60,17 +59,16 @@ export const createArticle = ({ fileName, content, title }) => {
 }
 
 /**
- * @param {object} fileOptions
- * @param {string} fileOptions.fileName
- * @param {string} fileOptions.content
- * @param {string} fileOptions.title
+ * @param {string} fileName
+ * @param {string} content
+ * @param {string} title
  *
  * @returns {Promise<void>}
  */
-export const createOrUpdateArticle = async ({ fileName, title, content }) => {
+export const createOrUpdateArticle = async (fileName, title, content) => {
   // If the file name is empty, it means that we are creating a new article.
   if (fileName === '') {
-    return createArticle({ fileName, title, content })
+    return createArticle(fileName, title, content)
   }
 
   const existingDate = fileName.slice(
