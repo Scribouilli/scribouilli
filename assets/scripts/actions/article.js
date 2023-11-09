@@ -2,7 +2,7 @@
 
 import store from './../store.js'
 import {
-  deleteFile,
+  deleteFileAndCommit,
   deleteFileAndPushChanges,
   writeFileAndPushChanges,
 } from './file'
@@ -23,7 +23,9 @@ export const deleteArticle = fileName => {
     }),
   )
 
-  return deleteFileAndPushChanges(fileName)
+  return deleteFileAndPushChanges(fileName, {
+    commitMessage: `Suppression de l'article ${fileName}`,
+  })
 }
 
 /**
@@ -84,7 +86,9 @@ export const createOrUpdateArticle = async ({ fileName, title, content }) => {
   // If the title has changed, we need to delete the old article and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await deleteFile(fileName)
+    await deleteFileAndCommit(fileName, {
+      commitMessage: `Suppression de l'article ${fileName} (changement de titre)`,
+    })
   }
 
   const finalContent = `${

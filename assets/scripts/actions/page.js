@@ -3,7 +3,7 @@
 import store from './../store.js'
 import { makeFileNameFromTitle, makePageFrontMatter } from './../utils'
 import {
-  deleteFile,
+  deleteFileAndCommit,
   deleteFileAndPushChanges,
   writeFileAndPushChanges,
 } from './file'
@@ -24,7 +24,9 @@ export const deletePage = fileName => {
       }),
   )
 
-  return deleteFileAndPushChanges(fileName)
+  return deleteFileAndPushChanges(fileName, {
+    commitMessage: `Suppression de la page ${fileName}`,
+  })
 }
 
 /**
@@ -87,7 +89,9 @@ export const createOrUpdatePage = async ({
   // If the title has changed, we need to delete the old page and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await deleteFile(fileName)
+    await deleteFileAndCommit(fileName, {
+      commitMessage: `Suppression de la page ${fileName} (changement de titre)`,
+    })
   }
 
   const finalContent = `${
