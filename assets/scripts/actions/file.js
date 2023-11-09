@@ -20,8 +20,6 @@ export const writeFileAndCommit = (fileName, content, commitMessage = '') => {
   const { owner, name } = store.state.currentRepository
 
   return databaseAPI.writeFile(owner, name, fileName, content).then(() => {
-    state.buildStatus.setBuildingAndCheckStatusLater()
-
     return databaseAPI.commit(owner, name, commitMessage)
   })
 }
