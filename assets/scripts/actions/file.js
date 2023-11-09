@@ -69,7 +69,7 @@ export const deleteFileAndCommit = (fileName, commitMessage = '') => {
  * @param {string} fileName
  * @param {string} [commitMessage]
  *
- * @returns {Promise<void>}
+ * @returns {Promise<Void>}
  */
 export const deleteFileAndPushChanges = (fileName, commitMessage) => {
   const { state } = store
