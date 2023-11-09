@@ -123,7 +123,7 @@
         `images/${img.name}`,
         buffer,
         {
-          commitMessage: `Ajout de ${img.name}`,
+          commitMessage: `Ajout de l'image ${img.name}`,
         }
       )
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
