@@ -342,10 +342,10 @@ class DatabaseAPI {
    * @param {string} repoName
    * @param {string} message
    *
-   * @returns {Promise<Void>}
+   * @returns {Promise<string>} sha of the commit
    */
   async commit(login, repoName, message) {
-    await git.commit({
+    return await git.commit({
       fs: this.fs,
       dir: this.repoDir(login, repoName),
       message,

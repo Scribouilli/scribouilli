@@ -51,7 +51,7 @@ export const deleteArticle = fileName => {
  * @param {string} fileName
  * @param {string} [commitMessage]
  *
- * @returns {Promise<Void>}
+ * @returns {Promise<string>}
  */
 export const deleteFileAndCommit = (fileName, commitMessage = '') => {
   const { state } = store
