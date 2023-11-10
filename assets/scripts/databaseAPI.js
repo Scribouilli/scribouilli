@@ -3,11 +3,11 @@
 import lireFrontMatter from 'front-matter'
 import FS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
-import http from 'isomorphic-git/http/web'
+import http from 'isomorphic-git/http/web/index.js'
 
 import store from './store.js'
 
-import 'types.js'
+import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
