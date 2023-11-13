@@ -51,7 +51,7 @@ Pour rendre accessible une nouvelle route :
 ```mermaid
 sequenceDiagram;
     participant A as Scribouilli
-    participant B as Service OAuth (GitHub)
+    participant B as Service d'identification OAuth
     participant C as toctoctoc
     participant D as Mon Compte GitHub
     A->>B: Demande l'authentification à
@@ -60,6 +60,10 @@ sequenceDiagram;
     B->>A: Donne son feu vert à
     A->>D: Peut utiliser
 ```
+
+- `Service d'identification OAuth` : le service OAuth actuellement implémenté est [celui de GitHub](https://docs.github.com/en/apps/oauth-apps). On va intégrer prochainement GitLab.
+- `toctoctoc` : un [serveur générique](https://github.com/Scribouilli/toctoctoc)
+  qui permet de se connecter à un service d'identification OAuth.
 
 ## Ressources
 
