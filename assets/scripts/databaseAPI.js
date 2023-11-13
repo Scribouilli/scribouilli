@@ -390,28 +390,17 @@ class DatabaseAPI {
   }
 
   /**
-   * @summary Create a file
+   * @summary Create or update a file and add it to the git staging area
    *
    * @param {string} login
    * @param {string} repoName
    * @param {string | Uint8Array} content
-   * @param {string} message
-   * @param {string | { old: string, new: string }} fileName
+   * @param {string} fileName
    *
    * @returns {Promise<void>}
    */
-  async writeFile(login, repoName, fileName, content, message, push = true) {
+  async writeFile(login, repoName, fileName, content) {
     await this.cloneIfNeeded(login, repoName)
-
-    if (typeof fileName !== 'string') {
-      await this.removeFile(login, repoName, fileName.old)
-      await this.commit(
-        login,
-        repoName,
-        `Suppression de la page ${fileName.old}`,
-      )
-      fileName = fileName.new
-    }
 
     // This condition is here just in case, but it should not happen in practice
     // Having an empty file name will not lead immediately to a crash but will result in
@@ -429,14 +418,6 @@ class DatabaseAPI {
       filepath: fileName,
       dir: this.repoDir(login, repoName),
     })
-    await git.commit({
-      fs: this.fs,
-      dir: this.repoDir(login, repoName),
-      message,
-    })
-    if (push) {
-      this.push(login, repoName)
-    }
   }
 
   /**
@@ -447,11 +428,11 @@ class DatabaseAPI {
    * @returns
    */
   async writeCustomCSS(login, repoName, content) {
-    return this.writeFile(
+    await this.writeFile(login, repoName, this.customCSSPath, content)
+
+    return await this.commit(
       login,
       repoName,
-      this.customCSSPath,
-      content,
       'mise à jour du ficher de styles custom',
     )
   }

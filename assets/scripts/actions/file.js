@@ -6,44 +6,42 @@ import { handleErrors } from './../utils.js'
 
 /**
  * @param {string} fileName
+ * @param {string|Uint8Array} content
+ * @param {string} [commitMessage]
  *
- * @returns {Promise<Void>}
+ * @returns {Promise<string>}
  */
-export const deletePage = fileName => {
+export const writeFileAndCommit = (fileName, content, commitMessage) => {
+  if (typeof commitMessage !== 'string' || commitMessage === '') {
+    commitMessage = `Modification du fichier ${fileName}`
+  }
+
   const { state } = store
-  const { owner, name } = state.currentRepository
+  const { owner, name } = store.state.currentRepository
 
-  store.mutations.setPages(
-    state.pages &&
-      state.pages.filter(page => {
-        return page.path !== fileName
-      }),
-  )
-
-  return deleteFileAndPushChanges(
-    fileName,
-    `Suppression de la page ${fileName}`,
-  )
+  return databaseAPI.writeFile(owner, name, fileName, content).then(() => {
+    // @ts-ignore
+    return databaseAPI.commit(owner, name, commitMessage)
+  })
 }
 
 /**
  * @param {string} fileName
+ * @param {string|Uint8Array} content
+ * @param {string} [commitMessage]
  *
- * @returns {Promise<Void>}
+ * @returns {Promise<void>}
  */
-export const deleteArticle = fileName => {
+export const writeFileAndPushChanges = (
+  fileName,
+  content,
+  commitMessage = '',
+) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
-  store.mutations.setArticles(
-    (state.articles ?? []).filter(article => {
-      return article.path !== fileName
-    }),
-  )
-
-  return deleteFileAndPushChanges(
-    fileName,
-    `Suppression de l'article ${fileName}`,
+  return writeFileAndCommit(fileName, content, commitMessage).then(() =>
+    databaseAPI.push(owner, name),
   )
 }
 
