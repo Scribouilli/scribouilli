@@ -12,7 +12,7 @@ import {
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
-import { deleteFileAndCommit } from '../actions/file'
+import { writeFileAndCommit, deleteFileAndCommit } from '../actions/file'
 
 const blogMdContent = `---
 layout: default
@@ -98,14 +98,7 @@ export default ({ querystring }) => {
   settings.$on('toggle-blog', async ({ detail: { activated } }) => {
     try {
       if (activated) {
-        await databaseAPI.writeFile(
-          store.state.currentRepository.owner,
-          store.state.currentRepository.name,
-          'blog.md',
-          blogMdContent,
-          'Activation du blog',
-          false,
-        )
+        await writeFileAndCommit('blog.md', blogMdContent, 'Activation du blog')
       } else {
         await deleteFileAndCommit('blog.md', 'Désactivation du blog')
       }

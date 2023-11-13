@@ -33,6 +33,7 @@
   import { makeFileNameFromTitle } from '../../../utils'
   import databaseAPI from '../../../databaseAPI'
   import store from '../../../store'
+  import { writeFileAndCommit } from '../../../actions/file'
 
   const imageDirUrl = `https://github.com/${currentRepository.owner}/${currentRepository.name}/tree/main/images`
 
@@ -118,13 +119,10 @@
     for (const img of image) {
       imageMd = 'Mise en ligne en cours…'
       const buffer = new Uint8Array(await img.arrayBuffer())
-      await databaseAPI.writeFile(
-        currentRepository.owner,
-        currentRepository.name,
+      await writeFileAndCommit(
         `images/${img.name}`,
         buffer,
-        "Ajout d'une image",
-        false, //l'image sera push avec le reste de l'article quand celui-ci sera enregistré
+        `Ajout de l'image ${img.name}`,
       )
       imageMd = `![Texte décrivant l'image](/images/${img.name})`
     }

@@ -16,7 +16,7 @@ import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
-import { deleteArticle } from '../actions/file'
+import { deleteArticle, createArticle, updateArticle } from '../actions/article'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
 
@@ -124,65 +124,27 @@ export default ({ querystring }) => {
     }) => {
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
+      const articlePageUrl = `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(
-          `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
-        return
+        return page(articlePageUrl)
       }
 
-      const existingDate = fileName.slice(
-        '_posts/'.length,
-        '_posts/YYYY-MM-DD'.length,
-      )
-      let date = new Date()
-      if (existingDate !== '') {
-        date = new Date(existingDate)
-      }
-
-      const newFileName = makeArticleFileName(title, date)
-
-      const message = `création de l'article ${title || 'index.md'}`
-      const finalContent = `${
-        title ? makeArticleFrontMatter(title) + '\n' : ''
-      }${content}`
-
-      let newArticles =
-        state.articles?.filter(article => {
-          return article.path !== fileName
-        }) || []
-      newArticles.push({ title: title, path: newFileName })
-
-      store.mutations.setArticles(newArticles)
-
-      // if creating a new article
+      // If the file name is empty, it means that we are creating a new article.
       if (fileName === '') {
-        fileName = newFileName
+        return createArticle(title, content)
+          .then(() => {
+            state.buildStatus.setBuildingAndCheckStatusLater()
+            page(articlePageUrl)
+          })
+          .catch(msg => handleErrors(msg))
       }
 
-      // If title changed
-      if (fileName && fileName !== newFileName) {
-        fileName = {
-          old: fileName,
-          new: newFileName,
-        }
-      }
-
-      databaseAPI
-        .writeFile(
-          state.currentRepository.owner,
-          state.currentRepository.name,
-          fileName,
-          finalContent,
-          message,
-        )
+      updateArticle(fileName, title, content)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
-          page(
-            `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-          )
+          page(articlePageUrl)
         })
         .catch(msg => handleErrors(msg))
     },
