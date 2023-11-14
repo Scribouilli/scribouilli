@@ -51,3 +51,4 @@ if (store.state.oAuthProvider?.accessToken && store.state.oAuthProvider?.name) {
 }
 
 export default oAuthProvider
+export const oAuthServiceAPI = oAuthProvider.getServiceAPI()

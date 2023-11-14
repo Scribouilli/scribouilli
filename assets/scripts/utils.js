@@ -4,7 +4,7 @@ import page from 'page'
 import { format } from 'date-fns'
 
 import databaseAPI from './databaseAPI.js'
-import oAuthProvider from './oauth-services-api/index.js'
+import { oAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 
 /**
@@ -17,8 +17,7 @@ import store from './store.js'
  */
 export function checkRepositoryAvailabilityThen(owner, repoName, thenCallback) {
   return (
-    oAuthProvider
-      .getServiceAPI()
+    oAuthServiceAPI
       .getRepository(owner, repoName)
       .then(thenCallback)
       // @ts-ignore

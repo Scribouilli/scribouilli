@@ -1,7 +1,7 @@
 //@ts-check
 
 import databaseAPI from './databaseAPI.js'
-import oAuthProvider from './oauth-services-api/index.js'
+import { oAuthServiceAPI } from './oauth-services-api/index.js'
 import { logMessage } from './utils.js'
 
 /*
@@ -96,8 +96,7 @@ export default function (owner, repoName) {
     },
     checkStatus() {
       return (
-        oAuthProvider
-          .getServiceAPI()
+        oAuthServiceAPI
           .getPagesWebsite(owner, repoName)
           // @ts-ignore
           .then(({ status }) => {
