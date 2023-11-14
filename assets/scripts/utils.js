@@ -4,6 +4,7 @@ import page from 'page'
 import { format } from 'date-fns'
 
 import databaseAPI from './databaseAPI.js'
+import oAuthProvider from './oauth-services-api/index.js'
 import store from './store.js'
 
 /**
@@ -15,10 +16,14 @@ import store from './store.js'
  * @returns
  */
 export function checkRepositoryAvailabilityThen(owner, repoName, thenCallback) {
-  return databaseAPI
-    .getRepository(owner, repoName)
-    .then(thenCallback)
-    .catch(msg => handleErrors(msg))
+  return (
+    oAuthProvider
+      .getServiceAPI()
+      .getRepository(owner, repoName)
+      .then(thenCallback)
+      // @ts-ignore
+      .catch(msg => handleErrors(msg))
+  )
 }
 
 /**
@@ -91,32 +96,28 @@ export function makeArticleFileName(title, date) {
 }
 
 /**
- * 
- * @param {string} title 
- * @param {number?} index 
- * @param {boolean} inMenu 
+ *
+ * @param {string} title
+ * @param {number?} index
+ * @param {boolean} inMenu
  * @returns {string}
  */
-export function makePageFrontMatter(
-  title,
-  index = 1,
-  inMenu = true,
-) {
-    return [
-      '---',
-      'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
-      'order: ' + index,
-      'in_menu: ' + inMenu,
-      '---',
-    ].join('\n')
+export function makePageFrontMatter(title, index = 1, inMenu = true) {
+  return [
+    '---',
+    'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
+    'order: ' + index,
+    'in_menu: ' + inMenu,
+    '---',
+  ].join('\n')
 }
 
 /**
- * 
- * @param {string} title 
+ *
+ * @param {string} title
  * @returns {string}
  */
-export function makeArticleFrontMatter(title){
+export function makeArticleFrontMatter(title) {
   return [
     '---',
     'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
@@ -125,18 +126,18 @@ export function makeArticleFrontMatter(title){
 }
 
 /**
- * 
- * @param {string} errorMessage 
- * @param {string} caller 
- * @param {'log' | 'warn' | 'error'} level 
+ *
+ * @param {string} errorMessage
+ * @param {string} caller
+ * @param {'log' | 'warn' | 'error'} level
  */
 export const logMessage = (errorMessage, caller = 'unknown', level = 'log') => {
   console[level](`[${level}] [caller: ${caller}] ${errorMessage}`)
 }
 
 /**
- * 
- * @param {number} ms 
+ *
+ * @param {number} ms
  * @returns {Promise<void>}
  */
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms))

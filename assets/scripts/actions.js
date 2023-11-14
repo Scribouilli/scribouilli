@@ -3,9 +3,12 @@
 import page from 'page'
 
 import databaseAPI from './databaseAPI.js'
+import oAuthProvider from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
 import { handleErrors, logMessage, delay } from './utils'
+
+import './../types.js'
 
 const logout = () => {
   store.mutations.setLogin(undefined)
@@ -27,13 +30,19 @@ const logout = () => {
  *
  */
 export const fetchAuthenticatedUserLogin = () => {
-  const loginP = databaseAPI
+  const loginP = oAuthProvider
+    .getServiceAPI()
     .getAuthenticatedUser()
-    .then(({ login }) => {
+    .then(({ login = '' }) => {
+      if (login === '') {
+        throw new Error('NO_LOGIN')
+      }
+
       store.mutations.setLogin(login)
 
       return login
     })
+    // @ts-ignore
     .catch(errorMessage => {
       switch (errorMessage) {
         case 'INVALIDATE_TOKEN': {
@@ -42,6 +51,12 @@ export const fetchAuthenticatedUserLogin = () => {
           page('/account')
 
           break
+        }
+
+        case 'NO_LOGIN': {
+          logout()
+
+          page('/account')
         }
 
         default:
@@ -53,13 +68,17 @@ export const fetchAuthenticatedUserLogin = () => {
       throw errorMessage
     })
 
-  const emailP = databaseAPI
+  const emailP = oAuthProvider
+    .getServiceAPI()
     .getUserEmails()
+    // @ts-ignore
     .then(emails => {
+      // @ts-ignore
       const email = (emails.find(e => e.primary) ?? emails[0]).email
       store.mutations.setEmail(email)
       return email
     })
+    // @ts-ignore
     .catch(err => {
       // If we can't get email addresses, we ask the user to login again
       logout()
@@ -90,8 +109,10 @@ export const fetchAuthenticatedUserLogin = () => {
 
 export const fetchCurrentUserRepositories = async () => {
   const { login } = await fetchAuthenticatedUserLogin()
-  const currentUserRepositoriesP = databaseAPI
+  const currentUserRepositoriesP = oAuthProvider
+    .getServiceAPI()
     .getCurrentUserRepositories()
+    // @ts-ignore
     .then(repos => {
       store.mutations.setReposForAccount({ login, repos })
 
@@ -124,12 +145,13 @@ export const getCurrentRepoArticles = () => {
 }
 
 /**
- * 
- * @param {string} owner 
- * @param {string} repo 
+ *
+ * @param {string} owner
+ * @param {string} repo
  * @returns {Promise<any>}
  */
-export const setupRepo = (owner, repo) => databaseAPI.setupRepo(owner, repo)
+export const setupRepo = (owner, repo) =>
+  oAuthProvider.getServiceAPI().setupRepository(owner, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
@@ -216,7 +238,7 @@ export const setBuildStatus = (owner, repoName) => {
 export const createRepositoryForCurrentAccount = async repoName => {
   const login = await store.state.login
 
-  if(!login){
+  if (!login) {
     throw new TypeError(`login manquant dans createRepositoryForCurrentAccount`)
   }
 
@@ -226,48 +248,66 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
-  const waitRepoReady = /** @type {Promise<void>} */(new Promise((resolve) => {
-    const timer = setInterval(() => {
-      databaseAPI.checkRepoReady(login, escapedRepoName).then(res => {
-        if (res) {
-          clearInterval(timer)
-          resolve()
-        }
-      })
-    }, 1000)
-  }))
+  const waitRepoReady = /** @type {Promise<void>} */ (
+    new Promise(resolve => {
+      const timer = setInterval(() => {
+        oAuthProvider
+          .getServiceAPI()
+          .isRepositoryReady(login, escapedRepoName)
+          // @ts-ignore
+          .then(res => {
+            if (res) {
+              clearInterval(timer)
+              resolve()
+            }
+          })
+      }, 1000)
+    })
+  )
 
-  const waitGithubPages = /** @type {Promise<void>} */(new Promise((resolve) => {
-    const timer = setInterval(() => {
-      databaseAPI.checkGithubPages(login, escapedRepoName).then(res => {
-        if (res) {
-          clearInterval(timer)
-          resolve()
-        }
+  const waitGithubPages = /** @type {Promise<void>} */ (
+    new Promise(resolve => {
+      const timer = setInterval(() => {
+        oAuthProvider
+          .getServiceAPI()
+          .isPagesWebsiteBuilt(login, escapedRepoName)
+          // @ts-ignore
+          .then(res => {
+            if (res) {
+              clearInterval(timer)
+              resolve()
+            }
+          })
+      }, 5000)
+    })
+  )
+  return (
+    oAuthProvider
+      .getServiceAPI()
+      .createDefaultRepository(login, escapedRepoName)
+      .then(() => {
+        // Generation from a template repository
+        // is asynchronous, so we need to wait a bit
+        // for the new repo to be created
+        // before the setup of the GitHub Pages branch
+        return waitRepoReady
       })
-    }, 5000)
-  }))
-  return databaseAPI
-    .createDefaultRepository(login, escapedRepoName)
-    .then(() => {
-      // Generation from a template repository
-      // is asynchronous, so we need to wait a bit
-      // for the new repo to be created
-      // before the setup of the GitHub Pages branch
-      return waitRepoReady
-    })
-    .then(() => {
-      return databaseAPI.createRepoGithubPages(login, escapedRepoName)
-    })
-    .then(() => {
-      return waitGithubPages
-    })
-    .then(() => {
-      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
-    })
-    .catch(errorMessage => {
-      logMessage(errorMessage, 'createRepositoryForCurrentAccount')
+      .then(() => {
+        return oAuthProvider
+          .getServiceAPI()
+          .createPagesWebsiteFromRepository(login, escapedRepoName)
+      })
+      .then(() => {
+        return waitGithubPages
+      })
+      .then(() => {
+        page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
+      })
+      // @ts-ignore
+      .catch(errorMessage => {
+        logMessage(errorMessage, 'createRepositoryForCurrentAccount')
 
-      throw errorMessage
-    })
+        throw errorMessage
+      })
+  )
 }

@@ -1,4 +1,25 @@
 /**
+ * @typedef {Object} OAuthProvider
+ * @property {function} getServiceAPI
+ */
+
+/**
+ * @typedef {Object} OAuthServiceAPI
+ * @property {function} callAPI
+ * @property {function} getAuthenticatedUser
+ * @property {function} getUserEmails
+ * @property {function} getRepository
+ * @property {function} getCurrentUserRepositories
+ * @property {function} createDefaultRepository
+ * @property {function} setupRepository
+ * @property {function} deleteRepository
+ * @property {function} createPagesWebsiteFromRepository
+ * @property {function} getPagesWebsite
+ * @property {function} isPagesWebsiteBuilt
+ * @property {function} isRepositoryReady
+ */
+
+/**
  * @typedef {Object} GithubUserEmails
  * @property {string} email
  * @property {boolean} primary

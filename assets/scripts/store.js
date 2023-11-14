@@ -5,8 +5,10 @@ import Store from 'baredux'
 import 'types.js'
 
 import {
+  OAUTH_PROVIDER_STORAGE_KEY,
   ACCESS_TOKEN_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
+  TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
 } from './config.js'
 
 /**
@@ -19,7 +21,9 @@ import {
 
 /**
  * @typedef {Object} ScribouilliState
- * @property {string} [accessToken]
+ * @property {object} [oAuthProvider]
+ * @property {string} [oAuthProvider.name]
+ * @property {string} [oAuthProvider.accessToken]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
@@ -30,6 +34,9 @@ import {
  * @property {any} buildStatus
  * @property {string} basePath
  * @property {{css: string}} theme
+ *
+ * deprecated
+ * @property {string} [accessToken]
  */
 
 /**
@@ -40,14 +47,38 @@ import {
  * @property {any} mutations
  */
 
+const getAccessToken = () => {
+  const fromLoginToken = new URL(location.toString()).searchParams.get(
+    TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
+  )
+
+  if (fromLoginToken) {
+    return fromLoginToken
+  }
+
+  return localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)
+}
+
+const getOAuthProviderName = () => {
+  const fromLoginService = new URL(location.toString()).searchParams.get(
+    TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  )
+
+  if (fromLoginService) {
+    return fromLoginService
+  }
+
+  return localStorage.getItem(OAUTH_PROVIDER_STORAGE_KEY)
+}
+
 /** @type { BareduxStore<ScribouilliState> } */
 const store = Store({
   state: {
     // @ts-ignore
-    accessToken:
-      new URL(location.toString()).searchParams.get(
-        TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-      ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+    oAuthProvider: {
+      accessToken: getAccessToken(),
+      name: getOAuthProviderName(),
+    },
     login: undefined,
     email: undefined,
     origin: undefined,

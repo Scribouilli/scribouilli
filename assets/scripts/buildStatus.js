@@ -1,6 +1,7 @@
 //@ts-check
 
 import databaseAPI from './databaseAPI.js'
+import oAuthProvider from './oauth-services-api/index.js'
 import { logMessage } from './utils.js'
 
 /*
@@ -86,43 +87,47 @@ export default function (owner, repoName) {
       return repoStatus
     },
     /**
-     * 
-     * @param {(status: BuildStatus) => any} callback 
+     *
+     * @param {(status: BuildStatus) => any} callback
      */
     subscribe(callback) {
       console.log('subscribe reaction.. ', callback)
       reaction = callback
     },
     checkStatus() {
-      return databaseAPI
-        .getGitHubPagesSite(owner, repoName)
-        .then(({ status }) => {
-          logMessage(
-            `GitHub Pages status is ${status}`,
-            'buildStatus.checkStatus',
-          )
+      return (
+        oAuthProvider
+          .getServiceAPI()
+          .getPagesWebsite(owner, repoName)
+          // @ts-ignore
+          .then(({ status }) => {
+            logMessage(
+              `GitHub Pages status is ${status}`,
+              'buildStatus.checkStatus',
+            )
 
-          if (['built', 'errored', 'building'].includes(status)) {
-            repoStatus = status
-          } else {
-            // status === null
-            repoStatus = 'building'
-          }
+            if (['built', 'errored', 'building'].includes(status)) {
+              repoStatus = status
+            } else {
+              // status === null
+              repoStatus = 'building'
+            }
 
-          if (reaction) {
-            reaction(repoStatus)
-          }
+            if (reaction) {
+              reaction(repoStatus)
+            }
 
-          if (repoStatus === 'building') {
-            scheduleCheck()
-          }
-        })
-        .catch(_ => {
-          repoStatus = 'errored'
-          if (reaction) {
-            reaction(repoStatus)
-          }
-        })
+            if (repoStatus === 'building') {
+              scheduleCheck()
+            }
+          })
+          .catch(() => {
+            repoStatus = 'errored'
+            if (reaction) {
+              reaction(repoStatus)
+            }
+          })
+      )
     },
     setBuildingAndCheckStatusLater(t = 30000) {
       repoStatus = 'building'
