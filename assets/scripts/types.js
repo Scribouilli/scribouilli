@@ -5,18 +5,18 @@
 
 /**
  * @typedef {Object} OAuthServiceAPI
- * @property {function} callAPI
- * @property {function} getAuthenticatedUser
- * @property {function} getUserEmails
- * @property {function} getRepository
- * @property {function} getCurrentUserRepositories
- * @property {function} createDefaultRepository
- * @property {function} setupRepository
- * @property {function} deleteRepository
- * @property {function} createPagesWebsiteFromRepository
- * @property {function} getPagesWebsite
- * @property {function} isPagesWebsiteBuilt
- * @property {function} isRepositoryReady
+ * @property {(url: string, requestParams: RequestInit) => Promise<Response>} callAPI
+ * @property {() => Promise<any>} getAuthenticatedUser
+ * @property {() => Promise<GithubUserEmails[]>} getUserEmails
+ * @property {(account: string, repositoryName: string) => Promise<GithubRepository>} getRepository
+ * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
+ * @property {(account: string, repositoryName: string) => Promise<any>} createDefaultRepository
+ * @property {(account: string, repositoryName: string) => Promise<any>} setupRepository
+ * @property {(account: string, repositoryName: string) => Promise<any>} deleteRepository
+ * @property {(account: string, repositoryName: string) => Promise<any>} createPagesWebsiteFromRepository
+ * @property {(account: string, repositoryName: string) => Promise<any>} getPagesWebsite
+ * @property {(account: string, repositoryName: string) => Promise<boolean>} isPagesWebsiteBuilt
+ * @property {(account: string, repositoryName: string) => Promise<boolean>} isRepositoryReady
  */
 
 /**
