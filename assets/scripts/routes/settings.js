@@ -9,6 +9,7 @@ import {
   setArticles,
   setCurrentRepositoryFromQuerystring,
 } from '../actions'
+import { deleteRepository } from '../actions/repository.js'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
@@ -69,11 +70,10 @@ export default ({ querystring }) => {
   })
 
   settings.$on('delete-site', () => {
-    databaseAPI
-      .deleteRepository(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-      )
+    deleteRepository(
+      store.state.currentRepository.owner,
+      store.state.currentRepository.name,
+    )
       .then(() => {
         store.mutations.removeSite(store.state)
         page('/create-project')
