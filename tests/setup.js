@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import 'mock-local-storage'
 import 'fake-indexeddb/auto'
 
@@ -6,10 +8,11 @@ import chai, { expect } from 'chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 
+import 'chai/register-expect.js'
+
 // Setup chai and sinon
 global.sinon = sinon
 global.chai = chai
-global.expect = expect
 chai.use(sinonChai)
 
 // Use a fake DOM for testing

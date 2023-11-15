@@ -28,12 +28,13 @@ describe('actions/file.js', () => {
     })
 
     it('calls removeFile and commit', done => {
-      writeFileAndCommit('test.js')
+      writeFileAndCommit('test.js', 'Curiouser and curiouser!')
         .then(() => {
           expect(databaseAPI.writeFile).to.have.been.calledWith(
             'alice',
             'alice.github.io',
             'test.js',
+            'Curiouser and curiouser!',
           )
           expect(databaseAPI.commit).to.have.been.calledWith(
             'alice',
@@ -54,7 +55,7 @@ describe('actions/file.js', () => {
     })
 
     it('calls removeFile, commit and push', done => {
-      writeFileAndPushChanges('test.js')
+      writeFileAndPushChanges('test.js', 'Curiouser and curiouser!')
         .then(() => {
           expect(databaseAPI.push).to.have.been.calledWith(
             'alice',
