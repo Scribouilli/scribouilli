@@ -21,10 +21,8 @@ if (
   store.state.oAuthProvider?.accessToken &&
   store.state.oAuthProvider?.name
 ) {
-  console.log(store.state.oAuthProvider.accessToken)
-  console.log(store.state.oAuthProvider.name)
-  // url.searchParams.delete(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)
-  // url.searchParams.delete(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER)
+  url.searchParams.delete(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)
+  url.searchParams.delete(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER)
   history.replaceState(undefined, '', url)
 
   localStorage.setItem(

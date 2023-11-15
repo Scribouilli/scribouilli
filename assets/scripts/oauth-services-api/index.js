@@ -22,7 +22,9 @@ export class OAuthProvider {
    */
   getServiceAPI() {
     if (!this._accessToken) {
-      throw new Error("Il manque le token d'accès.")
+      console.info("Il manque le jeton d'accès. Redirection vers /account.")
+
+      page.redirect('/account')
     }
 
     if (this._serviceAPI) {
@@ -44,11 +46,6 @@ if (store.state.oAuthProvider?.accessToken && store.state.oAuthProvider?.name) {
     store.state.oAuthProvider.accessToken,
     store.state.oAuthProvider.name,
   )
-} else {
-  console.info('No access token found in store. Redirecting to /account.')
-
-  page.redirect('/account')
 }
 
-export default oAuthProvider
 export const oAuthServiceAPI = oAuthProvider.getServiceAPI()
