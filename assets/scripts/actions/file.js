@@ -2,7 +2,7 @@
 
 import databaseAPI from './../databaseAPI.js'
 import store from './../store.js'
-import { handleErrors } from '../utils'
+import { handleErrors } from './../utils.js'
 
 /**
  * @param {string} fileName

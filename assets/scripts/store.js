@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import Store from 'baredux'
-import 'types.js'
+import './types.js'
 
 import {
   OAUTH_PROVIDER_STORAGE_KEY,

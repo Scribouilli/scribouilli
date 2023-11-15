@@ -1,5 +1,5 @@
 {
-  "include": ["declarations.d.ts", "assets/scripts/**/*.js"],
+  "include": ["declarations.d.ts", "assets/scripts/**/*.js", "tests/**/*.js"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "allowJs": true,
@@ -12,6 +12,6 @@
     "target": "esnext",
     "lib": ["ES2022", "dom", "dom.iterable"],
     "downlevelIteration": true,
-    "types": ["node"]
+    "types": ["node", "mocha"]
   }
 }
