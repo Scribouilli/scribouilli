@@ -22,8 +22,6 @@ export class OAuthProvider {
    */
   getServiceAPI() {
     if (!this._accessToken) {
-      console.info("Il manque le jeton d'accès. Redirection vers /account.")
-
       page.redirect('/account')
     }
 

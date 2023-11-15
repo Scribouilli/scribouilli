@@ -1,5 +1,8 @@
 export const fakeStateWithOneSite = {
-  accessToken: '1234567890',
+  oAuthProvider: {
+    accessToken: '1234567890',
+    name: 'github',
+  },
   login: 'alice',
   email: 'alice@wonderland.io',
   origin: undefined,
