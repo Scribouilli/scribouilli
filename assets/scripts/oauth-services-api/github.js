@@ -1,5 +1,8 @@
 import './../types.js'
 
+/**
+ * @extends {OAuthServiceAPI}
+ */
 export class GitHubAPI {
   /**
    * @param {string} accessToken
@@ -15,37 +18,21 @@ export class GitHubAPI {
     this.defaultThemeRepoName = 'site-template'
   }
 
-  /**
-   * @summary Fetch the authenticated user
-   *
-   * @returns {Promise<any>} A promise that resolves to the login of the
-   * authenticated user or organization.
-   */
+  /** @type {OAuthServiceAPI["getAuthenticatedUser"]} */
   getAuthenticatedUser() {
     return this.callAPI(`${this.url}/user`).then(response => {
       return response.json()
     })
   }
 
-  /**
-   * @summary Get the authenticated user emails
-   *
-   * @returns {Promise<GithubUserEmails[]>}
-   */
+  /** @type {OAuthServiceAPI["getUserEmails"]} */
   getUserEmails() {
     return this.callAPI(`${this.url}/user/emails`).then(response => {
       return response.json()
     })
   }
 
-  /**
-   * @summary Fetch a repository given its owner and name
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<GithubRepository>}
-   */
+  /** @type {OAuthServiceAPI["getRepository"]} */
   getRepository(account, repositoryName) {
     return this.callAPI(`${this.url}/repos/${account}/${repositoryName}`)
       .then(response => {
@@ -60,12 +47,7 @@ export class GitHubAPI {
       })
   }
 
-  /**
-   * @summary Fetch the list of public repositories for the current user
-   *
-   * @returns {Promise<GithubRepository[]>}
-   * A promise that resolves to the list of repositories for the current user.
-   */
+  /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
     return this.callAPI(
       `${this.url}/user/repos?sort=updated&visibility=public`,
@@ -74,14 +56,7 @@ export class GitHubAPI {
     })
   }
 
-  /**
-   * @summary Create a repository given its owner and a name
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<any>}
-   */
+  /** @type {OAuthServiceAPI["createDefaultRepository"]} */
   createDefaultRepository(account, repositoryName) {
     return this.callAPI(
       `${this.url}/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
@@ -106,15 +81,7 @@ export class GitHubAPI {
     })
   }
 
-  /**
-   * @summary Put topic in GitHub repository to find more easily the websites.
-   *          Also configure some other options
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<any>}
-   */
+  /** @type {OAuthServiceAPI["setupRepository"]} */
   setupRepository(account, repositoryName) {
     return this.callAPI(
       `${this.url}/repos/${account}/${repositoryName}/topics`,
@@ -147,13 +114,7 @@ export class GitHubAPI {
     })
   }
 
-  /**
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<any>}
-   */
+  /** @type {OAuthServiceAPI["deleteRepository"]} */
   deleteRepository(account, repositoryName) {
     return this.callAPI(`${this.url}/repos/${account}/${repositoryName}`, {
       headers: { Authorization: 'token ' + this.accessToken },
@@ -161,13 +122,7 @@ export class GitHubAPI {
     })
   }
 
-  /**
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<any>}
-   */
+  /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
   createPagesWebsiteFromRepository(account, repositoryName) {
     return this.callAPI(
       `${this.url}/repos/${account}/${repositoryName}/pages`,
@@ -182,13 +137,7 @@ export class GitHubAPI {
     )
   }
 
-  /**
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<any>}
-   */
+  /** @type {OAuthServiceAPI["getPagesWebsite"]} */
   getPagesWebsite(account, repositoryName) {
     return this.callAPI(
       `${this.url}/repos/${account}/${repositoryName}/pages`,
@@ -197,13 +146,7 @@ export class GitHubAPI {
     })
   }
 
-  /**
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<boolean>}
-   */
+  /** @type {OAuthServiceAPI["isPagesWebsiteBuilt"]} */
   isPagesWebsiteBuilt(account, repositoryName) {
     return this.getPagesWebsite(account, repositoryName)
       .then(response => {
@@ -214,13 +157,7 @@ export class GitHubAPI {
       })
   }
 
-  /**
-   *
-   * @param {string} account
-   * @param {string} repositoryName
-   *
-   * @returns {Promise<boolean>}
-   */
+  /** @type {OAuthServiceAPI["isRepositoryReady"]} */
   isRepositoryReady(account, repositoryName) {
     return this.callAPI(
       `${this.url}/repos/${account}/${repositoryName}/contents/_config.yml`,
@@ -233,32 +170,14 @@ export class GitHubAPI {
       })
   }
 
-  /**
-   *
-   * @param {GithubDeployment} deployment
-   *
-   * @returns {Promise<any>}
-   */
-  // getDeploymentStatus(deployment) {
-  // return this.callAPI(deployment.statuses_url).then(response => {
-  // return response.json()
-  // })
-  // }
+  /** @type {OAuthServiceAPI["callAPI"]} */
+  callAPI(url, requestParams) {
+    if (requestParams && requestParams.headers === undefined) {
+      requestParams.headers = {
+        Authorization: 'token ' + this.accessToken,
+      }
+    }
 
-  /**
-   * @summary This method must be called for each API call.
-   *
-   * It handles access_token errors
-   *
-   * @param {string} url - the url of the endpoint
-   * @param {RequestInit} requestParams - the request parameters
-   *
-   * @returns {Promise<Response>}
-   */
-  callAPI(
-    url,
-    requestParams = { headers: { Authorization: 'token ' + this.accessToken } },
-  ) {
     return fetch(url, requestParams).then(httpResp => {
       if (httpResp.status === 404) {
         throw 'NOT_FOUND'
