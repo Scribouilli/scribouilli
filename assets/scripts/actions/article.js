@@ -31,12 +31,12 @@ export const deleteArticle = fileName => {
 }
 
 /**
- * @param {string} content
  * @param {string} title
+ * @param {string} content
  *
  * @returns {Promise<void>}
  */
-export const createArticle = (content, title) => {
+export const createArticle = (title, content) => {
   const { state } = store
 
   const date = new Date()
