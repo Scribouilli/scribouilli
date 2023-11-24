@@ -7,6 +7,7 @@ export const gitHubApiBaseUrl = 'https://api.github.com'
 export const defaultRepoOwner = 'Scribouilli'
 export const defaultThemeRepoName = 'site-template'
 
+
 const body = document.querySelector('body')
 if (!body) {
   throw new TypeError(

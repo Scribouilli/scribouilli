@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/daktary-team/scribouilli#readme",
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "**/*.js": "prettier --write --ignore-unknown"
   },
   "type": "module",
   "devDependencies": {
