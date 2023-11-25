@@ -3,6 +3,9 @@ export const OAUTH_PROVIDER_STORAGE_KEY = 'scribouilli_oauth_service'
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token'
 export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'
 export const defaultRepositoryName = 'mon-scribouilli'
+export const gitHubApiBaseUrl = 'https://api.github.com'
+export const defaultRepoOwner = 'Scribouilli'
+export const defaultThemeRepoName = 'site-template'
 
 const body = document.querySelector('body')
 if (!body) {

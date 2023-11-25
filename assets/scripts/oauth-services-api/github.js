@@ -1,3 +1,9 @@
+import {
+  gitHubApiBaseUrl,
+  defaultRepoOwner,
+  defaultThemeRepoName,
+} from './../config.js'
+
 import './../types.js'
 
 /**
@@ -8,33 +14,29 @@ export class GitHubAPI {
    * @param {string} accessToken
    */
   constructor(accessToken) {
-    /** @type {string} */
-    this.url = 'https://api.github.com'
-
     /** @type {string | undefined} */
     this.accessToken = accessToken
-
-    this.defaultRepoOwner = 'Scribouilli'
-    this.defaultThemeRepoName = 'site-template'
   }
 
   /** @type {OAuthServiceAPI["getAuthenticatedUser"]} */
   getAuthenticatedUser() {
-    return this.callAPI(`${this.url}/user`).then(response => {
+    return this.callAPI(`${gitHubApiBaseUrl}/user`).then(response => {
       return response.json()
     })
   }
 
   /** @type {OAuthServiceAPI["getUserEmails"]} */
   getUserEmails() {
-    return this.callAPI(`${this.url}/user/emails`).then(response => {
+    return this.callAPI(`${gitHubApiBaseUrl}/user/emails`).then(response => {
       return response.json()
     })
   }
 
   /** @type {OAuthServiceAPI["getRepository"]} */
   getRepository(account, repositoryName) {
-    return this.callAPI(`${this.url}/repos/${account}/${repositoryName}`)
+    return this.callAPI(
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}`,
+    )
       .then(response => {
         return response.json()
       })
@@ -50,7 +52,7 @@ export class GitHubAPI {
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
     return this.callAPI(
-      `${this.url}/user/repos?sort=updated&visibility=public`,
+      `${gitHubApiBaseUrl}/user/repos?sort=updated&visibility=public`,
     ).then(response => {
       return response.json()
     })
@@ -59,7 +61,7 @@ export class GitHubAPI {
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
   createDefaultRepository(account, repositoryName) {
     return this.callAPI(
-      `${this.url}/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
+      `${gitHubApiBaseUrl}/repos/${defaultRepoOwner}/${defaultThemeRepoName}/generate`,
       {
         headers: {
           Authorization: 'token ' + this.accessToken,
@@ -84,7 +86,7 @@ export class GitHubAPI {
   /** @type {OAuthServiceAPI["setupRepository"]} */
   setupRepository(account, repositoryName) {
     return this.callAPI(
-      `${this.url}/repos/${account}/${repositoryName}/topics`,
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/topics`,
       {
         headers: {
           Authorization: 'token ' + this.accessToken,
@@ -98,34 +100,40 @@ export class GitHubAPI {
         }),
       },
     ).then(response => {
-      return this.callAPI(`${this.url}/repos/${account}/${repositoryName}`, {
-        method: 'POST',
-        headers: {
-          Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
+      return this.callAPI(
+        `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'token ' + this.accessToken,
+            Accept: 'application/vnd.github+json',
+          },
+          body: JSON.stringify({
+            homepage: `https://${account.toLowerCase()}.github.io/${repositoryName.toLowerCase()}`,
+            has_issues: false,
+            has_projects: false,
+            has_wiki: false,
+          }),
         },
-        body: JSON.stringify({
-          homepage: `https://${account.toLowerCase()}.github.io/${repositoryName.toLowerCase()}`,
-          has_issues: false,
-          has_projects: false,
-          has_wiki: false,
-        }),
-      })
+      )
     })
   }
 
   /** @type {OAuthServiceAPI["deleteRepository"]} */
   deleteRepository(account, repositoryName) {
-    return this.callAPI(`${this.url}/repos/${account}/${repositoryName}`, {
-      headers: { Authorization: 'token ' + this.accessToken },
-      method: 'DELETE',
-    })
+    return this.callAPI(
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}`,
+      {
+        headers: { Authorization: 'token ' + this.accessToken },
+        method: 'DELETE',
+      },
+    )
   }
 
   /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
   createPagesWebsiteFromRepository(account, repositoryName) {
     return this.callAPI(
-      `${this.url}/repos/${account}/${repositoryName}/pages`,
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/pages`,
       {
         headers: {
           Authorization: 'token ' + this.accessToken,
@@ -140,7 +148,7 @@ export class GitHubAPI {
   /** @type {OAuthServiceAPI["getPagesWebsite"]} */
   getPagesWebsite(account, repositoryName) {
     return this.callAPI(
-      `${this.url}/repos/${account}/${repositoryName}/pages`,
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/pages`,
     ).then(response => {
       return response.json()
     })
@@ -160,7 +168,7 @@ export class GitHubAPI {
   /** @type {OAuthServiceAPI["isRepositoryReady"]} */
   isRepositoryReady(account, repositoryName) {
     return this.callAPI(
-      `${this.url}/repos/${account}/${repositoryName}/contents/_config.yml`,
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/contents/_config.yml`,
     )
       .then(response => {
         return response.ok
