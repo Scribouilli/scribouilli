@@ -31,7 +31,7 @@ const makeOAuthServiceAPI = (type, options) => {
   const implementedServices = ['github', 'gitlab']
 
   if (!implementedServices.includes(type)) {
-    throw new Error("Le service d'authentification OAuth n'est pas supporté")
+    throw new Error(`Le service d'authentificaton ${type} n'est pas supporté.`)
   }
 
   // TODO: Ajouter le support à GitLab
@@ -52,6 +52,8 @@ export const getOAuthServiceAPI = () => {
     !store.state.oAuthProvider?.accessToken ||
     !store.state.oAuthProvider?.name
   ) {
+    console.info("L'utilisateur n'est pas connecté. Redirection vers /account")
+
     page('/account')
 
     return
