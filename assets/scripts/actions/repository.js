@@ -1,4 +1,4 @@
-import databaseAPI from './../databaseAPI'
+import gitHelper from './../gitHelper'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 
 /**
@@ -10,7 +10,7 @@ import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
  * @return {Promise<any>} - A promise that resolves when the repository has been deleted
  */
 export const deleteRepository = (account, repositoryName) => {
-  return databaseAPI.deleteRepository(account, repositoryName).then(() => {
+  return gitHelper.deleteRepository(account, repositoryName).then(() => {
     return getOAuthServiceAPI().deleteRepository(account, repositoryName)
   })
 }

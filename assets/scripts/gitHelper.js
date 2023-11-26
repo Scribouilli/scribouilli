@@ -11,7 +11,7 @@ import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
-class DatabaseAPI {
+class GitHelper {
   /**
    * @param {string} accessToken
    */
@@ -346,14 +346,14 @@ class DatabaseAPI {
   }
 }
 
-/** @type {DatabaseAPI} */
-let databaseAPI = new DatabaseAPI('')
+/** @type {GitHelper} */
+let gitHelper = new GitHelper('')
 
-// Create the databaseAPI singleton with the logged-in user access token.
+// Create the gitHelper singleton with the logged-in user access token.
 if (store.state.oAuthProvider?.accessToken) {
-  databaseAPI = new DatabaseAPI(store.state.oAuthProvider.accessToken)
+  gitHelper = new GitHelper(store.state.oAuthProvider.accessToken)
 } else {
   history.replaceState(undefined, '', store.state.basePath + '/')
 }
 
-export default databaseAPI
+export default gitHelper

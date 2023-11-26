@@ -3,7 +3,7 @@
 import page from 'page'
 import { format } from 'date-fns'
 
-import databaseAPI from './databaseAPI.js'
+import gitHelper from './gitHelper.js'
 import store from './store.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
@@ -47,7 +47,7 @@ export const handleErrors = errorMessage => {
       break
     }
     case 'NOT_FOUND':
-      const message = `databaseAPI call failed: ${errorMessage}`
+      const message = `gitHelper call failed: ${errorMessage}`
       logMessage(message, 'handleErrors')
 
       break

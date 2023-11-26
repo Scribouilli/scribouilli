@@ -2,7 +2,7 @@
 
 import page from 'page'
 
-import databaseAPI from './databaseAPI.js'
+import gitHelper from './gitHelper.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
@@ -120,7 +120,7 @@ export const fetchCurrentUserRepositories = async () => {
 export const getCurrentRepoPages = () => {
   const { owner, name } = store.state.currentRepository
 
-  return databaseAPI
+  return gitHelper
     .getPagesList(owner, name)
     .then(pages => {
       store.mutations.setPages(pages)
@@ -131,7 +131,7 @@ export const getCurrentRepoPages = () => {
 export const getCurrentRepoArticles = () => {
   const { owner, name } = store.state.currentRepository
 
-  return databaseAPI
+  return gitHelper
     .getArticlesList(owner, name)
     .then(articles => {
       store.mutations.setArticles(articles)
@@ -186,14 +186,14 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  databaseAPI.setAuthor(login, owner, repoName, email)
+  gitHelper.setAuthor(login, owner, repoName, email)
 
   setBuildStatus(owner, repoName)
   setArticles()
 }
 
 export const setArticles = async () => {
-  const articles = await databaseAPI.getArticlesList(
+  const articles = await gitHelper.getArticlesList(
     store.state.currentRepository.owner,
     store.state.currentRepository.name,
   )

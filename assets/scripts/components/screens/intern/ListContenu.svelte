@@ -1,5 +1,5 @@
 <script>
-  import databaseAPI from '../../../databaseAPI'
+  import gitHelper from '../../../gitHelper.js'
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils'
@@ -44,7 +44,7 @@
   const editClick = async e => {
     if (modification) {
       for (let page of listContenu) {
-        await databaseAPI.writeFile(
+        await gitHelper.writeFile(
           store.state.currentRepository.owner,
           store.state.currentRepository.name,
           page.path,
@@ -60,13 +60,13 @@
         )
       }
 
-      await databaseAPI.commit(
+      await gitHelper.commit(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
         'Changement index',
       )
 
-      await databaseAPI.push(
+      await gitHelper.push(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
       )

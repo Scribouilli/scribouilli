@@ -1,6 +1,6 @@
 //@ts-check
 
-import databaseAPI from './../databaseAPI.js'
+import gitHelper from './../gitHelper.js'
 import store from './../store.js'
 import { handleErrors } from './../utils.js'
 
@@ -19,9 +19,9 @@ export const writeFileAndCommit = (fileName, content, commitMessage) => {
   const { state } = store
   const { owner, name } = store.state.currentRepository
 
-  return databaseAPI.writeFile(owner, name, fileName, content).then(() => {
+  return gitHelper.writeFile(owner, name, fileName, content).then(() => {
     // @ts-ignore
-    return databaseAPI.commit(owner, name, commitMessage)
+    return gitHelper.commit(owner, name, commitMessage)
   })
 }
 
@@ -41,7 +41,7 @@ export const writeFileAndPushChanges = (
   const { owner, name } = state.currentRepository
 
   return writeFileAndCommit(fileName, content, commitMessage).then(() =>
-    databaseAPI.push(owner, name),
+    gitHelper.push(owner, name),
   )
 }
 
@@ -59,8 +59,8 @@ export const deleteFileAndCommit = (fileName, commitMessage = '') => {
     commitMessage = `Suppression du fichier ${fileName}`
   }
 
-  return databaseAPI.removeFile(owner, name, fileName).then(() => {
-    return databaseAPI.commit(owner, name, commitMessage)
+  return gitHelper.removeFile(owner, name, fileName).then(() => {
+    return gitHelper.commit(owner, name, commitMessage)
   })
 }
 
@@ -75,6 +75,6 @@ export const deleteFileAndPushChanges = (fileName, commitMessage) => {
   const { owner, name } = state.currentRepository
 
   return deleteFileAndCommit(fileName, commitMessage).then(() =>
-    databaseAPI.push(owner, name),
+    gitHelper.push(owner, name),
   )
 }
