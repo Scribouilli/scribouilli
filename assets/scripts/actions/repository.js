@@ -1,5 +1,5 @@
 import databaseAPI from './../databaseAPI'
-import { oAuthServiceAPI } from './../oauth-services-api/index.js'
+import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 
 /**
  * @summary Delete a repository from the local indexedDB and from the OAuth service
@@ -11,6 +11,6 @@ import { oAuthServiceAPI } from './../oauth-services-api/index.js'
  */
 export const deleteRepository = (account, repositoryName) => {
   return databaseAPI.deleteRepository(account, repositoryName).then(() => {
-    return oAuthServiceAPI.deleteRepository(account, repositoryName)
+    return getOAuthServiceAPI().deleteRepository(account, repositoryName)
   })
 }

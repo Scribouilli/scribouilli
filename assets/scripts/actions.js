@@ -3,7 +3,7 @@
 import page from 'page'
 
 import databaseAPI from './databaseAPI.js'
-import { oAuthServiceAPI } from './oauth-services-api/index.js'
+import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
 import { handleErrors, logMessage, delay } from './utils'
@@ -28,7 +28,7 @@ const logout = () => {
  *
  */
 export const fetchAuthenticatedUserLogin = () => {
-  const loginP = oAuthServiceAPI
+  const loginP = getOAuthServiceAPI()
     .getAuthenticatedUser()
     .then(({ login = '' }) => {
       if (login === '') {
@@ -65,7 +65,7 @@ export const fetchAuthenticatedUserLogin = () => {
       throw errorMessage
     })
 
-  const emailP = oAuthServiceAPI
+  const emailP = getOAuthServiceAPI()
     .getUserEmails()
     // @ts-ignore
     .then(emails => {
@@ -105,7 +105,7 @@ export const fetchAuthenticatedUserLogin = () => {
 
 export const fetchCurrentUserRepositories = async () => {
   const { login } = await fetchAuthenticatedUserLogin()
-  const currentUserRepositoriesP = oAuthServiceAPI
+  const currentUserRepositoriesP = getOAuthServiceAPI()
     .getCurrentUserRepositories()
     // @ts-ignore
     .then(repos => {
@@ -146,7 +146,7 @@ export const getCurrentRepoArticles = () => {
  * @returns {Promise<any>}
  */
 export const setupRepo = (owner, repo) =>
-  oAuthServiceAPI.setupRepository(owner, repo)
+  getOAuthServiceAPI().setupRepository(owner, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
@@ -246,7 +246,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
   const waitRepoReady = /** @type {Promise<void>} */ (
     new Promise(resolve => {
       const timer = setInterval(() => {
-        oAuthServiceAPI
+        getOAuthServiceAPI()
           .isRepositoryReady(login, escapedRepoName)
           // @ts-ignore
           .then(res => {
@@ -262,7 +262,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
   const waitGithubPages = /** @type {Promise<void>} */ (
     new Promise(resolve => {
       const timer = setInterval(() => {
-        oAuthServiceAPI
+        getOAuthServiceAPI()
           .isPagesWebsiteBuilt(login, escapedRepoName)
           // @ts-ignore
           .then(res => {
@@ -275,7 +275,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
     })
   )
   return (
-    oAuthServiceAPI
+    getOAuthServiceAPI()
       .createDefaultRepository(login, escapedRepoName)
       .then(() => {
         // Generation from a template repository
@@ -285,7 +285,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
         return waitRepoReady
       })
       .then(() => {
-        return oAuthServiceAPI.createPagesWebsiteFromRepository(
+        return getOAuthServiceAPI().createPagesWebsiteFromRepository(
           login,
           escapedRepoName,
         )

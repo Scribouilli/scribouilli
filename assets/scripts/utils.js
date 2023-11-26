@@ -4,8 +4,8 @@ import page from 'page'
 import { format } from 'date-fns'
 
 import databaseAPI from './databaseAPI.js'
-import { oAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
+import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
 /**
  * @summary Check the availability of a repository and redirect to project creation
@@ -17,7 +17,7 @@ import store from './store.js'
  */
 export function checkRepositoryAvailabilityThen(owner, repoName, thenCallback) {
   return (
-    oAuthServiceAPI
+    getOAuthServiceAPI()
       .getRepository(owner, repoName)
       .then(thenCallback)
       // @ts-ignore

@@ -20,6 +20,20 @@
  */
 
 /**
+ * @typedef {Object} GithubOptions
+ * @property {string} accessToken
+ */
+
+/**
+ * @typedef {Object} GitlabOptions
+ * @property {string} accessToken
+ * @property {string} origin
+ * @property {string} refreshToken
+ * @property {string} expiredIn
+ * @property {string} state
+ */
+
+/**
  * @typedef {Object} GithubUserEmails
  * @property {string} email
  * @property {boolean} primary
