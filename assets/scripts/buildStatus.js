@@ -1,6 +1,5 @@
 //@ts-check
 
-import gitHelper from './gitHelper.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import { logMessage } from './utils.js'
 

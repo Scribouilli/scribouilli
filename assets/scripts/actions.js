@@ -2,7 +2,7 @@
 
 import page from 'page'
 
-import gitHelper from './gitHelper.js'
+import gitAgent from './gitAgent.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
@@ -120,7 +120,7 @@ export const fetchCurrentUserRepositories = async () => {
 export const getCurrentRepoPages = () => {
   const { owner, name } = store.state.currentRepository
 
-  return gitHelper
+  return gitAgent
     .getPagesList(owner, name)
     .then(pages => {
       store.mutations.setPages(pages)
@@ -131,7 +131,7 @@ export const getCurrentRepoPages = () => {
 export const getCurrentRepoArticles = () => {
   const { owner, name } = store.state.currentRepository
 
-  return gitHelper
+  return gitAgent
     .getArticlesList(owner, name)
     .then(articles => {
       store.mutations.setArticles(articles)
@@ -186,14 +186,14 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  gitHelper.setAuthor(login, owner, repoName, email)
+  gitAgent.setAuthor(login, owner, repoName, email)
 
   setBuildStatus(owner, repoName)
   setArticles()
 }
 
 export const setArticles = async () => {
-  const articles = await gitHelper.getArticlesList(
+  const articles = await gitAgent.getArticlesList(
     store.state.currentRepository.owner,
     store.state.currentRepository.name,
   )

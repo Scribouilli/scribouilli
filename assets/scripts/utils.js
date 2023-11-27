@@ -3,7 +3,7 @@
 import page from 'page'
 import { format } from 'date-fns'
 
-import gitHelper from './gitHelper.js'
+import gitAgent from './gitAgent.js'
 import store from './store.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
@@ -47,7 +47,7 @@ export const handleErrors = errorMessage => {
       break
     }
     case 'NOT_FOUND':
-      const message = `gitHelper call failed: ${errorMessage}`
+      const message = `gitAgent call failed: ${errorMessage}`
       logMessage(message, 'handleErrors')
 
       break

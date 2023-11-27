@@ -1,7 +1,7 @@
 //@ts-check
 
 import store from './../store.js'
-import gitHelper from './../gitHelper.js'
+import gitAgent from './../gitAgent.js'
 import { makeFileNameFromTitle, makePageFrontMatter } from './../utils'
 import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
 
@@ -76,7 +76,7 @@ export const updatePage = async (fileName, title, content, index) => {
   // If the title has changed, we need to delete the old page and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await gitHelper.removeFile(owner, name, fileName)
+    await gitAgent.removeFile(owner, name, fileName)
   }
 
   const finalContent = `${

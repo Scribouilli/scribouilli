@@ -11,7 +11,7 @@ import {
   makeArticleFrontMatter,
 } from '../utils'
 
-import gitHelper from '../gitHelper'
+import gitAgent from '../gitAgent'
 import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
@@ -28,7 +28,7 @@ const LIST_ARTICLE_URL = '/atelier-list-articles'
 const makeMapStateToProps = fileName => state => {
   if (fileName) {
     // Display existing file
-    const fileP = gitHelper
+    const fileP = gitAgent
       .getFile(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,

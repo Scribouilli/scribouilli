@@ -4,7 +4,7 @@ import lireFrontMatter from 'front-matter'
 import page from 'page'
 
 import { svelteTarget } from '../config'
-import gitHelper from '../gitHelper'
+import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import {
@@ -27,7 +27,7 @@ const makeMapStateToProps = fileName => state => {
   if (fileName) {
     const fileP = async function () {
       try {
-        const content = await gitHelper.getFile(
+        const content = await gitAgent.getFile(
           state.currentRepository.owner,
           state.currentRepository.name,
           fileName,

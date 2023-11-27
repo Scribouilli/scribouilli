@@ -1,7 +1,7 @@
 //@ts-check
 
 import store from './../store.js'
-import gitHelper from './../gitHelper.js'
+import gitAgent from './../gitAgent.js'
 import {
   deleteFileAndCommit,
   deleteFileAndPushChanges,
@@ -81,7 +81,7 @@ export const updateArticle = async (fileName, title, content) => {
   // If the title has changed, we need to delete the old article and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await gitHelper.removeFile(owner, name, fileName)
+    await gitAgent.removeFile(owner, name, fileName)
   }
 
   const finalContent = `${

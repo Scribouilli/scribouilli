@@ -1,7 +1,7 @@
 // @ts-check
 
 import { svelteTarget } from '../config'
-import gitHelper from '../gitHelper'
+import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import {
@@ -82,7 +82,7 @@ export default ({ querystring }) => {
   })
 
   settings.$on('update-theme', ({ detail: { theme } }) => {
-    gitHelper
+    gitAgent
       .writeCustomCSS(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
@@ -104,7 +104,7 @@ export default ({ querystring }) => {
       }
       await setArticles()
       await getCurrentRepoPages()
-      gitHelper.push(
+      gitAgent.push(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
       )
@@ -115,11 +115,11 @@ export default ({ querystring }) => {
   })
 
   if (!store.state.theme.css) {
-    gitHelper
+    gitAgent
       .getFile(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
-        gitHelper.customCSSPath,
+        gitAgent.customCSSPath,
       )
       .then(content => {
         store.mutations.setTheme(content)

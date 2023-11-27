@@ -12,7 +12,7 @@ import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
-class GitHelper {
+class GitAgent {
   constructor() {
     /** @type {string | undefined} */
     this.commitsEtag = undefined
@@ -343,7 +343,7 @@ class GitHelper {
   }
 }
 
-/** @type {GitHelper} */
-const gitHelper = new GitHelper()
+/** @type {GitAgent} */
+const gitAgent = new GitAgent()
 
-export default gitHelper
+export default gitAgent
