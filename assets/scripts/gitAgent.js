@@ -4,6 +4,7 @@ import lireFrontMatter from 'front-matter'
 import FS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web/index.js'
+import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
 import store from './store.js'
 
@@ -11,13 +12,9 @@ import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
-class DatabaseAPI {
-  /**
-   * @param {string} accessToken
-   */
-  constructor(accessToken) {
+class GitAgent {
+  constructor() {
     /** @type {string | undefined} */
-    this.accessToken = accessToken
     this.commitsEtag = undefined
     this.latestCommit = undefined
     this.getFilesCache = new Map()
@@ -29,144 +26,6 @@ class DatabaseAPI {
       'scribouilli',
       // @ts-ignore il y a un problème avec la définition de type dans lightning-fs, db est un paramètre optionnel
       { wipe: true },
-    )
-  }
-
-  getAuthenticatedUser() {
-    return this.callGithubAPI('https://api.github.com/user').then(response => {
-      return response.json()
-    })
-  }
-
-  /**
-   *
-   * @returns {Promise<GithubUserEmails[]>}
-   */
-  getUserEmails() {
-    return this.callGithubAPI('https://api.github.com/user/emails').then(r =>
-      r.json(),
-    )
-  }
-
-  /**
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @returns
-   */
-  getRepository(login, repoName) {
-    return this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${repoName}`,
-    )
-      .then(response => {
-        return response.json()
-      })
-      .catch(msg => {
-        if (msg === 'NOT_FOUND') {
-          throw 'REPOSITORY_NOT_FOUND'
-        }
-
-        throw msg
-      })
-  }
-
-  getCurrentUserRepositories() {
-    return this.callGithubAPI(
-      `https://api.github.com/user/repos?sort=updated&visibility=public`,
-    ).then(response => {
-      return response.json()
-    })
-  }
-
-  /**
-   *
-   * @param {string} login
-   * @param {string} newRepoName
-   * @returns
-   */
-  async createDefaultRepository(login, newRepoName) {
-    let res = await this.callGithubAPI(
-      `https://api.github.com/repos/${this.defaultRepoOwner}/${this.defaultThemeRepoName}/generate`,
-      {
-        headers: {
-          Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          owner: login,
-          name: newRepoName,
-          description: 'Mon site Scribouilli',
-        }),
-      },
-    )
-
-    //On attends pas forcément la fin de cette appel pour return car pas de nécessité
-    // d'avoir les options bien configurées pour continuer
-    this.setupRepo(login, newRepoName)
-
-    return res
-  }
-
-  /**
-   * @summary Put topic in GitHub repository to find more easily the websites.
-   *          Also configure some other options
-   *
-   * @param {string} login
-   * @param {string} newRepoName
-   * @returns {Promise<any>}
-   */
-  async setupRepo(login, newRepoName) {
-    await this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${newRepoName}/topics`,
-      {
-        headers: {
-          Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
-        },
-        method: 'PUT',
-        body: JSON.stringify({
-          owner: login,
-          repo: newRepoName,
-          names: ['site-scribouilli'],
-        }),
-      },
-    )
-    await this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${newRepoName}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
-        },
-        body: JSON.stringify({
-          homepage: `https://${login.toLowerCase()}.github.io/${newRepoName.toLowerCase()}`,
-          has_issues: false,
-          has_projects: false,
-          has_wiki: false,
-        }),
-      },
-    )
-  }
-
-  /**
-   *
-   * @param {string} account
-   * @param {string} repoName
-   * @returns
-   */
-  createRepoGithubPages(account, repoName) {
-    return this.callGithubAPI(
-      `https://api.github.com/repos/${account}/${repoName}/pages`,
-      {
-        headers: {
-          Authorization: 'token ' + this.accessToken,
-          Accept: 'applicatikn/vnd.github+json',
-        },
-        method: 'POST',
-        body: JSON.stringify({ source: { branch: 'main' } }),
-      },
     )
   }
 
@@ -293,31 +152,6 @@ class DatabaseAPI {
    *
    * @param {string} login
    * @param {string} repoName
-   * @returns
-   */
-  getGitHubPagesSite(login, repoName) {
-    return this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${repoName}/pages`,
-    ).then(response => {
-      return response.json()
-    })
-  }
-
-  /**
-   *
-   * @param {GithubDeployment} deployment
-   * @returns
-   */
-  getDeploymentStatus(deployment) {
-    return this.callGithubAPI(deployment.statuses_url).then(response => {
-      return response.json()
-    })
-  }
-
-  /**
-   *
-   * @param {string} login
-   * @param {string} repoName
    */
   async push(login, repoName) {
     await git.push({
@@ -328,7 +162,7 @@ class DatabaseAPI {
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
         return {
-          username: this.accessToken,
+          username: getOAuthServiceAPI().getAccessToken(),
           password: 'x-oauth-basic',
         }
       },
@@ -376,17 +210,11 @@ class DatabaseAPI {
    *
    * @param {string} login
    * @param {string} repoName
-   * @returns
+   *
+   * @returns {Promise<void>}
    */
-  async deleteRepository(login, repoName) {
-    await this.fs.promises.unlink(this.repoDir(login, repoName))
-    return await this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${repoName}`,
-      {
-        headers: { Authorization: 'token ' + this.accessToken },
-        method: 'DELETE',
-      },
-    )
+  deleteRepository(login, repoName) {
+    return this.fs.promises.unlink(this.repoDir(login, repoName))
   }
 
   /**
@@ -513,74 +341,9 @@ class DatabaseAPI {
     const stat = await this.fs.promises.stat(this.path(login, repoName, path))
     return stat.isFile()
   }
-
-  /**
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @returns
-   */
-  async checkRepoReady(login, repoName) {
-    try {
-      const appel = await this.callGithubAPI(
-        `https://api.github.com/repos/${login}/${repoName}/contents/_config.yml`,
-      )
-      return appel.ok
-    } catch (error) {
-      return false
-    }
-  }
-
-  /**
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @returns
-   */
-  async checkGithubPages(login, repoName) {
-    try {
-      const appel = await this.getGitHubPagesSite(login, repoName)
-      return appel.status === 'built'
-    } catch (error) {
-      return false
-    }
-  }
-
-  /**
-   * @summary This method must be called for each API call.
-   *
-   * It handles access_token errors
-   *
-   * @param {string} url
-   * @param {RequestInit} requestParams
-   */
-  callGithubAPI(
-    url,
-    requestParams = { headers: { Authorization: 'token ' + this.accessToken } },
-  ) {
-    return fetch(url, requestParams).then(httpResp => {
-      if (httpResp.status === 404) {
-        throw 'NOT_FOUND'
-      }
-
-      if (httpResp.status === 401) {
-        this.accessToken = undefined
-        console.debug('this accessToken : ', this)
-        throw 'INVALIDATE_TOKEN'
-      }
-      return httpResp
-    })
-  }
 }
 
-/** @type {DatabaseAPI} */
-let databaseAPI = new DatabaseAPI('')
+/** @type {GitAgent} */
+const gitAgent = new GitAgent()
 
-// Create the databaseAPI singleton with the logged-in user access token.
-if (store.state.accessToken) {
-  databaseAPI = new DatabaseAPI(store.state.accessToken)
-} else {
-  history.replaceState(undefined, '', store.state.basePath + '/')
-}
-
-export default databaseAPI
+export default gitAgent

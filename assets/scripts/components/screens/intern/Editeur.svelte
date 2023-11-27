@@ -31,7 +31,6 @@
   import * as DOMPurify from 'dompurify'
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
-  import databaseAPI from '../../../databaseAPI'
   import store from '../../../store'
   import { writeFileAndCommit } from '../../../actions/file'
 

@@ -2,7 +2,8 @@
 
 import page from 'page'
 
-import databaseAPI from './databaseAPI.js'
+import gitAgent from './gitAgent.js'
+import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
 import { handleErrors, logMessage, delay } from './utils'
@@ -27,13 +28,18 @@ const logout = () => {
  *
  */
 export const fetchAuthenticatedUserLogin = () => {
-  const loginP = databaseAPI
+  const loginP = getOAuthServiceAPI()
     .getAuthenticatedUser()
-    .then(({ login }) => {
+    .then(({ login = '' }) => {
+      if (login === '') {
+        throw new Error('NO_LOGIN')
+      }
+
       store.mutations.setLogin(login)
 
       return login
     })
+    // @ts-ignore
     .catch(errorMessage => {
       switch (errorMessage) {
         case 'INVALIDATE_TOKEN': {
@@ -42,6 +48,12 @@ export const fetchAuthenticatedUserLogin = () => {
           page('/account')
 
           break
+        }
+
+        case 'NO_LOGIN': {
+          logout()
+
+          page('/account')
         }
 
         default:
@@ -53,13 +65,16 @@ export const fetchAuthenticatedUserLogin = () => {
       throw errorMessage
     })
 
-  const emailP = databaseAPI
+  const emailP = getOAuthServiceAPI()
     .getUserEmails()
+    // @ts-ignore
     .then(emails => {
+      // @ts-ignore
       const email = (emails.find(e => e.primary) ?? emails[0]).email
       store.mutations.setEmail(email)
       return email
     })
+    // @ts-ignore
     .catch(err => {
       // If we can't get email addresses, we ask the user to login again
       logout()
@@ -90,8 +105,9 @@ export const fetchAuthenticatedUserLogin = () => {
 
 export const fetchCurrentUserRepositories = async () => {
   const { login } = await fetchAuthenticatedUserLogin()
-  const currentUserRepositoriesP = databaseAPI
+  const currentUserRepositoriesP = getOAuthServiceAPI()
     .getCurrentUserRepositories()
+    // @ts-ignore
     .then(repos => {
       store.mutations.setReposForAccount({ login, repos })
 
@@ -104,7 +120,7 @@ export const fetchCurrentUserRepositories = async () => {
 export const getCurrentRepoPages = () => {
   const { owner, name } = store.state.currentRepository
 
-  return databaseAPI
+  return gitAgent
     .getPagesList(owner, name)
     .then(pages => {
       store.mutations.setPages(pages)
@@ -115,7 +131,7 @@ export const getCurrentRepoPages = () => {
 export const getCurrentRepoArticles = () => {
   const { owner, name } = store.state.currentRepository
 
-  return databaseAPI
+  return gitAgent
     .getArticlesList(owner, name)
     .then(articles => {
       store.mutations.setArticles(articles)
@@ -124,12 +140,13 @@ export const getCurrentRepoArticles = () => {
 }
 
 /**
- * 
- * @param {string} owner 
- * @param {string} repo 
+ *
+ * @param {string} owner
+ * @param {string} repo
  * @returns {Promise<any>}
  */
-export const setupRepo = (owner, repo) => databaseAPI.setupRepo(owner, repo)
+export const setupRepo = (owner, repo) =>
+  getOAuthServiceAPI().setupRepository(owner, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
@@ -169,14 +186,14 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  databaseAPI.setAuthor(login, owner, repoName, email)
+  gitAgent.setAuthor(login, owner, repoName, email)
 
   setBuildStatus(owner, repoName)
   setArticles()
 }
 
 export const setArticles = async () => {
-  const articles = await databaseAPI.getArticlesList(
+  const articles = await gitAgent.getArticlesList(
     store.state.currentRepository.owner,
     store.state.currentRepository.name,
   )
@@ -216,7 +233,7 @@ export const setBuildStatus = (owner, repoName) => {
 export const createRepositoryForCurrentAccount = async repoName => {
   const login = await store.state.login
 
-  if(!login){
+  if (!login) {
     throw new TypeError(`login manquant dans createRepositoryForCurrentAccount`)
   }
 
@@ -226,48 +243,64 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
-  const waitRepoReady = /** @type {Promise<void>} */(new Promise((resolve) => {
-    const timer = setInterval(() => {
-      databaseAPI.checkRepoReady(login, escapedRepoName).then(res => {
-        if (res) {
-          clearInterval(timer)
-          resolve()
-        }
-      })
-    }, 1000)
-  }))
+  const waitRepoReady = /** @type {Promise<void>} */ (
+    new Promise(resolve => {
+      const timer = setInterval(() => {
+        getOAuthServiceAPI()
+          .isRepositoryReady(login, escapedRepoName)
+          // @ts-ignore
+          .then(res => {
+            if (res) {
+              clearInterval(timer)
+              resolve()
+            }
+          })
+      }, 1000)
+    })
+  )
 
-  const waitGithubPages = /** @type {Promise<void>} */(new Promise((resolve) => {
-    const timer = setInterval(() => {
-      databaseAPI.checkGithubPages(login, escapedRepoName).then(res => {
-        if (res) {
-          clearInterval(timer)
-          resolve()
-        }
+  const waitGithubPages = /** @type {Promise<void>} */ (
+    new Promise(resolve => {
+      const timer = setInterval(() => {
+        getOAuthServiceAPI()
+          .isPagesWebsiteBuilt(login, escapedRepoName)
+          // @ts-ignore
+          .then(res => {
+            if (res) {
+              clearInterval(timer)
+              resolve()
+            }
+          })
+      }, 5000)
+    })
+  )
+  return (
+    getOAuthServiceAPI()
+      .createDefaultRepository(login, escapedRepoName)
+      .then(() => {
+        // Generation from a template repository
+        // is asynchronous, so we need to wait a bit
+        // for the new repo to be created
+        // before the setup of the GitHub Pages branch
+        return waitRepoReady
       })
-    }, 5000)
-  }))
-  return databaseAPI
-    .createDefaultRepository(login, escapedRepoName)
-    .then(() => {
-      // Generation from a template repository
-      // is asynchronous, so we need to wait a bit
-      // for the new repo to be created
-      // before the setup of the GitHub Pages branch
-      return waitRepoReady
-    })
-    .then(() => {
-      return databaseAPI.createRepoGithubPages(login, escapedRepoName)
-    })
-    .then(() => {
-      return waitGithubPages
-    })
-    .then(() => {
-      page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
-    })
-    .catch(errorMessage => {
-      logMessage(errorMessage, 'createRepositoryForCurrentAccount')
+      .then(() => {
+        return getOAuthServiceAPI().createPagesWebsiteFromRepository(
+          login,
+          escapedRepoName,
+        )
+      })
+      .then(() => {
+        return waitGithubPages
+      })
+      .then(() => {
+        page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
+      })
+      // @ts-ignore
+      .catch(errorMessage => {
+        logMessage(errorMessage, 'createRepositoryForCurrentAccount')
 
-      throw errorMessage
-    })
+        throw errorMessage
+      })
+  )
 }

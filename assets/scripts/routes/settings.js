@@ -1,7 +1,7 @@
 // @ts-check
 
 import { svelteTarget } from '../config'
-import databaseAPI from '../databaseAPI'
+import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import {
@@ -9,6 +9,7 @@ import {
   setArticles,
   setCurrentRepositoryFromQuerystring,
 } from '../actions'
+import { deleteRepository } from '../actions/repository.js'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
@@ -69,11 +70,10 @@ export default ({ querystring }) => {
   })
 
   settings.$on('delete-site', () => {
-    databaseAPI
-      .deleteRepository(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-      )
+    deleteRepository(
+      store.state.currentRepository.owner,
+      store.state.currentRepository.name,
+    )
       .then(() => {
         store.mutations.removeSite(store.state)
         page('/create-project')
@@ -82,7 +82,7 @@ export default ({ querystring }) => {
   })
 
   settings.$on('update-theme', ({ detail: { theme } }) => {
-    databaseAPI
+    gitAgent
       .writeCustomCSS(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
@@ -104,7 +104,7 @@ export default ({ querystring }) => {
       }
       await setArticles()
       await getCurrentRepoPages()
-      databaseAPI.push(
+      gitAgent.push(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
       )
@@ -115,11 +115,11 @@ export default ({ querystring }) => {
   })
 
   if (!store.state.theme.css) {
-    databaseAPI
+    gitAgent
       .getFile(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
-        databaseAPI.customCSSPath,
+        gitAgent.customCSSPath,
       )
       .then(content => {
         store.mutations.setTheme(content)

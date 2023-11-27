@@ -6,7 +6,7 @@ import {
   deleteFileAndCommit,
   deleteFileAndPushChanges,
 } from './../../assets/scripts/actions/file.js'
-import databaseAPI from './../../assets/scripts/databaseAPI.js'
+import gitAgent from './../../assets/scripts/gitAgent.js'
 import store from './../../assets/scripts/store.js'
 
 // Use a common sandbox for all tests so we can easily restore it after each test.
@@ -23,20 +23,20 @@ describe('actions/file.js', () => {
 
   describe('writeFileAndCommit', () => {
     before(() => {
-      sandbox.stub(databaseAPI, 'writeFile').resolves()
-      sandbox.stub(databaseAPI, 'commit').resolves()
+      sandbox.stub(gitAgent, 'writeFile').resolves()
+      sandbox.stub(gitAgent, 'commit').resolves()
     })
 
     it('calls removeFile and commit', done => {
       writeFileAndCommit('test.js', 'Curiouser and curiouser!')
         .then(() => {
-          expect(databaseAPI.writeFile).to.have.been.calledWith(
+          expect(gitAgent.writeFile).to.have.been.calledWith(
             'alice',
             'alice.github.io',
             'test.js',
             'Curiouser and curiouser!',
           )
-          expect(databaseAPI.commit).to.have.been.calledWith(
+          expect(gitAgent.commit).to.have.been.calledWith(
             'alice',
             'alice.github.io',
             'Modification du fichier test.js',
@@ -49,15 +49,15 @@ describe('actions/file.js', () => {
 
   describe('writeFileAndPushChanges', () => {
     before(() => {
-      sandbox.stub(databaseAPI, 'writeFile').resolves()
-      sandbox.stub(databaseAPI, 'commit').resolves()
-      sandbox.stub(databaseAPI, 'push').resolves()
+      sandbox.stub(gitAgent, 'writeFile').resolves()
+      sandbox.stub(gitAgent, 'commit').resolves()
+      sandbox.stub(gitAgent, 'push').resolves()
     })
 
     it('calls removeFile, commit and push', done => {
       writeFileAndPushChanges('test.js', 'Curiouser and curiouser!')
         .then(() => {
-          expect(databaseAPI.push).to.have.been.calledWith(
+          expect(gitAgent.push).to.have.been.calledWith(
             'alice',
             'alice.github.io',
           )
@@ -69,19 +69,19 @@ describe('actions/file.js', () => {
 
   describe('deleteFileAndCommit', () => {
     before(() => {
-      sandbox.stub(databaseAPI, 'removeFile').resolves()
-      sandbox.stub(databaseAPI, 'commit').resolves()
+      sandbox.stub(gitAgent, 'removeFile').resolves()
+      sandbox.stub(gitAgent, 'commit').resolves()
     })
 
     it('calls removeFile and commit', done => {
       deleteFileAndCommit('test.js')
         .then(() => {
-          expect(databaseAPI.removeFile).to.have.been.calledWith(
+          expect(gitAgent.removeFile).to.have.been.calledWith(
             'alice',
             'alice.github.io',
             'test.js',
           )
-          expect(databaseAPI.commit).to.have.been.calledWith(
+          expect(gitAgent.commit).to.have.been.calledWith(
             'alice',
             'alice.github.io',
             'Suppression du fichier test.js',
@@ -94,15 +94,15 @@ describe('actions/file.js', () => {
 
   describe('deleteFileAndPushChanges', () => {
     before(() => {
-      sandbox.stub(databaseAPI, 'removeFile').resolves()
-      sandbox.stub(databaseAPI, 'commit').resolves()
-      sandbox.stub(databaseAPI, 'push').resolves()
+      sandbox.stub(gitAgent, 'removeFile').resolves()
+      sandbox.stub(gitAgent, 'commit').resolves()
+      sandbox.stub(gitAgent, 'push').resolves()
     })
 
     it('calls removeFile and commit', done => {
       deleteFileAndPushChanges('test.js')
         .then(() => {
-          expect(databaseAPI.push).to.have.been.calledWith(
+          expect(gitAgent.push).to.have.been.calledWith(
             'alice',
             'alice.github.io',
           )

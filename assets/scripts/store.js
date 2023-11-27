@@ -5,8 +5,10 @@ import Store from 'baredux'
 import './types.js'
 
 import {
+  OAUTH_PROVIDER_STORAGE_KEY,
   ACCESS_TOKEN_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
+  TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
 } from './config.js'
 
 /**
@@ -19,7 +21,9 @@ import {
 
 /**
  * @typedef {Object} ScribouilliState
- * @property {string} [accessToken]
+ * @property {object} [oAuthProvider]
+ * @property {string} [oAuthProvider.name]
+ * @property {string} [oAuthProvider.accessToken]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
@@ -30,6 +34,9 @@ import {
  * @property {any} buildStatus
  * @property {string} basePath
  * @property {{css: string}} theme
+ *
+ * deprecated
+ * @property {string} [accessToken]
  */
 
 /**
@@ -44,10 +51,14 @@ import {
 const store = Store({
   state: {
     // @ts-ignore
-    accessToken:
-      new URL(location.toString()).searchParams.get(
-        TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-      ) || localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+    oAuthProvider: {
+      // On souhaite avoir une seule source de vérité pour les informations
+      // d'authentification. On les stocke dans le localStorage et on les
+      // récupère au démarrage de l'application dans le store, ce dernier
+      // servant de source de vérité pour tous les composants.
+      accessToken: localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
+      name: localStorage.getItem(OAUTH_PROVIDER_STORAGE_KEY),
+    },
     login: undefined,
     email: undefined,
     origin: undefined,
@@ -70,6 +81,13 @@ const store = Store({
     },
   },
   mutations: {
+    /**
+     * @param {ScribouilliState} state
+     * @param {{ accessToken: string, name: string }} oAuthProvider
+     */
+    setOAuthProvider(state, oAuthProvider) {
+      state.oAuthProvider = oAuthProvider
+    },
     /**
      *
      * @param {ScribouilliState} state
