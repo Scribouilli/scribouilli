@@ -82,6 +82,13 @@ const store = Store({
   },
   mutations: {
     /**
+     * @param {ScribouilliState} state
+     * @param {{ accessToken: string, name: string }} oAuthProvider
+     */
+    setOAuthProvider(state, oAuthProvider) {
+      state.oAuthProvider = oAuthProvider
+    },
+    /**
      *
      * @param {ScribouilliState} state
      * @param {string} login

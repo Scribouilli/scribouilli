@@ -4,6 +4,7 @@ import lireFrontMatter from 'front-matter'
 import FS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web/index.js'
+import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
 import store from './store.js'
 
@@ -12,12 +13,8 @@ import './types.js'
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 class GitHelper {
-  /**
-   * @param {string} accessToken
-   */
-  constructor(accessToken) {
+  constructor() {
     /** @type {string | undefined} */
-    this.accessToken = accessToken
     this.commitsEtag = undefined
     this.latestCommit = undefined
     this.getFilesCache = new Map()
@@ -165,7 +162,7 @@ class GitHelper {
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
         return {
-          username: this.accessToken,
+          username: getOAuthServiceAPI().getAccessToken(),
           password: 'x-oauth-basic',
         }
       },
@@ -347,13 +344,6 @@ class GitHelper {
 }
 
 /** @type {GitHelper} */
-let gitHelper = new GitHelper('')
-
-// Create the gitHelper singleton with the logged-in user access token.
-if (store.state.oAuthProvider?.accessToken) {
-  gitHelper = new GitHelper(store.state.oAuthProvider.accessToken)
-} else {
-  history.replaceState(undefined, '', store.state.basePath + '/')
-}
+const gitHelper = new GitHelper()
 
 export default gitHelper

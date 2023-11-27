@@ -6,6 +6,7 @@
 /**
  * @typedef {Object} OAuthServiceAPI
  * @property {(url: string, requestParams?: RequestInit) => Promise<Response>} callAPI
+ * @property {() => string|undefined} getAccessToken
  * @property {() => Promise<any>} getAuthenticatedUser
  * @property {() => Promise<GithubUserEmails[]>} getUserEmails
  * @property {(account: string, repositoryName: string) => Promise<GithubRepository>} getRepository

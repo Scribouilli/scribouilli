@@ -18,6 +18,11 @@ export class GitHubAPI {
     this.accessToken = accessToken
   }
 
+  /** @type {OAuthServiceAPI["getAccessToken"]} */
+  getAccessToken() {
+    return this.accessToken
+  }
+
   /** @type {OAuthServiceAPI["getAuthenticatedUser"]} */
   getAuthenticatedUser() {
     return this.callAPI(`${gitHubApiBaseUrl}/user`).then(response => {
@@ -186,6 +191,14 @@ export class GitHubAPI {
       }
     }
 
+    if (requestParams === undefined) {
+      requestParams = {
+        headers: {
+          Authorization: 'token ' + this.accessToken,
+        },
+      }
+    }
+
     return fetch(url, requestParams).then(httpResp => {
       if (httpResp.status === 404) {
         throw 'NOT_FOUND'
@@ -193,7 +206,7 @@ export class GitHubAPI {
 
       if (httpResp.status === 401) {
         this.accessToken = undefined
-        console.debug('this accessToken : ', this)
+        console.debug('this accessToken : ', this.accessToken)
         throw 'INVALIDATE_TOKEN'
       }
       return httpResp
