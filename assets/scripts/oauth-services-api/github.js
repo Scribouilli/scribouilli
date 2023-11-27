@@ -79,17 +79,19 @@ export class GitHubAPI {
           description: 'Mon site Scribouilli',
         }),
       },
-    ).then(response => {
-      // We don't wait for the end of the setup to return the response
-      // because we don't need all the data it returns.
-      this.setupRepository(account, repositoryName)
+    )
+      .then(response => this.addTopicOnRepository(account, repositoryName))
+      .then(response => {
+        this.updateRepositoryFeaturesSettings(account, repositoryName)
 
-      return response
-    })
+        // We don't wait for the end of the setup to return the response
+        // because we don't need all the data it returns.
+        return response
+      })
   }
 
-  /** @type {OAuthServiceAPI["setupRepository"]} */
-  setupRepository(account, repositoryName) {
+  /** @type {OAuthServiceAPI["addTopicOnRepository"]} */
+  addTopicOnRepository(account, repositoryName) {
     return this.callAPI(
       `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/topics`,
       {
@@ -104,24 +106,27 @@ export class GitHubAPI {
           names: ['site-scribouilli'],
         }),
       },
-    ).then(response => {
-      return this.callAPI(
-        `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: 'token ' + this.accessToken,
-            Accept: 'application/vnd.github+json',
-          },
-          body: JSON.stringify({
-            homepage: `https://${account.toLowerCase()}.github.io/${repositoryName.toLowerCase()}`,
-            has_issues: false,
-            has_projects: false,
-            has_wiki: false,
-          }),
+    )
+  }
+
+  /** @type {OAuthServiceAPI["updateRepositoryFeaturesSettings"]} */
+  updateRepositoryFeaturesSettings(account, repositoryName) {
+    return this.callAPI(
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'token ' + this.accessToken,
+          Accept: 'application/vnd.github+json',
         },
-      )
-    })
+        body: JSON.stringify({
+          homepage: `https://${account.toLowerCase()}.github.io/${repositoryName.toLowerCase()}`,
+          has_issues: false,
+          has_projects: false,
+          has_wiki: false,
+        }),
+      },
+    )
   }
 
   /** @type {OAuthServiceAPI["deleteRepository"]} */

@@ -146,7 +146,7 @@ export const getCurrentRepoArticles = () => {
  * @returns {Promise<any>}
  */
 export const setupRepo = (owner, repo) =>
-  getOAuthServiceAPI().setupRepository(owner, repo)
+  getOAuthServiceAPI().addTopicOnRepository(owner, repo)
 
 /**
  * @summary Set the current repository from the owner and the name
