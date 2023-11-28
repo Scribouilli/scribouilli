@@ -21,6 +21,11 @@ import {
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
 
+  console.log(
+    'type',
+    url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER),
+  )
+
   if (
     url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) &&
     url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) !== null &&
