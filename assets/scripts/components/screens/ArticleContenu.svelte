@@ -5,7 +5,7 @@
   /** @type {Promise<EditeurFile>} */
   export let fileP;
 
-  /** @type any */
+  /** @type {any} */
   export let buildStatus;
 
   /** @type {FileContenu[]} */
