@@ -12,7 +12,8 @@
  * @property {(account: string, repositoryName: string) => Promise<GithubRepository>} getRepository
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
  * @property {(account: string, repositoryName: string) => Promise<any>} createDefaultRepository
- * @property {(account: string, repositoryName: string) => Promise<any>} setupRepository
+ * @property {(account: string, repositoryName: string) => Promise<any>} addTopicOnRepository
+ * @property {(account: string, repositoryName: string) => Promise<any>} updateRepositoryFeaturesSettings
  * @property {(account: string, repositoryName: string) => Promise<any>} deleteRepository
  * @property {(account: string, repositoryName: string) => Promise<any>} createPagesWebsiteFromRepository
  * @property {(account: string, repositoryName: string) => Promise<any>} getPagesWebsite

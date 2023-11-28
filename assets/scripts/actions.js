@@ -140,15 +140,6 @@ export const getCurrentRepoArticles = () => {
 }
 
 /**
- *
- * @param {string} owner
- * @param {string} repo
- * @returns {Promise<any>}
- */
-export const setupRepo = (owner, repo) =>
-  getOAuthServiceAPI().setupRepository(owner, repo)
-
-/**
  * @summary Set the current repository from the owner and the name
  * of the repository in the URL
  *
