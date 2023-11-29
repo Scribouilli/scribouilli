@@ -6,8 +6,6 @@ import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web/index.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
-import store from './store.js'
-
 import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
@@ -22,11 +20,7 @@ class GitAgent {
     this.customCSSPath = 'assets/css/custom.css'
     this.defaultRepoOwner = 'Scribouilli'
     this.defaultThemeRepoName = 'site-template'
-    this.fs = new FS(
-      'scribouilli',
-      // @ts-ignore il y a un problème avec la définition de type dans lightning-fs, db est un paramètre optionnel
-      { wipe: true },
-    )
+    this.fs = new FS('scribouilli')
   }
 
   /**
