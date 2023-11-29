@@ -54,92 +54,21 @@ class GitAgent {
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {string} gitURL
+   * @param {string} repoDir
    * @returns {Promise<void>}
    */
-  async cloneIfNeeded(login, repoName) {
-    const repoDir = this.repoDir(login, repoName)
-    let dirExists = true
-    try {
-      const stat = await this.fs.promises.stat(repoDir)
-      dirExists = stat.isDirectory()
-    } catch {
-      dirExists = false
-    }
-
-    if (!dirExists) {
-      await git.clone({
-        fs: this.fs,
-        http,
-        dir: repoDir,
-        url: `https://github.com/${login}/${repoName}.git`,
-        corsProxy: CORS_PROXY_URL,
-        ref: 'main',
-        singleBranch: true,
-        depth: 5,
-      })
-    }
-  }
-
-  /**
-   * Assigne l'auteur et l'email pour les commits git
-   *
-   * On voudrait le faire en global, mais ça n'est pas possible actuellement avec isomorphic-git (1.24.2)
-   * > Currently only the local $GIT_DIR/config file can be read or written. However support for the global ~/.gitconfig and system $(prefix)/etc/gitconfig will be added in the future.
-   * Voir https://github.com/isomorphic-git/isomorphic-git/pull/1779
-   *
-   *
-   * https://isomorphic-git.org/docs/en/setConfig
-   *
-   * Alors, on doit passer le repoName
-   *
-   * @param {string} login
-   * @param {string} owner
-   * @param {string} repoName
-   * @param {string} email
-   * @returns {Promise<void>}
-   */
-  async setAuthor(login, owner, repoName, email) {
-    if (!login || !owner || !repoName || !email) {
-      return
-    }
-
-    const repoDir = this.repoDir(owner, repoName)
-
-    await this.cloneIfNeeded(owner, repoName)
-
-    await git.setConfig({
+  clone(gitURL, repoDir) {
+    return git.clone({
       fs: this.fs,
       dir: repoDir,
-      path: 'user.name',
-      value: login,
+      http,
+      url: gitURL,
+      // ref is purposefully omitted to get the default behavior (default repo branch)
+      singleBranch: true,
+      corsProxy: CORS_PROXY_URL,
+      depth: 5,
     })
-    await git.setConfig({
-      fs: this.fs,
-      dir: repoDir,
-      path: 'user.email',
-      value: email,
-    })
-  }
-
-  /**
-   * @summary Get file informations
-   * @param {string} login
-   * @param {string} repoName
-   * @param {string} fileName
-   * @returns {Promise<string>}
-   */
-  async getFile(login, repoName, fileName) {
-    await this.cloneIfNeeded(login, repoName)
-    const content = await this.fs.promises.readFile(
-      this.path(login, repoName, fileName),
-      { encoding: 'utf8' },
-    )
-    if (content instanceof Uint8Array) {
-      return content.toString()
-    }
-    return content
   }
 
   /**
@@ -167,16 +96,15 @@ class GitAgent {
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {string} repoDir
    * @return {Promise<any>}
    */
-  pull(login, repoName) {
+  pull(repoDir) {
     return git.pull({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
-      dir: this.repoDir(login, repoName),
+      dir: repoDir,
       corsProxy: CORS_PROXY_URL,
     })
   }
@@ -207,7 +135,7 @@ class GitAgent {
    * @returns {Promise<void>}
    */
   async removeFile(login, repoName, fileName) {
-    await this.cloneIfNeeded(login, repoName)
+    await this.pullOrCloneRepo(login, repoName)
 
     const path = this.path(login, repoName, fileName)
     await this.fs.promises.unlink(path)
@@ -230,6 +158,92 @@ class GitAgent {
   }
 
   /**
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @return {Promise<any>}
+   */
+  async pullOrCloneRepo(login, repoName) {
+    const repoDir = this.repoDir(login, repoName)
+    const gitURL = `https://github.com/${login}/${repoName}.git`
+
+    let dirExists = true
+    try {
+      const stat = await this.fs.promises.stat(repoDir)
+      dirExists = stat.isDirectory()
+      if (dirExists) {
+        return this.pull(repoDir)
+      }
+    } catch {
+      dirExists = false
+    }
+
+    if (!dirExists) {
+      return this.clone(gitURL, repoDir)
+    }
+  }
+
+  /**
+   * Assigne l'auteur et l'email pour les commits git
+   *
+   * On voudrait le faire en global, mais ça n'est pas possible actuellement avec isomorphic-git (1.24.2)
+   * > Currently only the local $GIT_DIR/config file can be read or written. However support for the global ~/.gitconfig and system $(prefix)/etc/gitconfig will be added in the future.
+   * Voir https://github.com/isomorphic-git/isomorphic-git/pull/1779
+   *
+   *
+   * https://isomorphic-git.org/docs/en/setConfig
+   *
+   * Alors, on doit passer le repoName
+   *
+   * @param {string} login
+   * @param {string} owner
+   * @param {string} repoName
+   * @param {string} email
+   * @returns {Promise<void>}
+   */
+  async setAuthor(login, owner, repoName, email) {
+    if (!login || !owner || !repoName || !email) {
+      return
+    }
+
+    const repoDir = this.repoDir(owner, repoName)
+
+    await this.pullOrCloneRepo(owner, repoName)
+
+    await git.setConfig({
+      fs: this.fs,
+      dir: repoDir,
+      path: 'user.name',
+      value: login,
+    })
+    await git.setConfig({
+      fs: this.fs,
+      dir: repoDir,
+      path: 'user.email',
+      value: email,
+    })
+  }
+
+  /**
+   * @summary Get file informations
+   * @param {string} login
+   * @param {string} repoName
+   * @param {string} fileName
+   * @returns {Promise<string>}
+   */
+  async getFile(login, repoName, fileName) {
+    await this.pullOrCloneRepo(login, repoName)
+    const content = await this.fs.promises.readFile(
+      this.path(login, repoName, fileName),
+      { encoding: 'utf8' },
+    )
+    if (content instanceof Uint8Array) {
+      return content.toString()
+    }
+    return content
+  }
+
+  /**
    * @summary Create or update a file and add it to the git staging area
    *
    * @param {string} login
@@ -240,7 +254,7 @@ class GitAgent {
    * @returns {Promise<void>}
    */
   async writeFile(login, repoName, fileName, content) {
-    await this.cloneIfNeeded(login, repoName)
+    await this.pullOrCloneRepo(login, repoName)
 
     // This condition is here just in case, but it should not happen in practice
     // Having an empty file name will not lead immediately to a crash but will result in
@@ -285,7 +299,7 @@ class GitAgent {
    * @returns
    */
   async getPagesList(login, repoName, dir = '') {
-    await this.cloneIfNeeded(login, repoName)
+    await this.pullOrCloneRepo(login, repoName)
 
     const allFiles = await this.fs.promises.readdir(
       this.path(login, repoName, dir),
@@ -349,7 +363,7 @@ class GitAgent {
    * @returns
    */
   async checkFileExistence(login, repoName, path) {
-    await this.cloneIfNeeded(login, repoName)
+    await this.pullOrCloneRepo(login, repoName)
     const stat = await this.fs.promises.stat(this.path(login, repoName, path))
     return stat.isFile()
   }
