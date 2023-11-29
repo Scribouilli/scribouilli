@@ -146,11 +146,13 @@ class GitAgent {
    *
    * @param {string} login
    * @param {string} repoName
+   * @return {Promise<any>}
    */
-  async push(login, repoName) {
-    await git.push({
+  push(login, repoName) {
+    return git.push({
       fs: this.fs,
       http,
+      // ref is purposefully omitted to get the default (checked out branch)
       dir: this.repoDir(login, repoName),
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
@@ -160,6 +162,22 @@ class GitAgent {
           password: 'x-oauth-basic',
         }
       },
+    })
+  }
+
+  /**
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @return {Promise<any>}
+   */
+  pull(login, repoName) {
+    return git.pull({
+      fs: this.fs,
+      http,
+      // ref is purposefully omitted to get the default (checked out branch)
+      dir: this.repoDir(login, repoName),
+      corsProxy: CORS_PROXY_URL,
     })
   }
 
