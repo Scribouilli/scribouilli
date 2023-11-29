@@ -171,14 +171,13 @@ class GitAgent {
     try {
       const stat = await this.fs.promises.stat(repoDir)
       dirExists = stat.isDirectory()
-      if (dirExists) {
-        return this.pull(repoDir)
-      }
     } catch {
       dirExists = false
     }
 
-    if (!dirExists) {
+    if (dirExists) {
+      return this.pull(repoDir)
+    } else {
       return this.clone(gitURL, repoDir)
     }
   }
