@@ -177,7 +177,8 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  gitAgent.setAuthor(login, owner, repoName, email)
+  await gitAgent.pullOrCloneRepo(login, repoName)
+  await gitAgent.setAuthor(login, owner, repoName, email)
 
   setBuildStatus(owner, repoName)
   setArticles()

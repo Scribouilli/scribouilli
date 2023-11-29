@@ -208,8 +208,6 @@ class GitAgent {
 
     const repoDir = this.repoDir(owner, repoName)
 
-    await this.pullOrCloneRepo(owner, repoName)
-
     await git.setConfig({
       fs: this.fs,
       dir: repoDir,
