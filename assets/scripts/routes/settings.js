@@ -104,10 +104,13 @@ export default ({ querystring }) => {
       }
       await setArticles()
       await getCurrentRepoPages()
-      gitAgent.push(
+
+      const repoDir = gitAgent.repoDir(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
       )
+
+      gitAgent.safePush(repoDir)
     } catch (msg) {
       //@ts-ignore
       handleErrors(msg)

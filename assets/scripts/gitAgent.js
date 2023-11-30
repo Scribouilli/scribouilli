@@ -118,17 +118,18 @@ class GitAgent {
   }
 
   /**
+   * @summary This version of git push may fail if the remote repo
+   * has unmerged changes
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {string} repoDir
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  push(login, repoName) {
+  falliblePush(repoDir) {
     return git.push({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
-      dir: this.repoDir(login, repoName),
+      dir: repoDir,
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
@@ -138,6 +139,35 @@ class GitAgent {
         }
       },
     })
+  }
+
+  /**
+   * @summary This version of git push tries to push
+   * then tries to pull if the push fails
+   * and tries again to push if the pull succeeded
+   *
+   * @param {string} repoDir
+   * @returns {Promise<any>}
+   */
+  safePush(repoDir) {
+    console.log('safePush')
+    return this.falliblePush(repoDir)
+      .catch(err => {
+        console.log(
+          'failliblePush error ! Assuming the error is that we are not up to date with the remote',
+        )
+        return this.fetchAndTryMerging(repoDir)
+      })
+      .then(() => {
+        console.log('pull/merge succeeded, try to push again')
+        return this.falliblePush(repoDir)
+      })
+      .catch(err => {
+        console.log(
+          'the merge failed or the second push failed, there is nothing much we can try automatocally',
+        )
+        return err
+      })
   }
 
   /**

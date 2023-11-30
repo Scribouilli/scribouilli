@@ -66,10 +66,9 @@
         'Changement index',
       )
 
-      await gitAgent.push(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-      )
+      const repoDir = gitAgent.repoDir(store.state.currentRepository.owner, store.state.currentRepository.name)
+
+      await gitAgent.safePush(repoDir)
     }
     modification = !modification
   }
