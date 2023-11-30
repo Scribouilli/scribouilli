@@ -117,15 +117,15 @@
     margin-top: 0.3rem;
   }
 
-  .build-building::after {
+  .build-in_progress::after {
     content: '🕰 En cours de publication (2-3 min)';
   }
 
-  .build-built::after {
+  .build-success::after {
     content: '✅ Site à jour';
   }
 
-  .build-errored::after {
+  .build-error::after {
     content: '🕰 En cours de publication (15 min max)';
   }
 </style>
