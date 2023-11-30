@@ -156,11 +156,10 @@ class GitAgent {
         console.log(
           'failliblePush error ! Assuming the error is that we are not up to date with the remote',
         )
-        return this.fetchAndTryMerging(repoDir)
-      })
-      .then(() => {
-        console.log('pull/merge succeeded, try to push again')
-        return this.falliblePush(repoDir)
+        return this.fetchAndTryMerging(repoDir).then(() => {
+          console.log('pull/merge succeeded, try to push again')
+          return this.falliblePush(repoDir)
+        })
       })
       .catch(err => {
         console.log(
@@ -225,7 +224,15 @@ class GitAgent {
         fastForward: true,
         abortOnConflict: true,
       })
+      .then(() => {
+        return git.checkout({
+          fs: this.fs,
+          dir: repoDir,
+        })
+      })
       .catch(err => {
+        console.log('merge error', err)
+
         this.onMergeConflict &&
           this.onMergeConflict([
             {
