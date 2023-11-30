@@ -2,17 +2,13 @@
 
 import store from './../store.js'
 import gitAgent from './../gitAgent.js'
-import {
-  deleteFileAndCommit,
-  deleteFileAndPushChanges,
-  writeFileAndPushChanges,
-} from './file'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
 import { makeArticleFileName, makeArticleFrontMatter } from './../utils.js'
 
 /**
  * @param {string} fileName
  *
- * @returns {Promise<Void>}
+ * @returns {ReturnType<typeof deleteFileAndPushChanges>}
  */
 export const deleteArticle = fileName => {
   const { state } = store
@@ -34,7 +30,7 @@ export const deleteArticle = fileName => {
  * @param {string} title
  * @param {string} content
  *
- * @returns {Promise<void>}
+ * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const createArticle = (title, content) => {
   const { state } = store
@@ -66,7 +62,7 @@ export const createArticle = (title, content) => {
  * @param {string} content
  * @param {string} title
  *
- * @returns {Promise<void>}
+ * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const updateArticle = async (fileName, title, content) => {
   const { owner, name } = store.state.currentRepository

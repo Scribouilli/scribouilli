@@ -10,6 +10,10 @@ import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
+/** @typedef {import('isomorphic-git')} isomorphicGit */
+
+/** @typedef { {message: string, resolution: (...args: any[]) => Promise<void>} } ResolutionOption */
+
 class GitAgent {
   constructor() {
     /** @type {string | undefined} */
@@ -21,6 +25,8 @@ class GitAgent {
     this.defaultRepoOwner = 'Scribouilli'
     this.defaultThemeRepoName = 'site-template'
     this.fs = new FS('scribouilli')
+    /** @type {((resolutionOptions: ResolutionOption[]) => void) | undefined } */
+    this.onMergeConflict = undefined
   }
 
   /**
@@ -73,9 +79,49 @@ class GitAgent {
 
   /**
    *
+   * @param {string} repoDir
+   * @returns {ReturnType<isomorphicGit["currentBranch"]>}
+   */
+  currentBranch(repoDir) {
+    return git.currentBranch({
+      fs: this.fs,
+      dir: repoDir,
+    })
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   *
+   * @returns {Promise<{remote: string, url: string}[]>}
+   */
+  listRemotes(repoDir) {
+    return git.listRemotes({
+      fs: this.fs,
+      dir: repoDir,
+    })
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   * @param {string} [remote]
+   *
+   * @returns {Promise<string[]>}
+   */
+  listBranches(repoDir, remote) {
+    return git.listBranches({
+      fs: this.fs,
+      dir: repoDir,
+      remote,
+    })
+  }
+
+  /**
+   *
    * @param {string} login
    * @param {string} repoName
-   * @return {Promise<any>}
+   * @returns {ReturnType<isomorphicGit["push"]>}
    */
   push(login, repoName) {
     return git.push({
@@ -97,16 +143,77 @@ class GitAgent {
   /**
    *
    * @param {string} repoDir
-   * @return {Promise<any>}
+   * @returns {ReturnType<isomorphicGit["fetch"]>}
    */
-  pull(repoDir) {
-    return git.pull({
+  async fetch(repoDir) {
+    console.log('fetch')
+    const remotes = await this.listRemotes(repoDir)
+    console.log('remotes', remotes)
+    const branches = await Promise.all(
+      [undefined, ...remotes].map(r =>
+        this.listBranches(repoDir, r && r.remote),
+      ),
+    )
+    console.log('branches', branches)
+
+    return git.fetch({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
+      singleBranch: false, // we want all the branches
       dir: repoDir,
       corsProxy: CORS_PROXY_URL,
     })
+  }
+
+  /**
+   *
+   * @summary This function tries to merge
+   * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
+   *
+   * @param {string} repoDir
+   * @returns {Promise<any>}
+   */
+  async tryMerging(repoDir) {
+    console.log('merge')
+    const [currentBranch, remotes] = await Promise.all([
+      this.currentBranch(repoDir),
+      this.listRemotes(repoDir),
+    ])
+
+    const localBranch = currentBranch
+    const remoteBranch = `remotes/${remotes[0].remote}/${localBranch}`
+
+    return git
+      .merge({
+        fs: this.fs,
+        dir: repoDir,
+        // ours is purposefully omitted to get the default behavior (current branch)
+        // assuming their is only one remote
+        // assuming the remote and local branch have the same name
+        theirs: remoteBranch,
+        fastForward: true,
+        abortOnConflict: true,
+      })
+      .catch(err => {
+        this.onMergeConflict &&
+          this.onMergeConflict([
+            {
+              message: `Garder la version actuelle du site web en ligne (et perdre les changements récents dans l'atelier)`,
+              resolution: () => {
+                // PPP git branch -f
+                return Promise.reject('PPP git branch -f')
+              },
+            },
+            {
+              message: `Garder la version actuelle de l'atelier (et perdre la version en actuellement ligne)`,
+              resolution: () => {
+                // PPP git push -f
+                return Promise.reject('PPP git push -f')
+              },
+            },
+          ])
+      })
   }
 
   /**
@@ -135,8 +242,6 @@ class GitAgent {
    * @returns {Promise<void>}
    */
   async removeFile(login, repoName, fileName) {
-    await this.pullOrCloneRepo(login, repoName)
-
     const path = this.path(login, repoName, fileName)
     await this.fs.promises.unlink(path)
     await git.remove({
@@ -158,6 +263,18 @@ class GitAgent {
   }
 
   /**
+   * @summary like a git pull but the merge is better customized
+   *
+   * @param {string} repoDir
+   * @returns {Promise<any>}
+   */
+  async fetchAndTryMerging(repoDir) {
+    console.log('fetchAndTryMerging')
+    await this.fetch(repoDir)
+    await this.tryMerging(repoDir)
+  }
+
+  /**
    *
    * @param {string} login
    * @param {string} repoName
@@ -176,7 +293,7 @@ class GitAgent {
     }
 
     if (dirExists) {
-      return this.pull(repoDir)
+      return this.fetchAndTryMerging(repoDir)
     } else {
       return this.clone(gitURL, repoDir)
     }
@@ -229,7 +346,6 @@ class GitAgent {
    * @returns {Promise<string>}
    */
   async getFile(login, repoName, fileName) {
-    await this.pullOrCloneRepo(login, repoName)
     const content = await this.fs.promises.readFile(
       this.path(login, repoName, fileName),
       { encoding: 'utf8' },
@@ -251,8 +367,6 @@ class GitAgent {
    * @returns {Promise<void>}
    */
   async writeFile(login, repoName, fileName, content) {
-    await this.pullOrCloneRepo(login, repoName)
-
     // This condition is here just in case, but it should not happen in practice
     // Having an empty file name will not lead immediately to a crash but will result in
     // some bugs later, see https://github.com/Scribouilli/scribouilli/issues/49#issuecomment-1648226372
@@ -272,6 +386,7 @@ class GitAgent {
   }
 
   /**
+   * PPP move to actions
    *
    * @param {string} login
    * @param {string} repoName
@@ -296,8 +411,6 @@ class GitAgent {
    * @returns
    */
   async getPagesList(login, repoName, dir = '') {
-    await this.pullOrCloneRepo(login, repoName)
-
     const allFiles = await this.fs.promises.readdir(
       this.path(login, repoName, dir),
     )
@@ -360,7 +473,6 @@ class GitAgent {
    * @returns
    */
   async checkFileExistence(login, repoName, path) {
-    await this.pullOrCloneRepo(login, repoName)
     const stat = await this.fs.promises.stat(this.path(login, repoName, path))
     return stat.isFile()
   }

@@ -8,11 +8,10 @@ import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
 /**
  * @param {string} fileName
  *
- * @returns {Promise<void>}
+ * @returns {ReturnType<typeof deleteFileAndPushChanges>}
  */
 export const deletePage = fileName => {
   const { state } = store
-  const { owner, name } = state.currentRepository
 
   store.mutations.setPages(
     state.pages &&
@@ -32,7 +31,7 @@ export const deletePage = fileName => {
  * @param {string} title
  * @param {number} index
  *
- * @returns {Promise<void>}
+ * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const createPage = (content, title, index) => {
   const { state } = store
@@ -63,7 +62,7 @@ export const createPage = (content, title, index) => {
  * @param {string} title
  * @param {number} index
  *
- * @returns {Promise<void>}
+ * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const updatePage = async (fileName, title, content, index) => {
   const { owner, name } = store.state.currentRepository
