@@ -180,8 +180,10 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   await gitAgent.pullOrCloneRepo(login, repoName)
   await gitAgent.setAuthor(login, owner, repoName, email)
 
-  setBuildStatus(owner, repoName)
   getCurrentRepoArticles()
+  getCurrentRepoPages()
+
+  setBuildStatus(owner, repoName)
 }
 
 /**
