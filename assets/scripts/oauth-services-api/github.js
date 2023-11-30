@@ -150,7 +150,9 @@ export class GitHubAPI {
           Accept: 'applicatikn/vnd.github+json',
         },
         method: 'POST',
-        body: JSON.stringify({ source: { branch: 'main' } }),
+        body: JSON.stringify({
+          build_type: 'workflow',
+        }),
       },
     )
   }
