@@ -181,15 +181,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   await gitAgent.setAuthor(login, owner, repoName, email)
 
   setBuildStatus(owner, repoName)
-  setArticles()
-}
-
-export const setArticles = async () => {
-  const articles = await gitAgent.getArticlesList(
-    store.state.currentRepository.owner,
-    store.state.currentRepository.name,
-  )
-  store.mutations.setArticles(articles)
+  getCurrentRepoArticles()
 }
 
 /**
