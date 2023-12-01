@@ -7,8 +7,6 @@ import './types.js'
 import {
   OAUTH_PROVIDER_STORAGE_KEY,
   ACCESS_TOKEN_STORAGE_KEY,
-  TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-  TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
 } from './config.js'
 
 /**
@@ -19,6 +17,8 @@ import {
  * @property {string} publishedWebsiteURL
  */
 
+/** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
+
 /**
  * @typedef {Object} ScribouilliState
  * @property {object} [oAuthProvider]
@@ -28,6 +28,7 @@ import {
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
  * @property {CurrentRepository} currentRepository
+ * @property {ResolutionOption[] | undefined} conflict
  * @property {any} reposByAccount
  * @property {any[]} [pages]
  * @property {any[]} [articles]
@@ -68,6 +69,7 @@ const store = Store({
       publishedWebsiteURL: undefined,
       repositoryURL: undefined,
     },
+    conflict: undefined,
     // We use the term "account" to refer to user or organization.
     reposByAccount: {
       // [login: string]: Promise<Repository[]>
@@ -133,6 +135,14 @@ const store = Store({
         }
         return diffIndex
       })
+    },
+    /**
+     *
+     * @param {ScribouilliState} state
+     * @param {ScribouilliState['conflict']} conflict
+     */
+    setConflict(state, conflict) {
+      state.conflict = conflict
     },
     /**
      *

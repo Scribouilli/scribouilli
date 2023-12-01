@@ -1,5 +1,4 @@
 <script>
-
   /** @type {any} */
   export let buildStatus
 
@@ -9,6 +8,9 @@
 
   /** @type {boolean} */
   export let showArticles
+
+  /** @type {ScribouilliState["conflict"]}*/
+  export let conflict
 
   /** @type {string} */
   let status
@@ -47,6 +49,19 @@
     repoName && account
       ? `./atelier-list-pages?repoName=${repoName}&account=${account}`
       : './'
+  /**
+   *
+   * @param {string} account
+   * @param {string} repoName
+   * @returns {string}
+   */
+  function makeResolutionDesynchronisationURL(account, repoName) {
+    return `./resolution-desynchronisation?account=${account}&repoName=${repoName}`
+  }
+
+  /** @type {string} */
+  let resolutionURL;
+  $: resolutionURL = makeResolutionDesynchronisationURL(account || '', repoName || '')
 </script>
 
 <header>
@@ -112,7 +127,64 @@
   {/if}
 </header>
 
+{#if conflict}
+  <section class="warning">
+    <p>⚠️ Attention ! L'atelier ne peut plus se synchroniser avec le site web parce que les versions 
+    de l'un et de l'autre sont irréconciliables. Le site ne va plus se mettre à jour</p>
+
+    <p><a href={resolutionURL}>Aller sur la page dédiée de résolution du problème</a></p>
+  </section>
+{/if}
+
 <style lang="scss">
+  header {
+    margin-bottom: 2rem;
+    padding-right: 2rem;
+    padding-left: 2rem;
+    border-bottom: 1px solid #4d4646;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header > * {
+    flex: 1;
+  }
+
+  header > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  header > div > p {
+    margin: 0em;
+  }
+
+  header h1 {
+    text-align: center;
+  }
+
+  header img {
+    max-height: 3em;
+  }
+  
+  .warning{
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: orange;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+
+    p{
+      margin-top: 0;
+    }
+  }
+
+
   [class^='build-'] {
     margin-top: 0.3rem;
   }
@@ -128,4 +200,6 @@
   .build-errored::after {
     content: '🕰 En cours de publication (15 min max)';
   }
+
+
 </style>

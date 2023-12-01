@@ -12,8 +12,6 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
-/** @typedef { {message: string, resolution: (...args: any[]) => Promise<void>} } ResolutionOption */
-
 class GitAgent {
   constructor() {
     /** @type {string | undefined} */
@@ -25,7 +23,7 @@ class GitAgent {
     this.defaultRepoOwner = 'Scribouilli'
     this.defaultThemeRepoName = 'site-template'
     this.fs = new FS('scribouilli')
-    /** @type {((resolutionOptions: ResolutionOption[]) => void) | undefined } */
+    /** @type {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } */
     this.onMergeConflict = undefined
   }
 
@@ -87,6 +85,35 @@ class GitAgent {
       fs: this.fs,
       dir: repoDir,
     })
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   * @param {string} branch
+   * @param {boolean} [force]
+   * @param {boolean} [checkout]
+   * @returns {ReturnType<isomorphicGit["branch"]>}
+   */
+  branch(repoDir, branch, force = false, checkout = true) {
+    return git.branch({
+      fs: this.fs,
+      dir: repoDir,
+      ref: branch,
+      force,
+      checkout,
+    })
+  }
+
+  /**
+   * @summary helper to create ref strings for remotes
+   *
+   * @param {string} remote
+   * @param {string} ref
+   * @returns {string}
+   */
+  createRemoteRef(remote, ref) {
+    return `remotes/${remote}/${ref}`
   }
 
   /**
@@ -170,20 +197,41 @@ class GitAgent {
   }
 
   /**
+   * @summary like git push --force
+   *
+   * @param {string} repoDir
+   * @returns {ReturnType<isomorphicGit["push"]>}
+   */
+  forcePush(repoDir) {
+    return git.push({
+      fs: this.fs,
+      http,
+      // ref is purposefully omitted to get the default (checked out branch)
+      dir: repoDir,
+      force: true,
+      corsProxy: CORS_PROXY_URL,
+      onAuth: _ => {
+        // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+        return {
+          username: getOAuthServiceAPI().getAccessToken(),
+          password: 'x-oauth-basic',
+        }
+      },
+    })
+  }
+
+  /**
    *
    * @param {string} repoDir
    * @returns {ReturnType<isomorphicGit["fetch"]>}
    */
   async fetch(repoDir) {
-    console.log('fetch')
     const remotes = await this.listRemotes(repoDir)
-    console.log('remotes', remotes)
     const branches = await Promise.all(
       [undefined, ...remotes].map(r =>
         this.listBranches(repoDir, r && r.remote),
       ),
     )
-    console.log('branches', branches)
 
     return git.fetch({
       fs: this.fs,
@@ -192,6 +240,43 @@ class GitAgent {
       singleBranch: false, // we want all the branches
       dir: repoDir,
       corsProxy: CORS_PROXY_URL,
+    })
+  }
+
+  /**
+   *
+   * @summary This function tries to merge
+   * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
+   *
+   * @param {string} repoDir
+   * @param {string} [ref]
+   * @returns {Promise<import('isomorphic-git').CommitObject>}
+   */
+  currentCommit(repoDir, ref = undefined) {
+    return git
+      .log({
+        fs: this.fs,
+        dir: repoDir,
+        ref,
+        depth: 1,
+      })
+      .then(commits => commits[0].commit)
+  }
+
+  /**
+   *
+   * @summary This function tries to merge
+   * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
+   *
+   * @param {string} repoDir
+   * @param {string} [ref]
+   * @returns {ReturnType<isomorphicGit["checkout"]>}
+   */
+  checkout(repoDir, ref = undefined) {
+    return git.checkout({
+      fs: this.fs,
+      dir: repoDir,
+      ref,
     })
   }
 
@@ -210,8 +295,12 @@ class GitAgent {
       this.listRemotes(repoDir),
     ])
 
+    if (!currentBranch) {
+      throw new TypeError('currentBranch is undefined')
+    }
+
     const localBranch = currentBranch
-    const remoteBranch = `remotes/${remotes[0].remote}/${localBranch}`
+    const remoteBranch = this.createRemoteRef(remotes[0].remote, localBranch)
 
     return git
       .merge({
@@ -225,10 +314,8 @@ class GitAgent {
         abortOnConflict: true,
       })
       .then(() => {
-        return git.checkout({
-          fs: this.fs,
-          dir: repoDir,
-        })
+        // this checkout is necessary to update FS files
+        return this.checkout(repoDir)
       })
       .catch(err => {
         console.log('merge error', err)
@@ -237,16 +324,32 @@ class GitAgent {
           this.onMergeConflict([
             {
               message: `Garder la version actuelle du site web en ligne (et perdre les changements récents dans l'atelier)`,
-              resolution: () => {
-                // PPP git branch -f
-                return Promise.reject('PPP git branch -f')
+              resolution: async () => {
+                const currentBranch = await this.currentBranch(repoDir)
+                if (!currentBranch) {
+                  throw new TypeError('Missing currentBranch')
+                }
+
+                const remotes = await this.listRemotes(repoDir)
+                const firstRemote = remotes[0].remote
+                const remoteBranches = await this.listBranches(
+                  repoDir,
+                  firstRemote,
+                )
+                const targetedRemoteBranch = this.createRemoteRef(
+                  firstRemote,
+                  remoteBranches[0],
+                )
+
+                await this.checkout(repoDir, targetedRemoteBranch)
+
+                await this.branch(repoDir, currentBranch, true, true)
               },
             },
             {
               message: `Garder la version actuelle de l'atelier (et perdre la version en actuellement ligne)`,
               resolution: () => {
-                // PPP git push -f
-                return Promise.reject('PPP git push -f')
+                return this.forcePush(repoDir)
               },
             },
           ])
@@ -517,5 +620,8 @@ class GitAgent {
 
 /** @type {GitAgent} */
 const gitAgent = new GitAgent()
+
+// @ts-ignore
+window.gitAgent = gitAgent
 
 export default gitAgent

@@ -6,7 +6,11 @@ import gitAgent from './gitAgent.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
-import { handleErrors, logMessage, delay } from './utils'
+import { handleErrors, logMessage } from './utils'
+
+gitAgent.onMergeConflict = resolutionOptions => {
+  store.mutations.setConflict(resolutionOptions)
+}
 
 const logout = () => {
   store.mutations.setLogin(undefined)
@@ -289,4 +293,18 @@ export const createRepositoryForCurrentAccount = async repoName => {
         throw errorMessage
       })
   )
+}
+
+/**
+ *
+ * @param {import('./store.js').ResolutionOption['resolution']} resolution
+ * @returns {import('./store.js').ResolutionOption['resolution']}
+ */
+export function addConflictRemovalAndRedirectToResolution(resolution) {
+  return function (/** @type {any} */ ...args) {
+    return resolution(...args).then(() => {
+      store.mutations.setConflict(undefined)
+      history.back()
+    })
+  }
 }

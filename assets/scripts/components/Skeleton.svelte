@@ -11,9 +11,12 @@
   /** @typedef {import("./../store.js").ScribouilliState} ScribouilliState */
   /** @type {ScribouilliState["currentRepository"] | undefined} */
   export let currentRepository = undefined;
+
+  /** @type {ScribouilliState["conflict"]}*/
+  export let conflict = undefined
 </script>
 
-<Header {showArticles} {currentRepository} {buildStatus} />
+<Header {showArticles} {currentRepository} {buildStatus} {conflict} />
 
 <main>
   <slot />

@@ -17,6 +17,7 @@ import selectOrCreateSite from './select-or-create-site.js'
 import createNewSite from './create-new-site.js'
 import startFromExistingSite from './start-from-existing-site.js'
 import settings from './settings.js'
+import resolutionDesynchronisation from './resolution-desynchronisation.js'
 
 page('/', welcome)
 page('/account', account)
@@ -43,6 +44,7 @@ page('/selectionner-un-site', selectOrCreateSite)
 page('/creer-un-nouveau-site', createNewSite)
 page('/partir-dun-site-existant', startFromExistingSite)
 page('/settings', settings)
+page('/resolution-desynchronisation', resolutionDesynchronisation)
 
 page.base(store.state.basePath)
 
