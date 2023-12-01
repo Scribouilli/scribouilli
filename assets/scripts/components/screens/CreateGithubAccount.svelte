@@ -21,7 +21,7 @@
           confirmer votre compte
         </li>
         <li>
-          Dès que le code est validé, <em>revenez sur Scribouilli</em> et
+          Dès que le code est validé, <strong>revenez sur Scribouilli</strong> et
           cliquez sur <a href="./login">"J'ai créé un compte"</a>
         </li>
       </ol>
