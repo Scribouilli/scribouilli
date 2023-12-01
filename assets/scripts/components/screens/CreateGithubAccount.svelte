@@ -53,9 +53,6 @@
     margin-bottom: 2rem;
   }
 
-  em {
-    font-weight: bold;
-  }
   ol {
     text-align: left;
   }
