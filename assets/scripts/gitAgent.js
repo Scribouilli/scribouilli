@@ -240,9 +240,6 @@ class GitAgent {
 
   /**
    *
-   * @summary This function tries to merge
-   * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
-   *
    * @param {string} repoDir
    * @param {string} [ref]
    * @returns {Promise<import('isomorphic-git').CommitObject>}
@@ -259,9 +256,6 @@ class GitAgent {
   }
 
   /**
-   *
-   * @summary This function tries to merge
-   * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
    *
    * @param {string} repoDir
    * @param {string} [ref]
