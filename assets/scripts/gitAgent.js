@@ -14,11 +14,6 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 class GitAgent {
   constructor() {
-    /** @type {string | undefined} */
-    this.commitsEtag = undefined
-    this.latestCommit = undefined
-    this.getFilesCache = new Map()
-    this.fileCached = undefined
     this.customCSSPath = 'assets/css/custom.css'
     this.defaultRepoOwner = 'Scribouilli'
     this.defaultThemeRepoName = 'site-template'
@@ -592,20 +587,6 @@ class GitAgent {
   }
 
   /**
-   * Non-utilisée et sûrement fausse pour le moment
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @returns
-   */
-  /*getLastDeployment(login, repoName) {
-    return this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`,
-    )
-    .then(deployments => deployments[0])
-  }*/
-
-  /**
    *
    * @param {string} login
    * @param {string} repoName
@@ -620,8 +601,5 @@ class GitAgent {
 
 /** @type {GitAgent} */
 const gitAgent = new GitAgent()
-
-// @ts-ignore
-window.gitAgent = gitAgent
 
 export default gitAgent
