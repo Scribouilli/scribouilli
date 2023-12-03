@@ -3,59 +3,8 @@
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import { logMessage } from './utils.js'
 
-/*
-
-Pas d'étoile
-
-
-Tant que le répo ne déploi pas, le status vaut `null`
-Quand un build est annulé par un nouveau commit,
-
-l'API de statut retourne d'abord une erreur et plus tard, `building` puis `built`
-
-Quand on viens de commité et qu'on interroge l'API `/pages`
-elle nous réponds d'abord que c'est built (parce que le nouveau build n'a pas commencé).
-
-https://docs.github.com/en/rest/pages?apiVersion=2022-11-28#get-a-github-pages-site
-
-Peut-être que l'on pourrait changer de stratégie et utiliser
-`await octokit.request('GET /repos/{owner}/{repo}/deployments'` avec un 1 per_page
-
-Puis, récupérer
-
-"statuses_url": "https://api.github.com/repos/octocat/example/deployments/1/statuses",
-pour ensuite faire du polling dessus, et récupérer la propriété state
-
-    "state": {
-        "description": "The state of the status.",
-        "enum": [
-          "error",
-          "failure",
-          "inactive",
-          "pending",
-          "success",
-          "queued",
-          "in_progress"
-        ]
-    }
-
-
-
-NOTE
-
-Nous pensons que GitHub laisse mourrir l'API GitHub Pages
-
-Un refactoring à faire plus tard serait d'utilise les API de déploiement qui sont plus riche en information.
-
-Nous pourirons essayer de suivre un commit pour s'assurer que nous allons à la fin du déploiement.
-
-Voir `databaseAPI.getLastDeployment(login, repoName)` et `databaseAPI.getDeploymentStatus(deployment)`
-
-
-*/
-
 /**
- * @typedef {"building" | "built" | "errored"} BuildStatus
+ * @typedef {"in_progress" | "success" | "error"} BuildStatus
  */
 
 /**
@@ -66,7 +15,7 @@ Voir `databaseAPI.getLastDeployment(login, repoName)` et `databaseAPI.getDeploym
  */
 export default function (owner, repoName) {
   /** @type {BuildStatus} */
-  let repoStatus = 'building'
+  let repoStatus = 'in_progress'
   /** @type {(status: BuildStatus) => any} */
   let reaction
   /** @type {ReturnType<setTimeout> | undefined} */
@@ -96,31 +45,30 @@ export default function (owner, repoName) {
     checkStatus() {
       return (
         getOAuthServiceAPI()
-          .getPagesWebsite(owner, repoName)
+          .getPagesWebsiteDeploymentStatus(owner, repoName)
           // @ts-ignore
-          .then(({ status }) => {
+          .then(status => {
             logMessage(
-              `GitHub Pages status is ${status}`,
+              `GitHub deployment's status is ${status}`,
               'buildStatus.checkStatus',
             )
 
-            if (['built', 'errored', 'building'].includes(status)) {
+            if (['in_progress', 'success', 'error'].includes(status)) {
               repoStatus = status
             } else {
-              // status === null
-              repoStatus = 'building'
+              repoStatus = 'in_progress'
             }
 
             if (reaction) {
               reaction(repoStatus)
             }
 
-            if (repoStatus === 'building') {
+            if (repoStatus === 'in_progress') {
               scheduleCheck()
             }
           })
           .catch(() => {
-            repoStatus = 'errored'
+            repoStatus = 'error'
             if (reaction) {
               reaction(repoStatus)
             }
@@ -128,7 +76,7 @@ export default function (owner, repoName) {
       )
     },
     setBuildingAndCheckStatusLater(t = 30000) {
-      repoStatus = 'building'
+      repoStatus = 'in_progress'
       // @ts-ignore
       clearTimeout(timeout)
       timeout = undefined

@@ -150,25 +150,39 @@ export class GitHubAPI {
           Accept: 'applicatikn/vnd.github+json',
         },
         method: 'POST',
-        body: JSON.stringify({ source: { branch: 'main' } }),
+        body: JSON.stringify({
+          build_type: 'workflow',
+        }),
       },
     )
   }
 
-  /** @type {OAuthServiceAPI["getPagesWebsite"]} */
-  getPagesWebsite(account, repositoryName) {
+  /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
+  getPagesWebsiteDeploymentStatus(account, repositoryName) {
+    // TODO: We need to add the `sha` parameter to avoid the GitHub API to return
+    // cached data.
     return this.callAPI(
-      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/pages`,
-    ).then(response => {
-      return response.json()
-    })
+      `${gitHubApiBaseUrl}/repos/${account}/${repositoryName}/deployments?environment=github-pages`,
+    )
+      .then(response => response.json())
+      .then(json => {
+        console.debug('Deployments list: ', json)
+        const statusesUrl = json[0].statuses_url
+
+        return this.callAPI(`${statusesUrl}?per_page=1`)
+      })
+      .then(response => response.json())
+      .then(json => {
+        console.debug('Deployment status: ', json[0].state)
+        return json[0].state
+      })
   }
 
   /** @type {OAuthServiceAPI["isPagesWebsiteBuilt"]} */
   isPagesWebsiteBuilt(account, repositoryName) {
-    return this.getPagesWebsite(account, repositoryName)
+    return this.getPagesWebsiteDeploymentStatus(account, repositoryName)
       .then(response => {
-        return response.status === 'built'
+        return response === 'success'
       })
       .catch(error => {
         return false

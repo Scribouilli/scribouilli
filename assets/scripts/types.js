@@ -16,7 +16,7 @@
  * @property {(account: string, repositoryName: string) => Promise<any>} updateRepositoryFeaturesSettings
  * @property {(account: string, repositoryName: string) => Promise<any>} deleteRepository
  * @property {(account: string, repositoryName: string) => Promise<any>} createPagesWebsiteFromRepository
- * @property {(account: string, repositoryName: string) => Promise<any>} getPagesWebsite
+ * @property {(account: string, repositoryName: string) => Promise<any>} getPagesWebsiteDeploymentStatus
  * @property {(account: string, repositoryName: string) => Promise<boolean>} isPagesWebsiteBuilt
  * @property {(account: string, repositoryName: string) => Promise<boolean>} isRepositoryReady
  */
