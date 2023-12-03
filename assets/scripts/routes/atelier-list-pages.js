@@ -20,8 +20,10 @@ const mapStateToProps = state => {
     buildStatus: state.buildStatus,
     currentRepository: state.currentRepository,
     showArticles:
-      state.pages && state.pages.find(p => p.path === 'blog.md') !== undefined ||
-      state.articles && state.articles.length > 0,
+      (state.pages &&
+        state.pages.find(p => p.path === 'blog.md') !== undefined) ||
+      (state.articles && state.articles.length > 0),
+    conflict: state.conflict,
   }
 }
 

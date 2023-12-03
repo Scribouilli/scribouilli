@@ -5,7 +5,7 @@
   import { makePageFrontMatter } from '../../../utils'
   import './../../../types.js'
 
-  /** @type any */
+  /** @type {any} */
   export let buildStatus
 
   /** @type {FileContenu[]} */
@@ -24,11 +24,14 @@
   export let showArticles
 
   /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["currentRepository"] */
+  /** @type {ScribouilliState["currentRepository"]} */
   export let currentRepository
 
   /** @type {boolean} */
   export let allowModification
+
+  /** @type {ScribouilliState["conflict"]}*/
+  export let conflict
 
   /** @type {string} */
   let repoName
@@ -66,16 +69,15 @@
         'Changement index',
       )
 
-      await gitAgent.push(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-      )
+      const repoDir = gitAgent.repoDir(store.state.currentRepository.owner, store.state.currentRepository.name)
+
+      await gitAgent.safePush(repoDir)
     }
     modification = !modification
   }
 </script>
 
-<Skeleton {currentRepository} {buildStatus} {showArticles}>
+<Skeleton {currentRepository} {buildStatus} {showArticles} {conflict}>
   <section class="screen">
     <div>
       <header>

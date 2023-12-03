@@ -6,7 +6,7 @@ import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import {
   getCurrentRepoPages,
-  setArticles,
+  getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
 } from '../actions'
 import { deleteRepository } from '../actions/repository.js'
@@ -102,12 +102,15 @@ export default ({ querystring }) => {
       } else {
         await deleteFileAndCommit('blog.md', 'Désactivation du blog')
       }
-      await setArticles()
+      await getCurrentRepoArticles()
       await getCurrentRepoPages()
-      gitAgent.push(
+
+      const repoDir = gitAgent.repoDir(
         store.state.currentRepository.owner,
         store.state.currentRepository.name,
       )
+
+      gitAgent.safePush(repoDir)
     } catch (msg) {
       //@ts-ignore
       handleErrors(msg)

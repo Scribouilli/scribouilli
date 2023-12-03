@@ -51,13 +51,13 @@ describe('actions/file.js', () => {
     before(() => {
       sandbox.stub(gitAgent, 'writeFile').resolves()
       sandbox.stub(gitAgent, 'commit').resolves()
-      sandbox.stub(gitAgent, 'push').resolves()
+      sandbox.stub(gitAgent, 'safePush').resolves()
     })
 
     it('calls removeFile, commit and push', done => {
       writeFileAndPushChanges('test.js', 'Curiouser and curiouser!')
         .then(() => {
-          expect(gitAgent.push).to.have.been.calledWith(
+          expect(gitAgent.safePush).to.have.been.calledWith(
             'alice',
             'alice.github.io',
           )
@@ -96,13 +96,13 @@ describe('actions/file.js', () => {
     before(() => {
       sandbox.stub(gitAgent, 'removeFile').resolves()
       sandbox.stub(gitAgent, 'commit').resolves()
-      sandbox.stub(gitAgent, 'push').resolves()
+      sandbox.stub(gitAgent, 'safePush').resolves()
     })
 
     it('calls removeFile and commit', done => {
       deleteFileAndPushChanges('test.js')
         .then(() => {
-          expect(gitAgent.push).to.have.been.calledWith(
+          expect(gitAgent.safePush).to.have.been.calledWith(
             'alice',
             'alice.github.io',
           )

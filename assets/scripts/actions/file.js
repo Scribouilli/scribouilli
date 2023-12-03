@@ -2,7 +2,6 @@
 
 import gitAgent from './../gitAgent.js'
 import store from './../store.js'
-import { handleErrors } from './../utils.js'
 
 /**
  * @param {string} fileName
@@ -16,7 +15,6 @@ export const writeFileAndCommit = (fileName, content, commitMessage) => {
     commitMessage = `Modification du fichier ${fileName}`
   }
 
-  const { state } = store
   const { owner, name } = store.state.currentRepository
 
   return gitAgent.writeFile(owner, name, fileName, content).then(() => {
@@ -30,7 +28,7 @@ export const writeFileAndCommit = (fileName, content, commitMessage) => {
  * @param {string|Uint8Array} content
  * @param {string} [commitMessage]
  *
- * @returns {Promise<void>}
+ * @returns {ReturnType<typeof gitAgent.safePush>}
  */
 export const writeFileAndPushChanges = (
   fileName,
@@ -40,8 +38,10 @@ export const writeFileAndPushChanges = (
   const { state } = store
   const { owner, name } = state.currentRepository
 
+  const repoDir = gitAgent.repoDir(owner, name)
+
   return writeFileAndCommit(fileName, content, commitMessage).then(() =>
-    gitAgent.push(owner, name),
+    gitAgent.safePush(repoDir),
   )
 }
 
@@ -68,13 +68,15 @@ export const deleteFileAndCommit = (fileName, commitMessage = '') => {
  * @param {string} fileName
  * @param {string} [commitMessage]
  *
- * @returns {Promise<Void>}
+ * @returns {ReturnType<typeof gitAgent.safePush>}
  */
 export const deleteFileAndPushChanges = (fileName, commitMessage) => {
   const { state } = store
   const { owner, name } = state.currentRepository
 
+  const repoDir = gitAgent.repoDir(owner, name)
+
   return deleteFileAndCommit(fileName, commitMessage).then(() =>
-    gitAgent.push(owner, name),
+    gitAgent.safePush(repoDir),
   )
 }

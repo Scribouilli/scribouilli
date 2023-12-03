@@ -96,40 +96,6 @@ body {
   background-color: #ffe7b3;
 }
 
-header {
-  margin-bottom: 3rem;
-  padding-right: 2rem;
-  padding-left: 2rem;
-  border-bottom: 1px solid #4d4646;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-header > * {
-  flex: 1;
-}
-
-header > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-
-header > div > p {
-  margin: 0em;
-}
-
-header h1 {
-  text-align: center;
-}
-
-header img {
-  max-height: 3em;
-}
-
 main {
   padding-bottom: 2rem;
   min-height: 83vh;

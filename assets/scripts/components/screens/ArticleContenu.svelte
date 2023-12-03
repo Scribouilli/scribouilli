@@ -15,7 +15,7 @@
   export let showArticles;
 
   /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["currentRepository"] */
+  /** @type {ScribouilliState["currentRepository"]} */
   export let currentRepository;
 
   import Editeur from "./intern/Editeur.svelte";

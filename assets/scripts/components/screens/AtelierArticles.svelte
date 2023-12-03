@@ -11,8 +11,11 @@
   export let showArticles
 
   /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["currentRepository"] */
+  /** @type {ScribouilliState["currentRepository"]} */
   export let currentRepository
+
+  /** @type {ScribouilliState["conflict"]}*/
+  export let conflict
 </script>
 
 <ListContenu
@@ -24,6 +27,7 @@
   atelierPrefix="./atelier-article"
   newContentButtonText="Nouvel article"
   allowModification={false}
+  {conflict}
 />
 
 <style lang="scss">

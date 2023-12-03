@@ -6,27 +6,20 @@ import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web/index.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
-import store from './store.js'
-
 import './types.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
+/** @typedef {import('isomorphic-git')} isomorphicGit */
+
 class GitAgent {
   constructor() {
-    /** @type {string | undefined} */
-    this.commitsEtag = undefined
-    this.latestCommit = undefined
-    this.getFilesCache = new Map()
-    this.fileCached = undefined
     this.customCSSPath = 'assets/css/custom.css'
     this.defaultRepoOwner = 'Scribouilli'
     this.defaultThemeRepoName = 'site-template'
-    this.fs = new FS(
-      'scribouilli',
-      // @ts-ignore il y a un problème avec la définition de type dans lightning-fs, db est un paramètre optionnel
-      { wipe: true },
-    )
+    this.fs = new FS('scribouilli')
+    /** @type {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } */
+    this.onMergeConflict = undefined
   }
 
   /**
@@ -60,104 +53,105 @@ class GitAgent {
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {string} gitURL
+   * @param {string} repoDir
    * @returns {Promise<void>}
    */
-  async cloneIfNeeded(login, repoName) {
-    const repoDir = this.repoDir(login, repoName)
-    let dirExists = true
-    try {
-      const stat = await this.fs.promises.stat(repoDir)
-      dirExists = stat.isDirectory()
-    } catch {
-      dirExists = false
-    }
-
-    if (!dirExists) {
-      await git.clone({
-        fs: this.fs,
-        http,
-        dir: repoDir,
-        url: `https://github.com/${login}/${repoName}.git`,
-        corsProxy: CORS_PROXY_URL,
-        ref: 'main',
-        singleBranch: true,
-        depth: 5,
-      })
-    }
-  }
-
-  /**
-   * Assigne l'auteur et l'email pour les commits git
-   *
-   * On voudrait le faire en global, mais ça n'est pas possible actuellement avec isomorphic-git (1.24.2)
-   * > Currently only the local $GIT_DIR/config file can be read or written. However support for the global ~/.gitconfig and system $(prefix)/etc/gitconfig will be added in the future.
-   * Voir https://github.com/isomorphic-git/isomorphic-git/pull/1779
-   *
-   *
-   * https://isomorphic-git.org/docs/en/setConfig
-   *
-   * Alors, on doit passer le repoName
-   *
-   * @param {string} login
-   * @param {string} owner
-   * @param {string} repoName
-   * @param {string} email
-   * @returns {Promise<void>}
-   */
-  async setAuthor(login, owner, repoName, email) {
-    if (!login || !owner || !repoName || !email) {
-      return
-    }
-
-    const repoDir = this.repoDir(owner, repoName)
-
-    await this.cloneIfNeeded(owner, repoName)
-
-    await git.setConfig({
+  clone(gitURL, repoDir) {
+    return git.clone({
       fs: this.fs,
       dir: repoDir,
-      path: 'user.name',
-      value: login,
-    })
-    await git.setConfig({
-      fs: this.fs,
-      dir: repoDir,
-      path: 'user.email',
-      value: email,
+      http,
+      url: gitURL,
+      // ref is purposefully omitted to get the default behavior (default repo branch)
+      singleBranch: true,
+      corsProxy: CORS_PROXY_URL,
+      depth: 5,
     })
   }
 
   /**
-   * @summary Get file informations
-   * @param {string} login
-   * @param {string} repoName
-   * @param {string} fileName
-   * @returns {Promise<string>}
+   *
+   * @param {string} repoDir
+   * @returns {ReturnType<isomorphicGit["currentBranch"]>}
    */
-  async getFile(login, repoName, fileName) {
-    await this.cloneIfNeeded(login, repoName)
-    const content = await this.fs.promises.readFile(
-      this.path(login, repoName, fileName),
-      { encoding: 'utf8' },
-    )
-    if (content instanceof Uint8Array) {
-      return content.toString()
-    }
-    return content
+  currentBranch(repoDir) {
+    return git.currentBranch({
+      fs: this.fs,
+      dir: repoDir,
+    })
   }
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {string} repoDir
+   * @param {string} branch
+   * @param {boolean} [force]
+   * @param {boolean} [checkout]
+   * @returns {ReturnType<isomorphicGit["branch"]>}
    */
-  async push(login, repoName) {
-    await git.push({
+  branch(repoDir, branch, force = false, checkout = true) {
+    return git.branch({
+      fs: this.fs,
+      dir: repoDir,
+      ref: branch,
+      force,
+      checkout,
+    })
+  }
+
+  /**
+   * @summary helper to create ref strings for remotes
+   *
+   * @param {string} remote
+   * @param {string} ref
+   * @returns {string}
+   */
+  createRemoteRef(remote, ref) {
+    return `remotes/${remote}/${ref}`
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   *
+   * @returns {Promise<{remote: string, url: string}[]>}
+   */
+  listRemotes(repoDir) {
+    return git.listRemotes({
+      fs: this.fs,
+      dir: repoDir,
+    })
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   * @param {string} [remote]
+   *
+   * @returns {Promise<string[]>}
+   */
+  listBranches(repoDir, remote) {
+    return git.listBranches({
+      fs: this.fs,
+      dir: repoDir,
+      remote,
+    })
+  }
+
+  /**
+   * @summary This version of git push may fail if the remote repo
+   * has unmerged changes
+   *
+   * @param {string} repoDir
+   * @returns {ReturnType<isomorphicGit["push"]>}
+   */
+  falliblePush(repoDir) {
+    return git.push({
       fs: this.fs,
       http,
-      dir: this.repoDir(login, repoName),
+      // ref is purposefully omitted to get the default (checked out branch)
+      dir: repoDir,
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
@@ -167,6 +161,188 @@ class GitAgent {
         }
       },
     })
+  }
+
+  /**
+   * @summary This version of git push tries to push
+   * then tries to pull if the push fails
+   * and tries again to push if the pull succeeded
+   *
+   * @param {string} repoDir
+   * @returns {Promise<any>}
+   */
+  safePush(repoDir) {
+    console.log('safePush')
+    return this.falliblePush(repoDir)
+      .catch(err => {
+        console.log(
+          'failliblePush error ! Assuming the error is that we are not up to date with the remote',
+        )
+        return this.fetchAndTryMerging(repoDir).then(() => {
+          console.log('pull/merge succeeded, try to push again')
+          return this.falliblePush(repoDir)
+        })
+      })
+      .catch(err => {
+        console.log(
+          'the merge failed or the second push failed, there is nothing much we can try automatocally',
+        )
+        return err
+      })
+  }
+
+  /**
+   * @summary like git push --force
+   *
+   * @param {string} repoDir
+   * @returns {ReturnType<isomorphicGit["push"]>}
+   */
+  forcePush(repoDir) {
+    return git.push({
+      fs: this.fs,
+      http,
+      // ref is purposefully omitted to get the default (checked out branch)
+      dir: repoDir,
+      force: true,
+      corsProxy: CORS_PROXY_URL,
+      onAuth: _ => {
+        // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+        return {
+          username: getOAuthServiceAPI().getAccessToken(),
+          password: 'x-oauth-basic',
+        }
+      },
+    })
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   * @returns {ReturnType<isomorphicGit["fetch"]>}
+   */
+  async fetch(repoDir) {
+    const remotes = await this.listRemotes(repoDir)
+    const branches = await Promise.all(
+      [undefined, ...remotes].map(r =>
+        this.listBranches(repoDir, r && r.remote),
+      ),
+    )
+
+    return git.fetch({
+      fs: this.fs,
+      http,
+      // ref is purposefully omitted to get the default (checked out branch)
+      singleBranch: false, // we want all the branches
+      dir: repoDir,
+      corsProxy: CORS_PROXY_URL,
+    })
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   * @param {string} [ref]
+   * @returns {Promise<import('isomorphic-git').CommitObject>}
+   */
+  currentCommit(repoDir, ref = undefined) {
+    return git
+      .log({
+        fs: this.fs,
+        dir: repoDir,
+        ref,
+        depth: 1,
+      })
+      .then(commits => commits[0].commit)
+  }
+
+  /**
+   *
+   * @param {string} repoDir
+   * @param {string} [ref]
+   * @returns {ReturnType<isomorphicGit["checkout"]>}
+   */
+  checkout(repoDir, ref = undefined) {
+    return git.checkout({
+      fs: this.fs,
+      dir: repoDir,
+      ref,
+    })
+  }
+
+  /**
+   *
+   * @summary This function tries to merge
+   * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
+   *
+   * @param {string} repoDir
+   * @returns {Promise<any>}
+   */
+  async tryMerging(repoDir) {
+    console.log('merge')
+    const [currentBranch, remotes] = await Promise.all([
+      this.currentBranch(repoDir),
+      this.listRemotes(repoDir),
+    ])
+
+    if (!currentBranch) {
+      throw new TypeError('currentBranch is undefined')
+    }
+
+    const localBranch = currentBranch
+    const remoteBranch = this.createRemoteRef(remotes[0].remote, localBranch)
+
+    return git
+      .merge({
+        fs: this.fs,
+        dir: repoDir,
+        // ours is purposefully omitted to get the default behavior (current branch)
+        // assuming their is only one remote
+        // assuming the remote and local branch have the same name
+        theirs: remoteBranch,
+        fastForward: true,
+        abortOnConflict: true,
+      })
+      .then(() => {
+        // this checkout is necessary to update FS files
+        return this.checkout(repoDir)
+      })
+      .catch(err => {
+        console.log('merge error', err)
+
+        this.onMergeConflict &&
+          this.onMergeConflict([
+            {
+              message: `Garder la version actuelle du site web en ligne (et perdre les changements récents dans l'atelier)`,
+              resolution: async () => {
+                const currentBranch = await this.currentBranch(repoDir)
+                if (!currentBranch) {
+                  throw new TypeError('Missing currentBranch')
+                }
+
+                const remotes = await this.listRemotes(repoDir)
+                const firstRemote = remotes[0].remote
+                const remoteBranches = await this.listBranches(
+                  repoDir,
+                  firstRemote,
+                )
+                const targetedRemoteBranch = this.createRemoteRef(
+                  firstRemote,
+                  remoteBranches[0],
+                )
+
+                await this.checkout(repoDir, targetedRemoteBranch)
+
+                await this.branch(repoDir, currentBranch, true, true)
+              },
+            },
+            {
+              message: `Garder la version actuelle de l'atelier (et perdre la version en actuellement ligne)`,
+              resolution: () => {
+                return this.forcePush(repoDir)
+              },
+            },
+          ])
+      })
   }
 
   /**
@@ -195,8 +371,6 @@ class GitAgent {
    * @returns {Promise<void>}
    */
   async removeFile(login, repoName, fileName) {
-    await this.cloneIfNeeded(login, repoName)
-
     const path = this.path(login, repoName, fileName)
     await this.fs.promises.unlink(path)
     await git.remove({
@@ -218,6 +392,100 @@ class GitAgent {
   }
 
   /**
+   * @summary like a git pull but the merge is better customized
+   *
+   * @param {string} repoDir
+   * @returns {Promise<any>}
+   */
+  async fetchAndTryMerging(repoDir) {
+    console.log('fetchAndTryMerging')
+    await this.fetch(repoDir)
+    await this.tryMerging(repoDir)
+  }
+
+  /**
+   *
+   * @param {string} login
+   * @param {string} repoName
+   * @return {Promise<any>}
+   */
+  async pullOrCloneRepo(login, repoName) {
+    const repoDir = this.repoDir(login, repoName)
+    const gitURL = `https://github.com/${login}/${repoName}.git`
+
+    let dirExists = true
+    try {
+      const stat = await this.fs.promises.stat(repoDir)
+      dirExists = stat.isDirectory()
+    } catch {
+      dirExists = false
+    }
+
+    if (dirExists) {
+      return this.fetchAndTryMerging(repoDir)
+    } else {
+      return this.clone(gitURL, repoDir)
+    }
+  }
+
+  /**
+   * Assigne l'auteur et l'email pour les commits git
+   *
+   * On voudrait le faire en global, mais ça n'est pas possible actuellement avec isomorphic-git (1.24.2)
+   * > Currently only the local $GIT_DIR/config file can be read or written. However support for the global ~/.gitconfig and system $(prefix)/etc/gitconfig will be added in the future.
+   * Voir https://github.com/isomorphic-git/isomorphic-git/pull/1779
+   *
+   *
+   * https://isomorphic-git.org/docs/en/setConfig
+   *
+   * Alors, on doit passer le repoName
+   *
+   * @param {string} login
+   * @param {string} owner
+   * @param {string} repoName
+   * @param {string} email
+   * @returns {Promise<void>}
+   */
+  async setAuthor(login, owner, repoName, email) {
+    if (!login || !owner || !repoName || !email) {
+      return
+    }
+
+    const repoDir = this.repoDir(owner, repoName)
+
+    await git.setConfig({
+      fs: this.fs,
+      dir: repoDir,
+      path: 'user.name',
+      value: login,
+    })
+    await git.setConfig({
+      fs: this.fs,
+      dir: repoDir,
+      path: 'user.email',
+      value: email,
+    })
+  }
+
+  /**
+   * @summary Get file informations
+   * @param {string} login
+   * @param {string} repoName
+   * @param {string} fileName
+   * @returns {Promise<string>}
+   */
+  async getFile(login, repoName, fileName) {
+    const content = await this.fs.promises.readFile(
+      this.path(login, repoName, fileName),
+      { encoding: 'utf8' },
+    )
+    if (content instanceof Uint8Array) {
+      return content.toString()
+    }
+    return content
+  }
+
+  /**
    * @summary Create or update a file and add it to the git staging area
    *
    * @param {string} login
@@ -228,8 +496,6 @@ class GitAgent {
    * @returns {Promise<void>}
    */
   async writeFile(login, repoName, fileName, content) {
-    await this.cloneIfNeeded(login, repoName)
-
     // This condition is here just in case, but it should not happen in practice
     // Having an empty file name will not lead immediately to a crash but will result in
     // some bugs later, see https://github.com/Scribouilli/scribouilli/issues/49#issuecomment-1648226372
@@ -249,6 +515,7 @@ class GitAgent {
   }
 
   /**
+   * PPP move to actions
    *
    * @param {string} login
    * @param {string} repoName
@@ -273,8 +540,6 @@ class GitAgent {
    * @returns
    */
   async getPagesList(login, repoName, dir = '') {
-    await this.cloneIfNeeded(login, repoName)
-
     const allFiles = await this.fs.promises.readdir(
       this.path(login, repoName, dir),
     )
@@ -316,20 +581,6 @@ class GitAgent {
   }
 
   /**
-   * Non-utilisée et sûrement fausse pour le moment
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @returns
-   */
-  /*getLastDeployment(login, repoName) {
-    return this.callGithubAPI(
-      `https://api.github.com/repos/${login}/${repoName}/deployments?per_page=1`,
-    )
-    .then(deployments => deployments[0])
-  }*/
-
-  /**
    *
    * @param {string} login
    * @param {string} repoName
@@ -337,7 +588,6 @@ class GitAgent {
    * @returns
    */
   async checkFileExistence(login, repoName, path) {
-    await this.cloneIfNeeded(login, repoName)
     const stat = await this.fs.promises.stat(this.path(login, repoName, path))
     return stat.isFile()
   }
