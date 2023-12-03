@@ -69,7 +69,7 @@
     "dompurify": "^3.0.5",
     "front-matter": "^4.0.2",
     "isomorphic-git": "^1.24.2",
-    "marked": "^5.1.2",
+    "marked": "^11.0.0",
     "page": "^1.11.6"
   }
 }

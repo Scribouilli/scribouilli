@@ -199,9 +199,8 @@
         >.
       </p>
       <p>
-        Scribouilli saura que le compte est supprimé <em
-          >~&nbsp;2&nbsp;minutes après.</em
-        >
+        Scribouilli saura que le compte est supprimé
+        <strong>~&nbsp;2&nbsp;minutes après.</strong>
       </p>
     </div>
 
