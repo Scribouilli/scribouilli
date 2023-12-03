@@ -14,12 +14,15 @@ export const writeFileAndCommit = (fileName, content, commitMessage) => {
   if (typeof commitMessage !== 'string' || commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`
   }
+  const currentRepository = store.state.currentRepository
 
-  const { owner, name } = store.state.currentRepository
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
-  return gitAgent.writeFile(owner, name, fileName, content).then(() => {
+  return gitAgent.writeFile(currentRepository, fileName, content).then(() => {
     // @ts-ignore
-    return gitAgent.commit(owner, name, commitMessage)
+    return gitAgent.commit(currentRepository, commitMessage)
   })
 }
 
@@ -35,13 +38,14 @@ export const writeFileAndPushChanges = (
   content,
   commitMessage = '',
 ) => {
-  const { state } = store
-  const { owner, name } = state.currentRepository
+  const currentRepository = store.state.currentRepository
 
-  const repoDir = gitAgent.repoDir(owner, name)
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
   return writeFileAndCommit(fileName, content, commitMessage).then(() =>
-    gitAgent.safePush(repoDir),
+    gitAgent.safePush(currentRepository),
   )
 }
 
@@ -52,15 +56,18 @@ export const writeFileAndPushChanges = (
  * @returns {Promise<string>}
  */
 export const deleteFileAndCommit = (fileName, commitMessage = '') => {
-  const { state } = store
-  const { owner, name } = state.currentRepository
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
   if (commitMessage === '') {
     commitMessage = `Suppression du fichier ${fileName}`
   }
 
-  return gitAgent.removeFile(owner, name, fileName).then(() => {
-    return gitAgent.commit(owner, name, commitMessage)
+  return gitAgent.removeFile(currentRepository, fileName).then(() => {
+    return gitAgent.commit(currentRepository, commitMessage)
   })
 }
 
@@ -71,12 +78,13 @@ export const deleteFileAndCommit = (fileName, commitMessage = '') => {
  * @returns {ReturnType<typeof gitAgent.safePush>}
  */
 export const deleteFileAndPushChanges = (fileName, commitMessage) => {
-  const { state } = store
-  const { owner, name } = state.currentRepository
+  const currentRepository = store.state.currentRepository
 
-  const repoDir = gitAgent.repoDir(owner, name)
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
   return deleteFileAndCommit(fileName, commitMessage).then(() =>
-    gitAgent.safePush(repoDir),
+    gitAgent.safePush(currentRepository),
   )
 }

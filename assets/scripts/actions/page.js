@@ -65,7 +65,11 @@ export const createPage = (content, title, index) => {
  * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const updatePage = async (fileName, title, content, index) => {
-  const { owner, name } = store.state.currentRepository
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
   let targetFileName = fileName
 
   if (fileName !== 'index.md') {
@@ -75,7 +79,7 @@ export const updatePage = async (fileName, title, content, index) => {
   // If the title has changed, we need to delete the old page and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await gitAgent.removeFile(owner, name, fileName)
+    await gitAgent.removeFile(currentRepository, fileName)
   }
 
   const finalContent = `${

@@ -2,6 +2,7 @@
 
 import page from 'page'
 
+import ScribouilliGitRepo, {makeGithubRepoId, makeGithubPublicRepositoryURL, makeGithubPublishedWebsiteURL} from './scribouilliGitRepo.js';
 import gitAgent from './gitAgent.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
@@ -122,10 +123,14 @@ export const fetchCurrentUserRepositories = async () => {
 }
 
 export const getCurrentRepoPages = () => {
-  const { owner, name } = store.state.currentRepository
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
   return gitAgent
-    .getPagesList(owner, name)
+    .getPagesList(currentRepository)
     .then(pages => {
       store.mutations.setPages(pages)
     })
@@ -133,10 +138,14 @@ export const getCurrentRepoPages = () => {
 }
 
 export const getCurrentRepoArticles = () => {
-  const { owner, name } = store.state.currentRepository
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
   return gitAgent
-    .getArticlesList(owner, name)
+    .getArticlesList(currentRepository)
     .then(articles => {
       store.mutations.setArticles(articles)
     })
@@ -170,19 +179,19 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     throw new Error(message)
   }
 
-  const currentRepository = {
-    name: repoName,
-    owner,
-    publishedWebsiteURL: `${owner.toLowerCase()}.github.io/${repoName.toLowerCase()}`,
-    repositoryURL: `https://github.com/${owner}/${repoName}`,
-  }
+  const scribouilliGitRepo = new ScribouilliGitRepo({
+    repoId: makeGithubRepoId(owner, repoName), 
+    origin: 'https://github.com', 
+    publishedWebsiteURL:  makeGithubPublishedWebsiteURL(owner, repoName), 
+    publicRepositoryURL: makeGithubPublicRepositoryURL(owner, repoName)
+  })
 
-  store.mutations.setCurrentRepository(currentRepository)
+  store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  await gitAgent.pullOrCloneRepo(login, repoName)
-  await gitAgent.setAuthor(login, owner, repoName, email)
+  await gitAgent.pullOrCloneRepo(scribouilliGitRepo)
+  await gitAgent.setAuthor(scribouilliGitRepo, login, email)
 
   getCurrentRepoArticles()
   getCurrentRepoPages()

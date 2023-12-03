@@ -8,14 +8,7 @@ import {
   OAUTH_PROVIDER_STORAGE_KEY,
   ACCESS_TOKEN_STORAGE_KEY,
 } from './config.js'
-
-/**
- * @typedef {Object} CurrentRepository
- * @property {string} owner
- * @property {string} name
- * @property {string} repositoryURL
- * @property {string} publishedWebsiteURL
- */
+import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
 
@@ -27,7 +20,7 @@ import {
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
- * @property {CurrentRepository} currentRepository
+ * @property {ScribouilliGitRepo | undefined} currentRepository
  * @property {ResolutionOption[] | undefined} conflict
  * @property {any} reposByAccount
  * @property {any[]} [pages]
@@ -63,12 +56,7 @@ const store = Store({
     login: undefined,
     email: undefined,
     origin: undefined,
-    currentRepository: {
-      name: undefined,
-      owner: undefined,
-      publishedWebsiteURL: undefined,
-      repositoryURL: undefined,
-    },
+    currentRepository: undefined,
     conflict: undefined,
     // We use the term "account" to refer to user or organization.
     reposByAccount: {
@@ -109,7 +97,7 @@ const store = Store({
     /**
      *
      * @param {ScribouilliState} state
-     * @param {CurrentRepository} repository
+     * @param {ScribouilliState['currentRepository']} repository
      */
     setCurrentRepository(state, repository) {
       state.currentRepository = repository

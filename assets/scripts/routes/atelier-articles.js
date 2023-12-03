@@ -27,12 +27,17 @@ const LIST_ARTICLE_URL = '/atelier-list-articles'
  */
 const makeMapStateToProps = fileName => state => {
   if (fileName) {
+    const currentRepository = store.state.currentRepository
+
+    if(!currentRepository){
+      throw new TypeError('currentRepository is undefined')
+    }
+
     // Display existing file
     const fileP = gitAgent
       .getFile(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-        fileName,
+        currentRepository,
+        fileName
       )
       .then(contenu => {
         const { attributes: data, body: markdownContent } =

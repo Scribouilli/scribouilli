@@ -1,16 +1,16 @@
+import ScribouilliGitRepo from '../scribouilliGitRepo'
 import gitAgent from './../gitAgent'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 
 /**
  * @summary Delete a repository from the local indexedDB and from the OAuth service
  *
- * @param {string} account - The account name
- * @param {string} repositoryName - The repository name
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
  *
  * @return {Promise<any>} - A promise that resolves when the repository has been deleted
  */
-export const deleteRepository = (account, repositoryName) => {
-  return gitAgent.deleteRepository(account, repositoryName).then(() => {
-    return getOAuthServiceAPI().deleteRepository(account, repositoryName)
+export const deleteRepository = (scribouilliGitRepo) => {
+  return gitAgent.deleteRepository(scribouilliGitRepo).then(() => {
+    return getOAuthServiceAPI().deleteRepository(scribouilliGitRepo)
   })
 }
