@@ -53,7 +53,11 @@ export default function (owner, repoName) {
               'buildStatus.checkStatus',
             )
 
-            repoStatus = status
+            if (['in_progress', 'success', 'error'].includes(status)) {
+              repoStatus = status
+            } else {
+              repoStatus = 'in_progress'
+            }
 
             if (reaction) {
               reaction(repoStatus)
