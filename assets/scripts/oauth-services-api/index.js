@@ -42,6 +42,10 @@ const makeOAuthServiceAPI = (type, options) => {
 // @ts-ignore
 let oAuthServiceAPI
 
+/**
+ * 
+ * @returns {OAuthServiceAPI}
+ */
 export const getOAuthServiceAPI = () => {
   // @ts-ignore
   if (oAuthServiceAPI) {
@@ -56,7 +60,7 @@ export const getOAuthServiceAPI = () => {
 
     page('/account')
 
-    return
+    throw new TypeError('Missing accessToken or provider name')
   }
 
   oAuthServiceAPI = makeOAuthServiceAPI(store.state.oAuthProvider.name, {

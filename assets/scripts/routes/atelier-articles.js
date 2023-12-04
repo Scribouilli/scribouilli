@@ -6,9 +6,7 @@ import page from 'page'
 import store from '../store'
 import {
   checkRepositoryAvailabilityThen,
-  handleErrors,
-  makeArticleFileName,
-  makeArticleFrontMatter,
+  handleErrors
 } from '../utils'
 
 import gitAgent from '../gitAgent'
@@ -17,8 +15,17 @@ import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import { deleteArticle, createArticle, updateArticle } from '../actions/article'
+import ScribouilliGitRepo from '../scribouilliGitRepo'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
+
+/**
+ * 
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
+ */
+export function makeArticleListURL(scribouilliGitRepo){
+  return `${LIST_ARTICLE_URL}?repoId=${scribouilliGitRepo.repoId}`;
+}
 
 /**
  *
@@ -86,17 +93,20 @@ const makeMapStateToProps = fileName => state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
+export default async ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
-  checkRepositoryAvailabilityThen(
-    store.state.currentRepository.owner,
-    store.state.currentRepository.name,
-    () => {},
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
+
+  await checkRepositoryAvailabilityThen(
+    currentRepository
   )
 
   const state = store.state
-  const currentRepository = state.currentRepository
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
   const mapStateToProps = makeMapStateToProps(fileName)
 
@@ -111,15 +121,11 @@ export default ({ querystring }) => {
     deleteArticle(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
-        page(
-          `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
+        page(makeArticleListURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
 
-    page(
-      `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-    )
+    page(makeArticleListURL(currentRepository))
   })
 
   articleContenu.$on(
@@ -129,7 +135,7 @@ export default ({ querystring }) => {
     }) => {
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
-      const articlePageUrl = `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`
+      const articlePageUrl = makeArticleListURL(currentRepository)
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {

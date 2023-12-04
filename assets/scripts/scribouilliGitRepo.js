@@ -2,16 +2,22 @@ export default class ScribouilliGitRepo{
     /**
      * 
      * @param { object } _
-     * @param { string } _.repoId
+     * @param { string } [_.repoId]
      * @param { string } _.origin
      * @param { string } _.publishedWebsiteURL
      * @param { string } _.publicRepositoryURL
+     * @param { string } _.owner
+     * @param { string } _.repoName
      */
-    constructor({repoId, origin, publishedWebsiteURL, publicRepositoryURL}){
-        this.repoId = repoId;
+    constructor({repoId, origin, publishedWebsiteURL, publicRepositoryURL, owner, repoName}){
         this.origin = origin;
         this.publishedWebsiteURL = publishedWebsiteURL
         this.publicRepositoryURL = publicRepositoryURL
+        this.owner = owner
+        this.repoName = repoName
+        
+        this.repoId = repoId ? repoId : makeGithubRepoId(owner, repoName)
+
         Object.freeze(this);
     }
 

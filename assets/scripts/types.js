@@ -1,7 +1,22 @@
+
+
+/**
+ * @typedef {Object} ScribouilliGitRepo
+ * @property {string} repoId
+ * @property {string} origin
+ * @property {string} publishedWebsiteURL
+ * @property {string} publicRepositoryURL
+ * @property {string} hostname
+ * @property {string} repoDirectory
+ * @property {string} remoteURL
+ * @property {(filename: string) => string} path
+ */
+
 /**
  * @typedef {Object} OAuthProvider
  * @property {function} getServiceAPI
  */
+
 
 /**
  * @typedef {Object} OAuthServiceAPI
@@ -9,16 +24,16 @@
  * @property {() => string|undefined} getAccessToken
  * @property {() => Promise<any>} getAuthenticatedUser
  * @property {() => Promise<GithubUserEmails[]>} getUserEmails
- * @property {(account: string, repositoryName: string) => Promise<GithubRepository>} getRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<GithubRepository>} getRepository
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
- * @property {(account: string, repositoryName: string) => Promise<any>} createDefaultRepository
- * @property {(account: string, repositoryName: string) => Promise<any>} addTopicOnRepository
- * @property {(account: string, repositoryName: string) => Promise<any>} updateRepositoryFeaturesSettings
- * @property {(account: string, repositoryName: string) => Promise<any>} deleteRepository
- * @property {(account: string, repositoryName: string) => Promise<any>} createPagesWebsiteFromRepository
- * @property {(account: string, repositoryName: string) => Promise<any>} getPagesWebsiteDeploymentStatus
- * @property {(account: string, repositoryName: string) => Promise<boolean>} isPagesWebsiteBuilt
- * @property {(account: string, repositoryName: string) => Promise<boolean>} isRepositoryReady
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createDefaultRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} addTopicOnRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} updateRepositoryFeaturesSettings
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} deleteRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createPagesWebsiteFromRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isPagesWebsiteBuilt
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isRepositoryReady
  */
 
 /**

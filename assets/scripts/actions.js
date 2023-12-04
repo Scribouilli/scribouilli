@@ -8,6 +8,7 @@ import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
 import { handleErrors, logMessage } from './utils'
+import { makePagesListURL } from './routes/atelier-pages.js';
 
 gitAgent.onMergeConflict = resolutionOptions => {
   store.mutations.setConflict(resolutionOptions)
@@ -242,11 +243,20 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
+  const scribouilliGitRepo = new ScribouilliGitRepo({
+    owner: login,
+    repoName: escapedRepoName,
+    origin: 'https://github.com', 
+    publishedWebsiteURL:  makeGithubPublishedWebsiteURL(login, escapedRepoName), 
+    publicRepositoryURL: makeGithubPublicRepositoryURL(login, escapedRepoName)
+  })
+  
+
   const waitRepoReady = /** @type {Promise<void>} */ (
     new Promise(resolve => {
       const timer = setInterval(() => {
         getOAuthServiceAPI()
-          .isRepositoryReady(login, escapedRepoName)
+          .isRepositoryReady(scribouilliGitRepo)
           // @ts-ignore
           .then(res => {
             if (res) {
@@ -262,7 +272,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
     new Promise(resolve => {
       const timer = setInterval(() => {
         getOAuthServiceAPI()
-          .isPagesWebsiteBuilt(login, escapedRepoName)
+          .isPagesWebsiteBuilt(scribouilliGitRepo)
           // @ts-ignore
           .then(res => {
             if (res) {
@@ -275,7 +285,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
   )
   return (
     getOAuthServiceAPI()
-      .createDefaultRepository(login, escapedRepoName)
+      .createDefaultRepository(scribouilliGitRepo)
       .then(() => {
         // Generation from a template repository
         // is asynchronous, so we need to wait a bit
@@ -285,15 +295,14 @@ export const createRepositoryForCurrentAccount = async repoName => {
       })
       .then(() => {
         return getOAuthServiceAPI().createPagesWebsiteFromRepository(
-          login,
-          escapedRepoName,
+          scribouilliGitRepo
         )
       })
       .then(() => {
         return waitGithubPages
       })
       .then(() => {
-        page(`/atelier-list-pages?repoName=${escapedRepoName}&account=${login}`)
+        page(makePagesListURL(scribouilliGitRepo))
       })
       // @ts-ignore
       .catch(errorMessage => {

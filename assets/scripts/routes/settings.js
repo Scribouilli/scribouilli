@@ -47,10 +47,16 @@ permalink: /articles/
  */
 function mapStateToProps(state) {
   const blogFile = state.pages && state.pages.find(p => p.path === 'blog.md')
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
+
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
-    deleteRepositoryUrl: `https://github.com/${state.currentRepository.owner}/${state.currentRepository.name}/settings#danger-zone`,
+    deleteRepositoryUrl: `${currentRepository.publicRepositoryURL}/settings#danger-zone`,
     blogEnabled: blogFile !== undefined,
     showArticles:
       blogFile !== undefined || (state.articles && state.articles?.length > 0),
@@ -64,16 +70,19 @@ function mapStateToProps(state) {
 export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
+
   const settings = new Settings({
     target: svelteTarget,
     props: mapStateToProps(store.state),
   })
 
   settings.$on('delete-site', () => {
-    deleteRepository(
-      store.state.currentRepository.owner,
-      store.state.currentRepository.name,
-    )
+    deleteRepository(currentRepository)
       .then(() => {
         store.mutations.removeSite(store.state)
         page('/create-project')
@@ -84,9 +93,8 @@ export default ({ querystring }) => {
   settings.$on('update-theme', ({ detail: { theme } }) => {
     gitAgent
       .writeCustomCSS(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-        theme.css,
+        currentRepository,
+        theme.css
       )
       .then(_ => {
         store.mutations.setTheme(store.state.theme.css)
@@ -105,12 +113,7 @@ export default ({ querystring }) => {
       await getCurrentRepoArticles()
       await getCurrentRepoPages()
 
-      const repoDir = gitAgent.repoDir(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-      )
-
-      gitAgent.safePush(repoDir)
+      gitAgent.safePush(currentRepository)
     } catch (msg) {
       //@ts-ignore
       handleErrors(msg)
@@ -120,9 +123,8 @@ export default ({ querystring }) => {
   if (!store.state.theme.css) {
     gitAgent
       .getFile(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-        gitAgent.customCSSPath,
+        currentRepository,
+        gitAgent.customCSSPath
       )
       .then(content => {
         store.mutations.setTheme(content)

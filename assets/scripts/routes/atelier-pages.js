@@ -11,11 +11,23 @@ import {
   handleErrors,
   logMessage,
   makeFileNameFromTitle,
-  makePageFrontMatter,
 } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
 import { deletePage, createPage, updatePage } from './../actions/page'
+import ScribouilliGitRepo from '../scribouilliGitRepo'
+
+
+const LIST_PAGES_URL = '/atelier-list-pages'
+
+/**
+ * 
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
+ */
+export function makePagesListURL(scribouilliGitRepo){
+  return `${LIST_PAGES_URL}?repoId=${scribouilliGitRepo.repoId}`;
+}
+
 
 /**
  *
@@ -25,12 +37,17 @@ import { deletePage, createPage, updatePage } from './../actions/page'
 const makeMapStateToProps = fileName => state => {
   // Display existing file
   if (fileName) {
+    const currentRepository = store.state.currentRepository
+
+    if(!currentRepository){
+      throw new TypeError('currentRepository is undefined')
+    }
+
     const fileP = async function () {
       try {
         const content = await gitAgent.getFile(
-          state.currentRepository.owner,
-          state.currentRepository.name,
-          fileName,
+          currentRepository,
+          fileName
         )
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(content)
@@ -89,9 +106,14 @@ export default ({ querystring }) => {
   setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
-  const currentRepository = state.currentRepository
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
   const mapStateToProps = makeMapStateToProps(fileName)
+
+  const currentRepository = store.state.currentRepository
+
+  if(!currentRepository){
+    throw new TypeError('currentRepository is undefined')
+  }
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
@@ -104,15 +126,11 @@ export default ({ querystring }) => {
     deletePage(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
-        page(
-          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
+        page(makePagesListURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
 
-    page(
-      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-    )
+    page(makePagesListURL(currentRepository))
   })
 
   // @ts-ignore
@@ -133,9 +151,7 @@ export default ({ querystring }) => {
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(
-          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
+        page(makePagesListURL(currentRepository))
         return
       }
       //
@@ -144,9 +160,7 @@ export default ({ querystring }) => {
         return createPage(content, title, index)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater()
-            page(
-              `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-            )
+            page(makePagesListURL(currentRepository))
           })
           .catch(msg => handleErrors(msg))
       }
@@ -154,9 +168,7 @@ export default ({ querystring }) => {
       updatePage(fileName, title, content, index)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
-          page(
-            `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-          )
+          page(makePagesListURL(currentRepository))
         })
         .catch(msg => handleErrors(msg))
     },

@@ -202,7 +202,11 @@ export class GitHubAPI {
       })
   }
 
-  /** @type {OAuthServiceAPI["callAPI"]} */
+  /**
+   * @type {import('./../types.js').OAuthServiceAPI["callAPI"]}
+   * @param {URL | RequestInfo} url
+   * @param {RequestInit} [requestParams]
+   */
   callAPI(url, requestParams) {
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {
