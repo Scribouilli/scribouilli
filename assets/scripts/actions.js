@@ -2,13 +2,17 @@
 
 import page from 'page'
 
-import ScribouilliGitRepo, {makeGithubRepoId, makeGithubPublicRepositoryURL, makeGithubPublishedWebsiteURL} from './scribouilliGitRepo.js';
+import ScribouilliGitRepo, {
+  makeGithubRepoId,
+  makeGithubPublicRepositoryURL,
+  makeGithubPublishedWebsiteURL,
+} from './scribouilliGitRepo.js'
 import gitAgent from './gitAgent.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
 import { handleErrors, logMessage } from './utils'
-import { makePagesListURL } from './routes/atelier-pages.js';
+import { makeAtelierListPageURL } from './routes/atelier-list-pages.js'
 
 gitAgent.onMergeConflict = resolutionOptions => {
   store.mutations.setConflict(resolutionOptions)
@@ -126,7 +130,7 @@ export const fetchCurrentUserRepositories = async () => {
 export const getCurrentRepoPages = () => {
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
@@ -141,7 +145,7 @@ export const getCurrentRepoPages = () => {
 export const getCurrentRepoArticles = () => {
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
@@ -181,10 +185,12 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   }
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
-    repoId: makeGithubRepoId(owner, repoName), 
-    origin: 'https://github.com', 
-    publishedWebsiteURL:  makeGithubPublishedWebsiteURL(owner, repoName), 
-    publicRepositoryURL: makeGithubPublicRepositoryURL(owner, repoName)
+    owner,
+    repoName,
+    repoId: makeGithubRepoId(owner, repoName),
+    origin: 'https://github.com',
+    publishedWebsiteURL: makeGithubPublishedWebsiteURL(owner, repoName),
+    publicRepositoryURL: makeGithubPublicRepositoryURL(owner, repoName),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
@@ -197,16 +203,15 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   getCurrentRepoArticles()
   getCurrentRepoPages()
 
-  setBuildStatus(owner, repoName)
+  setBuildStatus(scribouilliGitRepo)
 }
 
 /**
  *
- * @param {string} owner
- * @param {string} repoName
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
  */
-export const setBuildStatus = (owner, repoName) => {
-  store.mutations.setBuildStatus(makeBuildStatus(owner, repoName))
+export const setBuildStatus = scribouilliGitRepo => {
+  store.mutations.setBuildStatus(makeBuildStatus(scribouilliGitRepo))
   /*
   Appel sans vérification,
   On suppose qu'au chargement initial,
@@ -246,11 +251,10 @@ export const createRepositoryForCurrentAccount = async repoName => {
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner: login,
     repoName: escapedRepoName,
-    origin: 'https://github.com', 
-    publishedWebsiteURL:  makeGithubPublishedWebsiteURL(login, escapedRepoName), 
-    publicRepositoryURL: makeGithubPublicRepositoryURL(login, escapedRepoName)
+    origin: 'https://github.com',
+    publishedWebsiteURL: makeGithubPublishedWebsiteURL(login, escapedRepoName),
+    publicRepositoryURL: makeGithubPublicRepositoryURL(login, escapedRepoName),
   })
-  
 
   const waitRepoReady = /** @type {Promise<void>} */ (
     new Promise(resolve => {
@@ -295,14 +299,14 @@ export const createRepositoryForCurrentAccount = async repoName => {
       })
       .then(() => {
         return getOAuthServiceAPI().createPagesWebsiteFromRepository(
-          scribouilliGitRepo
+          scribouilliGitRepo,
         )
       })
       .then(() => {
         return waitGithubPages
       })
       .then(() => {
-        page(makePagesListURL(scribouilliGitRepo))
+        page(makeAtelierListPageURL(scribouilliGitRepo))
       })
       // @ts-ignore
       .catch(errorMessage => {

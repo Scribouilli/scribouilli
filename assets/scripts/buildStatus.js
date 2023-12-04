@@ -9,11 +9,10 @@ import { logMessage } from './utils.js'
 
 /**
  *
- * @param {string} owner
- * @param {string} repoName
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns
  */
-export default function (owner, repoName) {
+export default function (scribouilliGitRepo) {
   /** @type {BuildStatus} */
   let repoStatus = 'in_progress'
   /** @type {(status: BuildStatus) => any} */
@@ -45,7 +44,7 @@ export default function (owner, repoName) {
     checkStatus() {
       return (
         getOAuthServiceAPI()
-          .getPagesWebsiteDeploymentStatus(owner, repoName)
+          .getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
           // @ts-ignore
           .then(status => {
             logMessage(

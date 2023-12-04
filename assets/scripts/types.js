@@ -1,8 +1,8 @@
-
-
 /**
  * @typedef {Object} ScribouilliGitRepo
  * @property {string} repoId
+ * @property {string} owner
+ * @property {string} repoName
  * @property {string} origin
  * @property {string} publishedWebsiteURL
  * @property {string} publicRepositoryURL
@@ -16,7 +16,6 @@
  * @typedef {Object} OAuthProvider
  * @property {function} getServiceAPI
  */
-
 
 /**
  * @typedef {Object} OAuthServiceAPI

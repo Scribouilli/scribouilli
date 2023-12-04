@@ -34,11 +34,11 @@
 
   /** @type {string | undefined} */
   let repositoryURL
-  $: repositoryURL = currentRepository?.repositoryURL
+  $: repositoryURL = currentRepository?.publicRepositoryURL
 
   /** @type {string | undefined} */
   let repoName
-  $: repoName = currentRepository?.name
+  $: repoName = currentRepository?.repoName
 
   /** @type {string | undefined} */
   let account

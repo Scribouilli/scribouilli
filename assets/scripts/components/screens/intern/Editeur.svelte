@@ -34,8 +34,6 @@
   import store from '../../../store'
   import { writeFileAndCommit } from '../../../actions/file'
 
-  const imageDirUrl = `https://github.com/${currentRepository.owner}/${currentRepository.name}/tree/main/images`
-
   /** @type {FileList} */
   let image
   let imageMd = ''

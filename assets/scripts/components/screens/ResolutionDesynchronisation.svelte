@@ -16,7 +16,7 @@
 
     /** @type {string | undefined} */
     let repositoryURL
-    $: repositoryURL = currentRepository.repositoryURL;
+    $: repositoryURL = currentRepository?.publicRepositoryURL;
 
     /** @type {ScribouilliState["conflict"]} */
     export let conflict;

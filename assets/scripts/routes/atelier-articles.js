@@ -4,10 +4,7 @@ import lireFrontMatter from 'front-matter'
 import page from 'page'
 
 import store from '../store'
-import {
-  checkRepositoryAvailabilityThen,
-  handleErrors
-} from '../utils'
+import { checkRepositoryAvailabilityThen, handleErrors } from '../utils'
 
 import gitAgent from '../gitAgent'
 import { svelteTarget } from '../config'
@@ -15,17 +12,9 @@ import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import { deleteArticle, createArticle, updateArticle } from '../actions/article'
-import ScribouilliGitRepo from '../scribouilliGitRepo'
+import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
-
-/**
- * 
- * @param {ScribouilliGitRepo} scribouilliGitRepo
- */
-export function makeArticleListURL(scribouilliGitRepo){
-  return `${LIST_ARTICLE_URL}?repoId=${scribouilliGitRepo.repoId}`;
-}
 
 /**
  *
@@ -36,16 +25,13 @@ const makeMapStateToProps = fileName => state => {
   if (fileName) {
     const currentRepository = store.state.currentRepository
 
-    if(!currentRepository){
+    if (!currentRepository) {
       throw new TypeError('currentRepository is undefined')
     }
 
     // Display existing file
     const fileP = gitAgent
-      .getFile(
-        currentRepository,
-        fileName
-      )
+      .getFile(currentRepository, fileName)
       .then(contenu => {
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(contenu)
@@ -98,13 +84,11 @@ export default async ({ querystring }) => {
 
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
-  await checkRepositoryAvailabilityThen(
-    currentRepository
-  )
+  await checkRepositoryAvailabilityThen(currentRepository)
 
   const state = store.state
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
@@ -121,11 +105,11 @@ export default async ({ querystring }) => {
     deleteArticle(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
-        page(makeArticleListURL(currentRepository))
+        page(makeAtelierListArticlesURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
 
-    page(makeArticleListURL(currentRepository))
+    page(makeAtelierListArticlesURL(currentRepository))
   })
 
   articleContenu.$on(
@@ -135,7 +119,7 @@ export default async ({ querystring }) => {
     }) => {
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
-      const articlePageUrl = makeArticleListURL(currentRepository)
+      const articlePageUrl = makeAtelierListArticlesURL(currentRepository)
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {

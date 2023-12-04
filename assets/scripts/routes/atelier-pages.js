@@ -7,27 +7,11 @@ import { svelteTarget } from '../config'
 import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
-import {
-  handleErrors,
-  logMessage,
-  makeFileNameFromTitle,
-} from '../utils'
+import { handleErrors, logMessage, makeFileNameFromTitle } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
 import { deletePage, createPage, updatePage } from './../actions/page'
-import ScribouilliGitRepo from '../scribouilliGitRepo'
-
-
-const LIST_PAGES_URL = '/atelier-list-pages'
-
-/**
- * 
- * @param {ScribouilliGitRepo} scribouilliGitRepo
- */
-export function makePagesListURL(scribouilliGitRepo){
-  return `${LIST_PAGES_URL}?repoId=${scribouilliGitRepo.repoId}`;
-}
-
+import { makeAtelierListPageURL } from './atelier-list-pages.js'
 
 /**
  *
@@ -39,16 +23,13 @@ const makeMapStateToProps = fileName => state => {
   if (fileName) {
     const currentRepository = store.state.currentRepository
 
-    if(!currentRepository){
+    if (!currentRepository) {
       throw new TypeError('currentRepository is undefined')
     }
 
     const fileP = async function () {
       try {
-        const content = await gitAgent.getFile(
-          currentRepository,
-          fileName
-        )
+        const content = await gitAgent.getFile(currentRepository, fileName)
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(content)
         return {
@@ -111,7 +92,7 @@ export default ({ querystring }) => {
 
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
@@ -126,11 +107,11 @@ export default ({ querystring }) => {
     deletePage(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
-        page(makePagesListURL(currentRepository))
+        page(makeAtelierListPageURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
 
-    page(makePagesListURL(currentRepository))
+    page(makeAtelierListPageURL(currentRepository))
   })
 
   // @ts-ignore
@@ -151,7 +132,7 @@ export default ({ querystring }) => {
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(makePagesListURL(currentRepository))
+        page(makeAtelierListPageURL(currentRepository))
         return
       }
       //
@@ -160,7 +141,7 @@ export default ({ querystring }) => {
         return createPage(content, title, index)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater()
-            page(makePagesListURL(currentRepository))
+            page(makeAtelierListPageURL(currentRepository))
           })
           .catch(msg => handleErrors(msg))
       }
@@ -168,7 +149,7 @@ export default ({ querystring }) => {
       updatePage(fileName, title, content, index)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
-          page(makePagesListURL(currentRepository))
+          page(makeAtelierListPageURL(currentRepository))
         })
         .catch(msg => handleErrors(msg))
     },

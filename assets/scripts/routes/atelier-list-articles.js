@@ -15,6 +15,10 @@ import {
  * @returns
  */
 function mapStateToProps(state) {
+  if (!state.currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
   return {
     articles: state.articles,
     buildStatus: state.buildStatus,
@@ -46,10 +50,9 @@ export default ({ querystring }) => {
 
 /**
  *
- * @param {string} account
- * @param {string} repoName
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {string}
  */
-export function makeAtelierListArticlesURL(account, repoName) {
-  return `./atelier-list-articles?account=${account}&repoName=${repoName}`
+export function makeAtelierListArticlesURL({ owner, repoName }) {
+  return `./atelier-list-articles?account=${owner}&repoName=${repoName}`
 }

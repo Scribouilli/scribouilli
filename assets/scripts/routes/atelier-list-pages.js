@@ -15,6 +15,10 @@ import AtelierPages from '../components/screens/AtelierPages.svelte'
  * @returns
  */
 const mapStateToProps = state => {
+  if (!state.currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
   return {
     pages: state.pages && state.pages.filter(p => p.path !== 'blog.md'),
     buildStatus: state.buildStatus,
@@ -44,10 +48,9 @@ export default async ({ querystring }) => {
 
 /**
  *
- * @param {string} account
- * @param {string} repoName
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {string}
  */
-export function makeAtelierListPageURL(account, repoName) {
-  return `./atelier-list-pages?account=${account}&repoName=${repoName}`
+export function makeAtelierListPageURL({ owner, repoName }) {
+  return `./atelier-list-pages?account=${owner}&repoName=${repoName}`
 }

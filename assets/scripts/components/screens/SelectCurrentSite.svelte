@@ -9,10 +9,11 @@
   /** @type {string | Promise<string> | undefined} */
   export let currentAccount
 
-  /** typedef {import("../../../types").GithubRepository} GithubRepository */
   /** @type {GithubRepository[]} */
   export let currentAccountRepositories;
 
+  /** @type {import("../../store").ScribouilliState['currentRepository']} */
+  export let currentRepository
 
   /** @type {GithubRepository} */
   let repo
@@ -33,10 +34,13 @@
 
     loading = true;
 
+    
     // On devrait pouvoir retirer cette ligne à un moment. Elle sert pour
     // tagguer tous les repos Scribouilli qui n'ont pas encore de topic
     // (c'est-à-dire tous les repos créés au tout tout début)
-    getOAuthServiceAPI().addTopicOnRepository(repo.owner.login, repo.name);
+    if(currentRepository){
+      getOAuthServiceAPI().addTopicOnRepository(currentRepository);
+    }
     page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
 
     loading = false;
