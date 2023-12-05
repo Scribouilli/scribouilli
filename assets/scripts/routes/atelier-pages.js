@@ -11,7 +11,7 @@ import { handleErrors, logMessage, makeFileNameFromTitle } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions'
 import PageContenu from '../components/screens/PageContenu.svelte'
 import { deletePage, createPage, updatePage } from './../actions/page'
-import { makeAtelierListPageURL } from './atelier-list-pages.js'
+import { makeAtelierListPageURL } from './urls.js'
 
 /**
  *

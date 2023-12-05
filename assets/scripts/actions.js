@@ -12,7 +12,7 @@ import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import store from './store.js'
 import makeBuildStatus from './buildStatus.js'
 import { handleErrors, logMessage } from './utils'
-import { makeAtelierListPageURL } from './routes/atelier-list-pages.js'
+import { makeAtelierListPageURL } from './routes/urls.js'
 
 gitAgent.onMergeConflict = resolutionOptions => {
   store.mutations.setConflict(resolutionOptions)
