@@ -22,29 +22,32 @@
   </section>
 </Skeleton>
 
-<style>
+<style lang="scss">
   #account {
     max-width: 70%;
     margin: 0 auto;
+
+    #question_github {
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
+      h2 {
+        margin-bottom: 2rem;
+      }
+      p {
+        margin-bottom: 4rem;
+      }
+    }
   }
+
   div {
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
     justify-content: center;
   }
-  h2 {
-    margin-bottom: 2rem;
-  }
+
   p {
     font-size: 1.5rem;
-  }
-  #question_github {
-    align-items: center;
-    justify-content: flex-start;
-    flex-direction: column;
-  }
-  #question_github p {
-    margin-bottom: 4rem;
   }
 </style>

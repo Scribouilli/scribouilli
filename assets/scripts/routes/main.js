@@ -5,6 +5,7 @@ import page from 'page'
 import store from '../store.js'
 
 import welcome from './welcome.js'
+import chooseAccount from './choose-account.js'
 import account from './account.js'
 import login from './login.js'
 import afterOauthLogin from './after-oauth-login.js'
@@ -20,6 +21,7 @@ import settings from './settings.js'
 import resolutionDesynchronisation from './resolution-desynchronisation.js'
 
 page('/', welcome)
+page('/choose-account', chooseAccount)
 page('/account', account)
 page('/login', login)
 
