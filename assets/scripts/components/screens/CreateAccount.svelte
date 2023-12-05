@@ -1,10 +1,14 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
+
+  /** @type {string} */
+  export let gitProvider
 </script>
 
 <Skeleton>
+  {#if gitProvider === 'github.com'}
   <section class="screen">
-    <div id="creer_compte_github">
+    <div>
       <h2>Créer un compte GitHub</h2>
       <p>
         Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte
@@ -22,7 +26,7 @@
         </li>
         <li>
           Dès que le code est validé, <strong>revenez sur Scribouilli</strong> et
-          cliquez sur <a href="./login">"J'ai créé un compte"</a>
+          cliquez sur <a href="./login?provider=github.com">"J'ai créé un compte"</a>
         </li>
       </ol>
 
@@ -30,10 +34,27 @@
         <a href="https://github.com/signup" target="_blank" class="btn"
           >Créer un compte GitHub</a
         >
-        <a href="./login" class="btn">J'ai créé un compte</a>
+        <a href="./login?provider=github.com" class="btn">J'ai créé un compte</a>
       </div>
     </div>
   </section>
+  {/if}
+
+  {#if gitProvider === 'gitlab.com'}
+  <section class="screen">
+    <div>
+      <h2>Créer un compte sur gitlab.com</h2>
+
+      <div class="btn-list">
+        <a href="https://gitlab.com/users/sign_up" target="_blank" class="btn"
+          >Créer un compte gitlab.com</a
+        >
+        <a href="./login?provider=gitlab.com" class="btn">J'ai créé un compte</a>
+      </div>
+    </div>
+  </section>
+  {/if}
+  
 </Skeleton>
 
 <style lang="scss">

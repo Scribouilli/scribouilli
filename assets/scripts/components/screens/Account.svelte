@@ -1,25 +1,42 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
+
+  /** @type {string} */
+   export let gitProvider
 </script>
 
 <Skeleton>
-  <section class="screen" id="account">
-    <div id="question_github">
-      <h2>Avez-vous un compte GitHub&nbsp;?</h2>
+  {#if gitProvider === 'github.com'}
+    <section class="screen" id="account">
+      <div>
+        <h2>Avez-vous un compte GitHub&nbsp;?</h2>
 
-      <p>
-        Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte
-        à un compte <a href="https://github.com" target="_blank">GitHub</a>.
-      </p>
+        <div>
+          <a href="./login?provider=github.com" class="btn">Oui, je me connecte</a>
+          <a href="./create-account?provider=github.com" class="btn"
+            >Non, je veux créer un compte</a
+          >
+        </div>
+      </div>
+    </section>
+  {/if}
+
+  {#if gitProvider === 'gitlab.com'}
+  <section class="screen" id="account">
+    <div>
+      <h2>Avez-vous un compte sur gitlab.com&nbsp;?</h2>
 
       <div>
-        <a href="./login" class="btn">Oui, je me connecte</a>
-        <a href="./create-github-account" class="btn"
+        <a href="./login?provider=gitlab.com" class="btn">Oui, je me connecte</a>
+        <a href="./create-account?provider=gitlab.com" class="btn"
           >Non, je veux créer un compte</a
         >
       </div>
     </div>
   </section>
+  {/if}
+
+  
 </Skeleton>
 
 <style lang="scss">
@@ -27,15 +44,12 @@
     max-width: 70%;
     margin: 0 auto;
 
-    #question_github {
+    &> div {
       align-items: center;
       justify-content: flex-start;
       flex-direction: column;
       h2 {
         margin-bottom: 2rem;
-      }
-      p {
-        margin-bottom: 4rem;
       }
     }
   }
@@ -45,9 +59,5 @@
     flex-wrap: wrap;
     gap: 2rem;
     justify-content: center;
-  }
-
-  p {
-    font-size: 1.5rem;
   }
 </style>

@@ -27,9 +27,9 @@
     </ul>
 
     <ul class="buttons">
-      <li><a href="./account#gitlab.com" class="btn">gitlab.com</a></li>
+      <li><a href="./account?provider=gitlab.com" class="btn">gitlab.com</a></li>
       <!--<li><a href="./account#git.scrbouilli.org" class="btn">git.scrbouilli.org</a></li>-->
-      <li><a href="./account#github.com" class="btn">github.com</a></li>
+      <li><a href="./account?provider=github.com" class="btn">github.com</a></li>
     </ul>
   </section>
 </Skeleton>
