@@ -125,10 +125,7 @@ export default class GitHubAPI {
         description: 'Mon site Scribouilli',
         topics: ['site-scribouilli'],
       }),
-    }).then(response => {
-      console.log('response : ', response)
-      return response
-    })
+    }).then(response => response.json())
   }
 
   /** @type {OAuthServiceAPI["addTopicOnRepository"]} */
@@ -143,54 +140,42 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["deleteRepository"]} */
   deleteRepository({ repoId }) {
-    throw `GitLab.deleteRepository`
-
-    return this.callAPI(`${this.apiBaseUrl}/repos/${repoId}`, {
-      headers: { Authorization: 'token ' + this.accessToken },
-      method: 'DELETE',
-    })
+    return Promise.resolve()
   }
 
   /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
   createPagesWebsiteFromRepository({ repoId }) {
-    throw `GitLab.createPagesWebsiteFromRepository`
-
-    return this.callAPI(`${this.apiBaseUrl}/repos/${repoId}/pages`, {
-      headers: {
-        Authorization: 'Bearer ' + this.accessToken,
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        build_type: 'workflow',
-      }),
-    })
+    return Promise.resolve()
   }
 
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
-  getPagesWebsiteDeploymentStatus({ repoId }) {
-    throw `GitLab.getPagesWebsiteDeploymentStatus`
+  getPagesWebsiteDeploymentStatus({ owner, repoName }) {
+    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
 
     return this.callAPI(
-      `${this.apiBaseUrl}/repos/${repoId}/deployments?environment=github-pages`,
+      `${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/deployments?per_page=1&order_by=updated_at&sort=desc`,
     )
       .then(response => response.json())
       .then(json => {
-        console.debug('Deployments list: ', json)
-        const statusesUrl = json[0].statuses_url
+        const status = json[0].status
+        const matchingStatus = {
+          running: 'in_progress',
+          success: 'success',
+          failed: 'error',
+          created: 'in_progress',
+          canceled: 'error',
+          blocked: 'error',
+        }
 
-        return this.callAPI(`${statusesUrl}?per_page=1`)
-      })
-      .then(response => response.json())
-      .then(json => {
-        console.debug('Deployment status: ', json[0].state)
-        return json[0].state
+        console.debug('Deployment status: ', json[0].status)
+
+        // @ts-ignore
+        return Promise.resolve(matchingStatus[status])
       })
   }
 
   /** @type {OAuthServiceAPI["isPagesWebsiteBuilt"]} */
   isPagesWebsiteBuilt(scribouilliGitRepo) {
-    throw `GitLab.isPagesWebsiteBuilt`
-
     return this.getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
       .then(response => {
         return response === 'success'
@@ -201,11 +186,11 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["isRepositoryReady"]} */
-  isRepositoryReady({ repoId }) {
-    throw `GitLab.isRepositoryReady`
+  isRepositoryReady({ owner, repoName }) {
+    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
 
     return this.callAPI(
-      `${this.apiBaseUrl}/repos/${repoId}/contents/_config.yml`,
+      `${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/repository/files/_config.yml`,
     )
       .then(response => {
         return response.ok
