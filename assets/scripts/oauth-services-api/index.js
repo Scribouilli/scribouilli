@@ -5,6 +5,30 @@ import GitlabAPI from './gitlab.js'
 
 import './../types.js'
 
+export const oAuthAppByProvider = new Map([
+  [
+    'github.com',
+    {
+      origin: 'https://github.com',
+      client_id: '64ecce0b01397c2499a6',
+    },
+  ],
+  [
+    'gitlab.com',
+    {
+      origin: 'https://gitlab.com',
+      client_id:
+        '4337f297cf1e74295f50f7a00eb66e3063fb3ef715e51c8d6412fb64a311fe8e',
+    },
+  ],
+])
+
+// TODO: maybe change the `type` param to `provider` in toctoctoc
+export const oAuthAppByType = new Map([
+  ['github', oAuthAppByProvider.get('github.com')],
+  ['gitlab', oAuthAppByProvider.get('gitlab.com')],
+])
+
 /**
  * @overlaod
  * @param {'github'} type

@@ -6,6 +6,7 @@ import './types.js'
 
 import {
   OAUTH_PROVIDER_STORAGE_KEY,
+  OAUTH_PROVIDER_ORIGIN_STORAGE_KEY,
   ACCESS_TOKEN_STORAGE_KEY,
 } from './config.js'
 import ScribouilliGitRepo from './scribouilliGitRepo.js'
@@ -17,6 +18,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
  * @property {object} [oAuthProvider]
  * @property {string} [oAuthProvider.name]
  * @property {string} [oAuthProvider.accessToken]
+ * @property {string} [oAuthProvider.origin]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
@@ -52,6 +54,7 @@ const store = Store({
       // servant de source de vérité pour tous les composants.
       accessToken: localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
       name: localStorage.getItem(OAUTH_PROVIDER_STORAGE_KEY),
+      origin: localStorage.getItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY),
     },
     login: undefined,
     email: undefined,

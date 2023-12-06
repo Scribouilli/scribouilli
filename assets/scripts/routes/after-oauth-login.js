@@ -7,6 +7,7 @@ import {
   defaultRepositoryName,
   ACCESS_TOKEN_STORAGE_KEY,
   OAUTH_PROVIDER_STORAGE_KEY,
+  OAUTH_PROVIDER_ORIGIN_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
 } from '../config'
@@ -17,6 +18,7 @@ import {
   fetchCurrentUserRepositories,
   createRepositoryForCurrentAccount,
 } from '../actions.js'
+import { oAuthAppByType } from '../oauth-services-api/index.js'
 
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
@@ -30,14 +32,17 @@ const storeOAuthProviderAccess = () => {
   const providerName = url.searchParams.get(
     TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   )
+  const origin = oAuthAppByType.get(providerName)['origin']
 
   if (accessToken && providerName) {
     localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, accessToken)
     localStorage.setItem(OAUTH_PROVIDER_STORAGE_KEY, providerName)
+    localStorage.setItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY, origin)
 
     store.mutations.setOAuthProvider({
       accessToken: accessToken,
       name: providerName,
+      origin: origin,
     })
   }
 }
