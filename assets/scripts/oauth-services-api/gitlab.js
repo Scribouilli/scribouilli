@@ -167,7 +167,7 @@ export default class GitHubAPI {
           blocked: 'error',
         }
 
-        console.debug('Deployment status: ', json[0].status)
+        console.debug('Deployment status: ', status)
 
         // @ts-ignore
         return Promise.resolve(matchingStatus[status])

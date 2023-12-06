@@ -23,7 +23,6 @@ export const oAuthAppByProvider = new Map([
   ],
 ])
 
-// TODO: maybe change the `type` param to `provider` in toctoctoc
 export const oAuthAppByType = new Map([
   ['github', oAuthAppByProvider.get('github.com')],
   ['gitlab', oAuthAppByProvider.get('gitlab.com')],
