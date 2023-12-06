@@ -21,6 +21,7 @@ export default class GitHubAPI {
     this.authenticatedUser = undefined
   }
 
+  /** @type {OAuthServiceAPI["getOauthUsernameAndPassword"]} */
   getOauthUsernameAndPassword() {
     if (!this.accessToken) {
       throw new TypeError('Missing accessToken')
@@ -32,6 +33,7 @@ export default class GitHubAPI {
     }
   }
 
+  /** @type {OAuthServiceAPI["getAuthenticatedUser"]} */
   getAuthenticatedUser() {
     if (this.authenticatedUser) {
       return Promise.resolve(this.authenticatedUser)
@@ -58,6 +60,7 @@ export default class GitHubAPI {
       return Promise.resolve([
         {
           email,
+          primary: true,
         },
       ])
     })
@@ -65,9 +68,11 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getRepository"]} */
   getRepository({ owner, repoName }) {
-    throw `PPP`
+    throw `gitlab.getRepository`
 
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${owner}/${repoName}`)
+    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
+
+    return this.callAPI(`${this.apiBaseUrl}/projects/${urlEncodedRepoPath}`)
       .then(response => {
         return response.json()
       })
@@ -88,11 +93,20 @@ export default class GitHubAPI {
           `${this.apiBaseUrl}/users/${login}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public`,
         )
       })
-      .then(response => {
-        const json = response.json()
-        console.log('json : ', json)
+      .then(response => response.json())
+      .then(json => {
+        // @ts-ignore
+        const repositories = json.map(repo => {
+          return {
+            id: repo.id,
+            name: repo.name,
+            owner: {
+              login: repo.owner.username,
+            },
+          }
+        })
 
-        return json
+        return Promise.resolve(repositories)
       })
   }
 
@@ -100,70 +114,36 @@ export default class GitHubAPI {
   createDefaultRepository(scribouilliGitRepo) {
     const { owner, repoName } = scribouilliGitRepo
 
-    return this.callAPI(`${this.origin}/projects`, {
+    return this.callAPI(`${this.apiBaseUrl}/projects`, {
       headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'application/vnd.github+json',
+        Authorization: 'Bearer ' + this.accessToken,
       },
       method: 'POST',
       body: JSON.stringify({
         import_url: 'https://git.scribouilli.org/scribouilli/site-template.git',
         name: repoName,
         description: 'Mon site Scribouilli',
+        topics: ['site-scribouilli'],
       }),
     }).then(response => {
       console.log('response : ', response)
       return response
-      // return this.addTopicOnRepository(scribouilliGitRepo).then(() => {
-      // this.updateRepositoryFeaturesSettings(scribouilliGitRepo)
-
-      // // We don't wait for the end of the setup to return the response
-      // // because we don't need all the data it returns.
-      // return response
-      // })
     })
   }
 
   /** @type {OAuthServiceAPI["addTopicOnRepository"]} */
-  addTopicOnRepository({ repoId, owner, repoName }) {
-    throw `PPP`
-
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/topics`, {
-      headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'application/vnd.github+json',
-      },
-      method: 'PUT',
-      body: JSON.stringify({
-        owner,
-        repo: repoName,
-        names: ['site-scribouilli'],
-      }),
-    })
+  addTopicOnRepository({ repoId }) {
+    return Promise.resolve()
   }
 
   /** @type {OAuthServiceAPI["updateRepositoryFeaturesSettings"]} */
-  updateRepositoryFeaturesSettings({ repoId, publishedWebsiteURL }) {
-    throw `PPP`
-
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
-      method: 'POST',
-      headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'application/vnd.github+json',
-      },
-      body: JSON.stringify({
-        homepage: publishedWebsiteURL,
-        has_issues: false,
-        has_projects: false,
-        has_wiki: false,
-      }),
-    })
+  updateRepositoryFeaturesSettings({ repoId }) {
+    return Promise.resolve()
   }
 
   /** @type {OAuthServiceAPI["deleteRepository"]} */
   deleteRepository({ repoId }) {
-    throw `PPP`
+    throw `GitLab.deleteRepository`
 
     return this.callAPI(`${this.apiBaseUrl}/repos/${repoId}`, {
       headers: { Authorization: 'token ' + this.accessToken },
@@ -173,12 +153,11 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
   createPagesWebsiteFromRepository({ repoId }) {
-    throw `PPP`
+    throw `GitLab.createPagesWebsiteFromRepository`
 
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
+    return this.callAPI(`${this.apiBaseUrl}/repos/${repoId}/pages`, {
       headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'applicatikn/vnd.github+json',
+        Authorization: 'Bearer ' + this.accessToken,
       },
       method: 'POST',
       body: JSON.stringify({
@@ -189,10 +168,10 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ repoId }) {
-    throw `PPP`
+    throw `GitLab.getPagesWebsiteDeploymentStatus`
 
     return this.callAPI(
-      `${gitHubApiBaseUrl}/repos/${repoId}/deployments?environment=github-pages`,
+      `${this.apiBaseUrl}/repos/${repoId}/deployments?environment=github-pages`,
     )
       .then(response => response.json())
       .then(json => {
@@ -210,7 +189,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["isPagesWebsiteBuilt"]} */
   isPagesWebsiteBuilt(scribouilliGitRepo) {
-    throw `PPP`
+    throw `GitLab.isPagesWebsiteBuilt`
+
     return this.getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
       .then(response => {
         return response === 'success'
@@ -222,9 +202,10 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["isRepositoryReady"]} */
   isRepositoryReady({ repoId }) {
-    throw `PPP`
+    throw `GitLab.isRepositoryReady`
+
     return this.callAPI(
-      `${gitHubApiBaseUrl}/repos/${repoId}/contents/_config.yml`,
+      `${this.apiBaseUrl}/repos/${repoId}/contents/_config.yml`,
     )
       .then(response => {
         return response.ok

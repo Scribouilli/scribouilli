@@ -23,7 +23,7 @@
  * // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
  * @property {() => {username: string, password: string}} getOauthUsernameAndPassword
  * @property {() => Promise<any>} getAuthenticatedUser
- * @property {() => Promise<GithubUserEmails[]>} getUserEmails
+ * @property {() => Promise<AuthenticatedUserEmails[]>} getUserEmails
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<GithubRepository>} getRepository
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createDefaultRepository
@@ -51,7 +51,7 @@
  */
 
 /**
- * @typedef {Object} GithubUserEmails
+ * @typedef {Object} AuthenticatedUserEmails
  * @property {string} email
  * @property {boolean} primary
  */

@@ -52,7 +52,7 @@ export default ({ querystring }) => {
 
   const destination =
     location.origin + store.state.basePath + '/after-oauth-login'
-  const client_id = oAuthAppByProvider.get(gitProvider)['client_id']
+  const client_id = oAuthAppByProvider.get(gitProvider)?.client_id
   if (!client_id) {
     throw new TypeError(`Missing client_id`)
   }

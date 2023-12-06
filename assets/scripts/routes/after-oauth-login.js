@@ -32,9 +32,10 @@ const storeOAuthProviderAccess = () => {
   const providerName = url.searchParams.get(
     TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   )
-  const origin = oAuthAppByType.get(providerName)['origin']
 
   if (accessToken && providerName) {
+    const origin = oAuthAppByType.get(providerName)?.origin || ''
+
     localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, accessToken)
     localStorage.setItem(OAUTH_PROVIDER_STORAGE_KEY, providerName)
     localStorage.setItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY, origin)
@@ -51,7 +52,6 @@ export default () => {
   storeOAuthProviderAccess()
 
   const type = store.state.oAuthProvider?.name
-  const origin = oAuthAppByType.get(type)['origin']
 
   let currentUserReposP
 
