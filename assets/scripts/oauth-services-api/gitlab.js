@@ -30,6 +30,8 @@ export default class GitHubAPI {
   }
 
   getAuthenticatedUser() {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/user`).then(response => {
       return response.json()
     })
@@ -37,6 +39,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getUserEmails"]} */
   getUserEmails() {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/user/emails`).then(response => {
       return response.json()
     })
@@ -44,6 +48,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getRepository"]} */
   getRepository({ owner, repoName }) {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${owner}/${repoName}`)
       .then(response => {
         return response.json()
@@ -59,6 +65,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
+    throw `PPP`
+
     return this.callAPI(
       `${gitHubApiBaseUrl}/user/repos?sort=updated&visibility=public`,
     ).then(response => {
@@ -68,6 +76,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
   createDefaultRepository(scribouilliGitRepo) {
+    throw `PPP`
+
     const { owner, repoName } = scribouilliGitRepo
 
     return this.callAPI(
@@ -97,6 +107,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["addTopicOnRepository"]} */
   addTopicOnRepository({ repoId, owner, repoName }) {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/topics`, {
       headers: {
         Authorization: 'token ' + this.accessToken,
@@ -113,6 +125,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["updateRepositoryFeaturesSettings"]} */
   updateRepositoryFeaturesSettings({ repoId, publishedWebsiteURL }) {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
       method: 'POST',
       headers: {
@@ -130,6 +144,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["deleteRepository"]} */
   deleteRepository({ repoId }) {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
       headers: { Authorization: 'token ' + this.accessToken },
       method: 'DELETE',
@@ -138,6 +154,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
   createPagesWebsiteFromRepository({ repoId }) {
+    throw `PPP`
+
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
       headers: {
         Authorization: 'token ' + this.accessToken,
@@ -152,8 +170,8 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ repoId }) {
-    // TODO: We need to add the `sha` parameter to avoid the GitHub API to return
-    // cached data.
+    throw `PPP`
+
     return this.callAPI(
       `${gitHubApiBaseUrl}/repos/${repoId}/deployments?environment=github-pages`,
     )
@@ -173,6 +191,7 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["isPagesWebsiteBuilt"]} */
   isPagesWebsiteBuilt(scribouilliGitRepo) {
+    throw `PPP`
     return this.getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
       .then(response => {
         return response === 'success'
@@ -184,6 +203,7 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["isRepositoryReady"]} */
   isRepositoryReady({ repoId }) {
+    throw `PPP`
     return this.callAPI(
       `${gitHubApiBaseUrl}/repos/${repoId}/contents/_config.yml`,
     )
@@ -199,6 +219,8 @@ export default class GitHubAPI {
    * @type {OAuthServiceAPI["callAPI"]}
    */
   callAPI(url, requestParams) {
+    throw `PPP`
+
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {
         Authorization: 'token ' + this.accessToken,

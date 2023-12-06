@@ -20,7 +20,8 @@
 /**
  * @typedef {Object} OAuthServiceAPI
  * @property {(url: string, requestParams?: RequestInit) => Promise<Response>} callAPI
- * @property {() => string|undefined} getAccessToken
+ * // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+ * @property {() => {username: string, password: string}} getOauthUsernameAndPassword
  * @property {() => Promise<any>} getAuthenticatedUser
  * @property {() => Promise<GithubUserEmails[]>} getUserEmails
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<GithubRepository>} getRepository

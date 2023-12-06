@@ -1,6 +1,7 @@
 import page from 'page'
 import store from './../store.js'
-import { GitHubAPI } from './github.js'
+import GitHubAPI from './github.js'
+import GitlabAPI from './gitlab.js'
 
 import './../types.js'
 
@@ -22,28 +23,25 @@ import './../types.js'
 
 /**
  * @param {string} type
- * @param {any} options
+ * @param {{accessToken: string}} options
  *
  * @returns {OAuthServiceAPI}
  */
-const makeOAuthServiceAPI = (type, options) => {
-  const accessToken = options.accessToken
-  const implementedServices = ['github', 'gitlab']
+const makeOAuthServiceAPI = (type, { accessToken }) => {
+  if (type === 'github') return new GitHubAPI(accessToken)
 
-  if (!implementedServices.includes(type)) {
-    throw new Error(`Le service d'authentificaton ${type} n'est pas supporté.`)
-  }
+  if (type === 'gitlab') return new GitlabAPI(accessToken)
 
-  // TODO: Ajouter le support à GitLab
-
-  return new GitHubAPI(accessToken)
+  throw new TypeError(
+    `Le service d'authentificaton ${type} n'est pas supporté.`,
+  )
 }
 
 // @ts-ignore
 let oAuthServiceAPI
 
 /**
- * 
+ *
  * @returns {OAuthServiceAPI}
  */
 export const getOAuthServiceAPI = () => {

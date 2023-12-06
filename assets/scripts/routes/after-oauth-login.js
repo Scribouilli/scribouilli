@@ -26,22 +26,13 @@ const storeOAuthProviderAccess = () => {
     url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER),
   )
 
-  if (
-    url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) &&
-    url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) !== null &&
-    url.searchParams.has(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER) &&
-    url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER) !== null
-  ) {
-    const accessToken = url.searchParams.get(
-      TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-    )
-    const providerName = url.searchParams.get(
-      TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
-    )
+  const accessToken = url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)
+  const providerName = url.searchParams.get(
+    TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  )
 
-    // @ts-ignore
+  if (accessToken && providerName) {
     localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, accessToken)
-    // @ts-ignore
     localStorage.setItem(OAUTH_PROVIDER_STORAGE_KEY, providerName)
 
     store.mutations.setOAuthProvider({
@@ -51,10 +42,7 @@ const storeOAuthProviderAccess = () => {
   }
 }
 
-/**
- * @param {import('page').Context} _
- */
-export default ({ querystring }) => {
+export default () => {
   storeOAuthProviderAccess()
 
   const type = store.state.oAuthProvider?.name
