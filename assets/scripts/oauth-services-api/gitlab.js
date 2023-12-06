@@ -1,7 +1,7 @@
 import {
-  gitHubApiBaseUrl,
   defaultRepoOwner,
   defaultThemeRepoName,
+  OAUTH_PROVIDER_ORIGIN_STORAGE_KEY,
 } from './../config.js'
 
 import './../types.js'
@@ -16,6 +16,9 @@ export default class GitHubAPI {
   constructor(accessToken) {
     /** @type {string | undefined} */
     this.accessToken = accessToken
+    this.origin = localStorage.getItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY)
+    this.apiBaseUrl = `${this.origin}/api/v4`
+    this.authenticatedUser = undefined
   }
 
   getOauthUsernameAndPassword() {
@@ -30,19 +33,33 @@ export default class GitHubAPI {
   }
 
   getAuthenticatedUser() {
-    throw `PPP`
+    if (this.authenticatedUser) {
+      return Promise.resolve(this.authenticatedUser)
+    }
 
-    return this.callAPI(`${gitHubApiBaseUrl}/user`).then(response => {
-      return response.json()
-    })
+    return this.callAPI(`${this.apiBaseUrl}/user`)
+      .then(response => response.json())
+      .then(json => {
+        const user = {
+          id: json.id,
+          login: json.username,
+          email: json.email,
+        }
+
+        this.authenticatedUser = user
+
+        return Promise.resolve(user)
+      })
   }
 
   /** @type {OAuthServiceAPI["getUserEmails"]} */
   getUserEmails() {
-    throw `PPP`
-
-    return this.callAPI(`${gitHubApiBaseUrl}/user/emails`).then(response => {
-      return response.json()
+    return this.getAuthenticatedUser().then(({ email }) => {
+      return Promise.resolve([
+        {
+          email,
+        },
+      ])
     })
   }
 
@@ -65,43 +82,45 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
-    throw `PPP`
+    return this.getAuthenticatedUser()
+      .then(({ login }) => {
+        return this.callAPI(
+          `${this.apiBaseUrl}/users/${login}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public`,
+        )
+      })
+      .then(response => {
+        const json = response.json()
+        console.log('json : ', json)
 
-    return this.callAPI(
-      `${gitHubApiBaseUrl}/user/repos?sort=updated&visibility=public`,
-    ).then(response => {
-      return response.json()
-    })
+        return json
+      })
   }
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
   createDefaultRepository(scribouilliGitRepo) {
-    throw `PPP`
-
     const { owner, repoName } = scribouilliGitRepo
 
-    return this.callAPI(
-      `${gitHubApiBaseUrl}/repos/${defaultRepoOwner}/${defaultThemeRepoName}/generate`,
-      {
-        headers: {
-          Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          owner,
-          name: repoName,
-          description: 'Mon site Scribouilli',
-        }),
+    return this.callAPI(`${this.origin}/projects`, {
+      headers: {
+        Authorization: 'token ' + this.accessToken,
+        Accept: 'application/vnd.github+json',
       },
-    ).then(response => {
-      return this.addTopicOnRepository(scribouilliGitRepo).then(() => {
-        this.updateRepositoryFeaturesSettings(scribouilliGitRepo)
+      method: 'POST',
+      body: JSON.stringify({
+        import_url: 'https://git.scribouilli.org/scribouilli/site-template.git',
+        name: repoName,
+        description: 'Mon site Scribouilli',
+      }),
+    }).then(response => {
+      console.log('response : ', response)
+      return response
+      // return this.addTopicOnRepository(scribouilliGitRepo).then(() => {
+      // this.updateRepositoryFeaturesSettings(scribouilliGitRepo)
 
-        // We don't wait for the end of the setup to return the response
-        // because we don't need all the data it returns.
-        return response
-      })
+      // // We don't wait for the end of the setup to return the response
+      // // because we don't need all the data it returns.
+      // return response
+      // })
     })
   }
 
@@ -146,7 +165,7 @@ export default class GitHubAPI {
   deleteRepository({ repoId }) {
     throw `PPP`
 
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
+    return this.callAPI(`${this.apiBaseUrl}/repos/${repoId}`, {
       headers: { Authorization: 'token ' + this.accessToken },
       method: 'DELETE',
     })
@@ -219,18 +238,16 @@ export default class GitHubAPI {
    * @type {OAuthServiceAPI["callAPI"]}
    */
   callAPI(url, requestParams) {
-    throw `PPP`
-
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {
-        Authorization: 'token ' + this.accessToken,
+        Authorization: 'Bearer ' + this.accessToken,
       }
     }
 
     if (requestParams === undefined) {
       requestParams = {
         headers: {
-          Authorization: 'token ' + this.accessToken,
+          Authorization: 'Bearer ' + this.accessToken,
         },
       }
     }
