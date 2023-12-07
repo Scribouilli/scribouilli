@@ -96,22 +96,36 @@ export default class GitHubAPI {
           repo: repoName,
           names: ['site-scribouilli'],
         }),
-      }).then(() => {
-        // Activate GitHub Pages on the new repository
-        return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
-          method: 'POST',
-          headers: {
-            Authorization: 'token ' + this.accessToken,
-            Accept: 'application/vnd.github+json',
-          },
-          body: JSON.stringify({
-            homepage: publishedWebsiteURL,
-            has_issues: false,
-            has_projects: false,
-            has_wiki: false,
-          }),
-        })
       })
+        .then(() => {
+          // Setup repository settings
+          return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
+            method: 'POST',
+            headers: {
+              Authorization: 'token ' + this.accessToken,
+              Accept: 'application/vnd.github+json',
+            },
+            body: JSON.stringify({
+              homepage: publishedWebsiteURL,
+              has_issues: false,
+              has_projects: false,
+              has_wiki: false,
+            }),
+          })
+        })
+        .then(() => {
+          // Activate GitHub Pages
+          return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
+            headers: {
+              Authorization: 'token ' + this.accessToken,
+              Accept: 'applicatikn/vnd.github+json',
+            },
+            method: 'POST',
+            body: JSON.stringify({
+              build_type: 'workflow',
+            }),
+          })
+        })
     })
   }
 
@@ -120,20 +134,6 @@ export default class GitHubAPI {
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
       headers: { Authorization: 'token ' + this.accessToken },
       method: 'DELETE',
-    })
-  }
-
-  /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
-  createPagesWebsiteFromRepository({ repoId }) {
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
-      headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'applicatikn/vnd.github+json',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        build_type: 'workflow',
-      }),
     })
   }
 

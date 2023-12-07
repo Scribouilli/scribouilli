@@ -138,11 +138,6 @@ export default class GitHubAPI {
     return Promise.resolve()
   }
 
-  /** @type {OAuthServiceAPI["createPagesWebsiteFromRepository"]} */
-  createPagesWebsiteFromRepository({ repoId }) {
-    return Promise.resolve()
-  }
-
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ owner, repoName }) {
     const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)

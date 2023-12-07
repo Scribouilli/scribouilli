@@ -1,5 +1,7 @@
 //@ts-check
 
+import remember from 'remember'
+
 import store from './../store.js'
 import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
@@ -7,7 +9,7 @@ import ScribouilliGitRepo, {
   makeGithubPublicRepositoryURL,
   makeGithubPublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
-import { repoTemplateGitUrl } from './../config.js'
+import { repoTemplateGitUrl, OAUTH_PROVIDER_STORAGE_KEY } from './../config.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
@@ -16,8 +18,8 @@ import { logMessage } from './../utils.js'
  * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {Promise<void>}
  */
-const waitRepoReady = scribouilliGitRepo =>
-  new Promise(resolve => {
+const waitRepoReady = scribouilliGitRepo => {
+  return new Promise(resolve => {
     const timer = setInterval(() => {
       getOAuthServiceAPI()
         .isRepositoryReady(scribouilliGitRepo)
@@ -30,13 +32,14 @@ const waitRepoReady = scribouilliGitRepo =>
         })
     }, 1000)
   })
+}
 
 /**
  * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {Promise<void>}
  */
-const waitGithubPages = scribouilliGitRepo =>
-  new Promise(resolve => {
+const waitGithubPages = scribouilliGitRepo => {
+  return new Promise(resolve => {
     const timer = setInterval(() => {
       getOAuthServiceAPI()
         .isPagesWebsiteBuilt(scribouilliGitRepo)
@@ -49,6 +52,7 @@ const waitGithubPages = scribouilliGitRepo =>
         })
     }, 5000)
   })
+}
 
 /**
  * @summary Create a repository for the current account
@@ -78,10 +82,12 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
+  const origin = remember(OAUTH_PROVIDER_STORAGE_KEY).origin
+
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner: login,
     repoName: escapedRepoName,
-    origin: 'https://github.com',
+    origin: origin,
     publishedWebsiteURL: makeGithubPublishedWebsiteURL(login, escapedRepoName),
     publicRepositoryURL: makeGithubPublicRepositoryURL(login, escapedRepoName),
   })
@@ -92,14 +98,6 @@ export const createRepositoryForCurrentAccount = async repoName => {
       .then(() => {
         // We check that the repository is effectively created
         return waitRepoReady(scribouilliGitRepo)
-      })
-      .then(() => {
-        return getOAuthServiceAPI().createPagesWebsiteFromRepository(
-          scribouilliGitRepo,
-        )
-      })
-      .then(() => {
-        return waitGithubPages(scribouilliGitRepo)
       })
       .then(() => {
         page(makeAtelierListPageURL(scribouilliGitRepo))
