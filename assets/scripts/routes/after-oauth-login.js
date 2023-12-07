@@ -1,13 +1,12 @@
 // @ts-check
 
 import page from 'page'
+import remember from 'remember'
 
 import {
   svelteTarget,
   defaultRepositoryName,
-  ACCESS_TOKEN_STORAGE_KEY,
   OAUTH_PROVIDER_STORAGE_KEY,
-  OAUTH_PROVIDER_ORIGIN_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
 } from '../config'
@@ -33,16 +32,15 @@ const storeOAuthProviderAccess = () => {
 
   if (accessToken && providerName) {
     const origin = oAuthAppByType.get(providerName)?.origin || ''
-
-    localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, accessToken)
-    localStorage.setItem(OAUTH_PROVIDER_STORAGE_KEY, providerName)
-    localStorage.setItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY, origin)
-
-    store.mutations.setOAuthProvider({
-      accessToken: accessToken,
+    const oAuthProvider = {
       name: providerName,
-      origin: origin,
-    })
+      accessToken,
+      origin,
+    }
+
+    remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
+
+    store.mutations.setOAuthProvider(oAuthProvider)
   }
 }
 

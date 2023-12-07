@@ -2,13 +2,10 @@
 
 // @ts-ignore
 import Store from 'baredux'
+import remember, { forget } from 'remember'
 import './types.js'
 
-import {
-  OAUTH_PROVIDER_STORAGE_KEY,
-  OAUTH_PROVIDER_ORIGIN_STORAGE_KEY,
-  ACCESS_TOKEN_STORAGE_KEY,
-} from './config.js'
+import { OAUTH_PROVIDER_STORAGE_KEY } from './config.js'
 import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
@@ -36,6 +33,13 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
  */
 
 /**
+ * @typedef {Object} OAuthProvider
+ * @property {string} name
+ * @property {string} accessToken
+ * @property {string} origin
+ */
+
+/**
  * @template State
  * @typedef {Object} BareduxStore
  * @property {Readonly<State>} state
@@ -47,15 +51,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
 const store = Store({
   state: {
     // @ts-ignore
-    oAuthProvider: {
-      // On souhaite avoir une seule source de vérité pour les informations
-      // d'authentification. On les stocke dans le localStorage et on les
-      // récupère au démarrage de l'application dans le store, ce dernier
-      // servant de source de vérité pour tous les composants.
-      accessToken: localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-      name: localStorage.getItem(OAUTH_PROVIDER_STORAGE_KEY),
-      origin: localStorage.getItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY),
-    },
+    oAuthProvider: remember(OAUTH_PROVIDER_STORAGE_KEY),
     login: undefined,
     email: undefined,
     origin: undefined,
@@ -204,7 +200,7 @@ const store = Store({
      */
     invalidateToken(state) {
       state.accessToken = undefined
-      localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
+      forget(OAUTH_PROVIDER_STORAGE_KEY)
       console.log('Token has been invalidated')
     },
   },

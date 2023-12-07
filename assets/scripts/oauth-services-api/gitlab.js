@@ -1,7 +1,9 @@
+import remember from 'remember'
+
 import {
   defaultRepoOwner,
   defaultThemeRepoName,
-  OAUTH_PROVIDER_ORIGIN_STORAGE_KEY,
+  OAUTH_PROVIDER_STORAGE_KEY,
 } from './../config.js'
 
 import './../types.js'
@@ -16,7 +18,7 @@ export default class GitHubAPI {
   constructor(accessToken) {
     /** @type {string | undefined} */
     this.accessToken = accessToken
-    this.origin = localStorage.getItem(OAUTH_PROVIDER_ORIGIN_STORAGE_KEY)
+    this.origin = remember(OAUTH_PROVIDER_STORAGE_KEY).origin
     this.apiBaseUrl = `${this.origin}/api/v4`
     this.authenticatedUser = undefined
   }
