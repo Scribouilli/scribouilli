@@ -1,7 +1,7 @@
 <script>
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
-  import { createRepositoryForCurrentAccount } from "../../actions.js";
+  import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
 
   let name = "";
   let loading = false;

@@ -8,7 +8,8 @@ export const defaultRepositoryName = 'mon-scribouilli'
 export const gitHubApiBaseUrl = 'https://api.github.com'
 export const defaultRepoOwner = 'Scribouilli'
 export const defaultThemeRepoName = 'site-template'
-
+export const repoTemplateGitUrl =
+  'https://gitlab.com/scribouilli/site-template.git'
 
 const body = document.querySelector('body')
 if (!body) {

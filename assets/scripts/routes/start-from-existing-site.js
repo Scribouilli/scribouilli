@@ -4,7 +4,7 @@ import store from '../store.js'
 import {
   fetchCurrentUserRepositories,
   fetchAuthenticatedUserLogin,
-} from '../actions.js'
+} from '../actions/current-user.js'
 import { svelteTarget } from '../config.js'
 import { replaceComponent } from '../routeComponentLifeCycle.js'
 import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'

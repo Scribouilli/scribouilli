@@ -87,6 +87,7 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
+    console.log('getCurrentUserRepositories')
     return this.getAuthenticatedUser()
       .then(({ login }) => {
         return this.callAPI(
@@ -95,6 +96,7 @@ export default class GitHubAPI {
       })
       .then(response => response.json())
       .then(json => {
+        console.log('json : ', json)
         // @ts-ignore
         const repositories = json.map(repo => {
           return {

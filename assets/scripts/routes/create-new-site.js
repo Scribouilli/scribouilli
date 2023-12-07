@@ -1,17 +1,17 @@
 import page from 'page'
 
-import { svelteTarget } from "../config";
-import { replaceComponent } from "../routeComponentLifeCycle";
-import store from "../store";
+import { svelteTarget } from '../config'
+import { replaceComponent } from '../routeComponentLifeCycle'
+import store from '../store'
 import CreateNewSite from '../components/screens/CreateNewSite.svelte'
-import { fetchAuthenticatedUserLogin } from '../actions.js'
+import { fetchAuthenticatedUserLogin } from '../actions/current-user.js'
 export default () => {
-    fetchAuthenticatedUserLogin()
+  fetchAuthenticatedUserLogin()
 
-    const createNewSite = new CreateNewSite({
-      target: svelteTarget,
-      props: {},
-    });
+  const createNewSite = new CreateNewSite({
+    target: svelteTarget,
+    props: {},
+  })
 
-    replaceComponent(createNewSite, () => {});
+  replaceComponent(createNewSite, () => {})
 }

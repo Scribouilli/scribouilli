@@ -1,40 +1,37 @@
 //@ts-check
 
-import page from "page";
+import page from 'page'
 
-import store from "../store.js";
-import { fetchCurrentUserRepositories } from "../actions.js";
-import { svelteTarget } from "../config.js";
-import { replaceComponent } from "../routeComponentLifeCycle.js";
+import store from '../store.js'
+import { fetchCurrentUserRepositories } from '../actions/current-user.js'
+import { svelteTarget } from '../config.js'
+import { replaceComponent } from '../routeComponentLifeCycle.js'
 
-import Welcome from "../components/screens/Welcome.svelte";
+import Welcome from '../components/screens/Welcome.svelte'
 
 export default () => {
-  let props = {};
+  let props = {}
 
   if (!!store.state.accessToken) {
     props = {
       isFetchingCurrentUserRepos: true,
-    };
+    }
 
-    fetchCurrentUserRepositories()
-      .then((repos) => {
-        if (repos.length === 1) {
-            const repoName = repos[0].name;
-            const account = repos[0].owner.login;
+    fetchCurrentUserRepositories().then(repos => {
+      if (repos.length === 1) {
+        const repoName = repos[0].name
+        const account = repos[0].owner.login
 
-            page(`/atelier-list-pages?repoName=${repoName}&account=${account}`);
-        } else {
-          store.mutations.setReposForAccount(
-            {
-              login: store.state.login,
-              repos
-            }
-          );
+        page(`/atelier-list-pages?repoName=${repoName}&account=${account}`)
+      } else {
+        store.mutations.setReposForAccount({
+          login: store.state.login,
+          repos,
+        })
 
-          page.redirect("/selectionner-un-site");
-        }
-      })
+        page.redirect('/selectionner-un-site')
+      }
+    })
   } else {
     props = {
       showWelcome: true,
@@ -44,7 +41,7 @@ export default () => {
   const welcome = new Welcome({
     target: svelteTarget,
     props,
-  });
+  })
 
-  replaceComponent(welcome, () => {});
-};
+  replaceComponent(welcome, () => {})
+}

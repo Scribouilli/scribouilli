@@ -14,10 +14,8 @@ import {
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
-import {
-  fetchCurrentUserRepositories,
-  createRepositoryForCurrentAccount,
-} from '../actions.js'
+import { fetchCurrentUserRepositories } from '../actions/current-user.js'
+import { createRepositoryForCurrentAccount } from '../actions/setup.js'
 import { oAuthAppByType } from '../oauth-services-api/index.js'
 
 const storeOAuthProviderAccess = () => {

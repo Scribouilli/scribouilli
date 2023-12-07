@@ -6,7 +6,7 @@ import store from '../store'
 import {
   getCurrentRepoPages,
   setCurrentRepositoryFromQuerystring,
-} from '../actions'
+} from '../actions/current-repository.js'
 import AtelierPages from '../components/screens/AtelierPages.svelte'
 
 /**

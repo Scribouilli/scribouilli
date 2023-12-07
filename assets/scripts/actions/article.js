@@ -66,7 +66,7 @@ export const createArticle = (title, content) => {
 export const updateArticle = async (fileName, title, content) => {
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 

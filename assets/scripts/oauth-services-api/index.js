@@ -18,7 +18,7 @@ export const oAuthAppByProvider = new Map([
     {
       origin: 'https://gitlab.com',
       client_id:
-        '4337f297cf1e74295f50f7a00eb66e3063fb3ef715e51c8d6412fb64a311fe8e',
+        'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
     },
   ],
 ])

@@ -6,7 +6,7 @@ import ResolutionDesynchronisation from '../components/screens/ResolutionDesynch
 
 import { svelteTarget } from '../config.js'
 import { replaceComponent } from '../routeComponentLifeCycle.js'
-import { setCurrentRepositoryFromQuerystring } from '../actions.js'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 
 /**
  *

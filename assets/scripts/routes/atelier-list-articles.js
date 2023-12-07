@@ -7,7 +7,7 @@ import store from '../store'
 import {
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
-} from '../actions'
+} from '../actions/current-repository.js'
 
 /**
  *

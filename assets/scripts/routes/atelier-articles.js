@@ -10,7 +10,7 @@ import gitAgent from '../gitAgent'
 import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
-import { setCurrentRepositoryFromQuerystring } from '../actions'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import { deleteArticle, createArticle, updateArticle } from '../actions/article'
 import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
 

@@ -33,7 +33,7 @@ function makeLoginHref(gitProvider, client_id, redirect_url) {
     return `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,user:email&redirect_uri=${redirect_url}`
   } else {
     // assume HTTPS
-    return `https://${gitProvider}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_url}&response_type=code&scope=read_user`
+    return `https://${gitProvider}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_url}&response_type=code&scope=api+read_api`
   }
 }
 
