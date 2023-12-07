@@ -13,6 +13,44 @@ import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
 
 /**
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
+ * @returns {Promise<void>}
+ */
+const waitRepoReady = scribouilliGitRepo =>
+  new Promise(resolve => {
+    const timer = setInterval(() => {
+      getOAuthServiceAPI()
+        .isRepositoryReady(scribouilliGitRepo)
+        // @ts-ignore
+        .then(res => {
+          if (res) {
+            clearInterval(timer)
+            resolve()
+          }
+        })
+    }, 1000)
+  })
+
+/**
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
+ * @returns {Promise<void>}
+ */
+const waitGithubPages = scribouilliGitRepo =>
+  new Promise(resolve => {
+    const timer = setInterval(() => {
+      getOAuthServiceAPI()
+        .isPagesWebsiteBuilt(scribouilliGitRepo)
+        // @ts-ignore
+        .then(res => {
+          if (res) {
+            clearInterval(timer)
+            resolve()
+          }
+        })
+    }, 5000)
+  })
+
+/**
  * @summary Create a repository for the current account
  *
  * @description This function creates a repository for the current account
@@ -48,45 +86,12 @@ export const createRepositoryForCurrentAccount = async repoName => {
     publicRepositoryURL: makeGithubPublicRepositoryURL(login, escapedRepoName),
   })
 
-  const waitRepoReady = /** @type {Promise<void>} */ (
-    new Promise(resolve => {
-      const timer = setInterval(() => {
-        getOAuthServiceAPI()
-          .isRepositoryReady(scribouilliGitRepo)
-          // @ts-ignore
-          .then(res => {
-            if (res) {
-              clearInterval(timer)
-              resolve()
-            }
-          })
-      }, 1000)
-    })
-  )
-  const waitGithubPages = /** @type {Promise<void>} */ (
-    new Promise(resolve => {
-      const timer = setInterval(() => {
-        getOAuthServiceAPI()
-          .isPagesWebsiteBuilt(scribouilliGitRepo)
-          // @ts-ignore
-          .then(res => {
-            if (res) {
-              clearInterval(timer)
-              resolve()
-            }
-          })
-      }, 5000)
-    })
-  )
   return (
     getOAuthServiceAPI()
       .createDefaultRepository(scribouilliGitRepo)
       .then(() => {
-        // Generation from a template repository
-        // is asynchronous, so we need to wait a bit
-        // for the new repo to be created
-        // before the setup of the GitHub Pages branch
-        return waitRepoReady
+        // We check that the repository is effectively created
+        return waitRepoReady(scribouilliGitRepo)
       })
       .then(() => {
         return getOAuthServiceAPI().createPagesWebsiteFromRepository(
@@ -94,7 +99,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
         )
       })
       .then(() => {
-        return waitGithubPages
+        return waitGithubPages(scribouilliGitRepo)
       })
       .then(() => {
         page(makeAtelierListPageURL(scribouilliGitRepo))
