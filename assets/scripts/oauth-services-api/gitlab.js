@@ -119,6 +119,7 @@ export default class GitHubAPI {
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
       headers: {
         Authorization: 'Bearer ' + this.accessToken,
+        'Content-Type': 'application/json',
       },
       method: 'POST',
       body: JSON.stringify({
@@ -128,16 +129,6 @@ export default class GitHubAPI {
         topics: ['site-scribouilli'],
       }),
     }).then(response => response.json())
-  }
-
-  /** @type {OAuthServiceAPI["addTopicOnRepository"]} */
-  addTopicOnRepository({ repoId }) {
-    return Promise.resolve()
-  }
-
-  /** @type {OAuthServiceAPI["updateRepositoryFeaturesSettings"]} */
-  updateRepositoryFeaturesSettings({ repoId }) {
-    return Promise.resolve()
   }
 
   /** @type {OAuthServiceAPI["deleteRepository"]} */

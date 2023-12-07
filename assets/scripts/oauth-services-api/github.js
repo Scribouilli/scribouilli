@@ -67,9 +67,8 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
-  createDefaultRepository(scribouilliGitRepo) {
-    const { owner, repoName } = scribouilliGitRepo
-
+  createDefaultRepository({ owner, repoName, repoId, publishedWebsiteURL }) {
+    // Generate a new repository from the theme repository
     return this.callAPI(
       `${gitHubApiBaseUrl}/repos/${defaultRepoOwner}/${defaultThemeRepoName}/generate`,
       {
@@ -85,46 +84,34 @@ export default class GitHubAPI {
         }),
       },
     ).then(response => {
-      return this.addTopicOnRepository(scribouilliGitRepo).then(() => {
-        this.updateRepositoryFeaturesSettings(scribouilliGitRepo)
-
-        // We don't wait for the end of the setup to return the response
-        // because we don't need all the data it returns.
-        return response
+      // Apply topic to the new repository
+      return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/topics`, {
+        headers: {
+          Authorization: 'token ' + this.accessToken,
+          Accept: 'application/vnd.github+json',
+        },
+        method: 'PUT',
+        body: JSON.stringify({
+          owner,
+          repo: repoName,
+          names: ['site-scribouilli'],
+        }),
+      }).then(() => {
+        // Activate GitHub Pages on the new repository
+        return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
+          method: 'POST',
+          headers: {
+            Authorization: 'token ' + this.accessToken,
+            Accept: 'application/vnd.github+json',
+          },
+          body: JSON.stringify({
+            homepage: publishedWebsiteURL,
+            has_issues: false,
+            has_projects: false,
+            has_wiki: false,
+          }),
+        })
       })
-    })
-  }
-
-  /** @type {OAuthServiceAPI["addTopicOnRepository"]} */
-  addTopicOnRepository({ repoId, owner, repoName }) {
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/topics`, {
-      headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'application/vnd.github+json',
-      },
-      method: 'PUT',
-      body: JSON.stringify({
-        owner,
-        repo: repoName,
-        names: ['site-scribouilli'],
-      }),
-    })
-  }
-
-  /** @type {OAuthServiceAPI["updateRepositoryFeaturesSettings"]} */
-  updateRepositoryFeaturesSettings({ repoId, publishedWebsiteURL }) {
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
-      method: 'POST',
-      headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: 'application/vnd.github+json',
-      },
-      body: JSON.stringify({
-        homepage: publishedWebsiteURL,
-        has_issues: false,
-        has_projects: false,
-        has_wiki: false,
-      }),
     })
   }
 

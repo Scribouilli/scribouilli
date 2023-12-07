@@ -34,13 +34,6 @@
 
     loading = true;
 
-    
-    // On devrait pouvoir retirer cette ligne à un moment. Elle sert pour
-    // tagguer tous les repos Scribouilli qui n'ont pas encore de topic
-    // (c'est-à-dire tous les repos créés au tout tout début)
-    if(currentRepository){
-      getOAuthServiceAPI().addTopicOnRepository(currentRepository);
-    }
     page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
 
     loading = false;

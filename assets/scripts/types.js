@@ -27,8 +27,6 @@
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<GithubRepository>} getRepository
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createDefaultRepository
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} addTopicOnRepository
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} updateRepositoryFeaturesSettings
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} deleteRepository
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createPagesWebsiteFromRepository
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus
