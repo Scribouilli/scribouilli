@@ -3,9 +3,9 @@
 import store from './../store.js'
 import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
-  makeGithubRepoId,
-  makeGithubPublicRepositoryURL,
-  makeGithubPublishedWebsiteURL,
+  makeRepoId,
+  makePublicRepositoryURL,
+  makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { handleErrors } from './../utils.js'
@@ -84,14 +84,19 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     throw new Error(message)
   }
 
+  const oAuthProvider = await store.state.oAuthProvider
+  const origin = oAuthProvider?.origin || ''
+
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,
     repoName,
-    repoId: makeGithubRepoId(owner, repoName),
-    origin: 'https://github.com',
-    publishedWebsiteURL: makeGithubPublishedWebsiteURL(owner, repoName),
-    publicRepositoryURL: makeGithubPublicRepositoryURL(owner, repoName),
+    repoId: makeRepoId(owner, repoName),
+    origin: origin,
+    publishedWebsiteURL: makePublishedWebsiteURL(owner, repoName, origin),
+    publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
   })
+
+  console.log('scribouilliGitRepo', scribouilliGitRepo)
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 

@@ -182,8 +182,10 @@ export default class GitHubAPI {
   isRepositoryReady({ owner, repoName }) {
     const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
 
+    // This call is used only at the creation of the repository.
+    // We assume that the git ref is `main`.
     return this.callAPI(
-      `${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/repository/files/_config.yml`,
+      `${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/repository/files/_config.yml?ref=main`,
     )
       .then(response => {
         return response.ok

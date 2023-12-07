@@ -1,13 +1,14 @@
 //@ts-check
 
 import remember from 'remember'
+import page from 'page'
 
 import store from './../store.js'
 import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
-  makeGithubRepoId,
-  makeGithubPublicRepositoryURL,
-  makeGithubPublishedWebsiteURL,
+  makeRepoId,
+  makePublicRepositoryURL,
+  makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
 import { repoTemplateGitUrl, OAUTH_PROVIDER_STORAGE_KEY } from './../config.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
@@ -89,8 +90,16 @@ export const createRepositoryForCurrentAccount = async repoName => {
     owner: login,
     repoName: escapedRepoName,
     origin: origin,
-    publishedWebsiteURL: makeGithubPublishedWebsiteURL(login, escapedRepoName),
-    publicRepositoryURL: makeGithubPublicRepositoryURL(login, escapedRepoName),
+    publishedWebsiteURL: makePublishedWebsiteURL(
+      login,
+      escapedRepoName,
+      origin,
+    ),
+    publicRepositoryURL: makePublicRepositoryURL(
+      login,
+      escapedRepoName,
+      origin,
+    ),
   })
 
   return (

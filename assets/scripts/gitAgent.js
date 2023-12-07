@@ -26,15 +26,14 @@ class GitAgent {
   /**
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
-   * @param {string} [remoteURL]
    * @returns {ReturnType<isomorphicGit["clone"]>}
    */
-  clone({ repoDirectory, remoteURL: defaultRemoteURL }, remoteURL = undefined) {
+  clone({ repoDirectory, remoteURL }) {
     return git.clone({
       fs: this.fs,
       dir: repoDirectory,
       http,
-      url: remoteURL ? remoteURL : defaultRemoteURL,
+      url: remoteURL,
       // ref is purposefully omitted to get the default behavior (default repo branch)
       singleBranch: true,
       corsProxy: CORS_PROXY_URL,
@@ -47,10 +46,10 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["currentBranch"]>}
    */
-  currentBranch({ repoDirectory }) {
+  currentBranch(scribouilliGitRepo) {
     return git.currentBranch({
       fs: this.fs,
-      dir: repoDirectory,
+      dir: scribouilliGitRepo.repoDirectory,
     })
   }
 
