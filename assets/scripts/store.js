@@ -69,10 +69,10 @@ const store = Store({
   mutations: {
     /**
      * @param {ScribouilliState} state
-     * @param {OAuthProvider} oAuthProvider
+     * @param {Promise<OAuthProvider>} oAuthProviderP
      */
-    setOAuthProvider(state, oAuthProvider) {
-      state.oAuthProvider = Promise.resolve(oAuthProvider)
+    setOAuthProvider(state, oAuthProviderP) {
+      state.oAuthProvider = oAuthProviderP
     },
     /**
      *

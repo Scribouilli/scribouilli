@@ -40,12 +40,12 @@ const storeOAuthProviderAccess = async () => {
 
     await remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
 
-    store.mutations.setOAuthProvider(oAuthProvider)
+    store.mutations.setOAuthProvider(Promise.resolve(oAuthProvider))
   }
 }
 
 export default async () => {
-  storeOAuthProviderAccess()
+  await storeOAuthProviderAccess()
 
   const oAuthProvider = await store.state.oAuthProvider
   let type = oAuthProvider?.name
