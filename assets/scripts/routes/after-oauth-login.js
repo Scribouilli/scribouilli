@@ -49,36 +49,33 @@ const storeOAuthProviderAccess = () => {
 export default () => {
   storeOAuthProviderAccess()
 
-  const type = store.state.oAuthProvider?.name
+  let type = store.state.oAuthProvider?.name
+
+  // no type is implicitly github for historical reasons (which will certainly be irrelevant in, say, 2025)
+  if (!type) {
+    type = 'github'
+  }
 
   let currentUserReposP
 
-  // no type is implicitly github for historical reasons (which will certainly be irrelevant in, say, 2025)
-  // if (!type || type === 'github') {
-  currentUserReposP = fetchCurrentUserRepositories().then(repos => {
-    console.log('repos', repos)
-    if (repos.length === 0) {
-      // If the user has no repository, we automatically create one for them.
-      createRepositoryForCurrentAccount(defaultRepositoryName)
-    } else {
-      store.mutations.setReposForAccount({
-        login: store.state.login,
-        repos,
-      })
+  if (type === 'github' || type === 'gitlab') {
+    currentUserReposP = fetchCurrentUserRepositories().then(repos => {
+      console.log('repos', repos)
+      if (repos.length === 0) {
+        // If the user has no repository, we automatically create one for them.
+        createRepositoryForCurrentAccount(defaultRepositoryName)
+      } else {
+        store.mutations.setReposForAccount({
+          login: store.state.login,
+          repos,
+        })
 
-      page.redirect('/selectionner-un-site')
-    }
-  })
-  // } else {
-  // currentUserReposP = Promise.resolve()
-  // if (type === 'gitlab') {
-  // console.log(
-  // 'Connexion depuis gitlab détectée et on ne sait rien en faire',
-  // )
-  // } else {
-  // console.error(`Type dans l'URL non reconnu:`, type)
-  // }
-  // }
+        page.redirect('/selectionner-un-site')
+      }
+    })
+  } else {
+    throw new Error(`Unknown OAuth provider type: ${type}`)
+  }
 
   const afterOauthLogin = new AfterOauthLogin({
     target: svelteTarget,
