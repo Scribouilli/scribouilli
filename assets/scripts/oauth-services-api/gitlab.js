@@ -131,6 +131,7 @@ export default class GitHubAPI {
         name: repoName,
         description: 'Mon site Scribouilli',
         topics: ['site-scribouilli'],
+        visibility: 'public',
       }),
     }).then(response => response.json())
   }
