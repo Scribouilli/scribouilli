@@ -15,7 +15,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
  */
 export function checkRepositoryAvailabilityThen(scribouilliGitRepo) {
   return getOAuthServiceAPI()
-    .getRepository(scribouilliGitRepo)
+    .then(api => api.getRepository(scribouilliGitRepo))
     .catch((/** @type {string} */ msg) => handleErrors(msg))
 }
 

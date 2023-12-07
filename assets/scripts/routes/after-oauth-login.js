@@ -17,7 +17,7 @@ import { fetchCurrentUserRepositories } from '../actions/current-user.js'
 import { createRepositoryForCurrentAccount } from '../actions/setup.js'
 import { oAuthAppByType } from '../oauth-services-api/index.js'
 
-const storeOAuthProviderAccess = () => {
+const storeOAuthProviderAccess = async () => {
   const url = new URL(location.href)
 
   console.log(
@@ -38,16 +38,20 @@ const storeOAuthProviderAccess = () => {
       origin,
     }
 
-    remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
+    await remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
 
     store.mutations.setOAuthProvider(oAuthProvider)
   }
 }
 
-export default () => {
+export default async () => {
   storeOAuthProviderAccess()
 
-  let type = store.state.oAuthProvider?.name
+  const oAuthProvider = await store.state.oAuthProvider
+  let type = oAuthProvider?.name
+
+  console.log('type', type)
+  console.log('oAuthProvider', oAuthProvider)
 
   // no type is implicitly github for historical reasons (which will certainly be irrelevant in, say, 2025)
   if (!type) {

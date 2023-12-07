@@ -4,7 +4,6 @@
 
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
-  import { getOAuthServiceAPI } from "../../oauth-services-api/index.js";
 
   /** @type {string | Promise<string> | undefined} */
   export let currentAccount

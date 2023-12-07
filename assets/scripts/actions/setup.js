@@ -22,7 +22,7 @@ const waitRepoReady = scribouilliGitRepo => {
   return new Promise(resolve => {
     const timer = setInterval(() => {
       getOAuthServiceAPI()
-        .isRepositoryReady(scribouilliGitRepo)
+        .then(api => api.isRepositoryReady(scribouilliGitRepo))
         // @ts-ignore
         .then(res => {
           if (res) {
@@ -42,7 +42,7 @@ const waitGithubPages = scribouilliGitRepo => {
   return new Promise(resolve => {
     const timer = setInterval(() => {
       getOAuthServiceAPI()
-        .isPagesWebsiteBuilt(scribouilliGitRepo)
+        .then(api => api.isPagesWebsiteBuilt(scribouilliGitRepo))
         // @ts-ignore
         .then(res => {
           if (res) {
@@ -82,7 +82,8 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
-  const origin = remember(OAUTH_PROVIDER_STORAGE_KEY).origin
+  const oAuthProvider = await remember(OAUTH_PROVIDER_STORAGE_KEY)
+  const origin = oAuthProvider.origin
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner: login,
@@ -94,7 +95,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
 
   return (
     getOAuthServiceAPI()
-      .createDefaultRepository(scribouilliGitRepo)
+      .then(api => api.createDefaultRepository(scribouilliGitRepo))
       .then(() => {
         // We check that the repository is effectively created
         return waitRepoReady(scribouilliGitRepo)

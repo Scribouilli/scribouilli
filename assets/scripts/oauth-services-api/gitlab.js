@@ -14,13 +14,17 @@ import './../types.js'
 export default class GitHubAPI {
   /**
    * @param {string} accessToken
+   * @param {string} origin
    */
-  constructor(accessToken) {
+  constructor(accessToken, origin) {
     /** @type {string | undefined} */
     this.accessToken = accessToken
-    this.origin = remember(OAUTH_PROVIDER_STORAGE_KEY).origin
-    this.apiBaseUrl = `${this.origin}/api/v4`
+    this.origin = origin
     this.authenticatedUser = undefined
+  }
+
+  get apiBaseUrl() {
+    return `${this.origin}/api/v4`
   }
 
   /** @type {OAuthServiceAPI["getOauthUsernameAndPassword"]} */
@@ -89,7 +93,6 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
-    console.log('getCurrentUserRepositories')
     return this.getAuthenticatedUser()
       .then(({ login }) => {
         return this.callAPI(
@@ -98,7 +101,6 @@ export default class GitHubAPI {
       })
       .then(response => response.json())
       .then(json => {
-        console.log('json : ', json)
         // @ts-ignore
         const repositories = json.map(repo => {
           return {

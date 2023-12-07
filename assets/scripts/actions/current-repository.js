@@ -21,7 +21,9 @@ import makeBuildStatus from './../buildStatus.js'
  */
 export const deleteRepository = scribouilliGitRepo => {
   return gitAgent.deleteRepository(scribouilliGitRepo).then(() => {
-    return getOAuthServiceAPI().deleteRepository(scribouilliGitRepo)
+    return getOAuthServiceAPI().then(api =>
+      api.deleteRepository(scribouilliGitRepo),
+    )
   })
 }
 

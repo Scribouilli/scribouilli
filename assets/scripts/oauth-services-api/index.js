@@ -53,7 +53,12 @@ export const oAuthAppByType = new Map([
 const makeOAuthServiceAPI = (type, { accessToken }) => {
   if (type === 'github') return new GitHubAPI(accessToken)
 
-  if (type === 'gitlab') return new GitlabAPI(accessToken)
+  if (type === 'gitlab') {
+    // @ts-ignore
+    const origin = oAuthAppByType.get(type).origin
+
+    return new GitlabAPI(accessToken, origin)
+  }
 
   throw new TypeError(
     `Le service d'authentificaton ${type} n'est pas supporté.`,
@@ -64,19 +69,17 @@ const makeOAuthServiceAPI = (type, { accessToken }) => {
 let oAuthServiceAPI
 
 /**
- *
- * @returns {OAuthServiceAPI}
+ * @returns {Promise<OAuthServiceAPI>}
  */
-export const getOAuthServiceAPI = () => {
+export const getOAuthServiceAPI = async () => {
   // @ts-ignore
   if (oAuthServiceAPI) {
     return oAuthServiceAPI
   }
 
-  if (
-    !store.state.oAuthProvider?.accessToken ||
-    !store.state.oAuthProvider?.name
-  ) {
+  const oAuthProvider = await store.state.oAuthProvider
+
+  if (!oAuthProvider) {
     console.info("L'utilisateur n'est pas connecté. Redirection vers /account")
 
     page('/account')
@@ -84,8 +87,8 @@ export const getOAuthServiceAPI = () => {
     throw new TypeError('Missing accessToken or provider name')
   }
 
-  oAuthServiceAPI = makeOAuthServiceAPI(store.state.oAuthProvider.name, {
-    accessToken: store.state.oAuthProvider.accessToken,
+  oAuthServiceAPI = makeOAuthServiceAPI(oAuthProvider.name, {
+    accessToken: oAuthProvider.accessToken,
   })
 
   return oAuthServiceAPI

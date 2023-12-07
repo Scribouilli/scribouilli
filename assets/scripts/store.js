@@ -11,11 +11,15 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
 
 /**
+ * @typedef {Object} OAuthProvider
+ * @property {string} name
+ * @property {string} accessToken
+ * @property {string} origin
+ */
+
+/**
  * @typedef {Object} ScribouilliState
- * @property {object} [oAuthProvider]
- * @property {string} [oAuthProvider.name]
- * @property {string} [oAuthProvider.accessToken]
- * @property {string} [oAuthProvider.origin]
+ * @property {Promise<OAuthProvider>} [oAuthProvider]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
@@ -30,13 +34,6 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
  *
  * deprecated
  * @property {string} [accessToken]
- */
-
-/**
- * @typedef {Object} OAuthProvider
- * @property {string} name
- * @property {string} accessToken
- * @property {string} origin
  */
 
 /**
@@ -72,10 +69,10 @@ const store = Store({
   mutations: {
     /**
      * @param {ScribouilliState} state
-     * @param {{ accessToken: string, name: string }} oAuthProvider
+     * @param {OAuthProvider} oAuthProvider
      */
     setOAuthProvider(state, oAuthProvider) {
-      state.oAuthProvider = oAuthProvider
+      state.oAuthProvider = Promise.resolve(oAuthProvider)
     },
     /**
      *

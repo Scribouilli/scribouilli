@@ -39,7 +39,7 @@ const logout = () => {
  */
 export const fetchAuthenticatedUserLogin = () => {
   const loginP = getOAuthServiceAPI()
-    .getAuthenticatedUser()
+    .then(api => api.getAuthenticatedUser())
     .then(({ login = '' }) => {
       if (login === '') {
         throw new Error('NO_LOGIN')
@@ -76,7 +76,7 @@ export const fetchAuthenticatedUserLogin = () => {
     })
 
   const emailP = getOAuthServiceAPI()
-    .getUserEmails()
+    .then(api => api.getUserEmails())
     // @ts-ignore
     .then(emails => {
       // @ts-ignore
@@ -116,7 +116,7 @@ export const fetchAuthenticatedUserLogin = () => {
 export const fetchCurrentUserRepositories = async () => {
   const { login } = await fetchAuthenticatedUserLogin()
   const currentUserRepositoriesP = getOAuthServiceAPI()
-    .getCurrentUserRepositories()
+    .then(api => api.getCurrentUserRepositories())
     // @ts-ignore
     .then(repos => {
       store.mutations.setReposForAccount({ login, repos })
