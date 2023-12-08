@@ -11,9 +11,6 @@
   /** @type {GithubRepository[]} */
   export let currentAccountRepositories;
 
-  /** @type {import("../../store").ScribouilliState['currentRepository']} */
-  export let currentRepository
-
   /** @type {GithubRepository} */
   let repo
   let loading = false;

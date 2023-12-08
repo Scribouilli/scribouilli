@@ -1,16 +1,12 @@
 //@ts-check
 
-import remember from 'remember'
 import page from 'page'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
-  makeRepoId,
   makePublicRepositoryURL,
   makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
-import { repoTemplateGitUrl, OAUTH_PROVIDER_STORAGE_KEY } from './../config.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
@@ -23,7 +19,7 @@ const waitRepoReady = scribouilliGitRepo => {
   return new Promise(resolve => {
     const timer = setInterval(() => {
       getOAuthServiceAPI()
-        .then(api => api.isRepositoryReady(scribouilliGitRepo))
+        .isRepositoryReady(scribouilliGitRepo)
         // @ts-ignore
         .then(res => {
           if (res) {
@@ -43,7 +39,7 @@ const waitGithubPages = scribouilliGitRepo => {
   return new Promise(resolve => {
     const timer = setInterval(() => {
       getOAuthServiceAPI()
-        .then(api => api.isPagesWebsiteBuilt(scribouilliGitRepo))
+        .isPagesWebsiteBuilt(scribouilliGitRepo)
         // @ts-ignore
         .then(res => {
           if (res) {
@@ -52,6 +48,24 @@ const waitGithubPages = scribouilliGitRepo => {
           }
         })
     }, 5000)
+  })
+}
+
+/**
+ *
+ * @returns {Promise<void>}
+ */
+export const waitOauthProvider = () => {
+  return new Promise(resolve => {
+    if (store.state.oAuthProvider) resolve()
+    else {
+      const unsubscribe = store.subscribe(state => {
+        if (state.oAuthProvider) {
+          unsubscribe()
+          resolve()
+        }
+      })
+    }
   })
 }
 
@@ -83,7 +97,13 @@ export const createRepositoryForCurrentAccount = async repoName => {
     .replace(/[^a-zA-Z0-9_-]+/g, '-')
     .toLowerCase()
 
-  const oAuthProvider = await remember(OAUTH_PROVIDER_STORAGE_KEY)
+  const oAuthProvider = store.state.oAuthProvider
+  if (!oAuthProvider) {
+    console.error('Missing oAuthProvider')
+    page('/')
+    return
+  }
+
   const origin = oAuthProvider.origin
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
@@ -104,7 +124,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
 
   return (
     getOAuthServiceAPI()
-      .then(api => api.createDefaultRepository(scribouilliGitRepo))
+      .createDefaultRepository(scribouilliGitRepo)
       .then(() => {
         // We check that the repository is effectively created
         return waitRepoReady(scribouilliGitRepo)

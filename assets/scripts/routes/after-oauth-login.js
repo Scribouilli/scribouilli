@@ -17,7 +17,7 @@ import { fetchCurrentUserRepositories } from '../actions/current-user.js'
 import { createRepositoryForCurrentAccount } from '../actions/setup.js'
 import { oAuthAppByType } from '../oauth-services-api/index.js'
 
-const storeOAuthProviderAccess = async () => {
+const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
 
   console.log(
@@ -38,16 +38,16 @@ const storeOAuthProviderAccess = async () => {
       origin,
     }
 
-    await remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
+    store.mutations.setOAuthProvider(oAuthProvider)
 
-    store.mutations.setOAuthProvider(Promise.resolve(oAuthProvider))
+    remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
   }
 }
 
-export default async () => {
-  await storeOAuthProviderAccess()
+export default () => {
+  storeOAuthProviderAccess()
 
-  const oAuthProvider = await store.state.oAuthProvider
+  const oAuthProvider = store.state.oAuthProvider
   let type = oAuthProvider?.name
 
   console.log('type', type)
@@ -84,8 +84,6 @@ export default async () => {
     props: {
       // @ts-ignore
       currentUserReposP,
-      // @ts-ignore
-      type,
     },
   })
 
