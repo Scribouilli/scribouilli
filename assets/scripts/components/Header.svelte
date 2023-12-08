@@ -69,7 +69,7 @@
     <div>
       <p>
         <a
-          href="https://{publishedWebsiteURL}"
+          href="{publishedWebsiteURL}"
           class="project-name"
           target="_blank"
         >
