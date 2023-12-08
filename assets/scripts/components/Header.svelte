@@ -118,7 +118,7 @@
         <li>
           {#if repositoryURL}
             {#await repositoryURL then urlrepository}
-              <a href={urlrepository} target="_blank">GitHub</a>
+              <a href={urlrepository} target="_blank">Sur {(new URL(urlrepository)).hostname}</a>
             {/await}
           {/if}
         </li>
