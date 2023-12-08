@@ -47,8 +47,8 @@
   /** @type {string | undefined} */
   $: homeURL =
     repoName && account
-      ? `./atelier-list-pages?repoName=${repoName}&account=${account}`
-      : './'
+      ? `/atelier-list-pages?repoName=${repoName}&account=${account}`
+      : '/'
   /**
    *
    * @param {string} account
@@ -56,7 +56,7 @@
    * @returns {string}
    */
   function makeResolutionDesynchronisationURL(account, repoName) {
-    return `./resolution-desynchronisation?account=${account}&repoName=${repoName}`
+    return `/resolution-desynchronisation?account=${account}&repoName=${repoName}`
   }
 
   /** @type {string} */
@@ -95,7 +95,7 @@
     <nav>
       <ul>
         <li>
-          <a href="./atelier-list-pages?repoName={repoName}&account={account}">
+          <a href="/atelier-list-pages?repoName={repoName}&account={account}">
             Pages
           </a>
         </li>
@@ -103,7 +103,7 @@
         {#if showArticles}
           <li>
             <a
-              href="./atelier-list-articles?repoName={repoName}&account={account}"
+              href="/atelier-list-articles?repoName={repoName}&account={account}"
             >
               Articles
             </a>
@@ -111,7 +111,7 @@
         {/if}
 
         <li>
-          <a href="./settings?repoName={repoName}&account={account}">
+          <a href="/settings?repoName={repoName}&account={account}">
             Paramètres
           </a>
         </li>

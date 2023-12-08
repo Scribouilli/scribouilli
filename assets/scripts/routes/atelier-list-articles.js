@@ -54,5 +54,5 @@ export default async ({ querystring }) => {
  * @returns {string}
  */
 export function makeAtelierListArticlesURL({ owner, repoName }) {
-  return `./atelier-list-articles?account=${owner}&repoName=${repoName}`
+  return `/atelier-list-articles?account=${owner}&repoName=${repoName}`
 }
