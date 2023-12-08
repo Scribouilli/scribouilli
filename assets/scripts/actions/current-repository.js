@@ -1,6 +1,7 @@
 //@ts-check
 
 import page from 'page'
+import yaml from 'js-yaml'
 
 import store from './../store.js'
 import gitAgent from './../gitAgent'
@@ -130,4 +131,23 @@ export const setBuildStatus = scribouilliGitRepo => {
   on peut faire confiance à ce que renvoit l'API
   */
   store.state.buildStatus.checkStatus()
+}
+
+
+export const getCurrentRepoConfig = () => {
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
+  return gitAgent
+    .getFile(currentRepository, '_config.yml')
+    .then(configStr => {
+      console.log('config', configStr)
+      const config = yaml.load(configStr)
+      console.log('config', config)
+      return config
+    })
+    .catch(msg => handleErrors(msg))
 }
