@@ -5,7 +5,6 @@ import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import {
-  deleteRepository,
   getCurrentRepoPages,
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
@@ -79,15 +78,6 @@ export default async ({ querystring }) => {
   const settings = new Settings({
     target: svelteTarget,
     props: mapStateToProps(store.state),
-  })
-
-  settings.$on('delete-site', () => {
-    deleteRepository(currentRepository)
-      .then(() => {
-        store.mutations.removeSite(store.state)
-        page('/create-project')
-      })
-      .catch(msg => handleErrors(msg))
   })
 
   settings.$on('update-theme', ({ detail: { theme } }) => {

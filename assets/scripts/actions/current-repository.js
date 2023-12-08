@@ -18,19 +18,6 @@ import { writeFileAndPushChanges } from './file.js'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
-/**
- * @summary Delete a repository from the local indexedDB and from the OAuth service
- *
- * @param {ScribouilliGitRepo} scribouilliGitRepo
- *
- * @return {Promise<any>} - A promise that resolves when the repository has been deleted
- */
-export const deleteRepository = scribouilliGitRepo => {
-  return gitAgent.deleteRepository(scribouilliGitRepo).then(() => {
-    return getOAuthServiceAPI().deleteRepository(scribouilliGitRepo)
-  })
-}
-
 export const getCurrentRepoPages = () => {
   const currentRepository = store.state.currentRepository
 

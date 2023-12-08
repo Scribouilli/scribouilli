@@ -337,15 +337,6 @@ class GitAgent {
   }
 
   /**
-   *
-   * @param {ScribouilliGitRepo} scribouilliGitRepo
-   * @returns {Promise<void>}
-   */
-  deleteRepository({ repoDirectory }) {
-    return this.fs.promises.unlink(repoDirectory)
-  }
-
-  /**
    * @summary like a git pull but the merge is better customized
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo

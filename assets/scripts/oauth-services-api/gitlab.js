@@ -138,11 +138,6 @@ export default class GitHubAPI {
     }).then(response => response.json())
   }
 
-  /** @type {OAuthServiceAPI["deleteRepository"]} */
-  deleteRepository({ repoId }) {
-    return Promise.resolve()
-  }
-
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ owner, repoName }) {
     const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)

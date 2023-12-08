@@ -129,14 +129,6 @@ export default class GitHubAPI {
     })
   }
 
-  /** @type {OAuthServiceAPI["deleteRepository"]} */
-  deleteRepository({ repoId }) {
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
-      headers: { Authorization: 'token ' + this.accessToken },
-      method: 'DELETE',
-    })
-  }
-
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ repoId }) {
     // TODO: We need to add the `sha` parameter to avoid the GitHub API to return
