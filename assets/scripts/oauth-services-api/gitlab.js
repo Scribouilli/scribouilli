@@ -35,7 +35,6 @@ export default class GitHubAPI {
 
     // cf. https://isomorphic-git.org/docs/en/authentication
     return {
-      oauth2format: 'gitlab',
       username: 'oauth2',
       password: this.accessToken,
     }
