@@ -395,7 +395,7 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} login
    * @param {string} email
-   * @returns {Promise<void>}
+   * @returns {Promise<ReturnType<isomorphicGit["setConfig"]>>}
    */
   async setAuthor(scribouilliGitRepo, login, email) {
     if (!login || !email) {
@@ -410,7 +410,7 @@ class GitAgent {
       path: 'user.name',
       value: login,
     })
-    await git.setConfig({
+    return await git.setConfig({
       fs: this.fs,
       dir: repoDirectory,
       path: 'user.email',

@@ -3,10 +3,7 @@
 import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
-import {
-  getCurrentRepoConfig,
-  setCurrentRepositoryFromQuerystring,
-} from '../actions/current-repository.js'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import AtelierPages from '../components/screens/AtelierPages.svelte'
 
 /**
@@ -36,7 +33,6 @@ const mapStateToProps = state => {
  */
 export default async ({ querystring }) => {
   await setCurrentRepositoryFromQuerystring(querystring)
-  await getCurrentRepoConfig()
 
   const state = store.state
   const atelierPages = new AtelierPages({

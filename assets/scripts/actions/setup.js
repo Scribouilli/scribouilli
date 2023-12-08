@@ -3,6 +3,7 @@
 import page from 'page'
 
 import store from './../store.js'
+import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makePublicRepositoryURL,
   makePublishedWebsiteURL,
@@ -10,6 +11,12 @@ import ScribouilliGitRepo, {
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
+import {
+  updateConfigWithBaseUrlAndPush,
+  getCurrentRepoConfig,
+} from './current-repository.js'
+
+/** @typedef {import('isomorphic-git')} isomorphicGit */
 
 /**
  * @param {ScribouilliGitRepo} scribouilliGitRepo
@@ -52,7 +59,6 @@ const waitGithubPages = scribouilliGitRepo => {
 }
 
 /**
- *
  * @returns {Promise<void>}
  */
 export const waitOauthProvider = () => {
@@ -67,6 +73,27 @@ export const waitOauthProvider = () => {
       })
     }
   })
+}
+
+/**
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
+ * @returns {Promise<ReturnType<isomorphicGit["setConfig"]>>}
+ */
+export const setupLocalRepository = async scribouilliGitRepo => {
+  const login = await store.state.login
+  const email = store.state.email
+
+  if (!login) {
+    throw new TypeError(`missing login in setupLocalRepository`)
+  }
+
+  if (!email) {
+    throw new TypeError(`missing email in setupLocalRepository`)
+  }
+
+  await gitAgent.clone(scribouilliGitRepo)
+
+  return gitAgent.setAuthor(scribouilliGitRepo, login, email)
 }
 
 /**
@@ -88,7 +115,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
   const login = await store.state.login
 
   if (!login) {
-    throw new TypeError(`login manquant dans createRepositoryForCurrentAccount`)
+    throw new TypeError(`missing login in createRepositoryForCurrentAccount`)
   }
 
   const escapedRepoName = repoName
@@ -126,8 +153,19 @@ export const createRepositoryForCurrentAccount = async repoName => {
     getOAuthServiceAPI()
       .createDefaultRepository(scribouilliGitRepo)
       .then(() => {
-        // We check that the repository is effectively created
+        // Il est nécessaire d'attendre que le repo soit prêt sur la remote
+        // avant de pouvoir le cloner localement.
         return waitRepoReady(scribouilliGitRepo)
+      })
+      .then(() => {
+        return setupLocalRepository(scribouilliGitRepo)
+      })
+      .then(res => {
+        store.mutations.setCurrentRepository(scribouilliGitRepo)
+
+        // Il est nécessaire d'avoir ce premier commit et push pour que
+        // le déploiement de la GitLab Pages fonctionne.
+        return updateConfigWithBaseUrlAndPush()
       })
       .then(() => {
         page(makeAtelierListPageURL(scribouilliGitRepo))

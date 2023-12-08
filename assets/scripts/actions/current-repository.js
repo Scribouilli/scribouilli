@@ -14,6 +14,9 @@ import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { handleErrors } from './../utils.js'
 import { fetchAuthenticatedUserLogin } from './current-user.js'
 import makeBuildStatus from './../buildStatus.js'
+import { writeFileAndPushChanges } from './file.js'
+
+/** @typedef {import('isomorphic-git')} isomorphicGit */
 
 /**
  * @summary Delete a repository from the local indexedDB and from the OAuth service
@@ -120,7 +123,6 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 }
 
 /**
- *
  * @param {ScribouilliGitRepo} scribouilliGitRepo
  */
 export const setBuildStatus = scribouilliGitRepo => {
@@ -133,7 +135,32 @@ export const setBuildStatus = scribouilliGitRepo => {
   store.state.buildStatus.checkStatus()
 }
 
+/**
+ * @returns {ReturnType<isomorphicGit["push"]>}
+ */
+export const updateConfigWithBaseUrlAndPush = async () => {
+  const currentRepository = store.state.currentRepository
 
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
+  const config = await getCurrentRepoConfig()
+
+  config.baseurl = `/${currentRepository.repoName}`
+
+  const configYmlContent = yaml.dump(config)
+
+  return writeFileAndPushChanges(
+    '_config.yml',
+    configYmlContent,
+    'Ajout de `baseurl` dans la config',
+  )
+}
+
+/**
+ * @returns {Promise<any>}
+ */
 export const getCurrentRepoConfig = () => {
   const currentRepository = store.state.currentRepository
 
@@ -144,9 +171,8 @@ export const getCurrentRepoConfig = () => {
   return gitAgent
     .getFile(currentRepository, '_config.yml')
     .then(configStr => {
-      console.log('config', configStr)
       const config = yaml.load(configStr)
-      console.log('config', config)
+
       return config
     })
     .catch(msg => handleErrors(msg))
