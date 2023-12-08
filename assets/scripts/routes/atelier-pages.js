@@ -83,8 +83,8 @@ const makeMapStateToProps = fileName => state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
   const fileName = new URLSearchParams(querystring).get('path') ?? ''

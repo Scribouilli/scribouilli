@@ -96,8 +96,6 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
   })
 
-  console.log('scribouilliGitRepo', scribouilliGitRepo)
-
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   const { login, email } = await fetchAuthenticatedUserLogin()

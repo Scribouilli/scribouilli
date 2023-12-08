@@ -80,7 +80,7 @@ const makeMapStateToProps = fileName => state => {
  * @param {import('page').Context} _
  */
 export default async ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const currentRepository = store.state.currentRepository
 

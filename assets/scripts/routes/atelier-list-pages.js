@@ -35,7 +35,8 @@ const mapStateToProps = state => {
  * @param {import('page').Context} _
  */
 export default async ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring).then(getCurrentRepoPages)
+  await setCurrentRepositoryFromQuerystring(querystring)
+  await getCurrentRepoPages
 
   const state = store.state
   const atelierPages = new AtelierPages({

@@ -29,8 +29,8 @@ const mapStateToProps = state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const conflictResolution = new ResolutionDesynchronisation({
     target: svelteTarget,
