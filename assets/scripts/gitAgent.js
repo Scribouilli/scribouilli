@@ -116,21 +116,17 @@ class GitAgent {
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
   falliblePush({ repoDirectory }) {
-    return getOAuthServiceAPI()
-      .then(api => api.getOauthUsernameAndPassword())
-      .then(usernameAndPassword => {
-        return git.push({
-          fs: this.fs,
-          http,
-          // ref is purposefully omitted to get the default (checked out branch)
-          dir: repoDirectory,
-          corsProxy: CORS_PROXY_URL,
-          onAuth: _ => {
-            // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-            return usernameAndPassword
-          },
-        })
-      })
+    return git.push({
+      fs: this.fs,
+      http,
+      // ref is purposefully omitted to get the default (checked out branch)
+      dir: repoDirectory,
+      corsProxy: CORS_PROXY_URL,
+      onAuth: _ => {
+        // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+        return getOAuthServiceAPI().getOauthUsernameAndPassword()
+      },
+    })
   }
 
   /**
@@ -168,22 +164,18 @@ class GitAgent {
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
   forcePush({ repoDirectory }) {
-    return getOAuthServiceAPI()
-      .then(api => api.getOauthUsernameAndPassword())
-      .then(usernameAndPasword => {
-        return git.push({
-          fs: this.fs,
-          http,
-          // ref is purposefully omitted to get the default (checked out branch)
-          dir: repoDirectory,
-          force: true,
-          corsProxy: CORS_PROXY_URL,
-          onAuth: _ => {
-            // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-            return usernameAndPasword
-          },
-        })
-      })
+    return git.push({
+      fs: this.fs,
+      http,
+      // ref is purposefully omitted to get the default (checked out branch)
+      dir: repoDirectory,
+      force: true,
+      corsProxy: CORS_PROXY_URL,
+      onAuth: _ => {
+        // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+        return getOAuthServiceAPI().getOauthUsernameAndPassword()
+      },
+    })
   }
 
   /**

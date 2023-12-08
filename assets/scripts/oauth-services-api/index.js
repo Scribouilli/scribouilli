@@ -69,20 +69,20 @@ const makeOAuthServiceAPI = (type, { accessToken }) => {
 let oAuthServiceAPI
 
 /**
- * @returns {Promise<OAuthServiceAPI>}
+ * @returns {OAuthServiceAPI}
  */
-export const getOAuthServiceAPI = async () => {
+export const getOAuthServiceAPI = () => {
   // @ts-ignore
   if (oAuthServiceAPI) {
     return oAuthServiceAPI
   }
 
-  const oAuthProvider = await store.state.oAuthProvider
+  const oAuthProvider = store.state.oAuthProvider
 
   if (!oAuthProvider) {
-    console.info("L'utilisateur n'est pas connecté. Redirection vers /account")
+    console.info("L'utilisateur n'est pas connecté. Redirection vers /")
 
-    page('/account')
+    page('/')
 
     throw new TypeError('Missing accessToken or provider name')
   }

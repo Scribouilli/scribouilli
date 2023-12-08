@@ -1,5 +1,7 @@
 //@ts-check
 
+import page from 'page'
+
 import store from './../store.js'
 import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
@@ -21,9 +23,7 @@ import makeBuildStatus from './../buildStatus.js'
  */
 export const deleteRepository = scribouilliGitRepo => {
   return gitAgent.deleteRepository(scribouilliGitRepo).then(() => {
-    return getOAuthServiceAPI().then(api =>
-      api.deleteRepository(scribouilliGitRepo),
-    )
+    return getOAuthServiceAPI().deleteRepository(scribouilliGitRepo)
   })
 }
 
@@ -74,18 +74,27 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   const repoName = params.get('repoName')
   const owner = params.get('account')
 
-  if (!repoName || !owner) {
-    const message = !repoName
-      ? `Missing parameter 'repoName' in URL`
-      : `Missing parameter 'account' in URL`
+  const oAuthProvider = store.state.oAuthProvider
 
-    console.info('[missing URL param] redirecting to /', message)
+  let message
+
+  if (!repoName || !owner || !oAuthProvider) {
+    if (!repoName) {
+      message = `Missing parameter 'repoName' in URL`
+    } else {
+      if (!owner) {
+        message = `Missing parameter 'account' in URL`
+      } else {
+        message = `Missing store.state.oAuthProvider`
+      }
+    }
+
+    console.info('[missing URL param or oauthConfig] redirecting to /', message)
     page('/')
     throw new Error(message)
   }
 
-  const oAuthProvider = await store.state.oAuthProvider
-  const origin = oAuthProvider?.origin || ''
+  const origin = oAuthProvider.origin
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,

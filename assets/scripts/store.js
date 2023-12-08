@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import Store from 'baredux'
-import remember, { forget } from 'remember'
+import { forget } from 'remember'
 import './types.js'
 
 import { OAUTH_PROVIDER_STORAGE_KEY } from './config.js'
@@ -19,7 +19,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /**
  * @typedef {Object} ScribouilliState
- * @property {Promise<OAuthProvider>} [oAuthProvider]
+ * @property {OAuthProvider} [oAuthProvider]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
@@ -48,7 +48,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
 const store = Store({
   state: {
     // @ts-ignore
-    oAuthProvider: remember(OAUTH_PROVIDER_STORAGE_KEY),
+    oAuthProvider: undefined,
     login: undefined,
     email: undefined,
     origin: undefined,
@@ -69,10 +69,10 @@ const store = Store({
   mutations: {
     /**
      * @param {ScribouilliState} state
-     * @param {Promise<OAuthProvider>} oAuthProviderP
+     * @param {ScribouilliState['oAuthProvider']} oAuthProvider
      */
-    setOAuthProvider(state, oAuthProviderP) {
-      state.oAuthProvider = oAuthProviderP
+    setOAuthProvider(state, oAuthProvider) {
+      state.oAuthProvider = oAuthProvider
     },
     /**
      *

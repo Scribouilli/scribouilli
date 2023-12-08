@@ -15,13 +15,12 @@ import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
  * @returns
  */
 const mapStateToProps = state => {
-  const { login, reposByAccount, currentRepository } = state
+  const { login, reposByAccount } = state
 
   return {
     currentAccount: login,
     // @ts-ignore
     currentAccountRepositories: reposByAccount[login],
-    currentRepository,
   }
 }
 

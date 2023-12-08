@@ -44,7 +44,7 @@ export default function (scribouilliGitRepo) {
     checkStatus() {
       return (
         getOAuthServiceAPI()
-          .then(api => api.getPagesWebsiteDeploymentStatus(scribouilliGitRepo))
+          .getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
           // @ts-ignore
           .then(status => {
             logMessage(

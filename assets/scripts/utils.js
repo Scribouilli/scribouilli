@@ -15,7 +15,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
  */
 export function checkRepositoryAvailabilityThen(scribouilliGitRepo) {
   return getOAuthServiceAPI()
-    .then(api => api.getRepository(scribouilliGitRepo))
+    .getRepository(scribouilliGitRepo)
     .catch((/** @type {string} */ msg) => handleErrors(msg))
 }
 
@@ -27,8 +27,8 @@ export const handleErrors = errorMessage => {
   switch (errorMessage) {
     case 'INVALIDATE_TOKEN': {
       store.mutations.invalidateToken()
-      console.info('[invalid token] redirecting to /account')
-      page('/account')
+      console.info('[invalid token] redirecting to /')
+      page('/')
 
       break
     }

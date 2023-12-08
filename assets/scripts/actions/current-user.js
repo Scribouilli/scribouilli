@@ -32,7 +32,7 @@ const logout = () => {
  */
 export const fetchAuthenticatedUserLogin = () => {
   const loginP = getOAuthServiceAPI()
-    .then(api => api.getAuthenticatedUser())
+    .getAuthenticatedUser()
     .then(({ login = '' }) => {
       if (login === '') {
         throw new Error('NO_LOGIN')
@@ -47,8 +47,8 @@ export const fetchAuthenticatedUserLogin = () => {
       switch (errorMessage) {
         case 'INVALIDATE_TOKEN': {
           store.mutations.invalidateToken()
-          console.info('[token error] redirecting to /account')
-          page('/account')
+          console.info('[token error] redirecting to /')
+          page('/')
 
           break
         }
@@ -56,7 +56,7 @@ export const fetchAuthenticatedUserLogin = () => {
         case 'NO_LOGIN': {
           logout()
 
-          page('/account')
+          page('/')
         }
 
         default:
@@ -69,7 +69,7 @@ export const fetchAuthenticatedUserLogin = () => {
     })
 
   const emailP = getOAuthServiceAPI()
-    .then(api => api.getUserEmails())
+    .getUserEmails()
     // @ts-ignore
     .then(emails => {
       // @ts-ignore
@@ -109,7 +109,7 @@ export const fetchAuthenticatedUserLogin = () => {
 export const fetchCurrentUserRepositories = async () => {
   const { login } = await fetchAuthenticatedUserLogin()
   const currentUserRepositoriesP = getOAuthServiceAPI()
-    .then(api => api.getCurrentUserRepositories())
+    .getCurrentUserRepositories()
     // @ts-ignore
     .then(repos => {
       store.mutations.setReposForAccount({ login, repos })
