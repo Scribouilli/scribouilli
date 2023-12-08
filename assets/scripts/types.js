@@ -24,7 +24,6 @@
  * @property {() => {username: string, password: string}} getOauthUsernameAndPassword
  * @property {() => Promise<any>} getAuthenticatedUser
  * @property {() => Promise<AuthenticatedUserEmails[]>} getUserEmails
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<GithubRepository>} getRepository
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createDefaultRepository
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus

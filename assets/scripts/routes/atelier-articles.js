@@ -4,7 +4,7 @@ import lireFrontMatter from 'front-matter'
 import page from 'page'
 
 import store from '../store'
-import { checkRepositoryAvailabilityThen, handleErrors } from '../utils'
+import { handleErrors } from '../utils'
 
 import gitAgent from '../gitAgent'
 import { svelteTarget } from '../config'
@@ -87,8 +87,6 @@ export default async ({ querystring }) => {
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
-
-  await checkRepositoryAvailabilityThen(currentRepository)
 
   const state = store.state
   const fileName = new URLSearchParams(querystring).get('path') ?? ''

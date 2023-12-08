@@ -8,18 +8,6 @@ import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /**
- * @summary Check the availability of a repository and redirect to project creation
- *          if it does not exist.
- * @param {ScribouilliGitRepo} scribouilliGitRepo
- * @returns
- */
-export function checkRepositoryAvailabilityThen(scribouilliGitRepo) {
-  return getOAuthServiceAPI()
-    .getRepository(scribouilliGitRepo)
-    .catch((/** @type {string} */ msg) => handleErrors(msg))
-}
-
-/**
  * @summary Handle errors catched by Promises
  * @param {string} errorMessage
  */

@@ -42,21 +42,6 @@ export default class GitHubAPI {
     })
   }
 
-  /** @type {OAuthServiceAPI["getRepository"]} */
-  getRepository({ owner, repoName }) {
-    return this.callAPI(`${gitHubApiBaseUrl}/repos/${owner}/${repoName}`)
-      .then(response => {
-        return response.json()
-      })
-      .catch(msg => {
-        if (msg === 'NOT_FOUND') {
-          throw 'REPOSITORY_NOT_FOUND'
-        }
-
-        throw msg
-      })
-  }
-
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
     return this.callAPI(

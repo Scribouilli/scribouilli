@@ -74,25 +74,6 @@ export default class GitHubAPI {
     })
   }
 
-  /** @type {OAuthServiceAPI["getRepository"]} */
-  getRepository({ owner, repoName }) {
-    throw `gitlab.getRepository`
-
-    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
-
-    return this.callAPI(`${this.apiBaseUrl}/projects/${urlEncodedRepoPath}`)
-      .then(response => {
-        return response.json()
-      })
-      .catch(msg => {
-        if (msg === 'NOT_FOUND') {
-          throw 'REPOSITORY_NOT_FOUND'
-        }
-
-        throw msg
-      })
-  }
-
   /** @type {OAuthServiceAPI["getCurrentUserRepositories"]} */
   getCurrentUserRepositories() {
     return this.getAuthenticatedUser()
