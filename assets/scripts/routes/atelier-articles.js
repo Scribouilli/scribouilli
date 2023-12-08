@@ -108,8 +108,6 @@ export default async ({ querystring }) => {
         page(makeAtelierListArticlesURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
-
-    page(makeAtelierListArticlesURL(currentRepository))
   })
 
   articleContenu.$on(

@@ -110,8 +110,6 @@ export default async ({ querystring }) => {
         page(makeAtelierListPageURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
-
-    page(makeAtelierListPageURL(currentRepository))
   })
 
   // @ts-ignore
