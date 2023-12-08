@@ -146,14 +146,12 @@ export default class GitHubAPI {
     )
       .then(response => response.json())
       .then(json => {
-        console.debug('Deployments list: ', json)
         const statusesUrl = json[0].statuses_url
 
         return this.callAPI(`${statusesUrl}?per_page=1`)
       })
       .then(response => response.json())
       .then(json => {
-        console.debug('Deployment status: ', json[0].state)
         return json[0].state
       })
   }

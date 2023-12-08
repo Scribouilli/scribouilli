@@ -33,9 +33,11 @@ export default class GitHubAPI {
       throw new TypeError('Missing accessToken')
     }
 
+    // cf. https://isomorphic-git.org/docs/en/authentication
     return {
-      username: this.accessToken,
-      password: 'x-oauth-basic',
+      oauth2format: 'gitlab',
+      username: 'oauth2',
+      password: this.accessToken,
     }
   }
 
