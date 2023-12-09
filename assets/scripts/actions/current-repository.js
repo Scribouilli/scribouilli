@@ -122,49 +122,42 @@ export const setBuildStatus = scribouilliGitRepo => {
   store.state.buildStatus.checkStatus()
 }
 
-
 /**
  * @description if baseurl param is set, always update the config with it
- * otherwise, wait for currentRepository.publishedWebsiteURL and 
+ * otherwise, wait for currentRepository.publishedWebsiteURL and
  * compute the new config.baseurl from it
  *
  * @param {string} [baseUrl]
  * @returns {Promise<any>}
  */
-export const setBaseUrlInConfigIfNecessary = async (baseUrl) => {
+export const setBaseUrlInConfigIfNecessary = async baseUrl => {
   const currentRepository = store.state.currentRepository
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
-  let publishedWebsiteURL;
-  if(!baseUrl){
+  let publishedWebsiteURL
+  if (!baseUrl) {
     publishedWebsiteURL = await currentRepository.publishedWebsiteURL
-  }
-
-  if (!publishedWebsiteURL) {
-    throw new TypeError('publishedWebsiteURL is undefined')
   }
 
   const config = await getCurrentRepoConfig()
   /** @type {string} */
   const currentBaseURL = config.baseurl || ''
-  
-  let newBaseUrl;
-  if(baseUrl){
+
+  let newBaseUrl
+  if (baseUrl) {
     newBaseUrl = baseUrl
-  }
-  else{
+  } else {
     const url = new URL(publishedWebsiteURL)
     newBaseUrl = url.pathname.replace(/\/$/, '')
   }
 
-  if(currentBaseURL === newBaseUrl) {
+  if (currentBaseURL === newBaseUrl) {
     // the config does not need to be changed, so let's skip both write/commit/push
-    return;
-  }
-  else{
+    return
+  } else {
     if (newBaseUrl === '') {
       console.log('delete baseurl from config')
       delete config.baseurl
@@ -172,9 +165,9 @@ export const setBaseUrlInConfigIfNecessary = async (baseUrl) => {
       console.log('update baseurl in config')
       config.baseurl = newBaseUrl
     }
-  
+
     const configYmlContent = yaml.dump(config)
-  
+
     console.log('configYmlContent', configYmlContent)
     return writeFileAndPushChanges(
       '_config.yml',
@@ -182,7 +175,6 @@ export const setBaseUrlInConfigIfNecessary = async (baseUrl) => {
       'Mise à jour de `baseurl` dans la config',
     )
   }
-
 }
 
 /**
