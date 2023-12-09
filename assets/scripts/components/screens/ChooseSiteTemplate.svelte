@@ -27,8 +27,8 @@
         <div>
           <label for="name">Je veux créer :</label>
           <select id="name">
-            <option value="mimoza">Un petit site simple</option>
-            <option value="kabusin">Un mini-site Framalibre</option>
+            <option value="site-template">Un petit site simple</option>
+            <option value="site-template-framalibre">Un mini-site Framalibre</option>
           </select>
         </div>
 

@@ -25,7 +25,7 @@
  * @property {() => Promise<any>} getAuthenticatedUser
  * @property {() => Promise<AuthenticatedUserEmails[]>} getUserEmails
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createDefaultRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo, template: string) => Promise<any>} createDefaultRepository
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isPagesWebsiteBuilt
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isRepositoryReady

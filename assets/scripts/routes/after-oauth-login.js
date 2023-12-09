@@ -62,7 +62,6 @@ export default () => {
 
   if (type === 'github' || type === 'gitlab') {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
-      console.log('repos', repos)
       if (repos.length === 0) {
         // If the user has no repository, we automatically create one for them.
         createRepositoryForCurrentAccount(defaultRepositoryName)

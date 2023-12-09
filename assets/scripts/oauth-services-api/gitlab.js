@@ -99,8 +99,12 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
-  createDefaultRepository(scribouilliGitRepo) {
+  createDefaultRepository(scribouilliGitRepo, template = '') {
     const { owner, repoName } = scribouilliGitRepo
+
+    if (template === '') {
+      template = defaultThemeRepoName
+    }
 
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
       headers: {
@@ -109,7 +113,7 @@ export default class GitHubAPI {
       },
       method: 'POST',
       body: JSON.stringify({
-        import_url: 'https://git.scribouilli.org/scribouilli/site-template.git',
+        import_url: `https://github.com/${defaultRepoOwner}/${template}.git`,
         name: repoName,
         description: 'Mon site Scribouilli',
         topics: ['site-scribouilli'],

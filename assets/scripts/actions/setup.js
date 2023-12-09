@@ -104,6 +104,7 @@ export const setupLocalRepository = async scribouilliGitRepo => {
  * list of pages for the atelier.
  *
  * @param {string} repoName - The name of the repository to create
+ * @param {string} template - The name of the template to use
  *
  * @returns {Promise<void>} A promise that resolves when the repository
  * is created.
@@ -111,7 +112,10 @@ export const setupLocalRepository = async scribouilliGitRepo => {
  * @throws {string} An error message if the repository cannot be created.
  *
  */
-export const createRepositoryForCurrentAccount = async repoName => {
+export const createRepositoryForCurrentAccount = async (
+  repoName,
+  template = '',
+) => {
   const login = await store.state.login
 
   if (!login) {
@@ -151,7 +155,7 @@ export const createRepositoryForCurrentAccount = async repoName => {
 
   return (
     getOAuthServiceAPI()
-      .createDefaultRepository(scribouilliGitRepo)
+      .createDefaultRepository(scribouilliGitRepo, template)
       .then(() => {
         // Il est nécessaire d'attendre que le repo soit prêt sur la remote
         // avant de pouvoir le cloner localement.

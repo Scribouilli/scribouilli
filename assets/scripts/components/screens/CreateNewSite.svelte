@@ -3,6 +3,9 @@
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
   import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
 
+  /** @type {string} */
+  export let template;
+
   let name = "";
   let loading = false;
   let hasError = false
@@ -19,7 +22,7 @@
     // Pour le moment on fait comme ça, et on documente comment transférer un
     // dépôt perso dans une organisation, via l'interface GitHub, pour les
     // utilisateurices avancé.es
-    createRepositoryForCurrentAccount(name)
+    createRepositoryForCurrentAccount(name, template)
       .catch(() => {
         loading = false;
         hasError = true;
