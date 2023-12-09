@@ -4,6 +4,8 @@ export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'
 export const defaultRepositoryName = 'mon-scribouilli'
 export const gitHubApiBaseUrl = 'https://api.github.com'
 
+/** @type {GitSiteTemplate[] & {default: GitSiteTemplate}} */
+// @ts-ignore
 export const templates = [
   {
     url: 'https://github.com/Scribouilli/site-template.git',
@@ -16,6 +18,8 @@ export const templates = [
     githubRepoId: 'Scribouilli/site-template-framalibre',
   },
 ]
+
+templates.default = templates[0]
 
 const body = document.querySelector('body')
 if (!body) {

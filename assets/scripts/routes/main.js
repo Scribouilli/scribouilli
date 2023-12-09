@@ -16,7 +16,6 @@ import atelierPages from './atelier-pages.js'
 import atelierArticles from './atelier-articles.js'
 import createAccount from './create-account.js'
 import selectOrCreateSite from './select-or-create-site.js'
-import chooseSiteTemplate from './choose-site-template.js'
 import createNewSite from './create-new-site.js'
 import startFromExistingSite from './start-from-existing-site.js'
 import settings from './settings.js'
@@ -54,11 +53,6 @@ page('/atelier-list-pages', waitOauthProviderMiddleware, atelierListPages)
 page('/atelier-page', waitOauthProviderMiddleware, atelierPages)
 page('/atelier-article', waitOauthProviderMiddleware, atelierArticles)
 page('/selectionner-un-site', waitOauthProviderMiddleware, selectOrCreateSite)
-page(
-  '/choisir-mon-type-de-site',
-  waitOauthProviderMiddleware,
-  chooseSiteTemplate,
-)
 page('/creer-un-nouveau-site', waitOauthProviderMiddleware, createNewSite)
 page(
   '/partir-dun-site-existant',

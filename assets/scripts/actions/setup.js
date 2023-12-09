@@ -17,6 +17,8 @@ import {
 } from './current-repository.js'
 import { defaultRepositoryName } from '../config'
 
+import '../types.js'
+
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
 /**
@@ -105,7 +107,7 @@ export const setupLocalRepository = async scribouilliGitRepo => {
  * list of pages for the atelier.
  *
  * @param {string} repoName - The name of the repository to create
- * @param {string} template - The name of the template to use
+ * @param {GitSiteTemplate} template - The git site template to use
  *
  * @returns {Promise<void>} A promise that resolves when the repository
  * is created.
@@ -113,10 +115,7 @@ export const setupLocalRepository = async scribouilliGitRepo => {
  * @throws {string} An error message if the repository cannot be created.
  *
  */
-export const createRepositoryForCurrentAccount = async (
-  repoName,
-  template = defaultRepositoryName,
-) => {
+export const createRepositoryForCurrentAccount = async (repoName, template) => {
   const login = await store.state.login
 
   if (!login) {

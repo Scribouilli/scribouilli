@@ -9,6 +9,7 @@ import {
   OAUTH_PROVIDER_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  templates,
 } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
@@ -64,7 +65,10 @@ export default () => {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 0) {
         // If the user has no repository, we automatically create one for them.
-        createRepositoryForCurrentAccount(defaultRepositoryName)
+        createRepositoryForCurrentAccount(
+          defaultRepositoryName,
+          templates.default,
+        )
       } else {
         store.mutations.setReposForAccount({
           login: store.state.login,
