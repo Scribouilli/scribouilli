@@ -92,7 +92,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     repoId: makeRepoId(owner, repoName),
     origin: origin,
     publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
-    gitServiceProvider: getOAuthServiceAPI()
+    gitServiceProvider: getOAuthServiceAPI(),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
@@ -126,14 +126,20 @@ export const setBuildStatus = scribouilliGitRepo => {
  */
 export const updateConfigWithBaseUrlAndPush = async () => {
   const currentRepository = store.state.currentRepository
+  const publishedWebsiteURL = currentRepository?.publishedWebsiteURL
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
-  const config = await getCurrentRepoConfig()
+  if (!publishedWebsiteURL) {
+    throw new TypeError('publishedWebsiteURL is undefined')
+  }
 
-  config.baseurl = `/${currentRepository.repoName}`
+  const config = await getCurrentRepoConfig()
+  const url = new URL(publishedWebsiteURL)
+
+  config.baseurl = url.pathname
 
   const configYmlContent = yaml.dump(config)
 
