@@ -194,22 +194,32 @@ export default class GitLabAPI {
   }
 
   /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
-  getPublishedWebsiteURL({ repoId }) {
-    console.log('gitlab.getPublishedWebsiteURL', repoId)
-    return this.callAPI(
-      `${this.apiBaseUrl}/projects/${encodeURIComponent(
-        repoId,
-      )}/environments?per_page=1&order_by=updated_at&sort=desc`,
-    )
-      .then(response => response.json())
-      .then(environments => {
-        console.log('environments', environments)
-        return environments[0].external_url
-      })
-      .catch(error => {
-        console.log('error', error)
-        return undefined
-      })
+  getPublishedWebsiteURL({ repoName, owner, origin }) {
+    if (origin === 'https://gitlab.com') {
+      return Promise.resolve(`https://${owner}.gitlab.io/${repoName}/`)
+    }
+
+    if (origin === 'https://git.scribouilli.org') {
+      return Promise.resolve(`https://${owner}.monpetitsite.org/${repoName}/`)
+    }
+
+    return Promise.reject('Unknown origin')
+
+    // console.log('gitlab.getPublishedWebsiteURL', repoId)
+    // return this.callAPI(
+    // `${this.apiBaseUrl}/projects/${encodeURIComponent(
+    // repoId,
+    // )}/environments?per_page=1&order_by=updated_at&sort=desc`,
+    // )
+    // .then(response => response.json())
+    // .then(environments => {
+    // console.log('environments', environments)
+    // return environments[0].external_url
+    // })
+    // .catch(error => {
+    // console.log('error', error)
+    // return undefined
+    // })
   }
 
   /**

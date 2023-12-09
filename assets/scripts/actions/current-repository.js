@@ -142,10 +142,15 @@ export const setBaseUrlInConfigIfNecessary = async baseUrl => {
   if (baseUrl) {
     newBaseUrl = baseUrl.replace(/\/$/, '')
   } else {
-    const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
-    const url = new URL(publishedWebsiteURL)
+    if (currentRepository.origin === 'https://github.com') {
+      const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
+      const url = new URL(publishedWebsiteURL)
 
-    newBaseUrl = url.pathname.replace(/\/$/, '')
+      newBaseUrl = url.pathname.replace(/\/$/, '')
+    } else {
+      // GitLab instances use Single Domain Pages
+      newBaseUrl = ''
+    }
   }
 
   const config = await getCurrentRepoConfig()
