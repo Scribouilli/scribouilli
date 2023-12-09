@@ -119,10 +119,6 @@ export const createRepositoryForCurrentAccount = async (
 ) => {
   const login = await store.state.login
 
-  if (template === '') {
-    template = defaultRepositoryName
-  }
-
   if (!login) {
     throw new TypeError(`missing login in createRepositoryForCurrentAccount`)
   }

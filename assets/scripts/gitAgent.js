@@ -16,8 +16,6 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 class GitAgent {
   constructor() {
     this.customCSSPath = 'assets/css/custom.css'
-    this.defaultRepoOwner = 'Scribouilli'
-    this.defaultThemeRepoName = 'site-template'
     this.fs = new FS('scribouilli')
     /** @type {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } */
     this.onMergeConflict = undefined

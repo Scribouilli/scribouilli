@@ -1,10 +1,6 @@
 import remember from 'remember'
 
-import {
-  defaultRepoOwner,
-  defaultThemeRepoName,
-  OAUTH_PROVIDER_STORAGE_KEY,
-} from './../config.js'
+import { OAUTH_PROVIDER_STORAGE_KEY } from './../config.js'
 
 import './../types.js'
 
@@ -99,7 +95,7 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
-  createDefaultRepository(scribouilliGitRepo, template = '') {
+  createDefaultRepository(scribouilliGitRepo, { url: gitRepoUrl }) {
     const { owner, repoName } = scribouilliGitRepo
 
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
@@ -109,7 +105,7 @@ export default class GitHubAPI {
       },
       method: 'POST',
       body: JSON.stringify({
-        import_url: `https://github.com/${defaultRepoOwner}/${template}.git`,
+        import_url: gitRepoUrl,
         name: repoName,
         description: 'Mon site Scribouilli',
         topics: ['site-scribouilli'],
