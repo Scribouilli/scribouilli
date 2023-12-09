@@ -116,7 +116,9 @@ export default class GitLabAPI {
 
   /** @type {OAuthServiceAPI["deploy"]} */
   deploy(scribouilliGitRepo) {
+    console.log('gitlab.deploy', scribouilliGitRepo)
     return this.gitAgent.currentBranch(scribouilliGitRepo).then(branch => {
+      console.log('branch', branch)
       return this.callAPI(
         `${this.apiBaseUrl}/projects/${encodeURIComponent(
           scribouilliGitRepo.repoId,
@@ -131,7 +133,9 @@ export default class GitLabAPI {
             ref: branch,
           }),
         },
-      )
+      ).then(response => {
+        console.log('response', response)
+      })
     })
   }
 
@@ -191,14 +195,17 @@ export default class GitLabAPI {
 
   /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
   getPublishedWebsiteURL({ repoId }) {
+    console.log('gitlab.getPublishedWebsiteURL', repoId)
     return this.callAPI(
       `${this.apiBaseUrl}/projects/${repoId}/environments?per_page=1&order_by=updated_at&sort=desc`,
     )
       .then(response => response.json())
       .then(environments => {
+        console.log('environments', environments)
         return environments[0].external_url
       })
-      .catch(() => {
+      .catch(error => {
+        console.log('error', error)
         return undefined
       })
   }
