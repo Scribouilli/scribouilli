@@ -122,7 +122,7 @@ export default class GitLabAPI {
       return this.callAPI(
         `${this.apiBaseUrl}/projects/${encodeURIComponent(
           scribouilliGitRepo.repoId,
-        )}/pipelines`,
+        )}/pipeline`,
         {
           method: 'POST',
           headers: {
