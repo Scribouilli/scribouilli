@@ -15,7 +15,6 @@ import {
   updateConfigWithBaseUrlAndPush,
   getCurrentRepoConfig,
 } from './current-repository.js'
-import { defaultRepositoryName } from '../config'
 
 import '../types.js'
 
