@@ -101,6 +101,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   await gitAgent.pullOrCloneRepo(scribouilliGitRepo)
   await gitAgent.setAuthor(scribouilliGitRepo, login, email)
+  await checkBaseUrlInConfig(scribouilliGitRepo)
 
   getCurrentRepoArticles()
   getCurrentRepoPages()
@@ -122,6 +123,22 @@ export const setBuildStatus = scribouilliGitRepo => {
 }
 
 /**
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
+ * @returns {Promise<void>}
+ */
+export const checkBaseUrlInConfig = async scribouilliGitRepo => {
+  const { publishedWebsiteURL } = scribouilliGitRepo
+
+  const config = await getCurrentRepoConfig()
+  const url = new URL(publishedWebsiteURL)
+  const baseUrl = url.pathname.replace(/\/$/, '')
+
+  if (baseUrl !== config.baseurl) {
+    updateConfigWithBaseUrlAndPush()
+  }
+}
+
+/**
  * @returns {ReturnType<isomorphicGit["push"]>}
  */
 export const updateConfigWithBaseUrlAndPush = async () => {
@@ -138,15 +155,22 @@ export const updateConfigWithBaseUrlAndPush = async () => {
 
   const config = await getCurrentRepoConfig()
   const url = new URL(publishedWebsiteURL)
+  const baseUrl = url.pathname.replace(/\/$/, '')
+  console.log('baseUrl UPDATE', baseUrl)
 
-  config.baseurl = url.pathname
+  if (baseUrl === '') {
+    delete config.baseurl
+  } else {
+    config.baseurl = baseUrl
+  }
 
   const configYmlContent = yaml.dump(config)
 
+  console.log('configYmlContent', configYmlContent)
   return writeFileAndPushChanges(
     '_config.yml',
     configYmlContent,
-    'Ajout de `baseurl` dans la config',
+    'Mise à jour de `baseurl` dans la config',
   )
 }
 
