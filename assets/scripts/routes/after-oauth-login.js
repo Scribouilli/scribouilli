@@ -9,6 +9,7 @@ import {
   OAUTH_PROVIDER_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  templates,
 } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
@@ -62,10 +63,12 @@ export default () => {
 
   if (type === 'github' || type === 'gitlab') {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
-      console.log('repos', repos)
       if (repos.length === 0) {
         // If the user has no repository, we automatically create one for them.
-        createRepositoryForCurrentAccount(defaultRepositoryName)
+        createRepositoryForCurrentAccount(
+          defaultRepositoryName,
+          templates.default,
+        )
       } else {
         store.mutations.setReposForAccount({
           login: store.state.login,

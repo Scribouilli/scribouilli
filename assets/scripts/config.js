@@ -3,10 +3,23 @@ export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token'
 export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'
 export const defaultRepositoryName = 'mon-scribouilli'
 export const gitHubApiBaseUrl = 'https://api.github.com'
-export const defaultRepoOwner = 'Scribouilli'
-export const defaultThemeRepoName = 'site-template'
-export const repoTemplateGitUrl =
-  'https://github.com/Scribouilli/site-template.git'
+
+/** @type {GitSiteTemplate[] & {default: GitSiteTemplate}} */
+// @ts-ignore
+export const templates = [
+  {
+    url: 'https://github.com/Scribouilli/site-template.git',
+    description: 'Un petit site Scribouilli tout simple',
+    githubRepoId: 'Scribouilli/site-template',
+  },
+  {
+    url: 'https://github.com/Scribouilli/site-template-framalibre.git',
+    description: 'Un mini-site Framalibre',
+    githubRepoId: 'Scribouilli/site-template-framalibre',
+  },
+]
+
+templates.default = templates[0]
 
 const body = document.querySelector('body')
 if (!body) {

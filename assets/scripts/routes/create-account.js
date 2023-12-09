@@ -11,8 +11,6 @@ export default ({ querystring }) => {
   const params = new URLSearchParams(querystring)
   const gitProvider = params.get('provider')
 
-  console.log('gitProvider', gitProvider)
-
   if (!gitProvider) {
     throw new TypeError(`Missing 'provider' parameter`)
   }

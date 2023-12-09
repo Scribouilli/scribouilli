@@ -1,8 +1,4 @@
-import {
-  gitHubApiBaseUrl,
-  defaultRepoOwner,
-  defaultThemeRepoName,
-} from './../config.js'
+import { gitHubApiBaseUrl } from './../config.js'
 
 import './../types.js'
 
@@ -52,10 +48,13 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
-  createDefaultRepository({ owner, repoName, repoId, publishedWebsiteURL }) {
+  createDefaultRepository(
+    { owner, repoName, repoId, publishedWebsiteURL },
+    template,
+  ) {
     // Generate a new repository from the theme repository
     return this.callAPI(
-      `${gitHubApiBaseUrl}/repos/${defaultRepoOwner}/${defaultThemeRepoName}/generate`,
+      `${gitHubApiBaseUrl}/repos/${template.githubRepoId}/generate`,
       {
         headers: {
           Authorization: 'token ' + this.accessToken,
