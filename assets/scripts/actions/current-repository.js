@@ -133,6 +133,10 @@ export const checkBaseUrlInConfig = async scribouilliGitRepo => {
   const url = new URL(publishedWebsiteURL)
   const baseUrl = url.pathname.replace(/\/$/, '')
 
+  if (baseUrl === '' && typeof config.baseurl === 'undefined') {
+    return Promise.resolve()
+  }
+
   if (baseUrl !== config.baseurl) {
     updateConfigWithBaseUrlAndPush()
   }
@@ -156,11 +160,12 @@ export const updateConfigWithBaseUrlAndPush = async () => {
   const config = await getCurrentRepoConfig()
   const url = new URL(publishedWebsiteURL)
   const baseUrl = url.pathname.replace(/\/$/, '')
-  console.log('baseUrl UPDATE', baseUrl)
 
   if (baseUrl === '') {
+    console.log('delete baseurl from config')
     delete config.baseurl
   } else {
+    console.log('update baseurl in config')
     config.baseurl = baseUrl
   }
 
