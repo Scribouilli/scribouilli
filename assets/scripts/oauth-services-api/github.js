@@ -54,12 +54,8 @@ export default class GitHubAPI {
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
   createDefaultRepository(
     { owner, repoName, repoId, publishedWebsiteURL },
-    template = '',
+    template,
   ) {
-    if (template === '') {
-      template = defaultThemeRepoName
-    }
-
     // Generate a new repository from the theme repository
     return this.callAPI(
       `${gitHubApiBaseUrl}/repos/${defaultRepoOwner}/${template}/generate`,

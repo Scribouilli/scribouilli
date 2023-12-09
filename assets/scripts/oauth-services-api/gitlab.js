@@ -102,10 +102,6 @@ export default class GitHubAPI {
   createDefaultRepository(scribouilliGitRepo, template = '') {
     const { owner, repoName } = scribouilliGitRepo
 
-    if (template === '') {
-      template = defaultThemeRepoName
-    }
-
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
       headers: {
         Authorization: 'Bearer ' + this.accessToken,

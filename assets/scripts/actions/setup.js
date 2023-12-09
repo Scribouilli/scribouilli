@@ -15,6 +15,7 @@ import {
   updateConfigWithBaseUrlAndPush,
   getCurrentRepoConfig,
 } from './current-repository.js'
+import { defaultRepositoryName } from '../config'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
@@ -117,6 +118,10 @@ export const createRepositoryForCurrentAccount = async (
   template = '',
 ) => {
   const login = await store.state.login
+
+  if (template === '') {
+    template = defaultRepositoryName
+  }
 
   if (!login) {
     throw new TypeError(`missing login in createRepositoryForCurrentAccount`)
