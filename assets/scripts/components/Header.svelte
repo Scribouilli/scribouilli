@@ -93,41 +93,39 @@
     >
   </h1>
 
-  {#if publishedWebsiteURL}
-    {#await publishedWebsiteURL then publishedURL}
-      <nav>
-        <ul>
+  {#if currentRepository}
+    <nav>
+      <ul>
+        <li>
+          <a href="/atelier-list-pages?repoName={repoName}&account={account}">
+            Pages
+          </a>
+        </li>
+
+        {#if showArticles}
           <li>
-            <a href="/atelier-list-pages?repoName={repoName}&account={account}">
-              Pages
+            <a
+              href="/atelier-list-articles?repoName={repoName}&account={account}"
+            >
+              Articles
             </a>
           </li>
+        {/if}
 
-          {#if showArticles}
-            <li>
-              <a
-                href="/atelier-list-articles?repoName={repoName}&account={account}"
-              >
-                Articles
-              </a>
-            </li>
+        <li>
+          <a href="/settings?repoName={repoName}&account={account}">
+            Paramètres
+          </a>
+        </li>
+        <li>
+          {#if repositoryURL}
+            {#await repositoryURL then urlrepository}
+              <a href={urlrepository} target="_blank">Sur {(new URL(urlrepository)).hostname}</a>
+            {/await}
           {/if}
-
-          <li>
-            <a href="/settings?repoName={repoName}&account={account}">
-              Paramètres
-            </a>
-          </li>
-          <li>
-            {#if repositoryURL}
-              {#await repositoryURL then urlrepository}
-                <a href={urlrepository} target="_blank">Sur {(new URL(urlrepository)).hostname}</a>
-              {/await}
-            {/if}
-          </li>
-        </ul>
-      </nav>
-    {/await}
+        </li>
+      </ul>
+    </nav>
   {/if}
 </header>
 
