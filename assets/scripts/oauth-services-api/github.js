@@ -115,6 +115,20 @@ export default class GitHubAPI {
     })
   }
 
+  /** @type {OAuthServiceAPI["deploy"]} */
+  deploy({ repoId }) {
+    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/dispatches`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'token ' + this.accessToken,
+        Accept: GITHUB_JSON_ACCEPT_HEADER,
+      },
+      body: JSON.stringify({
+        event_type: 'atelier-scribouilli',
+      }),
+    })
+  }
+
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ repoId }) {
     // TODO: We need to add the `sha` parameter to avoid the GitHub API to return
@@ -159,15 +173,15 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
-  getPublishedWebsiteURL({ repoId }){
+  getPublishedWebsiteURL({ repoId }) {
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
       headers: {
         Authorization: 'token ' + this.accessToken,
         Accept: GITHUB_JSON_ACCEPT_HEADER,
-      }
+      },
     })
-    .then(resp => resp.json())
-    .then(({html_url}) => html_url ? html_url : undefined)
+      .then(resp => resp.json())
+      .then(({ html_url }) => (html_url ? html_url : undefined))
   }
 
   /** @type {OAuthServiceAPI["callAPI"]} */

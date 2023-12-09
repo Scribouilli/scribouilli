@@ -10,9 +10,7 @@ import ScribouilliGitRepo, {
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
-import {
-  setBaseUrlInConfigIfNecessary,
-} from './current-repository.js'
+import { setBaseUrlInConfigIfNecessary } from './current-repository.js'
 
 import '../types.js'
 
@@ -98,17 +96,20 @@ export const setupLocalRepository = async scribouilliGitRepo => {
 
 /**
  * @summary guess the published URL until a call to OAuthServiceAPI.getPublishedWebsiteURL is made
- * 
+ *
  * @param {ScribouilliGitRepo} _
  * @returns {string}
  */
-export function guessBaseURL({owner, repoName, origin}) {
+export function guessBaseURL({ owner, repoName, origin }) {
   if (origin === 'https://github.com') {
     const publishedHostname = `${owner.toLowerCase()}.github.io`
     repoName = repoName.toLowerCase()
 
     return publishedHostname === repoName ? '' : `/${repoName}`
-  } else if (origin === 'https://gitlab.com' || origin === 'https://git.scribouilli.org') {
+  } else if (
+    origin === 'https://gitlab.com' ||
+    origin === 'https://git.scribouilli.org'
+  ) {
     // because of Single Pages Domain enabled by default
     return `/`
   }
@@ -163,7 +164,7 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
       escapedRepoName,
       origin,
     ),
-    gitServiceProvider: getOAuthServiceAPI()
+    gitServiceProvider: getOAuthServiceAPI(),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
@@ -180,8 +181,9 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
         return setupLocalRepository(scribouilliGitRepo)
       })
       .then(() => {
-        // Il est nécessaire d'avoir ce premier commit et push pour que
-        // le déploiement de la GitLab Pages fonctionne.
+        return getOAuthServiceAPI().deploy(scribouilliGitRepo)
+      })
+      .then(() => {
         return setBaseUrlInConfigIfNecessary(guessBaseURL(scribouilliGitRepo))
       })
       .then(() => {

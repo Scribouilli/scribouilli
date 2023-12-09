@@ -112,6 +112,23 @@ export default class GitLabAPI {
     }).then(response => response.json())
   }
 
+  /** @type {OAuthServiceAPI["deploy"]} */
+  deploy({ repoId }, ref = 'main') {
+    return this.callAPI(
+      `${this.apiBaseUrl}/projects/${encodeURIComponent(repoId)}/pipelines`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + this.accessToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ref,
+        }),
+      },
+    ).then(response => response.json())
+  }
+
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ owner, repoName }) {
     const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
@@ -167,18 +184,18 @@ export default class GitLabAPI {
   }
 
   /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
-  getPublishedWebsiteURL({ repoId }){
+  getPublishedWebsiteURL({ repoId }) {
     return this.callAPI(
       `${this.apiBaseUrl}/projects/${repoId}/environments?per_page=1&order_by=updated_at&sort=desc`,
     )
-    .then(response => response.json())
-    .then(environments => {
-      return environments[0].external_url
-    })
-    .catch(() => {
-      return undefined
-    })
-}
+      .then(response => response.json())
+      .then(environments => {
+        return environments[0].external_url
+      })
+      .catch(() => {
+        return undefined
+      })
+  }
 
   /**
    * @type {OAuthServiceAPI["callAPI"]}
