@@ -34,7 +34,7 @@
  * @property {(scribouilliGitRepo: ScribouilliGitRepo, template: GitSiteTemplate) => Promise<any>} createDefaultRepository
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isRepositoryReady
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} deploy
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo, ref: string) => Promise<any>} deploy
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isPagesWebsiteBuilt
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<string | undefined>} getPublishedWebsiteURL

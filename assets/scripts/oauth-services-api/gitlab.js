@@ -113,7 +113,7 @@ export default class GitLabAPI {
   }
 
   /** @type {OAuthServiceAPI["deploy"]} */
-  deploy({ repoId }, ref = 'main') {
+  deploy({ repoId }, ref) {
     return this.callAPI(
       `${this.apiBaseUrl}/projects/${encodeURIComponent(repoId)}/pipelines`,
       {

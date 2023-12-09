@@ -181,7 +181,12 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
         return setupLocalRepository(scribouilliGitRepo)
       })
       .then(() => {
-        return getOAuthServiceAPI().deploy(scribouilliGitRepo)
+        return gitAgent.currentBranch(scribouilliGitRepo)
+      })
+      .then(currentBranch => {
+        const deployBranch = currentBranch ? currentBranch : 'main'
+
+        return getOAuthServiceAPI().deploy(scribouilliGitRepo, deployBranch)
       })
       .then(() => {
         return setBaseUrlInConfigIfNecessary(guessBaseURL(scribouilliGitRepo))
