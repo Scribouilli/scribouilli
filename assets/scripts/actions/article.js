@@ -12,7 +12,6 @@ import { makeArticleFileName, makeArticleFrontMatter } from './../utils.js'
  */
 export const deleteArticle = fileName => {
   const { state } = store
-  const { owner, name } = state.currentRepository
 
   store.mutations.setArticles(
     (state.articles ?? []).filter(article => {
@@ -65,7 +64,12 @@ export const createArticle = (title, content) => {
  * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const updateArticle = async (fileName, title, content) => {
-  const { owner, name } = store.state.currentRepository
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
   const existingDate = fileName.slice(
     '_posts/'.length,
     '_posts/YYYY-MM-DD'.length,
@@ -77,7 +81,7 @@ export const updateArticle = async (fileName, title, content) => {
   // If the title has changed, we need to delete the old article and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await gitAgent.removeFile(owner, name, fileName)
+    await gitAgent.removeFile(currentRepository, fileName)
   }
 
   const finalContent = `${

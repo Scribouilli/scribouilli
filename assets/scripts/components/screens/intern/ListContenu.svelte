@@ -23,19 +23,18 @@
   /** @type {boolean | undefined} */
   export let showArticles
 
-  /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
-  /** @type {ScribouilliState["currentRepository"]} */
+  /** @type {ScribouilliGitRepo} */
   export let currentRepository
 
   /** @type {boolean} */
   export let allowModification
 
-  /** @type {ScribouilliState["conflict"]}*/
+  /** @type {import('../../../store').ScribouilliState["conflict"]}*/
   export let conflict
 
   /** @type {string} */
   let repoName
-  $: repoName = currentRepository.name
+  $: repoName = currentRepository.repoName
 
   /** @type {string} */
   let account
@@ -48,8 +47,7 @@
     if (modification) {
       for (let page of listContenu) {
         await gitAgent.writeFile(
-          store.state.currentRepository.owner,
-          store.state.currentRepository.name,
+          currentRepository,
           page.path,
           `${
             page.title
@@ -64,14 +62,11 @@
       }
 
       await gitAgent.commit(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
+        currentRepository,
         'Changement index',
       )
 
-      const repoDir = gitAgent.repoDir(store.state.currentRepository.owner, store.state.currentRepository.name)
-
-      await gitAgent.safePush(repoDir)
+      await gitAgent.safePush(currentRepository)
     }
     modification = !modification
   }

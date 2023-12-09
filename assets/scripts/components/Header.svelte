@@ -34,11 +34,11 @@
 
   /** @type {string | undefined} */
   let repositoryURL
-  $: repositoryURL = currentRepository?.repositoryURL
+  $: repositoryURL = currentRepository?.publicRepositoryURL
 
   /** @type {string | undefined} */
   let repoName
-  $: repoName = currentRepository?.name
+  $: repoName = currentRepository?.repoName
 
   /** @type {string | undefined} */
   let account
@@ -47,8 +47,8 @@
   /** @type {string | undefined} */
   $: homeURL =
     repoName && account
-      ? `./atelier-list-pages?repoName=${repoName}&account=${account}`
-      : './'
+      ? `/atelier-list-pages?repoName=${repoName}&account=${account}`
+      : '/'
   /**
    *
    * @param {string} account
@@ -56,7 +56,7 @@
    * @returns {string}
    */
   function makeResolutionDesynchronisationURL(account, repoName) {
-    return `./resolution-desynchronisation?account=${account}&repoName=${repoName}`
+    return `/resolution-desynchronisation?account=${account}&repoName=${repoName}`
   }
 
   /** @type {string} */
@@ -69,7 +69,7 @@
     <div>
       <p>
         <a
-          href="https://{publishedWebsiteURL}"
+          href="{publishedWebsiteURL}"
           class="project-name"
           target="_blank"
         >
@@ -95,7 +95,7 @@
     <nav>
       <ul>
         <li>
-          <a href="./atelier-list-pages?repoName={repoName}&account={account}">
+          <a href="/atelier-list-pages?repoName={repoName}&account={account}">
             Pages
           </a>
         </li>
@@ -103,7 +103,7 @@
         {#if showArticles}
           <li>
             <a
-              href="./atelier-list-articles?repoName={repoName}&account={account}"
+              href="/atelier-list-articles?repoName={repoName}&account={account}"
             >
               Articles
             </a>
@@ -111,14 +111,14 @@
         {/if}
 
         <li>
-          <a href="./settings?repoName={repoName}&account={account}">
+          <a href="/settings?repoName={repoName}&account={account}">
             Paramètres
           </a>
         </li>
         <li>
           {#if repositoryURL}
             {#await repositoryURL then urlrepository}
-              <a href={urlrepository} target="_blank">GitHub</a>
+              <a href={urlrepository} target="_blank">Sur {(new URL(urlrepository)).hostname}</a>
             {/await}
           {/if}
         </li>

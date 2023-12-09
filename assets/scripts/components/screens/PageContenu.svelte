@@ -1,5 +1,5 @@
 <script>
-  import {makeAtelierListPageURL} from '../../routes/atelier-list-pages.js'
+  import {makeAtelierListPageURL} from '../../routes/urls.js'
   import './../../types.js'
 
   /** @type {Promise<EditeurFile>} */
@@ -14,8 +14,7 @@
   /** @type {boolean} */
   export let showArticles
 
-  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["currentRepository"] */
+  /** @type {ScribouilliGitRepo} */
   export let currentRepository;
 
   import Editeur from "./intern/Editeur.svelte";
@@ -28,7 +27,7 @@
   {contenus}
   {showArticles}
   editionTitle="Édition d'une page"
-  listPrefix={makeAtelierListPageURL(currentRepository.owner, currentRepository.name)}
+  listPrefix={makeAtelierListPageURL(currentRepository)}
   deleteTitle="Supprimer la page"
   on:save
   on:delete

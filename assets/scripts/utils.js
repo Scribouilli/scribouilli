@@ -3,27 +3,9 @@
 import page from 'page'
 import { format } from 'date-fns'
 
-import gitAgent from './gitAgent.js'
 import store from './store.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
-
-/**
- * @summary Check the availability of a repository and redirect to project creation
- *          if it does not exist.
- * @param {string} owner
- * @param {string} repoName
- * @param {*} thenCallback The callback you'll want to execute if the repository is available
- * @returns
- */
-export function checkRepositoryAvailabilityThen(owner, repoName, thenCallback) {
-  return (
-    getOAuthServiceAPI()
-      .getRepository(owner, repoName)
-      .then(thenCallback)
-      // @ts-ignore
-      .catch(msg => handleErrors(msg))
-  )
-}
+import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /**
  * @summary Handle errors catched by Promises
@@ -33,8 +15,8 @@ export const handleErrors = errorMessage => {
   switch (errorMessage) {
     case 'INVALIDATE_TOKEN': {
       store.mutations.invalidateToken()
-      console.info('[invalid token] redirecting to /account')
-      page('/account')
+      console.info('[invalid token] redirecting to /')
+      page('/')
 
       break
     }

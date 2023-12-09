@@ -8,8 +8,7 @@ import {
   getCurrentRepoPages,
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
-} from '../actions'
-import { deleteRepository } from '../actions/repository.js'
+} from '../actions/current-repository.js'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
@@ -47,10 +46,16 @@ permalink: /articles/
  */
 function mapStateToProps(state) {
   const blogFile = state.pages && state.pages.find(p => p.path === 'blog.md')
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
-    deleteRepositoryUrl: `https://github.com/${state.currentRepository.owner}/${state.currentRepository.name}/settings#danger-zone`,
+    deleteRepositoryUrl: `${currentRepository.publicRepositoryURL}/settings#danger-zone`,
     blogEnabled: blogFile !== undefined,
     showArticles:
       blogFile !== undefined || (state.articles && state.articles?.length > 0),
@@ -61,33 +66,23 @@ function mapStateToProps(state) {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
+
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
 
   const settings = new Settings({
     target: svelteTarget,
     props: mapStateToProps(store.state),
   })
 
-  settings.$on('delete-site', () => {
-    deleteRepository(
-      store.state.currentRepository.owner,
-      store.state.currentRepository.name,
-    )
-      .then(() => {
-        store.mutations.removeSite(store.state)
-        page('/create-project')
-      })
-      .catch(msg => handleErrors(msg))
-  })
-
   settings.$on('update-theme', ({ detail: { theme } }) => {
     gitAgent
-      .writeCustomCSS(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-        theme.css,
-      )
+      .writeCustomCSS(currentRepository, theme.css)
       .then(_ => {
         store.mutations.setTheme(store.state.theme.css)
         store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
@@ -105,12 +100,7 @@ export default ({ querystring }) => {
       await getCurrentRepoArticles()
       await getCurrentRepoPages()
 
-      const repoDir = gitAgent.repoDir(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-      )
-
-      gitAgent.safePush(repoDir)
+      gitAgent.safePush(currentRepository)
     } catch (msg) {
       //@ts-ignore
       handleErrors(msg)
@@ -119,11 +109,7 @@ export default ({ querystring }) => {
 
   if (!store.state.theme.css) {
     gitAgent
-      .getFile(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-        gitAgent.customCSSPath,
-      )
+      .getFile(currentRepository, gitAgent.customCSSPath)
       .then(content => {
         store.mutations.setTheme(content)
       })

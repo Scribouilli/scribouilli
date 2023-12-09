@@ -7,7 +7,7 @@ import store from '../store'
 import {
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
-} from '../actions'
+} from '../actions/current-repository.js'
 
 /**
  *
@@ -15,6 +15,10 @@ import {
  * @returns
  */
 function mapStateToProps(state) {
+  if (!state.currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
   return {
     articles: state.articles,
     buildStatus: state.buildStatus,
@@ -30,8 +34,8 @@ function mapStateToProps(state) {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
   const atelierArticles = new AtelierArticles({
@@ -46,10 +50,9 @@ export default ({ querystring }) => {
 
 /**
  *
- * @param {string} account
- * @param {string} repoName
+ * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {string}
  */
-export function makeAtelierListArticlesURL(account, repoName) {
-  return `./atelier-list-articles?account=${account}&repoName=${repoName}`
+export function makeAtelierListArticlesURL({ owner, repoName }) {
+  return `/atelier-list-articles?account=${owner}&repoName=${repoName}`
 }

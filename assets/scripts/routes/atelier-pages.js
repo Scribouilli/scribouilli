@@ -7,15 +7,11 @@ import { svelteTarget } from '../config'
 import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
-import {
-  handleErrors,
-  logMessage,
-  makeFileNameFromTitle,
-  makePageFrontMatter,
-} from '../utils'
-import { setCurrentRepositoryFromQuerystring } from '../actions'
+import { handleErrors, logMessage, makeFileNameFromTitle } from '../utils'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import PageContenu from '../components/screens/PageContenu.svelte'
 import { deletePage, createPage, updatePage } from './../actions/page'
+import { makeAtelierListPageURL } from './urls.js'
 
 /**
  *
@@ -25,13 +21,15 @@ import { deletePage, createPage, updatePage } from './../actions/page'
 const makeMapStateToProps = fileName => state => {
   // Display existing file
   if (fileName) {
+    const currentRepository = store.state.currentRepository
+
+    if (!currentRepository) {
+      throw new TypeError('currentRepository is undefined')
+    }
+
     const fileP = async function () {
       try {
-        const content = await gitAgent.getFile(
-          state.currentRepository.owner,
-          state.currentRepository.name,
-          fileName,
-        )
+        const content = await gitAgent.getFile(currentRepository, fileName)
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(content)
         return {
@@ -85,13 +83,18 @@ const makeMapStateToProps = fileName => state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
-  const currentRepository = state.currentRepository
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
   const mapStateToProps = makeMapStateToProps(fileName)
+
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
 
   const pageContenu = new PageContenu({
     target: svelteTarget,
@@ -104,15 +107,9 @@ export default ({ querystring }) => {
     deletePage(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
-        page(
-          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
+        page(makeAtelierListPageURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
-
-    page(
-      `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-    )
   })
 
   // @ts-ignore
@@ -133,9 +130,7 @@ export default ({ querystring }) => {
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(
-          `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
+        page(makeAtelierListPageURL(currentRepository))
         return
       }
       //
@@ -144,9 +139,7 @@ export default ({ querystring }) => {
         return createPage(content, title, index)
           .then(() => {
             state.buildStatus.setBuildingAndCheckStatusLater()
-            page(
-              `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-            )
+            page(makeAtelierListPageURL(currentRepository))
           })
           .catch(msg => handleErrors(msg))
       }
@@ -154,9 +147,7 @@ export default ({ querystring }) => {
       updatePage(fileName, title, content, index)
         .then(() => {
           state.buildStatus.setBuildingAndCheckStatusLater()
-          page(
-            `/atelier-list-pages?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-          )
+          page(makeAtelierListPageURL(currentRepository))
         })
         .catch(msg => handleErrors(msg))
     },

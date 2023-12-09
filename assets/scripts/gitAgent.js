@@ -7,6 +7,7 @@ import http from 'isomorphic-git/http/web/index.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
 import './types.js'
+import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
@@ -15,8 +16,6 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 class GitAgent {
   constructor() {
     this.customCSSPath = 'assets/css/custom.css'
-    this.defaultRepoOwner = 'Scribouilli'
-    this.defaultThemeRepoName = 'site-template'
     this.fs = new FS('scribouilli')
     /** @type {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } */
     this.onMergeConflict = undefined
@@ -24,45 +23,15 @@ class GitAgent {
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
-   * @returns {string}
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @returns {ReturnType<isomorphicGit["clone"]>}
    */
-  repoDir(login, repoName) {
-    if (typeof login !== 'string') {
-      throw new Error(
-        `login is not a string (${typeof login} - ${
-          Object(login) === login ? login[Symbol.toStringTag] : ''
-        })`,
-      )
-    }
-
-    return `/github.com/${login}/${repoName}`
-  }
-
-  /**
-   *
-   * @param {string} login
-   * @param {string} repoName
-   * @param {string} fileName
-   * @returns {string}
-   */
-  path(login, repoName, fileName) {
-    return `/github.com/${login}/${repoName}/${fileName}`
-  }
-
-  /**
-   *
-   * @param {string} gitURL
-   * @param {string} repoDir
-   * @returns {Promise<void>}
-   */
-  clone(gitURL, repoDir) {
+  clone({ repoDirectory, remoteURL }) {
     return git.clone({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
       http,
-      url: gitURL,
+      url: remoteURL,
       // ref is purposefully omitted to get the default behavior (default repo branch)
       singleBranch: true,
       corsProxy: CORS_PROXY_URL,
@@ -72,28 +41,28 @@ class GitAgent {
 
   /**
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["currentBranch"]>}
    */
-  currentBranch(repoDir) {
+  currentBranch(scribouilliGitRepo) {
     return git.currentBranch({
       fs: this.fs,
-      dir: repoDir,
+      dir: scribouilliGitRepo.repoDirectory,
     })
   }
 
   /**
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} branch
    * @param {boolean} [force]
    * @param {boolean} [checkout]
    * @returns {ReturnType<isomorphicGit["branch"]>}
    */
-  branch(repoDir, branch, force = false, checkout = true) {
+  branch({ repoDirectory }, branch, force = false, checkout = true) {
     return git.branch({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
       ref: branch,
       force,
       checkout,
@@ -113,28 +82,26 @@ class GitAgent {
 
   /**
    *
-   * @param {string} repoDir
-   *
-   * @returns {Promise<{remote: string, url: string}[]>}
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @returns {ReturnType<isomorphicGit["listRemotes"]>}
    */
-  listRemotes(repoDir) {
+  listRemotes({ repoDirectory }) {
     return git.listRemotes({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
     })
   }
 
   /**
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} [remote]
-   *
-   * @returns {Promise<string[]>}
+   * @returns {ReturnType<isomorphicGit["listBranches"]>}
    */
-  listBranches(repoDir, remote) {
+  listBranches({ repoDirectory }, remote) {
     return git.listBranches({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
       remote,
     })
   }
@@ -143,22 +110,19 @@ class GitAgent {
    * @summary This version of git push may fail if the remote repo
    * has unmerged changes
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  falliblePush(repoDir) {
+  falliblePush({ repoDirectory }) {
     return git.push({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
-      dir: repoDir,
+      dir: repoDirectory,
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-        return {
-          username: getOAuthServiceAPI().getAccessToken(),
-          password: 'x-oauth-basic',
-        }
+        return getOAuthServiceAPI().getOauthUsernameAndPassword()
       },
     })
   }
@@ -168,19 +132,19 @@ class GitAgent {
    * then tries to pull if the push fails
    * and tries again to push if the pull succeeded
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {Promise<any>}
    */
-  safePush(repoDir) {
+  safePush(scribouilliGitRepo) {
     console.log('safePush')
-    return this.falliblePush(repoDir)
+    return this.falliblePush(scribouilliGitRepo)
       .catch(err => {
         console.log(
           'failliblePush error ! Assuming the error is that we are not up to date with the remote',
         )
-        return this.fetchAndTryMerging(repoDir).then(() => {
+        return this.fetchAndTryMerging(scribouilliGitRepo).then(() => {
           console.log('pull/merge succeeded, try to push again')
-          return this.falliblePush(repoDir)
+          return this.falliblePush(scribouilliGitRepo)
         })
       })
       .catch(err => {
@@ -194,61 +158,51 @@ class GitAgent {
   /**
    * @summary like git push --force
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  forcePush(repoDir) {
+  forcePush({ repoDirectory }) {
     return git.push({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
-      dir: repoDir,
+      dir: repoDirectory,
       force: true,
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-        return {
-          username: getOAuthServiceAPI().getAccessToken(),
-          password: 'x-oauth-basic',
-        }
+        return getOAuthServiceAPI().getOauthUsernameAndPassword()
       },
     })
   }
 
   /**
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["fetch"]>}
    */
-  async fetch(repoDir) {
-    const remotes = await this.listRemotes(repoDir)
-    const branches = await Promise.all(
-      [undefined, ...remotes].map(r =>
-        this.listBranches(repoDir, r && r.remote),
-      ),
-    )
-
+  async fetch({ repoDirectory }) {
     return git.fetch({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
       singleBranch: false, // we want all the branches
-      dir: repoDir,
+      dir: repoDirectory,
       corsProxy: CORS_PROXY_URL,
     })
   }
 
   /**
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} [ref]
    * @returns {Promise<import('isomorphic-git').CommitObject>}
    */
-  currentCommit(repoDir, ref = undefined) {
+  currentCommit({ repoDirectory }, ref = undefined) {
     return git
       .log({
         fs: this.fs,
-        dir: repoDir,
+        dir: repoDirectory,
         ref,
         depth: 1,
       })
@@ -257,14 +211,14 @@ class GitAgent {
 
   /**
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} [ref]
    * @returns {ReturnType<isomorphicGit["checkout"]>}
    */
-  checkout(repoDir, ref = undefined) {
+  checkout({ repoDirectory }, ref = undefined) {
     return git.checkout({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
       ref,
     })
   }
@@ -274,14 +228,14 @@ class GitAgent {
    * @summary This function tries to merge
    * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {Promise<any>}
    */
-  async tryMerging(repoDir) {
+  async tryMerging(scribouilliGitRepo) {
     console.log('merge')
     const [currentBranch, remotes] = await Promise.all([
-      this.currentBranch(repoDir),
-      this.listRemotes(repoDir),
+      this.currentBranch(scribouilliGitRepo),
+      this.listRemotes(scribouilliGitRepo),
     ])
 
     if (!currentBranch) {
@@ -294,7 +248,7 @@ class GitAgent {
     return git
       .merge({
         fs: this.fs,
-        dir: repoDir,
+        dir: scribouilliGitRepo.repoDirectory,
         // ours is purposefully omitted to get the default behavior (current branch)
         // assuming their is only one remote
         // assuming the remote and local branch have the same name
@@ -304,7 +258,7 @@ class GitAgent {
       })
       .then(() => {
         // this checkout is necessary to update FS files
-        return this.checkout(repoDir)
+        return this.checkout(scribouilliGitRepo)
       })
       .catch(err => {
         console.log('merge error', err)
@@ -314,15 +268,17 @@ class GitAgent {
             {
               message: `Garder la version actuelle du site web en ligne (et perdre les changements récents dans l'atelier)`,
               resolution: async () => {
-                const currentBranch = await this.currentBranch(repoDir)
+                const currentBranch = await this.currentBranch(
+                  scribouilliGitRepo,
+                )
                 if (!currentBranch) {
                   throw new TypeError('Missing currentBranch')
                 }
 
-                const remotes = await this.listRemotes(repoDir)
+                const remotes = await this.listRemotes(scribouilliGitRepo)
                 const firstRemote = remotes[0].remote
                 const remoteBranches = await this.listBranches(
-                  repoDir,
+                  scribouilliGitRepo,
                   firstRemote,
                 )
                 const targetedRemoteBranch = this.createRemoteRef(
@@ -330,15 +286,15 @@ class GitAgent {
                   remoteBranches[0],
                 )
 
-                await this.checkout(repoDir, targetedRemoteBranch)
+                await this.checkout(scribouilliGitRepo, targetedRemoteBranch)
 
-                await this.branch(repoDir, currentBranch, true, true)
+                await this.branch(scribouilliGitRepo, currentBranch, true, true)
               },
             },
             {
               message: `Garder la version actuelle de l'atelier (et perdre la version en actuellement ligne)`,
               resolution: () => {
-                return this.forcePush(repoDir)
+                return this.forcePush(scribouilliGitRepo)
               },
             },
           ])
@@ -348,16 +304,15 @@ class GitAgent {
   /**
    * @summary Create a commit with the given message.
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} message
    *
-   * @returns {Promise<string>} sha of the commit
+   * @returns {ReturnType<isomorphicGit["commit"]>} sha of the commit
    */
-  commit(login, repoName, message) {
+  commit({ repoDirectory }, message) {
     return git.commit({
       fs: this.fs,
-      dir: this.repoDir(login, repoName),
+      dir: repoDirectory,
       message,
     })
   }
@@ -365,66 +320,52 @@ class GitAgent {
   /**
    * @summary Remove file from git tree and from the file system
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} fileName
-   * @returns {Promise<void>}
+   * @returns {ReturnType<isomorphicGit["remove"]>}
    */
-  async removeFile(login, repoName, fileName) {
-    const path = this.path(login, repoName, fileName)
+  async removeFile(scribouilliGitRepo, fileName) {
+    const path = scribouilliGitRepo.path(fileName)
     await this.fs.promises.unlink(path)
-    await git.remove({
+    return await git.remove({
       fs: this.fs,
-      dir: this.repoDir(login, repoName),
+      dir: scribouilliGitRepo.repoDirectory,
       filepath: fileName,
     })
   }
 
   /**
-   *
-   * @param {string} login
-   * @param {string} repoName
-   *
-   * @returns {Promise<void>}
-   */
-  deleteRepository(login, repoName) {
-    return this.fs.promises.unlink(this.repoDir(login, repoName))
-  }
-
-  /**
    * @summary like a git pull but the merge is better customized
    *
-   * @param {string} repoDir
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {Promise<any>}
    */
-  async fetchAndTryMerging(repoDir) {
+  async fetchAndTryMerging(scribouilliGitRepo) {
     console.log('fetchAndTryMerging')
-    await this.fetch(repoDir)
-    await this.tryMerging(repoDir)
+    await this.fetch(scribouilliGitRepo)
+    await this.tryMerging(scribouilliGitRepo)
   }
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @return {Promise<any>}
    */
-  async pullOrCloneRepo(login, repoName) {
-    const repoDir = this.repoDir(login, repoName)
-    const gitURL = `https://github.com/${login}/${repoName}.git`
+  async pullOrCloneRepo(scribouilliGitRepo) {
+    const { repoDirectory } = scribouilliGitRepo
 
     let dirExists = true
     try {
-      const stat = await this.fs.promises.stat(repoDir)
+      const stat = await this.fs.promises.stat(repoDirectory)
       dirExists = stat.isDirectory()
     } catch {
       dirExists = false
     }
 
     if (dirExists) {
-      return this.fetchAndTryMerging(repoDir)
+      return this.fetchAndTryMerging(scribouilliGitRepo)
     } else {
-      return this.clone(gitURL, repoDir)
+      return this.clone(scribouilliGitRepo)
     }
   }
 
@@ -440,28 +381,27 @@ class GitAgent {
    *
    * Alors, on doit passer le repoName
    *
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} login
-   * @param {string} owner
-   * @param {string} repoName
    * @param {string} email
-   * @returns {Promise<void>}
+   * @returns {Promise<ReturnType<isomorphicGit["setConfig"]>>}
    */
-  async setAuthor(login, owner, repoName, email) {
-    if (!login || !owner || !repoName || !email) {
+  async setAuthor(scribouilliGitRepo, login, email) {
+    if (!login || !email) {
       return
     }
 
-    const repoDir = this.repoDir(owner, repoName)
+    const { repoDirectory } = scribouilliGitRepo
 
     await git.setConfig({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
       path: 'user.name',
       value: login,
     })
-    await git.setConfig({
+    return await git.setConfig({
       fs: this.fs,
-      dir: repoDir,
+      dir: repoDirectory,
       path: 'user.email',
       value: email,
     })
@@ -469,14 +409,14 @@ class GitAgent {
 
   /**
    * @summary Get file informations
-   * @param {string} login
-   * @param {string} repoName
+   *
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} fileName
    * @returns {Promise<string>}
    */
-  async getFile(login, repoName, fileName) {
+  async getFile(scribouilliGitRepo, fileName) {
     const content = await this.fs.promises.readFile(
-      this.path(login, repoName, fileName),
+      scribouilliGitRepo.path(fileName),
       { encoding: 'utf8' },
     )
     if (content instanceof Uint8Array) {
@@ -488,14 +428,13 @@ class GitAgent {
   /**
    * @summary Create or update a file and add it to the git staging area
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string | Uint8Array} content
    * @param {string} fileName
    *
    * @returns {Promise<void>}
    */
-  async writeFile(login, repoName, fileName, content) {
+  async writeFile(scribouilliGitRepo, fileName, content) {
     // This condition is here just in case, but it should not happen in practice
     // Having an empty file name will not lead immediately to a crash but will result in
     // some bugs later, see https://github.com/Scribouilli/scribouilli/issues/49#issuecomment-1648226372
@@ -503,53 +442,47 @@ class GitAgent {
       throw new TypeError('Empty file name')
     }
 
-    await this.fs.promises.writeFile(
-      this.path(login, repoName, fileName),
-      content,
-    )
+    await this.fs.promises.writeFile(scribouilliGitRepo.path(fileName), content)
     await git.add({
       fs: this.fs,
       filepath: fileName,
-      dir: this.repoDir(login, repoName),
+      dir: scribouilliGitRepo.repoDirectory,
     })
   }
 
   /**
    * PPP move to actions
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} content
    * @returns
    */
-  async writeCustomCSS(login, repoName, content) {
-    await this.writeFile(login, repoName, this.customCSSPath, content)
+  async writeCustomCSS(scribouilliGitRepo, content) {
+    await this.writeFile(scribouilliGitRepo, this.customCSSPath, content)
 
     return await this.commit(
-      login,
-      repoName,
+      scribouilliGitRepo,
       'mise à jour du ficher de styles custom',
     )
   }
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} dir
    * @returns
    */
-  async getPagesList(login, repoName, dir = '') {
+  async getPagesList(scribouilliGitRepo, dir = '') {
     const allFiles = await this.fs.promises.readdir(
-      this.path(login, repoName, dir),
+      scribouilliGitRepo.path(dir),
     )
     return Promise.all(
       allFiles
         .filter(f => f.endsWith('.md') || f.endsWith('.html'))
         .map(async f => {
-          const path = dir == '' ? f : `${dir}/${f}`
+          const filename = dir == '' ? f : `${dir}/${f}`
           const content = await this.fs.promises.readFile(
-            this.path(login, repoName, path),
+            scribouilliGitRepo.path(filename),
           )
           const { attributes: data, body: markdownContent } = lireFrontMatter(
             content.toString(),
@@ -559,7 +492,7 @@ class GitAgent {
             index: data?.order,
             // no `in_menu` proprerty is interpreted as the page should be in the menu
             inMenu: data?.in_menu === true || data?.in_menu === undefined,
-            path,
+            path: filename,
             content: markdownContent,
           }
         }),
@@ -568,13 +501,12 @@ class GitAgent {
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns
    */
-  async getArticlesList(login, repoName) {
+  async getArticlesList(scribouilliGitRepo) {
     try {
-      return await this.getPagesList(login, repoName, '_posts')
+      return await this.getPagesList(scribouilliGitRepo, '_posts')
     } catch {
       return await Promise.resolve(undefined)
     }
@@ -582,13 +514,12 @@ class GitAgent {
 
   /**
    *
-   * @param {string} login
-   * @param {string} repoName
-   * @param {string} path
+   * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param {string} filename
    * @returns
    */
-  async checkFileExistence(login, repoName, path) {
-    const stat = await this.fs.promises.stat(this.path(login, repoName, path))
+  async checkFileExistence(scribouilliGitRepo, filename) {
+    const stat = await this.fs.promises.stat(scribouilliGitRepo.path(filename))
     return stat.isFile()
   }
 }

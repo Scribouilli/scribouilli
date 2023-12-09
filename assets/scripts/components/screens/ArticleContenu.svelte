@@ -14,8 +14,7 @@
   /** @type {boolean} */
   export let showArticles;
 
-  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type {ScribouilliState["currentRepository"]} */
+  /** @type {ScribouilliGitRepo} */
   export let currentRepository;
 
   import Editeur from "./intern/Editeur.svelte";
@@ -28,7 +27,7 @@
   {showArticles}
   {currentRepository}
   editionTitle="Édition d'un article"
-  listPrefix={makeAtelierListArticlesURL(currentRepository.owner, currentRepository.name)}
+  listPrefix={makeAtelierListArticlesURL(currentRepository)}
   deleteTitle="Supprimer l'article"
   on:save
   on:delete

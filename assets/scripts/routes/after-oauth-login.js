@@ -1,22 +1,22 @@
 // @ts-check
 
 import page from 'page'
+import remember from 'remember'
 
 import {
   svelteTarget,
   defaultRepositoryName,
-  ACCESS_TOKEN_STORAGE_KEY,
   OAUTH_PROVIDER_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  templates,
 } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
-import {
-  fetchCurrentUserRepositories,
-  createRepositoryForCurrentAccount,
-} from '../actions.js'
+import { fetchCurrentUserRepositories } from '../actions/current-user.js'
+import { createRepositoryForCurrentAccount } from '../actions/setup.js'
+import { oAuthAppByType } from '../oauth-services-api/index.js'
 
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
@@ -26,47 +26,49 @@ const storeOAuthProviderAccess = () => {
     url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER),
   )
 
-  if (
-    url.searchParams.has(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) &&
-    url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER) !== null &&
-    url.searchParams.has(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER) &&
-    url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER) !== null
-  ) {
-    const accessToken = url.searchParams.get(
-      TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-    )
-    const providerName = url.searchParams.get(
-      TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
-    )
+  const accessToken = url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)
+  const providerName = url.searchParams.get(
+    TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  )
 
-    // @ts-ignore
-    localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, accessToken)
-    // @ts-ignore
-    localStorage.setItem(OAUTH_PROVIDER_STORAGE_KEY, providerName)
-
-    store.mutations.setOAuthProvider({
-      accessToken: accessToken,
+  if (accessToken && providerName) {
+    const origin = oAuthAppByType.get(providerName)?.origin || ''
+    const oAuthProvider = {
       name: providerName,
-    })
+      accessToken,
+      origin,
+    }
+
+    store.mutations.setOAuthProvider(oAuthProvider)
+
+    remember(OAUTH_PROVIDER_STORAGE_KEY, oAuthProvider)
   }
 }
 
-/**
- * @param {import('page').Context} _
- */
-export default ({ querystring }) => {
+export default () => {
   storeOAuthProviderAccess()
 
-  const type = store.state.oAuthProvider?.name
+  const oAuthProvider = store.state.oAuthProvider
+  let type = oAuthProvider?.name
+
+  console.log('type', type)
+  console.log('oAuthProvider', oAuthProvider)
+
+  // no type is implicitly github for historical reasons (which will certainly be irrelevant in, say, 2025)
+  if (!type) {
+    type = 'github'
+  }
 
   let currentUserReposP
 
-  // no type is implicitly github for historical reasons (which will certainly be irrelevant in, say, 2025)
-  if (!type || type === 'github') {
+  if (type === 'github' || type === 'gitlab') {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 0) {
         // If the user has no repository, we automatically create one for them.
-        createRepositoryForCurrentAccount(defaultRepositoryName)
+        createRepositoryForCurrentAccount(
+          defaultRepositoryName,
+          templates.default,
+        )
       } else {
         store.mutations.setReposForAccount({
           login: store.state.login,
@@ -77,14 +79,7 @@ export default ({ querystring }) => {
       }
     })
   } else {
-    currentUserReposP = Promise.resolve()
-    if (type === 'gitlab') {
-      console.log(
-        'Connexion depuis gitlab détectée et on ne sait rien en faire',
-      )
-    } else {
-      console.error(`Type dans l'URL non reconnu:`, type)
-    }
+    throw new Error(`Unknown OAuth provider type: ${type}`)
   }
 
   const afterOauthLogin = new AfterOauthLogin({
@@ -92,8 +87,6 @@ export default ({ querystring }) => {
     props: {
       // @ts-ignore
       currentUserReposP,
-      // @ts-ignore
-      type,
     },
   })
 

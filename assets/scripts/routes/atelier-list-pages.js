@@ -3,10 +3,7 @@
 import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
-import {
-  getCurrentRepoPages,
-  setCurrentRepositoryFromQuerystring,
-} from '../actions'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import AtelierPages from '../components/screens/AtelierPages.svelte'
 
 /**
@@ -15,6 +12,10 @@ import AtelierPages from '../components/screens/AtelierPages.svelte'
  * @returns
  */
 const mapStateToProps = state => {
+  if (!state.currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
   return {
     pages: state.pages && state.pages.filter(p => p.path !== 'blog.md'),
     buildStatus: state.buildStatus,
@@ -31,7 +32,7 @@ const mapStateToProps = state => {
  * @param {import('page').Context} _
  */
 export default async ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring).then(getCurrentRepoPages)
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
   const atelierPages = new AtelierPages({
@@ -40,14 +41,4 @@ export default async ({ querystring }) => {
   })
 
   replaceComponent(atelierPages, mapStateToProps)
-}
-
-/**
- *
- * @param {string} account
- * @param {string} repoName
- * @returns {string}
- */
-export function makeAtelierListPageURL(account, repoName) {
-  return `./atelier-list-pages?account=${account}&repoName=${repoName}`
 }

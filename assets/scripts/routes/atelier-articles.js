@@ -4,19 +4,15 @@ import lireFrontMatter from 'front-matter'
 import page from 'page'
 
 import store from '../store'
-import {
-  checkRepositoryAvailabilityThen,
-  handleErrors,
-  makeArticleFileName,
-  makeArticleFrontMatter,
-} from '../utils'
+import { handleErrors } from '../utils'
 
 import gitAgent from '../gitAgent'
 import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
-import { setCurrentRepositoryFromQuerystring } from '../actions'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import { deleteArticle, createArticle, updateArticle } from '../actions/article'
+import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
 
 const LIST_ARTICLE_URL = '/atelier-list-articles'
 
@@ -27,13 +23,15 @@ const LIST_ARTICLE_URL = '/atelier-list-articles'
  */
 const makeMapStateToProps = fileName => state => {
   if (fileName) {
+    const currentRepository = store.state.currentRepository
+
+    if (!currentRepository) {
+      throw new TypeError('currentRepository is undefined')
+    }
+
     // Display existing file
     const fileP = gitAgent
-      .getFile(
-        store.state.currentRepository.owner,
-        store.state.currentRepository.name,
-        fileName,
-      )
+      .getFile(currentRepository, fileName)
       .then(contenu => {
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(contenu)
@@ -81,17 +79,16 @@ const makeMapStateToProps = fileName => state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
-  checkRepositoryAvailabilityThen(
-    store.state.currentRepository.owner,
-    store.state.currentRepository.name,
-    () => {},
-  )
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
 
   const state = store.state
-  const currentRepository = state.currentRepository
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
   const mapStateToProps = makeMapStateToProps(fileName)
 
@@ -106,15 +103,9 @@ export default ({ querystring }) => {
     deleteArticle(fileName)
       .then(() => {
         state.buildStatus.setBuildingAndCheckStatusLater()
-        page(
-          `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-        )
+        page(makeAtelierListArticlesURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
-
-    page(
-      `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`,
-    )
   })
 
   articleContenu.$on(
@@ -124,7 +115,7 @@ export default ({ querystring }) => {
     }) => {
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
-      const articlePageUrl = `${LIST_ARTICLE_URL}?repoName=${currentRepository.name}&account=${currentRepository.owner}`
+      const articlePageUrl = makeAtelierListArticlesURL(currentRepository)
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {

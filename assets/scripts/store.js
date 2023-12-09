@@ -2,32 +2,28 @@
 
 // @ts-ignore
 import Store from 'baredux'
+import { forget } from 'remember'
 import './types.js'
 
-import {
-  OAUTH_PROVIDER_STORAGE_KEY,
-  ACCESS_TOKEN_STORAGE_KEY,
-} from './config.js'
-
-/**
- * @typedef {Object} CurrentRepository
- * @property {string} owner
- * @property {string} name
- * @property {string} repositoryURL
- * @property {string} publishedWebsiteURL
- */
+import { OAUTH_PROVIDER_STORAGE_KEY } from './config.js'
+import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
 
 /**
+ * @typedef {Object} OAuthProvider
+ * @property {string} name
+ * @property {string} accessToken
+ * @property {string} origin
+ */
+
+/**
  * @typedef {Object} ScribouilliState
- * @property {object} [oAuthProvider]
- * @property {string} [oAuthProvider.name]
- * @property {string} [oAuthProvider.accessToken]
+ * @property {OAuthProvider} [oAuthProvider]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {Promise<string> | string} [origin]
- * @property {CurrentRepository} currentRepository
+ * @property {ScribouilliGitRepo | undefined} currentRepository
  * @property {ResolutionOption[] | undefined} conflict
  * @property {any} reposByAccount
  * @property {any[]} [pages]
@@ -52,23 +48,11 @@ import {
 const store = Store({
   state: {
     // @ts-ignore
-    oAuthProvider: {
-      // On souhaite avoir une seule source de vérité pour les informations
-      // d'authentification. On les stocke dans le localStorage et on les
-      // récupère au démarrage de l'application dans le store, ce dernier
-      // servant de source de vérité pour tous les composants.
-      accessToken: localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY),
-      name: localStorage.getItem(OAUTH_PROVIDER_STORAGE_KEY),
-    },
+    oAuthProvider: undefined,
     login: undefined,
     email: undefined,
     origin: undefined,
-    currentRepository: {
-      name: undefined,
-      owner: undefined,
-      publishedWebsiteURL: undefined,
-      repositoryURL: undefined,
-    },
+    currentRepository: undefined,
     conflict: undefined,
     // We use the term "account" to refer to user or organization.
     reposByAccount: {
@@ -85,7 +69,7 @@ const store = Store({
   mutations: {
     /**
      * @param {ScribouilliState} state
-     * @param {{ accessToken: string, name: string }} oAuthProvider
+     * @param {ScribouilliState['oAuthProvider']} oAuthProvider
      */
     setOAuthProvider(state, oAuthProvider) {
       state.oAuthProvider = oAuthProvider
@@ -109,7 +93,7 @@ const store = Store({
     /**
      *
      * @param {ScribouilliState} state
-     * @param {CurrentRepository} repository
+     * @param {ScribouilliState['currentRepository']} repository
      */
     setCurrentRepository(state, repository) {
       state.currentRepository = repository
@@ -213,7 +197,7 @@ const store = Store({
      */
     invalidateToken(state) {
       state.accessToken = undefined
-      localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY)
+      forget(OAUTH_PROVIDER_STORAGE_KEY)
       console.log('Token has been invalidated')
     },
   },

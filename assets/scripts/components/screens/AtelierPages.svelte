@@ -10,10 +10,10 @@
   /** @type {boolean | undefined} */
   export let showArticles
 
-  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["currentRepository"] */
+  /** @type {ScribouilliGitRepo} */
   export let currentRepository
-
+  
+  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
   /** @type {ScribouilliState["conflict"]}*/
   export let conflict
 </script>

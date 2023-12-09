@@ -4,15 +4,12 @@
 
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
-  import { getOAuthServiceAPI } from "../../oauth-services-api/index.js";
 
   /** @type {string | Promise<string> | undefined} */
   export let currentAccount
 
-  /** typedef {import("../../../types").GithubRepository} GithubRepository */
   /** @type {GithubRepository[]} */
   export let currentAccountRepositories;
-
 
   /** @type {GithubRepository} */
   let repo
@@ -33,10 +30,6 @@
 
     loading = true;
 
-    // On devrait pouvoir retirer cette ligne à un moment. Elle sert pour
-    // tagguer tous les repos Scribouilli qui n'ont pas encore de topic
-    // (c'est-à-dire tous les repos créés au tout tout début)
-    getOAuthServiceAPI().addTopicOnRepository(repo.owner.login, repo.name);
     page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
 
     loading = false;

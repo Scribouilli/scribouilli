@@ -11,7 +11,7 @@
     {#if showWelcome}
       <h2>Créez votre petit site facilement !</h2>
 
-      <a href="./account" class="btn">C'est parti !</a>
+      <a href="./choose-account" class="btn">C'est parti !</a>
     {:else if isFetchingCurrentUserRepos }
       <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
       <img
