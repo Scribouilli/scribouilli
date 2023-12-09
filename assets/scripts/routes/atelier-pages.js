@@ -8,7 +8,7 @@ import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import { handleErrors, logMessage, makeFileNameFromTitle } from '../utils'
-import { setCurrentRepositoryFromQuerystring } from '../actions'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import PageContenu from '../components/screens/PageContenu.svelte'
 import { deletePage, createPage, updatePage } from './../actions/page'
 import { makeAtelierListPageURL } from './urls.js'
@@ -83,8 +83,8 @@ const makeMapStateToProps = fileName => state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
@@ -110,8 +110,6 @@ export default ({ querystring }) => {
         page(makeAtelierListPageURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
-
-    page(makeAtelierListPageURL(currentRepository))
   })
 
   // @ts-ignore

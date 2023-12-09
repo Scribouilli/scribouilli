@@ -8,8 +8,7 @@ import {
   getCurrentRepoPages,
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
-} from '../actions'
-import { deleteRepository } from '../actions/repository.js'
+} from '../actions/current-repository.js'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import page from 'page'
@@ -49,7 +48,7 @@ function mapStateToProps(state) {
   const blogFile = state.pages && state.pages.find(p => p.path === 'blog.md')
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
@@ -67,12 +66,12 @@ function mapStateToProps(state) {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
@@ -81,21 +80,9 @@ export default ({ querystring }) => {
     props: mapStateToProps(store.state),
   })
 
-  settings.$on('delete-site', () => {
-    deleteRepository(currentRepository)
-      .then(() => {
-        store.mutations.removeSite(store.state)
-        page('/create-project')
-      })
-      .catch(msg => handleErrors(msg))
-  })
-
   settings.$on('update-theme', ({ detail: { theme } }) => {
     gitAgent
-      .writeCustomCSS(
-        currentRepository,
-        theme.css
-      )
+      .writeCustomCSS(currentRepository, theme.css)
       .then(_ => {
         store.mutations.setTheme(store.state.theme.css)
         store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
@@ -122,10 +109,7 @@ export default ({ querystring }) => {
 
   if (!store.state.theme.css) {
     gitAgent
-      .getFile(
-        currentRepository,
-        gitAgent.customCSSPath
-      )
+      .getFile(currentRepository, gitAgent.customCSSPath)
       .then(content => {
         store.mutations.setTheme(content)
       })

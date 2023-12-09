@@ -33,6 +33,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@types/chai": "^4.3.10",
     "@types/dompurify": "^3.0.4",
+    "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.5",
     "@types/mocha": "^10.0.4",
     "@types/page": "^1.11.8",
@@ -69,7 +70,9 @@
     "dompurify": "^3.0.5",
     "front-matter": "^4.0.2",
     "isomorphic-git": "^1.24.2",
+    "js-yaml": "^3.14.1",
     "marked": "^11.0.0",
-    "page": "^1.11.6"
+    "page": "^1.11.6",
+    "remember": "github:DavidBruant/remember#v1.0.1"
   }
 }

@@ -1,8 +1,32 @@
 import page from 'page'
 import store from './../store.js'
-import { GitHubAPI } from './github.js'
+import GitHubAPI from './github.js'
+import GitlabAPI from './gitlab.js'
 
 import './../types.js'
+
+export const oAuthAppByProvider = new Map([
+  [
+    'github.com',
+    {
+      origin: 'https://github.com',
+      client_id: '64ecce0b01397c2499a6',
+    },
+  ],
+  [
+    'gitlab.com',
+    {
+      origin: 'https://gitlab.com',
+      client_id:
+        'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
+    },
+  ],
+])
+
+export const oAuthAppByType = new Map([
+  ['github', oAuthAppByProvider.get('github.com')],
+  ['gitlab', oAuthAppByProvider.get('gitlab.com')],
+])
 
 /**
  * @overlaod
@@ -22,28 +46,29 @@ import './../types.js'
 
 /**
  * @param {string} type
- * @param {any} options
+ * @param {{accessToken: string}} options
  *
  * @returns {OAuthServiceAPI}
  */
-const makeOAuthServiceAPI = (type, options) => {
-  const accessToken = options.accessToken
-  const implementedServices = ['github', 'gitlab']
+const makeOAuthServiceAPI = (type, { accessToken }) => {
+  if (type === 'github') return new GitHubAPI(accessToken)
 
-  if (!implementedServices.includes(type)) {
-    throw new Error(`Le service d'authentificaton ${type} n'est pas supporté.`)
+  if (type === 'gitlab') {
+    // @ts-ignore
+    const origin = oAuthAppByType.get(type).origin
+
+    return new GitlabAPI(accessToken, origin)
   }
 
-  // TODO: Ajouter le support à GitLab
-
-  return new GitHubAPI(accessToken)
+  throw new TypeError(
+    `Le service d'authentificaton ${type} n'est pas supporté.`,
+  )
 }
 
 // @ts-ignore
 let oAuthServiceAPI
 
 /**
- * 
  * @returns {OAuthServiceAPI}
  */
 export const getOAuthServiceAPI = () => {
@@ -52,19 +77,18 @@ export const getOAuthServiceAPI = () => {
     return oAuthServiceAPI
   }
 
-  if (
-    !store.state.oAuthProvider?.accessToken ||
-    !store.state.oAuthProvider?.name
-  ) {
-    console.info("L'utilisateur n'est pas connecté. Redirection vers /account")
+  const oAuthProvider = store.state.oAuthProvider
 
-    page('/account')
+  if (!oAuthProvider) {
+    console.info("L'utilisateur n'est pas connecté. Redirection vers /")
+
+    page('/')
 
     throw new TypeError('Missing accessToken or provider name')
   }
 
-  oAuthServiceAPI = makeOAuthServiceAPI(store.state.oAuthProvider.name, {
-    accessToken: store.state.oAuthProvider.accessToken,
+  oAuthServiceAPI = makeOAuthServiceAPI(oAuthProvider.name, {
+    accessToken: oAuthProvider.accessToken,
   })
 
   return oAuthServiceAPI

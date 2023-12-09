@@ -7,7 +7,7 @@ import store from '../store'
 import {
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
-} from '../actions'
+} from '../actions/current-repository.js'
 
 /**
  *
@@ -34,8 +34,8 @@ function mapStateToProps(state) {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const state = store.state
   const atelierArticles = new AtelierArticles({
@@ -54,5 +54,5 @@ export default ({ querystring }) => {
  * @returns {string}
  */
 export function makeAtelierListArticlesURL({ owner, repoName }) {
-  return `./atelier-list-articles?account=${owner}&repoName=${repoName}`
+  return `/atelier-list-articles?account=${owner}&repoName=${repoName}`
 }

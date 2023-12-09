@@ -1,11 +1,17 @@
 <script>
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
-  import { createRepositoryForCurrentAccount } from "../../actions.js";
+  import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
+  import { templates } from '../../config.js';
+
+  import '../../types.js'
 
   let name = "";
   let loading = false;
   let hasError = false
+
+  /** @type {GitSiteTemplate} */
+  let selectedTemplate;
 
   // @ts-ignore
   const onSubmit = (e) => {
@@ -19,7 +25,7 @@
     // Pour le moment on fait comme ça, et on documente comment transférer un
     // dépôt perso dans une organisation, via l'interface GitHub, pour les
     // utilisateurices avancé.es
-    createRepositoryForCurrentAccount(name)
+    createRepositoryForCurrentAccount(name, selectedTemplate)
       .catch(() => {
         loading = false;
         hasError = true;
@@ -46,6 +52,15 @@
             />
           </div>
 
+          <div>
+            <label for="name">Je veux créer :</label>
+            <select id="name" bind:value={selectedTemplate}>
+              {#each templates as template}
+                <option value={template} selected={template === templates.default}>{template.description}</option>
+              {/each}
+            </select>
+          </div>
+
           <div class="actions-zone">
             {#if hasError}
               <div class="error-message">
@@ -70,6 +85,11 @@
 </Skeleton>
 
 <style lang="scss">
+  select {
+    font-size: 1.2rem;
+    padding: 0.5em;
+  }
+
   .actions-zone {
     display: flex;
     justify-content: space-between;

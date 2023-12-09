@@ -16,8 +16,6 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 class GitAgent {
   constructor() {
     this.customCSSPath = 'assets/css/custom.css'
-    this.defaultRepoOwner = 'Scribouilli'
-    this.defaultThemeRepoName = 'site-template'
     this.fs = new FS('scribouilli')
     /** @type {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } */
     this.onMergeConflict = undefined
@@ -28,7 +26,7 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["clone"]>}
    */
-  clone({repoDirectory, remoteURL}) {
+  clone({ repoDirectory, remoteURL }) {
     return git.clone({
       fs: this.fs,
       dir: repoDirectory,
@@ -46,10 +44,10 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["currentBranch"]>}
    */
-  currentBranch({repoDirectory}) {
+  currentBranch(scribouilliGitRepo) {
     return git.currentBranch({
       fs: this.fs,
-      dir: repoDirectory,
+      dir: scribouilliGitRepo.repoDirectory,
     })
   }
 
@@ -61,7 +59,7 @@ class GitAgent {
    * @param {boolean} [checkout]
    * @returns {ReturnType<isomorphicGit["branch"]>}
    */
-  branch({repoDirectory}, branch, force = false, checkout = true) {
+  branch({ repoDirectory }, branch, force = false, checkout = true) {
     return git.branch({
       fs: this.fs,
       dir: repoDirectory,
@@ -87,7 +85,7 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["listRemotes"]>}
    */
-  listRemotes({repoDirectory}) {
+  listRemotes({ repoDirectory }) {
     return git.listRemotes({
       fs: this.fs,
       dir: repoDirectory,
@@ -100,7 +98,7 @@ class GitAgent {
    * @param {string} [remote]
    * @returns {ReturnType<isomorphicGit["listBranches"]>}
    */
-  listBranches({repoDirectory}, remote) {
+  listBranches({ repoDirectory }, remote) {
     return git.listBranches({
       fs: this.fs,
       dir: repoDirectory,
@@ -115,7 +113,7 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  falliblePush({repoDirectory}) {
+  falliblePush({ repoDirectory }) {
     return git.push({
       fs: this.fs,
       http,
@@ -124,10 +122,7 @@ class GitAgent {
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-        return {
-          username: getOAuthServiceAPI().getAccessToken(),
-          password: 'x-oauth-basic',
-        }
+        return getOAuthServiceAPI().getOauthUsernameAndPassword()
       },
     })
   }
@@ -166,7 +161,7 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  forcePush({repoDirectory}) {
+  forcePush({ repoDirectory }) {
     return git.push({
       fs: this.fs,
       http,
@@ -176,10 +171,7 @@ class GitAgent {
       corsProxy: CORS_PROXY_URL,
       onAuth: _ => {
         // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-        return {
-          username: getOAuthServiceAPI().getAccessToken(),
-          password: 'x-oauth-basic',
-        }
+        return getOAuthServiceAPI().getOauthUsernameAndPassword()
       },
     })
   }
@@ -189,7 +181,7 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @returns {ReturnType<isomorphicGit["fetch"]>}
    */
-  async fetch({repoDirectory}) {
+  async fetch({ repoDirectory }) {
     return git.fetch({
       fs: this.fs,
       http,
@@ -206,7 +198,7 @@ class GitAgent {
    * @param {string} [ref]
    * @returns {Promise<import('isomorphic-git').CommitObject>}
    */
-  currentCommit({repoDirectory}, ref = undefined) {
+  currentCommit({ repoDirectory }, ref = undefined) {
     return git
       .log({
         fs: this.fs,
@@ -223,7 +215,7 @@ class GitAgent {
    * @param {string} [ref]
    * @returns {ReturnType<isomorphicGit["checkout"]>}
    */
-  checkout({repoDirectory}, ref = undefined) {
+  checkout({ repoDirectory }, ref = undefined) {
     return git.checkout({
       fs: this.fs,
       dir: repoDirectory,
@@ -276,7 +268,9 @@ class GitAgent {
             {
               message: `Garder la version actuelle du site web en ligne (et perdre les changements récents dans l'atelier)`,
               resolution: async () => {
-                const currentBranch = await this.currentBranch(scribouilliGitRepo)
+                const currentBranch = await this.currentBranch(
+                  scribouilliGitRepo,
+                )
                 if (!currentBranch) {
                   throw new TypeError('Missing currentBranch')
                 }
@@ -315,7 +309,7 @@ class GitAgent {
    *
    * @returns {ReturnType<isomorphicGit["commit"]>} sha of the commit
    */
-  commit({repoDirectory}, message) {
+  commit({ repoDirectory }, message) {
     return git.commit({
       fs: this.fs,
       dir: repoDirectory,
@@ -341,15 +335,6 @@ class GitAgent {
   }
 
   /**
-   *
-   * @param {ScribouilliGitRepo} scribouilliGitRepo
-   * @returns {Promise<void>}
-   */
-  deleteRepository({repoDirectory}) {
-    return this.fs.promises.unlink(repoDirectory)
-  }
-
-  /**
    * @summary like a git pull but the merge is better customized
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
@@ -367,7 +352,7 @@ class GitAgent {
    * @return {Promise<any>}
    */
   async pullOrCloneRepo(scribouilliGitRepo) {
-    const {repoDirectory} = scribouilliGitRepo
+    const { repoDirectory } = scribouilliGitRepo
 
     let dirExists = true
     try {
@@ -399,14 +384,14 @@ class GitAgent {
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} login
    * @param {string} email
-   * @returns {Promise<void>}
+   * @returns {Promise<ReturnType<isomorphicGit["setConfig"]>>}
    */
   async setAuthor(scribouilliGitRepo, login, email) {
     if (!login || !email) {
       return
     }
 
-    const {repoDirectory} = scribouilliGitRepo;
+    const { repoDirectory } = scribouilliGitRepo
 
     await git.setConfig({
       fs: this.fs,
@@ -414,7 +399,7 @@ class GitAgent {
       path: 'user.name',
       value: login,
     })
-    await git.setConfig({
+    return await git.setConfig({
       fs: this.fs,
       dir: repoDirectory,
       path: 'user.email',
@@ -424,7 +409,7 @@ class GitAgent {
 
   /**
    * @summary Get file informations
-   * 
+   *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
    * @param {string} fileName
    * @returns {Promise<string>}
@@ -457,14 +442,11 @@ class GitAgent {
       throw new TypeError('Empty file name')
     }
 
-    await this.fs.promises.writeFile(
-      scribouilliGitRepo.path(fileName),
-      content,
-    )
+    await this.fs.promises.writeFile(scribouilliGitRepo.path(fileName), content)
     await git.add({
       fs: this.fs,
       filepath: fileName,
-      dir: scribouilliGitRepo.repoDirectory
+      dir: scribouilliGitRepo.repoDirectory,
     })
   }
 
@@ -480,7 +462,7 @@ class GitAgent {
 
     return await this.commit(
       scribouilliGitRepo,
-      'mise à jour du ficher de styles custom'
+      'mise à jour du ficher de styles custom',
     )
   }
 

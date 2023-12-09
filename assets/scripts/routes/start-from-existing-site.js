@@ -4,7 +4,7 @@ import store from '../store.js'
 import {
   fetchCurrentUserRepositories,
   fetchAuthenticatedUserLogin,
-} from '../actions.js'
+} from '../actions/current-user.js'
 import { svelteTarget } from '../config.js'
 import { replaceComponent } from '../routeComponentLifeCycle.js'
 import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
@@ -15,13 +15,12 @@ import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
  * @returns
  */
 const mapStateToProps = state => {
-  const { login, reposByAccount, currentRepository } = state
+  const { login, reposByAccount } = state
 
   return {
     currentAccount: login,
     // @ts-ignore
     currentAccountRepositories: reposByAccount[login],
-    currentRepository,
   }
 }
 

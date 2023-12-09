@@ -6,7 +6,7 @@ import ResolutionDesynchronisation from '../components/screens/ResolutionDesynch
 
 import { svelteTarget } from '../config.js'
 import { replaceComponent } from '../routeComponentLifeCycle.js'
-import { setCurrentRepositoryFromQuerystring } from '../actions.js'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 
 /**
  *
@@ -29,8 +29,8 @@ const mapStateToProps = state => {
 /**
  * @param {import('page').Context} _
  */
-export default ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+export default async ({ querystring }) => {
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const conflictResolution = new ResolutionDesynchronisation({
     target: svelteTarget,

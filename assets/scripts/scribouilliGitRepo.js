@@ -26,13 +26,13 @@ export default class {
     this.owner = owner
     this.repoName = repoName
 
-    this.repoId = repoId ? repoId : makeGithubRepoId(owner, repoName)
+    this.repoId = repoId ? repoId : makeRepoId(owner, repoName)
 
     Object.freeze(this)
   }
 
   get hostname() {
-    return new URL(origin).hostname
+    return new URL(this.origin).hostname
   }
 
   get repoDirectory() {
@@ -59,7 +59,7 @@ export default class {
  * @param {string} repoName
  * @returns {string}
  */
-export function makeGithubRepoId(owner, repoName) {
+export function makeRepoId(owner, repoName) {
   return `${owner}/${repoName}`
 }
 
@@ -67,25 +67,33 @@ export function makeGithubRepoId(owner, repoName) {
  *
  * @param {string} owner // may be an individual Github user or an organisation
  * @param {string} repoName
+ * @param {string} origin
  * @returns {string}
  */
-export function makeGithubPublicRepositoryURL(owner, repoName) {
-  return `https://github.com/${owner}/${repoName}`
+export function makePublicRepositoryURL(owner, repoName, origin) {
+  return `${origin}/${owner}/${repoName}`
 }
 
 /**
  *
  * @param {string} owner // may be an individual Github user or an organisation
  * @param {string} repoName
+ * @param {string} origin
  * @returns {string}
  */
-export function makeGithubPublishedWebsiteURL(owner, repoName) {
-  const publishedOrigin = `${owner.toLowerCase()}.github.io`
-  repoName = repoName.toLowerCase()
+export function makePublishedWebsiteURL(owner, repoName, origin) {
+  if (origin === 'https://github.com') {
+    const publishedOrigin = `${owner.toLowerCase()}.github.io`
+    repoName = repoName.toLowerCase()
 
-  if (publishedOrigin === repoName) {
-    return `https://${publishedOrigin}/`
-  } else {
-    return `https://${publishedOrigin}/${repoName}`
+    if (publishedOrigin === repoName) {
+      return `https://${publishedOrigin}/`
+    } else {
+      return `https://${publishedOrigin}/${repoName}`
+    }
+  } else if (origin === 'https://gitlab.com') {
+    return `https://${owner.toLowerCase()}.gitlab.io/${repoName.toLowerCase()}`
   }
+
+  return ''
 }

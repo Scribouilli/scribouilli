@@ -4,16 +4,9 @@ import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import Login from '../components/screens/Login.svelte'
+import { oAuthAppByProvider } from '../oauth-services-api/index.js'
 
 const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team`
-
-const oauthAppClientIdByProvider = new Map([
-  ['github.com', '64ecce0b01397c2499a6'],
-  [
-    'gitlab.com',
-    '4337f297cf1e74295f50f7a00eb66e3063fb3ef715e51c8d6412fb64a311fe8e',
-  ],
-])
 
 /**
  * @param {string} gitProvider
@@ -40,7 +33,7 @@ function makeLoginHref(gitProvider, client_id, redirect_url) {
     return `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,user:email&redirect_uri=${redirect_url}`
   } else {
     // assume HTTPS
-    return `https://${gitProvider}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_url}&response_type=code&scope=read_user`
+    return `https://${gitProvider}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_url}&response_type=code&scope=api+read_api`
   }
 }
 
@@ -59,7 +52,7 @@ export default ({ querystring }) => {
 
   const destination =
     location.origin + store.state.basePath + '/after-oauth-login'
-  const client_id = oauthAppClientIdByProvider.get(gitProvider)
+  const client_id = oAuthAppByProvider.get(gitProvider)?.client_id
   if (!client_id) {
     throw new TypeError(`Missing client_id`)
   }

@@ -18,18 +18,21 @@
  */
 
 /**
+ * @typedef {Object} GitSiteTemplate
+ * @property {string} url
+ * @property {string} description
+ * @property {string} githubRepoId
+ */
+
+/**
  * @typedef {Object} OAuthServiceAPI
  * @property {(url: string, requestParams?: RequestInit) => Promise<Response>} callAPI
- * @property {() => string|undefined} getAccessToken
+ * // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+ * @property {() => {username: string, password: string}} getOauthUsernameAndPassword
  * @property {() => Promise<any>} getAuthenticatedUser
- * @property {() => Promise<GithubUserEmails[]>} getUserEmails
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<GithubRepository>} getRepository
+ * @property {() => Promise<AuthenticatedUserEmails[]>} getUserEmails
  * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createDefaultRepository
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} addTopicOnRepository
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} updateRepositoryFeaturesSettings
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} deleteRepository
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} createPagesWebsiteFromRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo, template: GitSiteTemplate) => Promise<any>} createDefaultRepository
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isPagesWebsiteBuilt
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isRepositoryReady
@@ -50,7 +53,7 @@
  */
 
 /**
- * @typedef {Object} GithubUserEmails
+ * @typedef {Object} AuthenticatedUserEmails
  * @property {string} email
  * @property {boolean} primary
  */

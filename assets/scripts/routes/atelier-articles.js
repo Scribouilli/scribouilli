@@ -4,13 +4,13 @@ import lireFrontMatter from 'front-matter'
 import page from 'page'
 
 import store from '../store'
-import { checkRepositoryAvailabilityThen, handleErrors } from '../utils'
+import { handleErrors } from '../utils'
 
 import gitAgent from '../gitAgent'
 import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
-import { setCurrentRepositoryFromQuerystring } from '../actions'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
 import { deleteArticle, createArticle, updateArticle } from '../actions/article'
 import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
 
@@ -80,15 +80,13 @@ const makeMapStateToProps = fileName => state => {
  * @param {import('page').Context} _
  */
 export default async ({ querystring }) => {
-  setCurrentRepositoryFromQuerystring(querystring)
+  await setCurrentRepositoryFromQuerystring(querystring)
 
   const currentRepository = store.state.currentRepository
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
-
-  await checkRepositoryAvailabilityThen(currentRepository)
 
   const state = store.state
   const fileName = new URLSearchParams(querystring).get('path') ?? ''
@@ -108,8 +106,6 @@ export default async ({ querystring }) => {
         page(makeAtelierListArticlesURL(currentRepository))
       })
       .catch(msg => handleErrors(msg))
-
-    page(makeAtelierListArticlesURL(currentRepository))
   })
 
   articleContenu.$on(
