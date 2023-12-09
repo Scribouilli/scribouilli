@@ -21,11 +21,14 @@ export const oAuthAppByProvider = new Map([
         'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
     },
   ],
-])
-
-export const oAuthAppByType = new Map([
-  ['github', oAuthAppByProvider.get('github.com')],
-  ['gitlab', oAuthAppByProvider.get('gitlab.com')],
+  [
+    'git.scribouilli.org',
+    {
+      origin: 'https://git.scribouilli.org',
+      client_id:
+        '3e8ac6636615d396a8f73e02fa3880e7e2140981b0ca27b0f240a450f69f1c76',
+    },
+  ],
 ])
 
 /**
@@ -45,24 +48,18 @@ export const oAuthAppByType = new Map([
  */
 
 /**
- * @param {string} type
- * @param {{accessToken: string}} options
+ * @param {import('./../store.js').OAuthProvider} _
  *
  * @returns {OAuthServiceAPI}
  */
-const makeOAuthServiceAPI = (type, { accessToken }) => {
-  if (type === 'github') return new GitHubAPI(accessToken)
+const makeOAuthServiceAPI = ({ accessToken, origin }) => {
+  const hostname = new URL(origin).hostname
 
-  if (type === 'gitlab') {
-    // @ts-ignore
-    const origin = oAuthAppByType.get(type).origin
-
+  if (hostname === 'github.com') return new GitHubAPI(accessToken)
+  else {
+    // assuming a gitlab instance
     return new GitlabAPI(accessToken, origin)
   }
-
-  throw new TypeError(
-    `Le service d'authentificaton ${type} n'est pas supporté.`,
-  )
 }
 
 // @ts-ignore
@@ -87,9 +84,7 @@ export const getOAuthServiceAPI = () => {
     throw new TypeError('Missing accessToken or provider name')
   }
 
-  oAuthServiceAPI = makeOAuthServiceAPI(oAuthProvider.name, {
-    accessToken: oAuthProvider.accessToken,
-  })
+  oAuthServiceAPI = makeOAuthServiceAPI(oAuthProvider)
 
   return oAuthServiceAPI
 }

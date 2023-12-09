@@ -9,14 +9,14 @@ import {
   OAUTH_PROVIDER_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
   templates,
-} from '../config'
+} from '../config.js'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
 import { fetchCurrentUserRepositories } from '../actions/current-user.js'
 import { createRepositoryForCurrentAccount } from '../actions/setup.js'
-import { oAuthAppByType } from '../oauth-services-api/index.js'
 
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
@@ -31,8 +31,13 @@ const storeOAuthProviderAccess = () => {
     TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   )
 
+  let origin = url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER)
+
+  if (providerName === 'github') {
+    origin = 'https://github.com'
+  }
+
   if (accessToken && providerName) {
-    const origin = oAuthAppByType.get(providerName)?.origin || ''
     const oAuthProvider = {
       name: providerName,
       accessToken,

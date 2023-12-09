@@ -5,30 +5,28 @@
 <Skeleton>
   <section class="screen" id="choose-account">
     
-    <h2>Choisir un compte</h2>
+    <h2>Se connecter</h2>
     <p>
-      Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte
-      à un compte, soit sur <a href="https://gitlab.com/" target="_blank">gitlab.com</a>, 
-      <!-- soit sur <a href="https://git.scrbouilli.org/" target="_blank">git.scrbouilli.org</a>, -->
-      soit sur <a href="https://github.com/" target="_blank">GitHub</a>.
+      Scribouilli a besoin de se connecter à l'application qui hébergera votre petit site.
+      Vous pouvez : 
     </p>
 
     <ul class="descriptions">
       <li>
-        Sur gitlab.com, on peut vous demander de saisir une carte de paiement, même pour un usage complètement gratuit
+        Utiliser <a href="https://gitlab.com/">gitlab.com</a> qui est un hébergeur professionnel 
+        (si vous n'avez pas encore de compte, gitlb.com vous demandera votre numéro de carte de crédit, 
+        même pour un usage gratuit)
       </li>
-      <!--
-        <li>
-          Sur git.scrbouilli.org, vous nous laissez votre email et nous vous envoyons une invitation 
-          sous dans la journée ou le lendemain
-        </li>
-      -->
-      <li>Github.com est contrôlé par Microsoft</li>
+      <li>
+        Sur <a href="https://git.scribouilli.org/">git.scribouilli.org</a>, qui est notre application d'hébergement
+        (si vous n'avez pas encore en compte, nous prendrons le temps de valider votre compte manuellement)
+      </li>
+      <li>Utiliser Microsoft GitHub® si vous le connaissez déjà</li>
     </ul>
 
     <ul class="buttons">
       <li><a href="./account?provider=gitlab.com" class="btn">gitlab.com</a></li>
-      <!--<li><a href="./account?provider=git.scrbouilli.org" class="btn">git.scrbouilli.org</a></li>-->
+      <li><a href="./account?provider=git.scribouilli.org" class="btn">git.scribouilli.org</a></li>
       <li><a href="./account?provider=github.com" class="btn">github.com</a></li>
     </ul>
   </section>
