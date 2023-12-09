@@ -115,7 +115,7 @@ export const setupLocalRepository = async scribouilliGitRepo => {
  */
 export const createRepositoryForCurrentAccount = async (
   repoName,
-  template = '',
+  template = defaultRepositoryName,
 ) => {
   const login = await store.state.login
 
