@@ -36,6 +36,21 @@
   </section>
   {/if}
 
+  {#if gitProvider === 'git.scribouilli.org'}
+  <section class="screen" id="account">
+    <div>
+      <h2>Avez-vous un compte sur git.scribouilli.org&nbsp;?</h2>
+
+      <div>
+        <a href="./login?provider=git.scribouilli.org" class="btn">Oui, je me connecte</a>
+        <a href="./create-account?provider=git.scribouilli.org" class="btn"
+          >Non, je veux créer un compte</a
+        >
+      </div>
+    </div>
+  </section>
+  {/if}
+
   
 </Skeleton>
 

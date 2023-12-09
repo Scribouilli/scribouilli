@@ -1,6 +1,7 @@
 export const OAUTH_PROVIDER_STORAGE_KEY = 'scribouilli_oauth_provider'
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token'
 export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'
+export const TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER = 'origin'
 export const defaultRepositoryName = 'mon-scribouilli'
 export const gitHubApiBaseUrl = 'https://api.github.com'
 
