@@ -116,7 +116,7 @@ export default class GitHubAPI {
   }
 
   /** @type {OAuthServiceAPI["deploy"]} */
-  deploy({ repoId }, _ref) {
+  deploy({ repoId }) {
     return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/dispatches`, {
       method: 'POST',
       headers: {

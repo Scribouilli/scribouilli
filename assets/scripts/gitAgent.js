@@ -13,7 +13,7 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
-class GitAgent {
+export class GitAgent {
   constructor() {
     this.customCSSPath = 'assets/css/custom.css'
     this.fs = new FS('scribouilli')

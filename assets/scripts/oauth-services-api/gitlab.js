@@ -9,12 +9,14 @@ export default class GitLabAPI {
   /**
    * @param {string} accessToken
    * @param {string} origin
+   * @param {import('../gitAgent.js').GitAgent} gitAgent
    */
-  constructor(accessToken, origin) {
+  constructor(accessToken, origin, gitAgent) {
     /** @type {string | undefined} */
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
+    this.gitAgent = gitAgent
   }
 
   get apiBaseUrl() {
@@ -113,20 +115,24 @@ export default class GitLabAPI {
   }
 
   /** @type {OAuthServiceAPI["deploy"]} */
-  deploy({ repoId }, ref) {
-    return this.callAPI(
-      `${this.apiBaseUrl}/projects/${encodeURIComponent(repoId)}/pipelines`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + this.accessToken,
-          'Content-Type': 'application/json',
+  deploy(scribouilliGitRepo) {
+    return this.gitAgent.currentBranch(scribouilliGitRepo).then(branch => {
+      return this.callAPI(
+        `${this.apiBaseUrl}/projects/${encodeURIComponent(
+          scribouilliGitRepo.repoId,
+        )}/pipelines`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + this.accessToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ref: branch,
+          }),
         },
-        body: JSON.stringify({
-          ref,
-        }),
-      },
-    ).then(response => response.json())
+      )
+    })
   }
 
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
