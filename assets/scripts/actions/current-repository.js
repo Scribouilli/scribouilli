@@ -137,22 +137,20 @@ export const setBaseUrlInConfigIfNecessary = async baseUrl => {
     throw new TypeError('currentRepository is undefined')
   }
 
-  let publishedWebsiteURL
-  if (!baseUrl) {
-    publishedWebsiteURL = await currentRepository.publishedWebsiteURL
+  let newBaseUrl
+
+  if (baseUrl) {
+    newBaseUrl = baseUrl
+  } else {
+    const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
+    const url = new URL(publishedWebsiteURL)
+
+    newBaseUrl = url.pathname.replace(/\/$/, '')
   }
 
   const config = await getCurrentRepoConfig()
   /** @type {string} */
   const currentBaseURL = config.baseurl || ''
-
-  let newBaseUrl
-  if (baseUrl) {
-    newBaseUrl = baseUrl
-  } else {
-    const url = new URL(publishedWebsiteURL)
-    newBaseUrl = url.pathname.replace(/\/$/, '')
-  }
 
   if (currentBaseURL === newBaseUrl) {
     // the config does not need to be changed, so let's skip both write/commit/push
