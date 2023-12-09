@@ -197,7 +197,9 @@ export default class GitLabAPI {
   getPublishedWebsiteURL({ repoId }) {
     console.log('gitlab.getPublishedWebsiteURL', repoId)
     return this.callAPI(
-      `${this.apiBaseUrl}/projects/${repoId}/environments?per_page=1&order_by=updated_at&sort=desc`,
+      `${this.apiBaseUrl}/projects/${encodeURIComponent(
+        repoId,
+      )}/environments?per_page=1&order_by=updated_at&sort=desc`,
     )
       .then(response => response.json())
       .then(environments => {

@@ -140,7 +140,7 @@ export const setBaseUrlInConfigIfNecessary = async baseUrl => {
   let newBaseUrl
 
   if (baseUrl) {
-    newBaseUrl = baseUrl
+    newBaseUrl = baseUrl.replace(/\/$/, '')
   } else {
     const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
     const url = new URL(publishedWebsiteURL)
