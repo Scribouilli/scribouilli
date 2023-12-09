@@ -74,7 +74,7 @@
             class="project-name"
             target="_blank"
           >
-            {publishedWebsiteURL}
+            {publishedURL}
           </a>
         </p>
         {#if buildStatusClass}
