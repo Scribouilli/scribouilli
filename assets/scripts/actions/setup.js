@@ -6,15 +6,11 @@ import store from './../store.js'
 import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makePublicRepositoryURL,
-  makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
-import {
-  updateConfigWithBaseUrlAndPush,
-  getCurrentRepoConfig,
-} from './current-repository.js'
+import { setBaseUrlInConfigIfNecessary } from './current-repository.js'
 
 import '../types.js'
 
@@ -99,6 +95,29 @@ export const setupLocalRepository = async scribouilliGitRepo => {
 }
 
 /**
+ * @summary guess the published URL until a call to OAuthServiceAPI.getPublishedWebsiteURL is made
+ *
+ * @param {ScribouilliGitRepo} _
+ * @returns {string}
+ */
+export function guessBaseURL({ owner, repoName, origin }) {
+  if (origin === 'https://github.com') {
+    const publishedHostname = `${owner.toLowerCase()}.github.io`
+    repoName = repoName.toLowerCase()
+
+    return publishedHostname === repoName ? '' : `/${repoName}`
+  } else if (
+    origin === 'https://gitlab.com' ||
+    origin === 'https://git.scribouilli.org'
+  ) {
+    // because of Single Pages Domain enabled by default
+    return `/`
+  }
+
+  return ''
+}
+
+/**
  * @summary Create a repository for the current account
  *
  * @description This function creates a repository for the current account
@@ -140,17 +159,15 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
     owner: login,
     repoName: escapedRepoName,
     origin: origin,
-    publishedWebsiteURL: makePublishedWebsiteURL(
-      login,
-      escapedRepoName,
-      origin,
-    ),
     publicRepositoryURL: makePublicRepositoryURL(
       login,
       escapedRepoName,
       origin,
     ),
+    gitServiceProvider: getOAuthServiceAPI(),
   })
+
+  store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   return (
     getOAuthServiceAPI()
@@ -163,12 +180,11 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
       .then(() => {
         return setupLocalRepository(scribouilliGitRepo)
       })
-      .then(res => {
-        store.mutations.setCurrentRepository(scribouilliGitRepo)
-
-        // Il est nécessaire d'avoir ce premier commit et push pour que
-        // le déploiement de la GitLab Pages fonctionne.
-        return updateConfigWithBaseUrlAndPush()
+      .then(() => {
+        return getOAuthServiceAPI().deploy(scribouilliGitRepo)
+      })
+      .then(() => {
+        return setBaseUrlInConfigIfNecessary(guessBaseURL(scribouilliGitRepo))
       })
       .then(() => {
         page(makeAtelierListPageURL(scribouilliGitRepo))

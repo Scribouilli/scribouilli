@@ -8,13 +8,12 @@ import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
-  makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
-import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { handleErrors } from './../utils.js'
 import { fetchAuthenticatedUserLogin } from './current-user.js'
 import makeBuildStatus from './../buildStatus.js'
 import { writeFileAndPushChanges } from './file.js'
+import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
@@ -92,8 +91,8 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     repoName,
     repoId: makeRepoId(owner, repoName),
     origin: origin,
-    publishedWebsiteURL: makePublishedWebsiteURL(owner, repoName, origin),
     publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
+    gitServiceProvider: getOAuthServiceAPI(),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
@@ -102,6 +101,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   await gitAgent.pullOrCloneRepo(scribouilliGitRepo)
   await gitAgent.setAuthor(scribouilliGitRepo, login, email)
+  await setBaseUrlInConfigIfNecessary()
 
   getCurrentRepoArticles()
   getCurrentRepoPages()
@@ -123,26 +123,56 @@ export const setBuildStatus = scribouilliGitRepo => {
 }
 
 /**
- * @returns {ReturnType<isomorphicGit["push"]>}
+ * @description if baseurl param is set, always update the config with it
+ * otherwise, wait for currentRepository.publishedWebsiteURL and
+ * compute the new config.baseurl from it
+ *
+ * @param {string} [baseUrl]
+ * @returns {Promise<any>}
  */
-export const updateConfigWithBaseUrlAndPush = async () => {
+export const setBaseUrlInConfigIfNecessary = async baseUrl => {
   const currentRepository = store.state.currentRepository
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
 
+  let newBaseUrl
+
+  if (baseUrl) {
+    newBaseUrl = baseUrl
+  } else {
+    const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
+    const url = new URL(publishedWebsiteURL)
+
+    newBaseUrl = url.pathname.replace(/\/$/, '')
+  }
+
   const config = await getCurrentRepoConfig()
+  /** @type {string} */
+  const currentBaseURL = config.baseurl || ''
 
-  config.baseurl = `/${currentRepository.repoName}`
+  if (currentBaseURL === newBaseUrl) {
+    // the config does not need to be changed, so let's skip both write/commit/push
+    return
+  } else {
+    if (newBaseUrl === '') {
+      console.log('delete baseurl from config')
+      delete config.baseurl
+    } else {
+      console.log('update baseurl in config')
+      config.baseurl = newBaseUrl
+    }
 
-  const configYmlContent = yaml.dump(config)
+    const configYmlContent = yaml.dump(config)
 
-  return writeFileAndPushChanges(
-    '_config.yml',
-    configYmlContent,
-    'Ajout de `baseurl` dans la config',
-  )
+    console.log('configYmlContent', configYmlContent)
+    return writeFileAndPushChanges(
+      '_config.yml',
+      configYmlContent,
+      'Mise à jour de `baseurl` dans la config',
+    )
+  }
 }
 
 /**

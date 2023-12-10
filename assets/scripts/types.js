@@ -4,7 +4,7 @@
  * @property {string} owner
  * @property {string} repoName
  * @property {string} origin
- * @property {string} publishedWebsiteURL
+ * @property {Promise<string>} publishedWebsiteURL
  * @property {string} publicRepositoryURL
  * @property {string} hostname
  * @property {string} repoDirectory
@@ -31,11 +31,13 @@
  * @property {() => {username: string, password: string}} getOauthUsernameAndPassword
  * @property {() => Promise<any>} getAuthenticatedUser
  * @property {() => Promise<AuthenticatedUserEmails[]>} getUserEmails
- * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
  * @property {(scribouilliGitRepo: ScribouilliGitRepo, template: GitSiteTemplate) => Promise<any>} createDefaultRepository
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isRepositoryReady
+ * @property {() => Promise<GithubRepository[]>} getCurrentUserRepositories
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} deploy
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>} getPagesWebsiteDeploymentStatus
  * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isPagesWebsiteBuilt
- * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>} isRepositoryReady
+ * @property {(scribouilliGitRepo: ScribouilliGitRepo) => Promise<string | undefined>} getPublishedWebsiteURL
  */
 
 /**

@@ -1,22 +1,22 @@
-import remember from 'remember'
-
-import { OAUTH_PROVIDER_STORAGE_KEY } from './../config.js'
+//@ts-check
 
 import './../types.js'
 
 /**
- * @extends {OAuthServiceAPI}
+ * @implements {OAuthServiceAPI}
  */
-export default class GitHubAPI {
+export default class GitLabAPI {
   /**
    * @param {string} accessToken
    * @param {string} origin
+   * @param {import('../gitAgent.js').GitAgent} gitAgent
    */
-  constructor(accessToken, origin) {
+  constructor(accessToken, origin, gitAgent) {
     /** @type {string | undefined} */
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
+    this.gitAgent = gitAgent
   }
 
   get apiBaseUrl() {
@@ -99,11 +99,11 @@ export default class GitHubAPI {
     const { owner, repoName } = scribouilliGitRepo
 
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
+      method: 'POST',
       headers: {
         Authorization: 'Bearer ' + this.accessToken,
         'Content-Type': 'application/json',
       },
-      method: 'POST',
       body: JSON.stringify({
         import_url: gitRepoUrl,
         name: repoName,
@@ -112,6 +112,31 @@ export default class GitHubAPI {
         visibility: 'public',
       }),
     }).then(response => response.json())
+  }
+
+  /** @type {OAuthServiceAPI["deploy"]} */
+  deploy(scribouilliGitRepo) {
+    console.log('gitlab.deploy', scribouilliGitRepo)
+    return this.gitAgent.currentBranch(scribouilliGitRepo).then(branch => {
+      console.log('branch', branch)
+      return this.callAPI(
+        `${this.apiBaseUrl}/projects/${encodeURIComponent(
+          scribouilliGitRepo.repoId,
+        )}/pipelines`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + this.accessToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ref: branch,
+          }),
+        },
+      ).then(response => {
+        console.log('response', response)
+      })
+    })
   }
 
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
@@ -165,6 +190,23 @@ export default class GitHubAPI {
       })
       .catch(error => {
         return false
+      })
+  }
+
+  /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
+  getPublishedWebsiteURL({ repoId }) {
+    console.log('gitlab.getPublishedWebsiteURL', repoId)
+    return this.callAPI(
+      `${this.apiBaseUrl}/projects/${repoId}/environments?per_page=1&order_by=updated_at&sort=desc`,
+    )
+      .then(response => response.json())
+      .then(environments => {
+        console.log('environments', environments)
+        return environments[0].external_url
+      })
+      .catch(error => {
+        console.log('error', error)
+        return undefined
       })
   }
 

@@ -28,7 +28,7 @@
 
   $: buildStatusClass = buildStatus ? `build-${status}` : undefined
 
-  /** @type {string | undefined} */
+  /** @type {Promise<string> | undefined } */
   let publishedWebsiteURL
   $: publishedWebsiteURL = currentRepository?.publishedWebsiteURL
 
@@ -66,20 +66,22 @@
 
 <header>
   {#if publishedWebsiteURL}
-    <div>
-      <p>
-        <a
-          href="{publishedWebsiteURL}"
-          class="project-name"
-          target="_blank"
-        >
-          {publishedWebsiteURL}
-        </a>
-      </p>
-      {#if buildStatusClass}
-        <p class={buildStatusClass} />
-      {/if}
-    </div>
+    {#await publishedWebsiteURL then publishedURL}
+      <div>
+        <p>
+          <a
+            href="{publishedURL}"
+            class="project-name"
+            target="_blank"
+          >
+            {publishedWebsiteURL}
+          </a>
+        </p>
+        {#if buildStatusClass}
+          <p class={buildStatusClass} />
+        {/if}
+      </div>
+    {/await}
   {/if}
 
   <h1>
@@ -91,7 +93,7 @@
     >
   </h1>
 
-  {#if publishedWebsiteURL}
+  {#if currentRepository}
     <nav>
       <ul>
         <li>
@@ -129,7 +131,7 @@
 
 {#if conflict}
   <section class="warning">
-    <p>⚠️ Attention ! L'atelier ne peut plus se synchroniser avec le site web parce que les versions 
+    <p>⚠️ Attention ! L'atelier ne peut plus se synchroniser avec le site web parce que les versions
     de l'un et de l'autre sont irréconciliables. Le site ne va plus se mettre à jour</p>
 
     <p><a href={resolutionURL}>Aller sur la page dédiée de résolution du problème</a></p>
@@ -170,7 +172,7 @@
   header img {
     max-height: 3em;
   }
-  
+
   .warning{
     max-width: 40rem;
     margin: 0 auto;

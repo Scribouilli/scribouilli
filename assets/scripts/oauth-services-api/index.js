@@ -1,5 +1,6 @@
 import page from 'page'
 import store from './../store.js'
+import gitAgent from './../gitAgent.js'
 import GitHubAPI from './github.js'
 import GitlabAPI from './gitlab.js'
 
@@ -58,11 +59,11 @@ const makeOAuthServiceAPI = ({ accessToken, origin }) => {
   if (hostname === 'github.com') return new GitHubAPI(accessToken)
   else {
     // assuming a gitlab instance
-    return new GitlabAPI(accessToken, origin)
+    return new GitlabAPI(accessToken, origin, gitAgent)
   }
 }
 
-// @ts-ignore
+/** @type {OAuthServiceAPI} */
 let oAuthServiceAPI
 
 /**
