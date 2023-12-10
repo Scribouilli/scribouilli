@@ -101,7 +101,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   await gitAgent.pullOrCloneRepo(scribouilliGitRepo)
   await gitAgent.setAuthor(scribouilliGitRepo, login, email)
-  await checkBaseUrlInConfig(scribouilliGitRepo)
+  await setBaseUrlInConfigIfNecessary()
 
   getCurrentRepoArticles()
   getCurrentRepoPages()
@@ -122,35 +122,25 @@ export const setBuildStatus = scribouilliGitRepo => {
   store.state.buildStatus.checkStatus()
 }
 
-/**
- * @param {ScribouilliGitRepo} scribouilliGitRepo
- * @returns {Promise<void>}
- */
-export const checkBaseUrlInConfig = async scribouilliGitRepo => {
-  const { publishedWebsiteURL } = scribouilliGitRepo
-
-  const config = await getCurrentRepoConfig()
-  const url = new URL(publishedWebsiteURL)
-  const baseUrl = url.pathname.replace(/\/$/, '')
-
-  if (baseUrl === '' && typeof config.baseurl === 'undefined') {
-    return Promise.resolve()
-  }
-
-  if (baseUrl !== config.baseurl) {
-    updateConfigWithBaseUrlAndPush()
-  }
-}
 
 /**
- * @returns {ReturnType<isomorphicGit["push"]>}
+ * @description if baseurl param is set, always update the config with it
+ * otherwise, wait for currentRepository.publishedWebsiteURL and 
+ * compute the new config.baseurl from it
+ *
+ * @param {string} [baseUrl]
+ * @returns {Promise<any>}
  */
-export const updateConfigWithBaseUrlAndPush = async () => {
+export const setBaseUrlInConfigIfNecessary = async (baseUrl) => {
   const currentRepository = store.state.currentRepository
-  const publishedWebsiteURL = currentRepository?.publishedWebsiteURL
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
+  }
+
+  let publishedWebsiteURL;
+  if(!baseUrl){
+    publishedWebsiteURL = await currentRepository.publishedWebsiteURL
   }
 
   if (!publishedWebsiteURL) {
@@ -158,25 +148,41 @@ export const updateConfigWithBaseUrlAndPush = async () => {
   }
 
   const config = await getCurrentRepoConfig()
-  const url = new URL(publishedWebsiteURL)
-  const baseUrl = url.pathname.replace(/\/$/, '')
-
-  if (baseUrl === '') {
-    console.log('delete baseurl from config')
-    delete config.baseurl
-  } else {
-    console.log('update baseurl in config')
-    config.baseurl = baseUrl
+  /** @type {string} */
+  const currentBaseURL = config.baseurl || ''
+  
+  let newBaseUrl;
+  if(baseUrl){
+    newBaseUrl = baseUrl
+  }
+  else{
+    const url = new URL(publishedWebsiteURL)
+    newBaseUrl = url.pathname.replace(/\/$/, '')
   }
 
-  const configYmlContent = yaml.dump(config)
+  if(currentBaseURL === newBaseUrl) {
+    // the config does not need to be changed, so let's skip both write/commit/push
+    return;
+  }
+  else{
+    if (newBaseUrl === '') {
+      console.log('delete baseurl from config')
+      delete config.baseurl
+    } else {
+      console.log('update baseurl in config')
+      config.baseurl = newBaseUrl
+    }
+  
+    const configYmlContent = yaml.dump(config)
+  
+    console.log('configYmlContent', configYmlContent)
+    return writeFileAndPushChanges(
+      '_config.yml',
+      configYmlContent,
+      'Mise à jour de `baseurl` dans la config',
+    )
+  }
 
-  console.log('configYmlContent', configYmlContent)
-  return writeFileAndPushChanges(
-    '_config.yml',
-    configYmlContent,
-    'Mise à jour de `baseurl` dans la config',
-  )
 }
 
 /**
