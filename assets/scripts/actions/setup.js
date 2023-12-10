@@ -6,14 +6,12 @@ import store from './../store.js'
 import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makePublicRepositoryURL,
-  makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
 import {
   updateConfigWithBaseUrlAndPush,
-  getCurrentRepoConfig,
 } from './current-repository.js'
 
 import '../types.js'
@@ -140,16 +138,12 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
     owner: login,
     repoName: escapedRepoName,
     origin: origin,
-    publishedWebsiteURL: makePublishedWebsiteURL(
-      login,
-      escapedRepoName,
-      origin,
-    ),
     publicRepositoryURL: makePublicRepositoryURL(
       login,
       escapedRepoName,
       origin,
     ),
+    gitServiceProvider: getOAuthServiceAPI()
   })
 
   return (

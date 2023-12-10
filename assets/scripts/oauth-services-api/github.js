@@ -2,8 +2,10 @@ import { gitHubApiBaseUrl } from './../config.js'
 
 import './../types.js'
 
+const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
+
 /**
- * @extends {OAuthServiceAPI}
+ * @implements {OAuthServiceAPI}
  */
 export default class GitHubAPI {
   /**
@@ -58,7 +60,7 @@ export default class GitHubAPI {
       {
         headers: {
           Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
+          Accept: GITHUB_JSON_ACCEPT_HEADER,
         },
         method: 'POST',
         body: JSON.stringify({
@@ -72,7 +74,7 @@ export default class GitHubAPI {
       return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/topics`, {
         headers: {
           Authorization: 'token ' + this.accessToken,
-          Accept: 'application/vnd.github+json',
+          Accept: GITHUB_JSON_ACCEPT_HEADER,
         },
         method: 'PUT',
         body: JSON.stringify({
@@ -87,7 +89,7 @@ export default class GitHubAPI {
             method: 'POST',
             headers: {
               Authorization: 'token ' + this.accessToken,
-              Accept: 'application/vnd.github+json',
+              Accept: GITHUB_JSON_ACCEPT_HEADER,
             },
             body: JSON.stringify({
               homepage: publishedWebsiteURL,
@@ -100,11 +102,11 @@ export default class GitHubAPI {
         .then(() => {
           // Activate GitHub Pages
           return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
+            method: 'POST',
             headers: {
               Authorization: 'token ' + this.accessToken,
-              Accept: 'applicatikn/vnd.github+json',
+              Accept: GITHUB_JSON_ACCEPT_HEADER,
             },
-            method: 'POST',
             body: JSON.stringify({
               build_type: 'workflow',
             }),
@@ -156,9 +158,19 @@ export default class GitHubAPI {
       })
   }
 
-  /**
-   * @type {OAuthServiceAPI["callAPI"]}
-   */
+  /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
+  getPublishedWebsiteURL({ repoId }){
+    return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/pages`, {
+      headers: {
+        Authorization: 'token ' + this.accessToken,
+        Accept: GITHUB_JSON_ACCEPT_HEADER,
+      }
+    })
+    .then(resp => resp.json())
+    .then(({html_url}) => html_url ? html_url : undefined)
+  }
+
+  /** @type {OAuthServiceAPI["callAPI"]} */
   callAPI(url, requestParams) {
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {

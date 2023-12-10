@@ -62,7 +62,7 @@ const makeOAuthServiceAPI = ({ accessToken, origin }) => {
   }
 }
 
-// @ts-ignore
+/** @type {OAuthServiceAPI} */
 let oAuthServiceAPI
 
 /**

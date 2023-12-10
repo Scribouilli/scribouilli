@@ -8,13 +8,12 @@ import gitAgent from './../gitAgent'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
-  makePublishedWebsiteURL,
 } from './../scribouilliGitRepo.js'
-import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { handleErrors } from './../utils.js'
 import { fetchAuthenticatedUserLogin } from './current-user.js'
 import makeBuildStatus from './../buildStatus.js'
 import { writeFileAndPushChanges } from './file.js'
+import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
@@ -92,8 +91,8 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
     repoName,
     repoId: makeRepoId(owner, repoName),
     origin: origin,
-    publishedWebsiteURL: makePublishedWebsiteURL(owner, repoName, origin),
     publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
+    gitServiceProvider: getOAuthServiceAPI()
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)

@@ -1,13 +1,11 @@
-import remember from 'remember'
-
-import { OAUTH_PROVIDER_STORAGE_KEY } from './../config.js'
+//@ts-check
 
 import './../types.js'
 
 /**
- * @extends {OAuthServiceAPI}
+ * @implements {OAuthServiceAPI}
  */
-export default class GitHubAPI {
+export default class GitLabAPI {
   /**
    * @param {string} accessToken
    * @param {string} origin

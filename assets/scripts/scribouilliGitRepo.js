@@ -7,28 +7,34 @@ export default class {
    * @param { object } _
    * @param { string } [_.repoId]
    * @param { string } _.origin
-   * @param { string } _.publishedWebsiteURL
    * @param { string } _.publicRepositoryURL
    * @param { string } _.owner
    * @param { string } _.repoName
+   * @param { OAuthServiceAPI } _.gitServiceProvider
    */
   constructor({
     repoId,
     origin,
-    publishedWebsiteURL,
     publicRepositoryURL,
     owner,
     repoName,
+    gitServiceProvider
   }) {
     this.origin = origin
-    this.publishedWebsiteURL = publishedWebsiteURL
+    this.publishedWebsiteURL = guessPublishedWebsiteURL(owner, repoName, origin)
     this.publicRepositoryURL = publicRepositoryURL
     this.owner = owner
     this.repoName = repoName
 
     this.repoId = repoId ? repoId : makeRepoId(owner, repoName)
 
-    Object.freeze(this)
+    gitServiceProvider.getPublishedWebsiteURL(this)
+    .then(url => {
+      console.log('gitServiceProvider.getPublishedWebsiteURL', url)
+
+      if(url) 
+        this.publishedWebsiteURL = url
+    })
   }
 
   get hostname() {
@@ -75,13 +81,14 @@ export function makePublicRepositoryURL(owner, repoName, origin) {
 }
 
 /**
- *
+ * @summary guess the published URL until a call to OAuthServiceAPI.getPublishedWebsiteURL is made
+ * 
  * @param {string} owner // may be an individual Github user or an organisation
  * @param {string} repoName
  * @param {string} origin
  * @returns {string}
  */
-export function makePublishedWebsiteURL(owner, repoName, origin) {
+export function guessPublishedWebsiteURL(owner, repoName, origin) {
   if (origin === 'https://github.com') {
     const publishedOrigin = `${owner.toLowerCase()}.github.io`
     repoName = repoName.toLowerCase()

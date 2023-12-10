@@ -33,11 +33,17 @@ const storeOAuthProviderAccess = () => {
 
   let origin = url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER)
 
-  if (providerName === 'github') {
-    origin = 'https://github.com'
+  if(!origin){
+    if (providerName === 'github') {
+      origin = 'https://github.com'
+    }
+    else{
+      throw new TypeError('missing origin')
+    }
   }
 
   if (accessToken && providerName) {
+    /** @type {import('../store').OAuthProvider} */
     const oAuthProvider = {
       name: providerName,
       accessToken,
