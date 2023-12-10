@@ -97,11 +97,11 @@ export default class GitLabAPI {
     const { owner, repoName } = scribouilliGitRepo
 
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
+      method: 'POST',
       headers: {
         Authorization: 'Bearer ' + this.accessToken,
         'Content-Type': 'application/json',
       },
-      method: 'POST',
       body: JSON.stringify({
         import_url: gitRepoUrl,
         name: repoName,
@@ -165,6 +165,20 @@ export default class GitLabAPI {
         return false
       })
   }
+
+  /** @type {OAuthServiceAPI["getPublishedWebsiteURL"]} */
+  getPublishedWebsiteURL({ repoId }){
+    return this.callAPI(
+      `${this.apiBaseUrl}/projects/${repoId}/environments?per_page=1&order_by=updated_at&sort=desc`,
+    )
+    .then(response => response.json())
+    .then(environments => {
+      return environments[0].external_url
+    })
+    .catch(() => {
+      return undefined
+    })
+}
 
   /**
    * @type {OAuthServiceAPI["callAPI"]}
