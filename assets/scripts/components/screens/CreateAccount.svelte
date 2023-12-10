@@ -54,7 +54,26 @@
     </div>
   </section>
   {/if}
-  
+
+  {#if gitProvider === 'git.scribouilli.org'}
+    <section class="screen">
+      <div>
+        <h2>Créer un compte sur git.scribouilli.org</h2>
+
+        <p>
+          Pour vérifier que vous n'êtes pas un robot, envoyez-nous un mail à
+          <strong>coucou@scribouilli.org</strong> en indiquant :
+        </p>
+
+        <ul class="simple-list">
+          <li>l'email avec lequel vous voulez créer votre compte,</li>
+          <li>un message pour nous indiquer quel genre de petit site vous voulez
+          créer.</li>
+        </ul>
+      </div>
+    </section>
+  {/if}
+
 </Skeleton>
 
 <style lang="scss">
@@ -92,4 +111,11 @@
     justify-content: center;
     margin-top: 4rem;
   }
+
+  .simple-list {
+    padding: 1rem 5rem;
+    text-align: left;
+    list-style-type: disc;
+    list-style-position: inside;
+   }
 </style>
