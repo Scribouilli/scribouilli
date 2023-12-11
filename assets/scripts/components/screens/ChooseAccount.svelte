@@ -8,26 +8,27 @@
     <h2>Se connecter</h2>
     <p>
       Scribouilli a besoin de se connecter à l'application qui hébergera votre petit site.
-      Vous pouvez : 
+    </p>
+    <p>
+      Vous pouvez utiliser : 
     </p>
 
     <ul class="descriptions">
       <li>
-        Utiliser <a href="https://gitlab.com/">gitlab.com</a> qui est un hébergeur professionnel 
-        (si vous n'avez pas encore de compte, gitlb.com vous demandera votre numéro de carte de crédit, 
-        même pour un usage gratuit)
+        <strong><a href="https://gitlab.com/">Gitlab.com</a></strong> qui est un hébergeur professionnel 
+        (si vous n'avez pas encore de compte, Gitlab <a href="https://docs.gitlab.com/ee/security/identity_verification.html#credit-card-verification">vous demandera votre numéro de carte de crédit</a> pour vérifier votre identité)
       </li>
       <li>
-        Sur <a href="https://git.scribouilli.org/">git.scribouilli.org</a>, qui est notre application d'hébergement
+        <a href="https://git.scribouilli.org/">ScribouGit</a>, l'hébergement de l'équipe de Scribouilli
         (si vous n'avez pas encore en compte, nous prendrons le temps de valider votre compte manuellement)
       </li>
-      <li>Utiliser Microsoft GitHub® si vous le connaissez déjà</li>
+      <li><a href="https://github.com/">Microsoft GitHub®</a>, si vous le connaissez déjà</li>
     </ul>
 
     <ul class="buttons">
-      <li><a href="./account?provider=gitlab.com" class="btn">gitlab.com</a></li>
-      <li><a href="./account?provider=git.scribouilli.org" class="btn">git.scribouilli.org</a></li>
-      <li><a href="./account?provider=github.com" class="btn">github.com</a></li>
+      <li><a href="./account?provider=gitlab.com" class="btn">Gitlab</a></li>
+      <li><a href="./account?provider=git.scribouilli.org" class="btn">Scribougit</a></li>
+      <li><a href="./account?provider=github.com" class="btn">Github</a></li>
     </ul>
   </section>
 </Skeleton>
