@@ -74,8 +74,6 @@ export default () => {
   if (type === 'github' || type === 'gitlab') {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 0) {
-        // If the user has no repository, we automatically create one for them.
-
         page.redirect('/creer-un-nouveau-site')
       } else {
         store.mutations.setReposForAccount({
