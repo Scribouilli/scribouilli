@@ -37,26 +37,6 @@ const waitRepoReady = scribouilliGitRepo => {
 }
 
 /**
- * @param {ScribouilliGitRepo} scribouilliGitRepo
- * @returns {Promise<void>}
- */
-const waitGithubPages = scribouilliGitRepo => {
-  return new Promise(resolve => {
-    const timer = setInterval(() => {
-      getOAuthServiceAPI()
-        .isPagesWebsiteBuilt(scribouilliGitRepo)
-        // @ts-ignore
-        .then(res => {
-          if (res) {
-            clearInterval(timer)
-            resolve()
-          }
-        })
-    }, 5000)
-  })
-}
-
-/**
  * @returns {Promise<void>}
  */
 export const waitOauthProvider = () => {

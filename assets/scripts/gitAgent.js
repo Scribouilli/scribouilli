@@ -141,6 +141,7 @@ export class GitAgent {
       .catch(err => {
         console.log(
           'failliblePush error ! Assuming the error is that we are not up to date with the remote',
+          err,
         )
         return this.fetchAndTryMerging(scribouilliGitRepo).then(() => {
           console.log('pull/merge succeeded, try to push again')
@@ -150,6 +151,7 @@ export class GitAgent {
       .catch(err => {
         console.log(
           'the merge failed or the second push failed, there is nothing much we can try automatocally',
+          err,
         )
         return err
       })

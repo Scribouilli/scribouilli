@@ -69,7 +69,7 @@ export default class GitHubAPI {
           description: 'Mon site Scribouilli',
         }),
       },
-    ).then(response => {
+    ).then(() => {
       // Apply topic to the new repository
       return this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}/topics`, {
         headers: {
@@ -154,7 +154,7 @@ export default class GitHubAPI {
       .then(response => {
         return response === 'success'
       })
-      .catch(error => {
+      .catch(() => {
         return false
       })
   }
@@ -167,7 +167,7 @@ export default class GitHubAPI {
       .then(response => {
         return response.ok
       })
-      .catch(error => {
+      .catch(() => {
         return false
       })
   }
