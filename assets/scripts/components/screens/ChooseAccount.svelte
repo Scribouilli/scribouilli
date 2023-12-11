@@ -20,9 +20,9 @@
       </li>
       <li>
         <a href="https://git.scribouilli.org/">ScribouGit</a>, l'hébergement de l'équipe de Scribouilli
-        (si vous n'avez pas encore en compte, nous prendrons le temps de valider votre compte manuellement)
+        (si vous n'avez pas encore de compte, nous prendrons le temps de le valider manuellement)
       </li>
-      <li><a href="https://github.com/">Microsoft GitHub®</a>, si vous le connaissez déjà</li>
+      <li><a href="https://github.com/">Microsoft GitHub®</a>, si vous l'utilisez déjà</li>
     </ul>
 
     <ul class="buttons">
