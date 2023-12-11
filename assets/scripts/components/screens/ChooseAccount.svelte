@@ -4,18 +4,18 @@
 
 <Skeleton>
   <section class="screen" id="choose-account">
-    
+
     <h2>Se connecter</h2>
     <p>
       Scribouilli a besoin de se connecter à l'application qui hébergera votre petit site.
     </p>
     <p>
-      Vous pouvez utiliser : 
+      Vous pouvez utiliser :
     </p>
 
     <ul class="descriptions">
       <li>
-        <strong><a href="https://gitlab.com/">Gitlab.com</a></strong> qui est un hébergeur professionnel 
+        <strong><a href="https://gitlab.com/">Gitlab.com</a></strong> qui est un hébergeur professionnel
         (si vous n'avez pas encore de compte, Gitlab <a href="https://docs.gitlab.com/ee/security/identity_verification.html#credit-card-verification">vous demandera votre numéro de carte de crédit</a> pour vérifier votre identité)
       </li>
       <li>
@@ -35,14 +35,18 @@
 
 <style lang="scss">
   #choose-account {
-    max-width: 70%;
+    max-width: 80ch;
     margin: 0 auto;
 
     ul.descriptions {
       text-align: left;
-      list-style: '- ';
+      list-style-type: disc;
 
-      margin-bottom: 1rem;
+      margin-bottom: 3rem;
+
+      li {
+        margin-bottom: 1rem;
+      }
     }
 
     ul.buttons{
