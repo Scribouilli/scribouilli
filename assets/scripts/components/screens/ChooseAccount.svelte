@@ -7,7 +7,7 @@
 
     <h2>Se connecter</h2>
     <p>
-      Scribouilli a besoin de se connecter à l'application qui hébergera votre petit site.
+      Scribouilli a besoin de se connecter à l'application qui hébergera votre petit&nbsp;site
     </p>
     <p>
       Vous pouvez utiliser :
@@ -19,7 +19,7 @@
         (si vous n'avez pas encore de compte, Gitlab <a href="https://docs.gitlab.com/ee/security/identity_verification.html#credit-card-verification">vous demandera votre numéro de carte de crédit</a> pour vérifier votre identité)
       </li>
       <li>
-        <a href="https://git.scribouilli.org/">ScribouGit</a>, l'hébergement de l'équipe de Scribouilli
+        <strong><a href="https://git.scribouilli.org/">ScribouGit</a></strong>, l'hébergement géré par l'équipe de Scribouilli
         (si vous n'avez pas encore de compte, nous prendrons le temps de le valider manuellement)
       </li>
       <li><a href="https://github.com/">Microsoft GitHub®</a>, si vous l'utilisez déjà</li>
