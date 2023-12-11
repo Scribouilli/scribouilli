@@ -65,31 +65,33 @@
 </script>
 
 <header>
-  {#await publishedWebsiteURL}
-    <div>
-      <p>
-        (Chargement en cours…)
-      </p>
-      {#if buildStatusClass}
-        <p class={buildStatusClass} />
-      {/if}
-    </div>
-  {:then publishedURL}
-    <div>
-      <p>
-        <a
-          href="{publishedURL}"
-          class="project-name"
-          target="_blank"
-        >
-          {publishedURL}
-        </a>
-      </p>
-      {#if buildStatusClass}
-        <p class={buildStatusClass} />
-      {/if}
-    </div>
-  {/await}
+  {#if currentRepository}
+    {#await publishedWebsiteURL}
+      <div>
+        <p>
+          (Chargement en cours…)
+        </p>
+        {#if buildStatusClass}
+          <p class={buildStatusClass} />
+        {/if}
+      </div>
+    {:then publishedURL}
+      <div>
+        <p>
+          <a
+            href="{publishedURL}"
+            class="project-name"
+            target="_blank"
+          >
+            {publishedURL}
+          </a>
+        </p>
+        {#if buildStatusClass}
+          <p class={buildStatusClass} />
+        {/if}
+      </div>
+    {/await}
+  {/if}
 
   <h1>
     <a href={homeURL} class="go-home"

@@ -33,11 +33,10 @@ const storeOAuthProviderAccess = () => {
 
   let origin = url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER)
 
-  if(!origin){
+  if (!origin) {
     if (providerName === 'github') {
       origin = 'https://github.com'
-    }
-    else{
+    } else {
       throw new TypeError('missing origin')
     }
   }
@@ -75,11 +74,7 @@ export default () => {
   if (type === 'github' || type === 'gitlab') {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 0) {
-        // If the user has no repository, we automatically create one for them.
-        createRepositoryForCurrentAccount(
-          defaultRepositoryName,
-          templates.default,
-        )
+        page.redirect('/creer-un-nouveau-site')
       } else {
         store.mutations.setReposForAccount({
           login: store.state.login,
