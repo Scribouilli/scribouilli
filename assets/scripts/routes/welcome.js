@@ -12,7 +12,7 @@ import Welcome from '../components/screens/Welcome.svelte'
 export default () => {
   let props = {}
 
-  if (!!store.state.accessToken) {
+  if (store.state.oAuthProvider) {
     props = {
       isFetchingCurrentUserRepos: true,
     }
@@ -25,6 +25,7 @@ export default () => {
         page(`/atelier-list-pages?repoName=${repoName}&account=${account}`)
       } else {
         store.mutations.setReposForAccount({
+          // @ts-ignore
           login: store.state.login,
           repos,
         })

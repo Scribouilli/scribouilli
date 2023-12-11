@@ -1,4 +1,20 @@
 /**
+ * @typedef {Object} Page
+ * @property {string} path
+ * @property {string} title
+ * @property {string} [content]
+ * @property {boolean} [inMenu]
+ * @property {number} index
+ */
+
+/**
+ * @typedef {Object} Article
+ * @property {string} path
+ * @property {string} title
+ * @property {string} [content]
+ */
+
+/**
  * @typedef {Object} ScribouilliGitRepo
  * @property {string} repoId
  * @property {string} owner
