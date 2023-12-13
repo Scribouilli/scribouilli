@@ -66,6 +66,7 @@
         </p>
 
         <ul class="simple-list">
+          <li>le pseudo que vous souhaitez,</li>
           <li>l'email avec lequel vous voulez créer votre compte,</li>
           <li>un message pour nous indiquer quel genre de petit site vous voulez
           créer.</li>
