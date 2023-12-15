@@ -69,7 +69,7 @@
     {#await publishedWebsiteURL}
       <div>
         <p>
-          (Chargement en cours…)
+          (L'adresse du site va apparaître ici…)
         </p>
         {#if buildStatusClass}
           <p class={buildStatusClass} />
