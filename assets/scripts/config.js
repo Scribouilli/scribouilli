@@ -10,12 +10,12 @@ export const gitHubApiBaseUrl = 'https://api.github.com'
 export const templates = [
   {
     url: 'https://github.com/Scribouilli/site-template.git',
-    description: 'Un petit site Scribouilli tout simple',
+    description: 'mon site vitrine ou mon blog',
     githubRepoId: 'Scribouilli/site-template',
   },
   {
     url: 'https://github.com/Scribouilli/site-template-framalibre.git',
-    description: 'Un mini-site Framalibre',
+    description: 'ma liste de recommandations liée à Framalibre',
     githubRepoId: 'Scribouilli/site-template-framalibre',
   },
 ]
