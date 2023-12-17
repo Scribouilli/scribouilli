@@ -36,7 +36,7 @@ export default class {
             resolve(url) 
           }
         })
-      }, 10*1000)
+      }, 1000)
     })
   }
 
