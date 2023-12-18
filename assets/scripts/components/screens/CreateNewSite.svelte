@@ -53,8 +53,8 @@
           </div>
 
           <div>
-            <label for="name">Je veux créer :</label>
-            <select id="name" bind:value={selectedTemplate}>
+            <label for="template">Je veux créer :</label>
+            <select id="template" bind:value={selectedTemplate}>
               {#each templates as template}
                 <option value={template} selected={template === templates.default}>{template.description}</option>
               {/each}
@@ -88,6 +88,10 @@
   select {
     font-size: 1.2rem;
     padding: 0.5em;
+  }
+
+  label[for="template"] {
+    margin-top: 1rem;
   }
 
   .actions-zone {
