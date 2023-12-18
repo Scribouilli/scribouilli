@@ -15,19 +15,19 @@
 
     <ul class="descriptions">
       <li>
-        <strong><a href="https://gitlab.com/">Gitlab.com</a></strong> qui est un hébergeur professionnel
+        <strong>Gitlab.com</strong> qui est un hébergeur professionnel
         (si vous n'avez pas encore de compte, Gitlab <a href="https://docs.gitlab.com/ee/security/identity_verification.html#credit-card-verification">vous demandera votre numéro de carte de crédit</a> pour vérifier votre identité)
       </li>
       <li>
-        <strong><a href="https://git.scribouilli.org/">ScribouGit</a></strong>, l'hébergement géré par l'équipe de Scribouilli
+        <strong>ScribouGit</strong>, l'hébergement géré par l'équipe de Scribouilli
         (si vous n'avez pas encore de compte, nous prendrons le temps de le valider manuellement)
       </li>
-      <li><a href="https://github.com/">Microsoft GitHub®</a>, si vous l'utilisez déjà</li>
+      <li>Microsoft GitHub®, si vous l'utilisez déjà</li>
     </ul>
 
     <ul class="buttons">
       <li><a href="./account?provider=gitlab.com" class="btn">Gitlab</a></li>
-      <li><a href="./account?provider=git.scribouilli.org" class="btn">Scribougit</a></li>
+      <li><a href="./account?provider=git.scribouilli.org" class="btn">ScribouGit</a></li>
       <li><a href="./account?provider=github.com" class="btn">Github</a></li>
     </ul>
   </section>
