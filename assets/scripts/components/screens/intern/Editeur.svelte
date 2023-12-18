@@ -33,6 +33,7 @@
   import { makeFileNameFromTitle } from '../../../utils'
   import store from '../../../store'
   import { writeFileAndCommit } from '../../../actions/file'
+  import './../../../../styles/editeur-preview/framalibre.css'
 
   /** @type {FileList} */
   let image
