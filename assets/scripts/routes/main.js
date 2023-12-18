@@ -23,10 +23,10 @@ import resolutionDesynchronisation from './resolution-desynchronisation.js'
 
 /**
  *
- * @param {any} context
+ * @param {any} _
  * @param {any} next
  */
-function waitOauthProviderMiddleware(context, next) {
+function waitOauthProviderMiddleware(_, next) {
   waitOauthProvider().then(next)
 }
 

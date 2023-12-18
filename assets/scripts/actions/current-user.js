@@ -5,7 +5,7 @@ import page from 'page'
 import gitAgent from './../gitAgent.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import store from './../store.js'
-import { handleErrors, logMessage } from './../utils'
+import { logMessage } from './../utils'
 
 gitAgent.onMergeConflict = resolutionOptions => {
   store.mutations.setConflict(resolutionOptions)

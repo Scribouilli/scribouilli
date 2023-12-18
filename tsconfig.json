@@ -12,6 +12,8 @@
     "target": "esnext",
     "lib": ["ES2022", "dom", "dom.iterable"],
     "downlevelIteration": true,
-    "types": ["node", "mocha"]
+    "types": ["node", "mocha"],
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   }
 }

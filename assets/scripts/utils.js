@@ -4,8 +4,6 @@ import page from 'page'
 import { format } from 'date-fns'
 
 import store from './store.js'
-import { getOAuthServiceAPI } from './oauth-services-api/index.js'
-import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /**
  * @summary Handle errors catched by Promises

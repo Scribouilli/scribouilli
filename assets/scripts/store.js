@@ -30,7 +30,7 @@ import ScribouilliGitRepo from './scribouilliGitRepo.js'
  * @property {any[]} [articles]
  * @property {any} buildStatus
  * @property {string} basePath
- * @property {{css: string}} theme
+ * @property {{css?: string}} theme
  *
  * deprecated
  * @property {string} [accessToken]
@@ -178,7 +178,7 @@ const store = Store({
     /**
      *
      * @param {ScribouilliState} state
-     * @param {string} css
+     * @param {ScribouilliState['theme']['css']} css
      */
     setTheme(state, css) {
       state.theme.css = css

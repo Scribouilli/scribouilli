@@ -11,7 +11,6 @@ import {
 } from '../actions/current-repository.js'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
-import page from 'page'
 import { writeFileAndCommit, deleteFileAndCommit } from '../actions/file'
 
 const blogMdContent = `---

@@ -96,7 +96,7 @@ export default class GitLabAPI {
 
   /** @type {OAuthServiceAPI["createDefaultRepository"]} */
   createDefaultRepository(scribouilliGitRepo, { url: gitRepoUrl }) {
-    const { owner, repoName } = scribouilliGitRepo
+    const { repoName } = scribouilliGitRepo
 
     return this.callAPI(`${this.apiBaseUrl}/projects`, {
       method: 'POST',
@@ -171,7 +171,7 @@ export default class GitLabAPI {
       .then(response => {
         return response === 'success'
       })
-      .catch(error => {
+      .catch(() => {
         return false
       })
   }
@@ -188,7 +188,7 @@ export default class GitLabAPI {
       .then(response => {
         return response.ok
       })
-      .catch(error => {
+      .catch(() => {
         return false
       })
   }

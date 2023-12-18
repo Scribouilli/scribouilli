@@ -5,18 +5,15 @@ import remember from 'remember'
 
 import {
   svelteTarget,
-  defaultRepositoryName,
   OAUTH_PROVIDER_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
-  templates,
 } from '../config.js'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
 import { fetchCurrentUserRepositories } from '../actions/current-user.js'
-import { createRepositoryForCurrentAccount } from '../actions/setup.js'
 
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)

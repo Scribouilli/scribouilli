@@ -14,8 +14,6 @@ import { setCurrentRepositoryFromQuerystring } from '../actions/current-reposito
 import { deleteArticle, createArticle, updateArticle } from '../actions/article'
 import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
 
-const LIST_ARTICLE_URL = '/atelier-list-articles'
-
 /**
  *
  * @param {string} fileName
