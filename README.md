@@ -67,4 +67,4 @@ sequenceDiagram;
 
 ## Ressources
 
-- Notre [benchmark](/tree/principale/docs/benchmark.md) de départ
+- Notre [benchmark](/docs/benchmark.md) de départ
