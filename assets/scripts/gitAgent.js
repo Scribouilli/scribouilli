@@ -15,7 +15,6 @@ const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 export class GitAgent {
   constructor() {
-    this.customCSSPath = 'assets/css/custom.css'
     this.fs = new FS('scribouilli')
     /** @type {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } */
     this.onMergeConflict = undefined
@@ -450,22 +449,6 @@ export class GitAgent {
       filepath: fileName,
       dir: scribouilliGitRepo.repoDirectory,
     })
-  }
-
-  /**
-   * PPP move to actions
-   *
-   * @param {ScribouilliGitRepo} scribouilliGitRepo
-   * @param {string} content
-   * @returns
-   */
-  async writeCustomCSS(scribouilliGitRepo, content) {
-    await this.writeFile(scribouilliGitRepo, this.customCSSPath, content)
-
-    return await this.commit(
-      scribouilliGitRepo,
-      'mise à jour du ficher de styles custom',
-    )
   }
 
   /**

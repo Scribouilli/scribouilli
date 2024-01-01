@@ -5,6 +5,8 @@ export const TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER = 'origin'
 export const defaultRepositoryName = 'mon-scribouilli'
 export const gitHubApiBaseUrl = 'https://api.github.com'
 
+export const CUSTOM_CSS_PATH = 'assets/css/custom.css'
+
 /** @type {GitSiteTemplate[] & {default: GitSiteTemplate}} */
 // @ts-ignore
 export const templates = [
