@@ -41,7 +41,7 @@ export const createPage = (content, title, index) => {
     state.pages?.filter(page => {
       return page.path !== fileName
     }) || []
-  newPages.push({ title: title, path: fileName })
+  newPages.push({ title: title, path: fileName, index })
 
   store.mutations.setPages(newPages)
 
@@ -67,7 +67,7 @@ export const createPage = (content, title, index) => {
 export const updatePage = async (fileName, title, content, index) => {
   const currentRepository = store.state.currentRepository
 
-  if(!currentRepository){
+  if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
   let targetFileName = fileName
