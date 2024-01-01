@@ -22,12 +22,5 @@ export const templates = [
 
 templates.default = templates[0]
 
-const body = document.querySelector('body')
-if (!body) {
-  throw new TypeError(
-    `Missing <body>. Maybe the script should be loaded as @defer`,
-  )
-}
-
 /** @type {Element} */
-export const svelteTarget = body
+export const svelteTarget = document.body
