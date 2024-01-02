@@ -1,6 +1,5 @@
 //@ts-check
 
-import lireFrontMatter from 'front-matter'
 import FS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web/index.js'
@@ -474,44 +473,8 @@ export class GitAgent {
    * @param {string} dir
    * @returns
    */
-  async getPagesList(scribouilliGitRepo, dir = '') {
-    const allFiles = await this.fs.promises.readdir(
-      scribouilliGitRepo.path(dir),
-    )
-    return Promise.all(
-      allFiles
-        .filter(f => f.endsWith('.md') || f.endsWith('.html'))
-        .map(async f => {
-          const filename = dir == '' ? f : `${dir}/${f}`
-          const content = await this.fs.promises.readFile(
-            scribouilliGitRepo.path(filename),
-          )
-          const { attributes: data, body: markdownContent } = lireFrontMatter(
-            content.toString(),
-          )
-          return {
-            title: data?.title,
-            index: data?.order,
-            // no `in_menu` proprerty is interpreted as the page should be in the menu
-            inMenu: data?.in_menu === true || data?.in_menu === undefined,
-            path: filename,
-            content: markdownContent,
-          }
-        }),
-    )
-  }
-
-  /**
-   *
-   * @param {ScribouilliGitRepo} scribouilliGitRepo
-   * @returns
-   */
-  async getArticlesList(scribouilliGitRepo) {
-    try {
-      return await this.getPagesList(scribouilliGitRepo, '_posts')
-    } catch {
-      return await Promise.resolve(undefined)
-    }
+  listFiles(scribouilliGitRepo, dir) {
+    return this.fs.promises.readdir(scribouilliGitRepo.path(dir))
   }
 
   /**

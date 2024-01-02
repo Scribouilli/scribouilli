@@ -6,7 +6,6 @@ import { forget } from 'remember'
 import './types.js'
 
 import { OAUTH_PROVIDER_STORAGE_KEY } from './config.js'
-import ScribouilliGitRepo from './scribouilliGitRepo.js'
 
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
 

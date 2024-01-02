@@ -1,9 +1,46 @@
 //@ts-check
 
+import lireFrontMatter from 'front-matter'
+
 import store from './../store.js'
 import gitAgent from './../gitAgent.js'
 import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
+import { keepMarkdownAndHTMLFiles } from './page.js'
 import { makeArticleFileName, makeArticleFrontMatter } from './../utils.js'
+
+/**
+ *
+ * @returns {Promise<Article[]>}
+ */
+export async function getArticlesList() {
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
+  const ARTICLES_DIRECTORY = '_posts'
+
+  const allFiles = await gitAgent.listFiles(
+    currentRepository,
+    ARTICLES_DIRECTORY,
+  )
+
+  return Promise.all(
+    allFiles.filter(keepMarkdownAndHTMLFiles).map(async filename => {
+      const fullName = `${ARTICLES_DIRECTORY}/${filename}`
+      const content = await gitAgent.getFile(currentRepository, fullName)
+      const { attributes: data, body: markdownContent } = lireFrontMatter(
+        content.toString(),
+      )
+      return {
+        title: data?.title,
+        path: filename,
+        content: markdownContent,
+      }
+    }),
+  )
+}
 
 /**
  * @param {string} fileName
