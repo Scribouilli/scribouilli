@@ -12,6 +12,8 @@ import {
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import { writeFileAndCommit, deleteFileAndCommit } from '../actions/file'
+import {getOAuthServiceAPI} from '../oauth-services-api/index.js'
+
 
 const blogMdContent = `---
 layout: default
@@ -99,7 +101,7 @@ export default async ({ querystring }) => {
       await getCurrentRepoArticles()
       await getCurrentRepoPages()
 
-      gitAgent.safePush(currentRepository)
+      gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword())
     } catch (msg) {
       //@ts-ignore
       handleErrors(msg)

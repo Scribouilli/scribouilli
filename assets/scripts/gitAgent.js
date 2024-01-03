@@ -1,16 +1,27 @@
 //@ts-check
 
+/**
+ * Ce fichier gère les interactions avec git (contenu, commits, branches, remotes, pull/pull, etc.)
+ * et aussi le contenu sous-jacent et le filesystem
+ * 
+ * Normallement, aucun autre fichier ne devrait communiquer avec le fs directement
+ * 
+ * Ce fichier aspire à être neutre par rapport à Scribouilli (pour pouvoir être utilisé par Comptanar, par exemple)
+ * Faire attention à ce qui y est importé 
+ * et aux méthodes ajoutées
+ */
+
 import FS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web/index.js'
-import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 
 import './types.js'
-import ScribouilliGitRepo from './scribouilliGitRepo.js'
+
 
 const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
+/** @typedef {import('isomorphic-git').GitAuth} GitAuth */
 
 export class GitAgent {
   constructor() {
@@ -110,19 +121,18 @@ export class GitAgent {
    * has unmerged changes
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param { GitAuth } auth 
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  falliblePush({ repoDirectory }) {
+  falliblePush({ repoDirectory }, auth) {
     return git.push({
       fs: this.fs,
       http,
       // ref is purposefully omitted to get the default (checked out branch)
       dir: repoDirectory,
       corsProxy: CORS_PROXY_URL,
-      onAuth: _ => {
-        // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-        return getOAuthServiceAPI().getOauthUsernameAndPassword()
-      },
+      // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+      onAuth: _ => auth
     })
   }
 
@@ -132,19 +142,20 @@ export class GitAgent {
    * and tries again to push if the pull succeeded
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param { GitAuth } auth 
    * @returns {Promise<any>}
    */
-  safePush(scribouilliGitRepo) {
+  safePush(scribouilliGitRepo, auth) {
     console.log('safePush')
-    return this.falliblePush(scribouilliGitRepo)
+    return this.falliblePush(scribouilliGitRepo, auth)
       .catch(err => {
         console.log(
           'failliblePush error ! Assuming the error is that we are not up to date with the remote',
           err,
         )
-        return this.fetchAndTryMerging(scribouilliGitRepo).then(() => {
+        return this.fetchAndTryMerging(scribouilliGitRepo, auth).then(() => {
           console.log('pull/merge succeeded, try to push again')
-          return this.falliblePush(scribouilliGitRepo)
+          return this.falliblePush(scribouilliGitRepo, auth)
         })
       })
       .catch(err => {
@@ -160,9 +171,10 @@ export class GitAgent {
    * @summary like git push --force
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param { GitAuth } auth 
    * @returns {ReturnType<isomorphicGit["push"]>}
    */
-  forcePush({ repoDirectory }) {
+  forcePush({ repoDirectory }, auth) {
     return git.push({
       fs: this.fs,
       http,
@@ -170,10 +182,8 @@ export class GitAgent {
       dir: repoDirectory,
       force: true,
       corsProxy: CORS_PROXY_URL,
-      onAuth: _ => {
-        // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-        return getOAuthServiceAPI().getOauthUsernameAndPassword()
-      },
+      // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+      onAuth: _ => auth
     })
   }
 
@@ -230,9 +240,10 @@ export class GitAgent {
    * If it fails, it forwards the conflict to this.onMergeConflict with resolution propositions
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param { GitAuth } auth 
    * @returns {Promise<any>}
    */
-  async tryMerging(scribouilliGitRepo) {
+  async tryMerging(scribouilliGitRepo, auth) {
     console.log('merge')
     const [currentBranch, remotes] = await Promise.all([
       this.currentBranch(scribouilliGitRepo),
@@ -295,7 +306,7 @@ export class GitAgent {
             {
               message: `Garder la version actuelle de l'atelier (et perdre la version en actuellement ligne)`,
               resolution: () => {
-                return this.forcePush(scribouilliGitRepo)
+                return this.forcePush(scribouilliGitRepo, auth)
               },
             },
           ])
@@ -339,20 +350,22 @@ export class GitAgent {
    * @summary like a git pull but the merge is better customized
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param { GitAuth } auth 
    * @returns {Promise<any>}
    */
-  async fetchAndTryMerging(scribouilliGitRepo) {
+  async fetchAndTryMerging(scribouilliGitRepo, auth) {
     console.log('fetchAndTryMerging')
     await this.fetch(scribouilliGitRepo)
-    await this.tryMerging(scribouilliGitRepo)
+    await this.tryMerging(scribouilliGitRepo, auth)
   }
 
   /**
    *
    * @param {ScribouilliGitRepo} scribouilliGitRepo
+   * @param { GitAuth } auth 
    * @return {Promise<any>}
    */
-  async pullOrCloneRepo(scribouilliGitRepo) {
+  async pullOrCloneRepo(scribouilliGitRepo, auth) {
     const { repoDirectory } = scribouilliGitRepo
 
     let dirExists = true
@@ -364,7 +377,7 @@ export class GitAgent {
     }
 
     if (dirExists) {
-      return this.fetchAndTryMerging(scribouilliGitRepo)
+      return this.fetchAndTryMerging(scribouilliGitRepo, auth)
     } else {
       return this.clone(scribouilliGitRepo)
     }

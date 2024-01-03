@@ -79,7 +79,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  await gitAgent.pullOrCloneRepo(scribouilliGitRepo)
+  await gitAgent.pullOrCloneRepo(scribouilliGitRepo, getOAuthServiceAPI().getOauthUsernameAndPassword())
   await gitAgent.setAuthor(scribouilliGitRepo, login, email)
   await setBaseUrlInConfigIfNecessary()
 
