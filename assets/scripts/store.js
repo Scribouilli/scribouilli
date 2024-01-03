@@ -1,11 +1,21 @@
 //@ts-check
 
-// @ts-ignore
 import Store from 'baredux'
-import { forget } from 'remember'
+/**
+ * Un store baredux a pour vocation de refléter notamment le modèle mental de la 
+ * personne face à Scribouilli. Le store stocke donc principalement des données (et parfois des singletons)
+ * Il stocke aussi parfois des promesses pour permettre d'afficher des loaders
+ * 
+ * Dans un store Baredux, les mutations sont synchrones
+ * S'il manque des informations, attendre la résolution de la promesse avant d'appeler une mutation
+ * (à moins que la valeur soit délibérément une promesse)
+ * 
+ */
+// DO NOT import x from 'remember' // do it in an action instead
+// DO NOT import x from './actions/*.js' // you're making an action, so add an action instead
+
 import './types.js'
 
-import { OAUTH_PROVIDER_STORAGE_KEY } from './config.js'
 
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
 
@@ -171,22 +181,23 @@ const mutations = {
   setTheme(state, css) {
     state.theme.css = css
   },
+
   /**
    *
    * @param {ScribouilliState} state
    */
-  removeSite(state) {
+  logout(state) {
+    // account-related
+    state.oAuthProvider = undefined
+    state.login = undefined
+    state.email = undefined
+    state.reposByAccount = undefined
+
+    // repo-related
     state.pages = undefined
     state.articles = undefined
-  },
-  /**
-   *
-   * @param {ScribouilliState} state
-   */
-  invalidateToken(state) {
-    state.oAuthProvider = undefined
-    forget(OAUTH_PROVIDER_STORAGE_KEY)
-    console.log('Token has been invalidated')
+    state.currentRepository = undefined
+    state.conflict = undefined
   },
 }
 
