@@ -31,7 +31,6 @@ import './types.js'
  * @property {OAuthProvider} [oAuthProvider]
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
- * @property {Promise<string> | string} [origin]
  * @property {ScribouilliGitRepo | undefined} currentRepository
  * @property {ResolutionOption[] | undefined} conflict
  * @property {any} reposByAccount
@@ -48,7 +47,6 @@ const state = {
   oAuthProvider: undefined,
   login: undefined,
   email: undefined,
-  origin: undefined,
   currentRepository: undefined,
   conflict: undefined,
   // We use the term "account" to refer to user or organization.
