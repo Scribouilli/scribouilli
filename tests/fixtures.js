@@ -27,4 +27,7 @@ export const fakeStateWithOneSite = {
       },
     ],
   },
+  buildStatus: {
+    setBuildingAndCheckStatusLater(){}
+  }
 }

@@ -4,7 +4,7 @@ import page from 'page'
 import yaml from 'js-yaml'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent'
+import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
