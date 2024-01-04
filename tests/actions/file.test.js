@@ -27,7 +27,7 @@ describe('actions/file.js', () => {
       sandbox.stub(gitAgent, 'commit').resolves()
     })
 
-    it('calls removeFile and commit', done => {
+    it('calls writeFile and commit', done => {
       writeFileAndCommit('test.js', 'Curiouser and curiouser!')
         .then(() => {
           expect(gitAgent.writeFile).to.have.been.calledWith(
@@ -52,9 +52,18 @@ describe('actions/file.js', () => {
       sandbox.stub(gitAgent, 'safePush').resolves()
     })
 
-    it('calls removeFile, commit and push', done => {
+    it('calls writeFile, commit and push', done => {
       writeFileAndPushChanges('test.js', 'Curiouser and curiouser!')
         .then(() => {
+          expect(gitAgent.writeFile).to.have.been.calledWith(
+            store.state.currentRepository,
+            'test.js', 
+            'Curiouser and curiouser!'
+          )
+          expect(gitAgent.commit).to.have.been.calledWith(
+            store.state.currentRepository,
+            `Modification du fichier test.js`
+          )
           expect(gitAgent.safePush).to.have.been.calledWith(
             store.state.currentRepository
           )
