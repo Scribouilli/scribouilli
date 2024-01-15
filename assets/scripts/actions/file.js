@@ -2,6 +2,7 @@
 
 import gitAgent from './../gitAgent.js'
 import store from './../store.js'
+import {getOAuthServiceAPI} from '../oauth-services-api/index.js'
 
 /**
  * @param {string} fileName
@@ -45,7 +46,7 @@ export const writeFileAndPushChanges = (
   }
 
   return writeFileAndCommit(fileName, content, commitMessage).then(() =>
-    gitAgent.safePush(currentRepository),
+    gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword()),
   )
 }
 
@@ -85,6 +86,6 @@ export const deleteFileAndPushChanges = (fileName, commitMessage) => {
   }
 
   return deleteFileAndCommit(fileName, commitMessage).then(() =>
-    gitAgent.safePush(currentRepository),
+    gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword()),
   )
 }

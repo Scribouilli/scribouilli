@@ -29,11 +29,6 @@
  */
 
 /**
- * @typedef {Object} OAuthProvider
- * @property {function} getServiceAPI
- */
-
-/**
  * @typedef {Object} GitSiteTemplate
  * @property {string} url
  * @property {string} description

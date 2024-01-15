@@ -13,39 +13,19 @@ import { handleErrors } from './../utils.js'
 import { fetchAuthenticatedUserLogin } from './current-user.js'
 import makeBuildStatus from './../buildStatus.js'
 import { writeFileAndPushChanges } from './file.js'
+import { getPagesList } from './page.js'
+import { getArticlesList } from './article.js'
 import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
 import { CUSTOM_CSS_PATH } from '../config.js'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
 export const getCurrentRepoPages = () => {
-  const currentRepository = store.state.currentRepository
-
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
-  }
-
-  return gitAgent
-    .getPagesList(currentRepository)
-    .then(pages => {
-      store.mutations.setPages(pages)
-    })
-    .catch(msg => handleErrors(msg))
+  return getPagesList().then(store.mutations.setPages).catch(handleErrors)
 }
 
 export const getCurrentRepoArticles = () => {
-  const currentRepository = store.state.currentRepository
-
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
-  }
-
-  return gitAgent
-    .getArticlesList(currentRepository)
-    .then(articles => {
-      store.mutations.setArticles(articles)
-    })
-    .catch(msg => handleErrors(msg))
+  return getArticlesList().then(store.mutations.setArticles).catch(handleErrors)
 }
 
 /**
@@ -100,7 +80,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  await gitAgent.pullOrCloneRepo(scribouilliGitRepo)
+  await gitAgent.pullOrCloneRepo(scribouilliGitRepo, getOAuthServiceAPI().getOauthUsernameAndPassword())
   await gitAgent.setAuthor(scribouilliGitRepo, login, email)
   await setBaseUrlInConfigIfNecessary()
 

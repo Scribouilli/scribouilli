@@ -12,7 +12,7 @@ import store from './store.js'
 export const handleErrors = errorMessage => {
   switch (errorMessage) {
     case 'INVALIDATE_TOKEN': {
-      store.mutations.invalidateToken()
+      store.mutations.logout()
       console.info('[invalid token] redirecting to /')
       page('/')
 

@@ -1,20 +1,21 @@
 //@ts-check
 
 import page from 'page'
+import { forget } from 'remember'
 
-import gitAgent from './../gitAgent.js'
-import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
-import store from './../store.js'
-import { logMessage } from './../utils.js'
+import gitAgent from '../gitAgent.js'
+import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
+import store from '../store.js'
+import { logMessage } from '../utils.js'
+import { OAUTH_PROVIDER_STORAGE_KEY } from '../config.js'
 
 gitAgent.onMergeConflict = resolutionOptions => {
   store.mutations.setConflict(resolutionOptions)
 }
 
 const logout = () => {
-  store.mutations.setLogin(undefined)
-  store.mutations.invalidateToken()
-  store.mutations.removeSite()
+  forget(OAUTH_PROVIDER_STORAGE_KEY)
+  store.mutations.logout()
   console.info('[logout] redirecting to /login')
   page('/login')
 }
@@ -45,18 +46,10 @@ export const fetchAuthenticatedUserLogin = () => {
     // @ts-ignore
     .catch(errorMessage => {
       switch (errorMessage) {
-        case 'INVALIDATE_TOKEN': {
-          store.mutations.invalidateToken()
-          console.info('[token error] redirecting to /')
-          page('/')
-
-          break
-        }
-
+        case 'INVALIDATE_TOKEN':
         case 'NO_LOGIN': {
-          logout()
-
-          page('/')
+          logout();
+          break;
         }
 
         default:

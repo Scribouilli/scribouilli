@@ -4,9 +4,35 @@ import { svelteTarget } from '../config'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import Login from '../components/screens/Login.svelte'
-import { oAuthAppByProvider } from '../oauth-services-api/index.js'
 
 const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team`
+
+
+const oAuthAppByProvider = new Map([
+  [
+    'github.com',
+    {
+      origin: 'https://github.com',
+      client_id: '64ecce0b01397c2499a6',
+    },
+  ],
+  [
+    'gitlab.com',
+    {
+      origin: 'https://gitlab.com',
+      client_id:
+        'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
+    },
+  ],
+  [
+    'git.scribouilli.org',
+    {
+      origin: 'https://git.scribouilli.org',
+      client_id:
+        '3e8ac6636615d396a8f73e02fa3880e7e2140981b0ca27b0f240a450f69f1c76',
+    },
+  ],
+])
 
 /**
  * @param {string} gitProvider

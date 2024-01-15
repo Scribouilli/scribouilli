@@ -1,9 +1,52 @@
 //@ts-check
 
+import lireFrontMatter from 'front-matter'
+
 import store from './../store.js'
 import gitAgent from './../gitAgent.js'
 import { makeFileNameFromTitle, makePageFrontMatter } from './../utils'
 import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
+
+/**
+ *
+ * @param {string} filename
+ * @returns {boolean}
+ */
+export function keepMarkdownAndHTMLFiles(filename) {
+  return filename.endsWith('.md') || filename.endsWith('.html')
+}
+
+/**
+ *
+ * @returns {Promise<Page[]>}
+ */
+export async function getPagesList() {
+  const currentRepository = store.state.currentRepository
+
+  if (!currentRepository) {
+    throw new TypeError('currentRepository is undefined')
+  }
+
+  const allFiles = await gitAgent.listFiles(currentRepository, '')
+
+  return Promise.all(
+    allFiles.filter(keepMarkdownAndHTMLFiles).map(async filename => {
+      const content = await gitAgent.getFile(currentRepository, filename)
+      const { attributes: data, body: markdownContent } = lireFrontMatter(
+        content.toString(),
+      )
+
+      return {
+        title: data?.title,
+        index: data?.order,
+        // no `in_menu` proprerty is interpreted as the page should be in the menu
+        inMenu: data?.in_menu === true || data?.in_menu === undefined,
+        path: filename,
+        content: markdownContent,
+      }
+    }),
+  )
+}
 
 /**
  * @param {string} fileName

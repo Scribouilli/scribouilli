@@ -3,6 +3,7 @@
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils'
+  import {getOAuthServiceAPI} from '../../../oauth-services-api/index.js'
   import './../../../types.js'
 
   /** @type {any} */
@@ -46,6 +47,7 @@
   const editClick = async e => {
     if (modification) {
       for (let page of listContenu) {
+        // for + await leads to poor pref. PPP: do a Promise.all
         await gitAgent.writeFile(
           currentRepository,
           page.path,
@@ -66,7 +68,7 @@
         'Changement index',
       )
 
-      await gitAgent.safePush(currentRepository)
+      await gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword())
     }
     modification = !modification
   }
