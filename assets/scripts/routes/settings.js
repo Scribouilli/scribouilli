@@ -1,6 +1,6 @@
 // @ts-check
 
-import { svelteTarget } from '../config'
+import { svelteTarget, CUSTOM_CSS_PATH } from '../config'
 import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
@@ -8,6 +8,7 @@ import {
   getCurrentRepoPages,
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
+  saveCustomCSS,
 } from '../actions/current-repository.js'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
@@ -82,13 +83,7 @@ export default async ({ querystring }) => {
   })
 
   settings.$on('update-theme', ({ detail: { theme } }) => {
-    gitAgent
-      .writeCustomCSS(currentRepository, theme.css)
-      .then(_ => {
-        store.mutations.setTheme(store.state.theme.css)
-        store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
-      })
-      .catch(msg => handleErrors(msg))
+    saveCustomCSS(theme.css).catch(handleErrors)
   })
 
   settings.$on('toggle-blog', async ({ detail: { activated } }) => {
@@ -110,7 +105,7 @@ export default async ({ querystring }) => {
 
   if (!store.state.theme.css) {
     gitAgent
-      .getFile(currentRepository, gitAgent.customCSSPath)
+      .getFile(currentRepository, CUSTOM_CSS_PATH)
       .then(content => {
         store.mutations.setTheme(content)
       })

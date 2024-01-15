@@ -27,18 +27,16 @@ describe('actions/file.js', () => {
       sandbox.stub(gitAgent, 'commit').resolves()
     })
 
-    it('calls removeFile and commit', done => {
+    it('calls writeFile and commit', done => {
       writeFileAndCommit('test.js', 'Curiouser and curiouser!')
         .then(() => {
           expect(gitAgent.writeFile).to.have.been.calledWith(
-            'alice',
-            'alice.github.io',
+            store.state.currentRepository,
             'test.js',
             'Curiouser and curiouser!',
           )
           expect(gitAgent.commit).to.have.been.calledWith(
-            'alice',
-            'alice.github.io',
+            store.state.currentRepository,
             'Modification du fichier test.js',
           )
           done()
@@ -54,12 +52,20 @@ describe('actions/file.js', () => {
       sandbox.stub(gitAgent, 'safePush').resolves()
     })
 
-    it('calls removeFile, commit and push', done => {
+    it('calls writeFile, commit and push', done => {
       writeFileAndPushChanges('test.js', 'Curiouser and curiouser!')
         .then(() => {
+          expect(gitAgent.writeFile).to.have.been.calledWith(
+            store.state.currentRepository,
+            'test.js', 
+            'Curiouser and curiouser!'
+          )
+          expect(gitAgent.commit).to.have.been.calledWith(
+            store.state.currentRepository,
+            `Modification du fichier test.js`
+          )
           expect(gitAgent.safePush).to.have.been.calledWith(
-            'alice',
-            'alice.github.io',
+            store.state.currentRepository
           )
           done()
         })
@@ -77,13 +83,11 @@ describe('actions/file.js', () => {
       deleteFileAndCommit('test.js')
         .then(() => {
           expect(gitAgent.removeFile).to.have.been.calledWith(
-            'alice',
-            'alice.github.io',
+            store.state.currentRepository,
             'test.js',
           )
           expect(gitAgent.commit).to.have.been.calledWith(
-            'alice',
-            'alice.github.io',
+            store.state.currentRepository,
             'Suppression du fichier test.js',
           )
           done()
@@ -103,8 +107,7 @@ describe('actions/file.js', () => {
       deleteFileAndPushChanges('test.js')
         .then(() => {
           expect(gitAgent.safePush).to.have.been.calledWith(
-            'alice',
-            'alice.github.io',
+            store.state.currentRepository
           )
           done()
         })

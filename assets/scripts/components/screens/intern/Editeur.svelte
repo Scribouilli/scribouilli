@@ -36,7 +36,9 @@
   import './../../../../styles/editeur-preview/framalibre.css'
 
   /** @type {FileList} */
-  let image
+  let files
+  // single-image selection
+  $: image = files && files[0]
   let imageMd = ''
 
   let preview = ''
@@ -114,16 +116,18 @@
 
   // @ts-ignore
   const imageSelect = async () => {
-    for (const img of image) {
-      imageMd = 'Mise en ligne en cours…'
-      const buffer = new Uint8Array(await img.arrayBuffer())
-      await writeFileAndCommit(
-        `images/${img.name}`,
-        buffer,
-        `Ajout de l'image ${img.name}`,
-      )
-      imageMd = `![Texte décrivant l'image](/images/${img.name})`
-    }
+    imageMd = 'Mise en ligne en cours…'
+    const buffer = new Uint8Array(await image.arrayBuffer())
+    const imageFilePath = `images/${image.name}`
+
+    await writeFileAndCommit(
+      imageFilePath,
+      buffer,
+      `Ajout de l'image ${image.name}`,
+    )
+
+    const imageLink = `{% link ${imageFilePath} %}`
+    imageMd = `![Texte décrivant l'image](${imageLink})`
   }
 
   $: {
@@ -189,7 +193,7 @@
                     <label for="image">Sélectionnez votre image :</label>
                     <input
                       accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
-                      bind:files={image}
+                      bind:files={files}
                       id="image"
                       name="image"
                       type="file"
