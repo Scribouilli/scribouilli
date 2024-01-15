@@ -5,6 +5,8 @@ export const TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER = 'origin'
 export const defaultRepositoryName = 'mon-scribouilli'
 export const gitHubApiBaseUrl = 'https://api.github.com'
 
+export const CUSTOM_CSS_PATH = 'assets/css/custom.css'
+
 /** @type {GitSiteTemplate[] & {default: GitSiteTemplate}} */
 // @ts-ignore
 export const templates = [
@@ -22,12 +24,5 @@ export const templates = [
 
 templates.default = templates[0]
 
-const body = document.querySelector('body')
-if (!body) {
-  throw new TypeError(
-    `Missing <body>. Maybe the script should be loaded as @defer`,
-  )
-}
-
 /** @type {Element} */
-export const svelteTarget = body
+export const svelteTarget = document.body

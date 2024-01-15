@@ -47,8 +47,7 @@
     notification =
       'Le thème sera mis à jour après le déploiement des modifications (~ 2min)'
 
-    // @ts-ignore
-    document.querySelector('body').scrollIntoView()
+    document.body.scrollIntoView()
   }
 
   // @ts-ignore

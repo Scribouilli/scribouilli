@@ -4,7 +4,7 @@ import page from 'page'
 import yaml from 'js-yaml'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent'
+import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
@@ -14,6 +14,7 @@ import { fetchAuthenticatedUserLogin } from './current-user.js'
 import makeBuildStatus from './../buildStatus.js'
 import { writeFileAndPushChanges } from './file.js'
 import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
+import { CUSTOM_CSS_PATH } from '../config.js'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 
@@ -198,4 +199,18 @@ export const getCurrentRepoConfig = () => {
       return config
     })
     .catch(msg => handleErrors(msg))
+}
+
+/**
+ * @param {string} css
+ * @returns {ReturnType<typeof writeFileAndPushChanges>}
+ */
+export function saveCustomCSS(css) {
+  store.mutations.setTheme(css)
+  store.state.buildStatus.setBuildingAndCheckStatusLater(10000)
+  return writeFileAndPushChanges(
+    CUSTOM_CSS_PATH,
+    css,
+    'mise à jour du ficher de styles custom',
+  )
 }
