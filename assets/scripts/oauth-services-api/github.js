@@ -39,11 +39,7 @@ export default class GitHubAPI {
     }`
 
     return this.graphQLCall(query)
-    .then(resp => {
-      console.log('graphql resp', resp)
-      return resp.data.viewer
-    })
-    .catch(err => console.error('graphql err', err))
+    .then(resp => resp.data.viewer)
   }
 
   /** @type {OAuthServiceAPI["getUserEmails"]} */
@@ -144,21 +140,24 @@ export default class GitHubAPI {
 
   /** @type {OAuthServiceAPI["getPagesWebsiteDeploymentStatus"]} */
   getPagesWebsiteDeploymentStatus({ repoId }) {
-    // TODO: We need to add the `sha` parameter to avoid the GitHub API to return
-    // cached data.
-    return this.callAPI(
-      `${gitHubApiBaseUrl}/repos/${repoId}/deployments?environment=github-pages`,
-    )
-      .then(response => response.json())
-      .then(json => {
-        const statusesUrl = json[0].statuses_url
+    const [owner, name] = repoId.split('/')
 
-        return this.callAPI(`${statusesUrl}?per_page=1`)
-      })
-      .then(response => response.json())
-      .then(json => {
-        return json[0].state
-      })
+    const query = `query {
+      repository(owner: "${owner}", name: "${name}") {
+        deployments(last: 1) {
+          nodes {
+            statuses(first: 1){
+              nodes {
+                state
+              }
+            }
+          }
+        }
+      }
+    }`
+
+    return this.graphQLCall(query)
+    .then(resp => resp.data.repository.deployments.nodes[0].statuses.nodes[0].state.toLowerString())
   }
 
   /** @type {OAuthServiceAPI["isPagesWebsiteBuilt"]} */
