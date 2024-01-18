@@ -4,6 +4,8 @@ import './../types.js'
 
 const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
 
+const GITHUB_GRAPHQL_ENDPOINT = 'https://api.github.com/graphql'
+
 /**
  * @implements {OAuthServiceAPI}
  */
@@ -27,10 +29,21 @@ export default class GitHubAPI {
     }
   }
 
+  /** @type {OAuthServiceAPI["getAuthenticatedUser"]} */
   getAuthenticatedUser() {
-    return this.callAPI(`${gitHubApiBaseUrl}/user`).then(response => {
-      return response.json()
+    const query = `query {
+      viewer {
+        login
+        email
+      }
+    }`
+
+    return this.graphQLCall(query)
+    .then(resp => {
+      console.log('graphql resp', resp)
+      return resp.data.viewer
     })
+    .catch(err => console.error('graphql err', err))
   }
 
   /** @type {OAuthServiceAPI["getUserEmails"]} */
@@ -211,6 +224,35 @@ export default class GitHubAPI {
         throw 'INVALIDATE_TOKEN'
       }
       return httpResp
+    })
+  }
+
+  
+
+  /**
+   * 
+   * @param {string} query 
+   * @returns {Promise<any>}
+   */
+  graphQLCall(query){
+    return fetch(GITHUB_GRAPHQL_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: 'token ' + this.accessToken,
+      },
+      body: JSON.stringify({query: query})
+    })
+    .then(httpResp => {
+      if (httpResp.status === 404) {
+        throw 'NOT_FOUND'
+      }
+
+      if (httpResp.status === 401) {
+        this.accessToken = undefined
+        console.debug('this accessToken : ', this.accessToken)
+        throw 'INVALIDATE_TOKEN'
+      }
+      return httpResp.json()
     })
   }
 }
