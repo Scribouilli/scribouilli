@@ -65,7 +65,7 @@
 
       await gitAgent.commit(
         currentRepository,
-        'Changement index',
+        'Changements menu',
       )
 
       await gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword())
