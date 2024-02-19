@@ -18,52 +18,55 @@ import http from 'isomorphic-git/http/web/index.js'
 import './types.js'
 
 
-const CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
+const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 /** @typedef {import('isomorphic-git')} isomorphicGit */
 /** @typedef {import('isomorphic-git').GitAuth} GitAuth */
 
 export default class GitAgent {
   #fs
-  #origin;
+  #remoteURL;
   #repoId;
+  #corsProxyURL;
   #onAuth;
   #onMergeConflict;
 
+  // computed
+  #origin;
+  #hostname;
+  #repoDirectory
+
   /**
    * @param { object } _
-   * @param { string } [_.repoId]
-   * @param { string } _.origin
+   * @param { string } _.repoId
+   * @param { string } _.remoteURL
+   * @param { string } [_.corsProxyURL]
    * @param { GitAuth } _.auth
-   * @param {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } _.onMergeConflict
+   * @param {((resolutionOptions: import('./store.js').ResolutionOption[]) => void) | undefined } [_.onMergeConflict]
    */
   constructor({
     repoId,
-    origin,
+    remoteURL,
+    corsProxyURL = DEFAULT_CORS_PROXY_URL,
     auth,
     onMergeConflict
   }) {
     this.#fs = new FS('scribouilli')
 
-    this.#origin = origin
     this.#repoId = repoId
+    this.#remoteURL = remoteURL
     this.#onAuth = () => auth
     this.#onMergeConflict = onMergeConflict
+    this.#corsProxyURL = corsProxyURL
+
+    // computed
+    this.#origin = new URL(this.#remoteURL).origin
+    this.#hostname = new URL(this.#origin).hostname
+    // filesystem directory
+    this.#repoDirectory = `/${this.#hostname}/${this.#repoId}`
   }
 
-  get #hostname() {
-    return new URL(this.#origin).hostname
-  }
-
-  // filesystem directory
-  get #repoDirectory() {
-    return `/${this.#hostname}/${this.#repoId}`
-  }
-
-  get #remoteURL() {
-    return `${this.#origin}/${this.#repoId}.git`
-  }
-
+  
   /**
    *
    * @param {string} filename
@@ -97,7 +100,7 @@ export default class GitAgent {
       url: this.#remoteURL,
       // ref is purposefully omitted to get the default behavior (default repo branch)
       singleBranch: true,
-      corsProxy: CORS_PROXY_URL,
+      corsProxy: this.#corsProxyURL,
       depth: 5,
     })
   }
@@ -169,7 +172,7 @@ export default class GitAgent {
       http,
       // ref is purposefully omitted to get the default (checked out branch)
       dir: this.#repoDirectory,
-      corsProxy: CORS_PROXY_URL,
+      corsProxy: this.#corsProxyURL,
       // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
       onAuth: this.#onAuth
     })
@@ -217,7 +220,7 @@ export default class GitAgent {
       // ref is purposefully omitted to get the default (checked out branch)
       dir: this.#repoDirectory,
       force: true,
-      corsProxy: CORS_PROXY_URL,
+      corsProxy: this.#corsProxyURL,
       // See https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
       onAuth: this.#onAuth
     })
@@ -234,7 +237,7 @@ export default class GitAgent {
       // ref is purposefully omitted to get the default (checked out branch)
       singleBranch: false, // we want all the branches
       dir: this.#repoDirectory,
-      corsProxy: CORS_PROXY_URL,
+      corsProxy: this.#corsProxyURL,
     })
   }
 

@@ -66,11 +66,12 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   }
 
   const origin = oAuthProvider.origin
+  const repoId = makeRepoId(owner, repoName)
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,
     repoName,
-    repoId: makeRepoId(owner, repoName),
+    repoId,
     origin: origin,
     publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
     gitServiceProvider: getOAuthServiceAPI(),
@@ -80,7 +81,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   const gitAgent = new GitAgent({
     repoId: makeRepoId(owner, repoName),
-    origin: origin,
+    remoteURL: `${origin}/${repoId}.git`,
     onMergeConflict : resolutionOptions => {
       store.mutations.setConflict(resolutionOptions)
     },
