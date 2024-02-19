@@ -22,10 +22,6 @@
  * @property {string} origin
  * @property {Promise<string>} publishedWebsiteURL
  * @property {string} publicRepositoryURL
- * @property {string} hostname
- * @property {string} repoDirectory
- * @property {string} remoteURL
- * @property {(filename: string) => string} path
  */
 
 /**

@@ -1,5 +1,5 @@
 <script>
-  import gitAgent from '../../../gitAgent.js'
+  import gitAgent from '../../../GitAgent.js'
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils'

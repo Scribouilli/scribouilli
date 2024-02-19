@@ -4,11 +4,11 @@ import page from 'page'
 import yaml from 'js-yaml'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
 } from './../scribouilliGitRepo.js'
+import GitAgent from '../GitAgent.js'
 import { handleErrors } from './../utils.js'
 import { fetchAuthenticatedUserLogin } from './current-user.js'
 import makeBuildStatus from './../buildStatus.js'
@@ -78,10 +78,21 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
+  const gitAgent = new GitAgent({
+    repoId: makeRepoId(owner, repoName),
+    origin: origin,
+    onMergeConflict : resolutionOptions => {
+      store.mutations.setConflict(resolutionOptions)
+    },
+    auth: getOAuthServiceAPI().getOauthUsernameAndPassword()
+  })
+
+  store.mutations.setGitAgent(gitAgent)
+
   const { login, email } = await fetchAuthenticatedUserLogin()
 
-  await gitAgent.pullOrCloneRepo(scribouilliGitRepo, getOAuthServiceAPI().getOauthUsernameAndPassword())
-  await gitAgent.setAuthor(scribouilliGitRepo, login, email)
+  await gitAgent.pullOrCloneRepo()
+  await gitAgent.setAuthor(login, email)
   await setBaseUrlInConfigIfNecessary()
 
   getCurrentRepoArticles()
@@ -165,20 +176,19 @@ export const setBaseUrlInConfigIfNecessary = async baseUrl => {
  * @returns {Promise<any>}
  */
 export const getCurrentRepoConfig = () => {
-  const currentRepository = store.state.currentRepository
+  const {currentRepository, gitAgent} = store.state
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
   }
+  if (!gitAgent) {
+    throw new TypeError('gitAgent is undefined')
+  }
 
   return gitAgent
-    .getFile(currentRepository, '_config.yml')
-    .then(configStr => {
-      const config = yaml.load(configStr)
-
-      return config
-    })
-    .catch(msg => handleErrors(msg))
+    .getFile('_config.yml')
+    .then(configStr => yaml.load(configStr))
+    .catch(handleErrors)
 }
 
 /**

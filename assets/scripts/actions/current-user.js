@@ -3,15 +3,12 @@
 import page from 'page'
 import { forget } from 'remember'
 
-import gitAgent from '../gitAgent.js'
 import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
 import store from '../store.js'
 import { logMessage } from '../utils.js'
 import { OAUTH_PROVIDER_STORAGE_KEY } from '../config.js'
 
-gitAgent.onMergeConflict = resolutionOptions => {
-  store.mutations.setConflict(resolutionOptions)
-}
+
 
 const logout = () => {
   forget(OAUTH_PROVIDER_STORAGE_KEY)

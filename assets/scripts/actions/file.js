@@ -1,8 +1,7 @@
 //@ts-check
 
-import gitAgent from './../gitAgent.js'
+import GitAgent from '../GitAgent.js'
 import store from './../store.js'
-import {getOAuthServiceAPI} from '../oauth-services-api/index.js'
 
 /**
  * @param {string} fileName
@@ -15,15 +14,15 @@ export const writeFileAndCommit = (fileName, content, commitMessage) => {
   if (typeof commitMessage !== 'string' || commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`
   }
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if(!currentRepository){
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
-  return gitAgent.writeFile(currentRepository, fileName, content).then(() => {
+  return gitAgent.writeFile(fileName, content).then(() => {
     // @ts-ignore
-    return gitAgent.commit(currentRepository, commitMessage)
+    return gitAgent.commit(commitMessage)
   })
 }
 
@@ -32,43 +31,42 @@ export const writeFileAndCommit = (fileName, content, commitMessage) => {
  * @param {string|Uint8Array} content
  * @param {string} [commitMessage]
  *
- * @returns {ReturnType<typeof gitAgent.safePush>}
+ * @returns {ReturnType<typeof GitAgent.prototype.safePush>}
  */
 export const writeFileAndPushChanges = (
   fileName,
   content,
   commitMessage = '',
 ) => {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if(!currentRepository){
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
-  return writeFileAndCommit(fileName, content, commitMessage).then(() =>
-    gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword()),
-  )
+  return writeFileAndCommit(fileName, content, commitMessage)
+    .then(() => gitAgent.safePush())
 }
 
 /**
  * @param {string} fileName
  * @param {string} [commitMessage]
  *
- * @returns {Promise<string>}
+ * @returns {ReturnType<typeof GitAgent.prototype.commit>}
  */
 export const deleteFileAndCommit = (fileName, commitMessage = '') => {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if(!currentRepository){
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
   if (commitMessage === '') {
     commitMessage = `Suppression du fichier ${fileName}`
   }
 
-  return gitAgent.removeFile(currentRepository, fileName).then(() => {
-    return gitAgent.commit(currentRepository, commitMessage)
+  return gitAgent.removeFile(fileName).then(() => {
+    return gitAgent.commit(commitMessage)
   })
 }
 
@@ -76,16 +74,15 @@ export const deleteFileAndCommit = (fileName, commitMessage = '') => {
  * @param {string} fileName
  * @param {string} [commitMessage]
  *
- * @returns {ReturnType<typeof gitAgent.safePush>}
+ * @returns {ReturnType<typeof GitAgent.prototype.safePush>}
  */
 export const deleteFileAndPushChanges = (fileName, commitMessage) => {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if(!currentRepository){
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
-  return deleteFileAndCommit(fileName, commitMessage).then(() =>
-    gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword()),
-  )
+  return deleteFileAndCommit(fileName, commitMessage)
+    .then(() => gitAgent.safePush())
 }

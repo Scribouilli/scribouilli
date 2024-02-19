@@ -1,7 +1,6 @@
 // @ts-check
 
 import { svelteTarget, CUSTOM_CSS_PATH } from '../config'
-import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import {
@@ -13,7 +12,6 @@ import {
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import { writeFileAndCommit, deleteFileAndCommit } from '../actions/file'
-import {getOAuthServiceAPI} from '../oauth-services-api/index.js'
 
 
 const blogMdContent = `---
@@ -71,10 +69,10 @@ function mapStateToProps(state) {
 export default async ({ querystring }) => {
   await setCurrentRepositoryFromQuerystring(querystring)
 
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
   const settings = new Settings({
@@ -96,7 +94,7 @@ export default async ({ querystring }) => {
       await getCurrentRepoArticles()
       await getCurrentRepoPages()
 
-      gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword())
+      gitAgent.safePush()
     } catch (msg) {
       //@ts-ignore
       handleErrors(msg)
@@ -105,7 +103,7 @@ export default async ({ querystring }) => {
 
   if (!store.state.theme.css) {
     gitAgent
-      .getFile(currentRepository, CUSTOM_CSS_PATH)
+      .getFile(CUSTOM_CSS_PATH)
       .then(content => {
         store.mutations.setTheme(content)
       })

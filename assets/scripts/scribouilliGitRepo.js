@@ -40,26 +40,6 @@ export default class {
     })
   }
 
-  get hostname() {
-    return new URL(this.origin).hostname
-  }
-
-  get repoDirectory() {
-    return `/${this.hostname}/${this.repoId}`
-  }
-
-  get remoteURL() {
-    return `${this.origin}/${this.repoId}.git`
-  }
-
-  /**
-   *
-   * @param {string} filename
-   * @returns {string}
-   */
-  path(filename) {
-    return `${this.repoDirectory}/${filename}`
-  }
 }
 
 /**

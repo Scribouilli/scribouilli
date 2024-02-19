@@ -3,7 +3,6 @@
 import page from 'page'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent.js'
 import ScribouilliGitRepo, {
   makePublicRepositoryURL,
 } from './../scribouilliGitRepo.js'
@@ -54,24 +53,26 @@ export const waitOauthProvider = () => {
 }
 
 /**
- * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {Promise<ReturnType<isomorphicGit["setConfig"]>>}
  */
-export const setupLocalRepository = async scribouilliGitRepo => {
+export const setupLocalRepository = async () => {
+  
   const login = await store.state.login
-  const email = store.state.email
+  const {gitAgent, email} = store.state
 
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
+  }
   if (!login) {
     throw new TypeError(`missing login in setupLocalRepository`)
   }
-
   if (!email) {
     throw new TypeError(`missing email in setupLocalRepository`)
   }
 
-  await gitAgent.clone(scribouilliGitRepo)
+  await gitAgent.clone()
 
-  return gitAgent.setAuthor(scribouilliGitRepo, login, email)
+  return gitAgent.setAuthor(login, email)
 }
 
 /**
@@ -158,7 +159,7 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
         return waitRepoReady(scribouilliGitRepo)
       })
       .then(() => {
-        return setupLocalRepository(scribouilliGitRepo)
+        return setupLocalRepository()
       })
       .then(() => {
         return getOAuthServiceAPI().deploy(scribouilliGitRepo)
