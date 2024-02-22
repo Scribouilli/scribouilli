@@ -1,7 +1,7 @@
 <script>
-  import store from '../../../store'
+  import store from '../../../store.js'
   import Skeleton from '../../Skeleton.svelte'
-  import { makePageFrontMatter } from '../../../utils's
+  import { makePageFrontMatter } from '../../../utils.js'
   import './../../../types.js'
 
   /** @type {any} */
