@@ -3,8 +3,7 @@
 import lireFrontMatter from 'front-matter'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent.js'
-import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file.js'
 import { keepMarkdownAndHTMLFiles } from './page.js'
 import { makeArticleFileName, makeArticleFrontMatter } from './../utils.js'
 
@@ -13,23 +12,20 @@ import { makeArticleFileName, makeArticleFrontMatter } from './../utils.js'
  * @returns {Promise<Article[]>}
  */
 export async function getArticlesList() {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
   const ARTICLES_DIRECTORY = '_posts'
 
-  const allFiles = await gitAgent.listFiles(
-    currentRepository,
-    ARTICLES_DIRECTORY,
-  )
+  const allFiles = await gitAgent.listFiles(ARTICLES_DIRECTORY)
 
   return Promise.all(
     allFiles.filter(keepMarkdownAndHTMLFiles).map(async filename => {
       const fullName = `${ARTICLES_DIRECTORY}/${filename}`
-      const content = await gitAgent.getFile(currentRepository, fullName)
+      const content = await gitAgent.getFile(fullName)
       const { attributes: data, body: markdownContent } = lireFrontMatter(
         content.toString(),
       )
@@ -49,6 +45,7 @@ export async function getArticlesList() {
  */
 export const deleteArticle = fileName => {
   const { state } = store
+  
 
   store.mutations.setArticles(
     (state.articles ?? []).filter(article => {
@@ -101,10 +98,10 @@ export const createArticle = (title, content) => {
  * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const updateArticle = async (fileName, title, content) => {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
   const existingDate = fileName.slice(
@@ -118,7 +115,7 @@ export const updateArticle = async (fileName, title, content) => {
   // If the title has changed, we need to delete the old article and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await gitAgent.removeFile(currentRepository, fileName)
+    await gitAgent.removeFile(fileName)
   }
 
   const finalContent = `${

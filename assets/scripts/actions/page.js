@@ -3,9 +3,8 @@
 import lireFrontMatter from 'front-matter'
 
 import store from './../store.js'
-import gitAgent from './../gitAgent.js'
-import { makeFileNameFromTitle, makePageFrontMatter } from './../utils'
-import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file'
+import { makeFileNameFromTitle, makePageFrontMatter } from './../utils.js'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file.js'
 
 /**
  *
@@ -21,17 +20,17 @@ export function keepMarkdownAndHTMLFiles(filename) {
  * @returns {Promise<Page[]>}
  */
 export async function getPagesList() {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
 
-  const allFiles = await gitAgent.listFiles(currentRepository, '')
+  const allFiles = await gitAgent.listFiles('')
 
   return Promise.all(
     allFiles.filter(keepMarkdownAndHTMLFiles).map(async filename => {
-      const content = await gitAgent.getFile(currentRepository, filename)
+      const content = await gitAgent.getFile(filename)
       const { attributes: data, body: markdownContent } = lireFrontMatter(
         content.toString(),
       )
@@ -108,10 +107,10 @@ export const createPage = (content, title, index) => {
  * @returns {ReturnType<typeof writeFileAndPushChanges>}
  */
 export const updatePage = async (fileName, title, content, index) => {
-  const currentRepository = store.state.currentRepository
+  const {gitAgent} = store.state
 
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
   }
   let targetFileName = fileName
 
@@ -122,7 +121,7 @@ export const updatePage = async (fileName, title, content, index) => {
   // If the title has changed, we need to delete the old page and
   // create a new one because the file name has changed.
   if (fileName && fileName !== targetFileName) {
-    await gitAgent.removeFile(currentRepository, fileName)
+    await gitAgent.removeFile(fileName)
   }
 
   const finalContent = `${

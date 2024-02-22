@@ -1,6 +1,8 @@
 
-/** @type {import("../assets/scripts/store").ScribouilliState} */
-export const fakeStateWithOneSite = {
+import GitAgent from '../assets/scripts/GitAgent.js'
+
+//@ts-ignore
+export const fakeStateWithOneSite = (sandbox) => ({
   oAuthProvider: {
     origin: 'https://github.com',
     accessToken: '1234567890',
@@ -16,6 +18,10 @@ export const fakeStateWithOneSite = {
     publicRepositoryURL: 'https://github.com/alice/alice.github.io.git',
     origin: 'https://github.com',
   },
+  gitAgent: sandbox.createStubInstance(GitAgent, {
+    writeFile: sinon.stub().resolves(),
+    commit: sinon.stub().resolves(),
+  }),
   // We use the term "account" to refer to user or organization.
   reposByAccount: {
     alice: [
@@ -30,4 +36,4 @@ export const fakeStateWithOneSite = {
   buildStatus: {
     setBuildingAndCheckStatusLater(){}
   }
-}
+})

@@ -15,6 +15,7 @@ import Store from 'baredux'
 // DO NOT import x from './actions/*.js' // you're making an action, so add an action instead
 
 import './types.js'
+import GitAgent from './GitAgent.js'
 
 
 /** @typedef { {message: string, resolution: (...args: any[]) => Promise<any>} } ResolutionOption */
@@ -32,6 +33,7 @@ import './types.js'
  * @property {Promise<string> | string} [login]
  * @property {string} [email]
  * @property {ScribouilliGitRepo | undefined} currentRepository
+ * @property {GitAgent | undefined} gitAgent
  * @property {ResolutionOption[] | undefined} conflict
  * @property {any} reposByAccount
  * @property {Page[]} [pages]
@@ -48,6 +50,7 @@ const state = {
   login: undefined,
   email: undefined,
   currentRepository: undefined,
+  gitAgent: undefined,
   conflict: undefined,
   // We use the term "account" to refer to user or organization.
   reposByAccount: {
@@ -93,6 +96,14 @@ const mutations = {
    */
   setCurrentRepository(state, repository) {
     state.currentRepository = repository
+  },
+  /**
+   *
+   * @param {ScribouilliState} state
+   * @param {ScribouilliState['gitAgent']} gitAgent
+   */
+  setGitAgent(state, gitAgent){
+    state.gitAgent = gitAgent
   },
   /**
    *
@@ -195,6 +206,7 @@ const mutations = {
     state.pages = undefined
     state.articles = undefined
     state.currentRepository = undefined
+    state.gitAgent = undefined
     state.conflict = undefined
   },
 }

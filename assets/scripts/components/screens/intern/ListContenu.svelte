@@ -1,9 +1,7 @@
 <script>
-  import gitAgent from '../../../gitAgent.js'
   import store from '../../../store'
   import Skeleton from '../../Skeleton.svelte'
-  import { makePageFrontMatter } from '../../../utils'
-  import {getOAuthServiceAPI} from '../../../oauth-services-api/index.js'
+  import { makePageFrontMatter } from '../../../utils's
   import './../../../types.js'
 
   /** @type {any} */
@@ -43,13 +41,19 @@
 
   let modification = false
 
+  const gitAgent = store.state.gitAgent
+
+  if(!gitAgent){
+    throw new TypeError('gitAgent is undefined')
+  }
+
+  // PPP move this to an action
   // @ts-ignore
   const editClick = async e => {
     if (modification) {
       for (let page of listContenu) {
         // for + await leads to poor pref. PPP: do a Promise.all
         await gitAgent.writeFile(
-          currentRepository,
           page.path,
           `${
             page.title
@@ -64,11 +68,10 @@
       }
 
       await gitAgent.commit(
-        currentRepository,
         'Changements menu',
       )
 
-      await gitAgent.safePush(currentRepository, getOAuthServiceAPI().getOauthUsernameAndPassword())
+      await gitAgent.safePush()
     }
     modification = !modification
   }

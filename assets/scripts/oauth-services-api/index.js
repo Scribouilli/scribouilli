@@ -1,6 +1,5 @@
 import page from 'page'
-import store from './../store.js'
-import gitAgent from './../gitAgent.js'
+import store from '../store.js'
 import GitHubAPI from './github.js'
 import GitlabAPI from './gitlab.js'
 
@@ -32,8 +31,11 @@ const makeOAuthServiceAPI = ({ accessToken, origin }) => {
 
   if (hostname === 'github.com') return new GitHubAPI(accessToken)
   else {
+    if(!store.state.gitAgent){
+      throw new TypeError('store.state.gitAgent is undefined')
+    }
     // assuming a gitlab instance
-    return new GitlabAPI(accessToken, origin, gitAgent)
+    return new GitlabAPI(accessToken, origin, store.state.gitAgent)
   }
 }
 

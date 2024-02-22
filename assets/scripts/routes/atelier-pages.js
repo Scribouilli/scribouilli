@@ -4,7 +4,6 @@ import lireFrontMatter from 'front-matter'
 import page from 'page'
 
 import { svelteTarget } from '../config'
-import gitAgent from '../gitAgent'
 import { replaceComponent } from '../routeComponentLifeCycle'
 import store from '../store'
 import { handleErrors, logMessage, makeFileNameFromTitle } from '../utils'
@@ -21,15 +20,15 @@ import { makeAtelierListPageURL } from './urls.js'
 const makeMapStateToProps = fileName => state => {
   // Display existing file
   if (fileName) {
-    const currentRepository = store.state.currentRepository
+    const {gitAgent} = store.state
 
-    if (!currentRepository) {
-      throw new TypeError('currentRepository is undefined')
+    if(!gitAgent){
+      throw new TypeError('gitAgent is undefined')
     }
 
     const fileP = async function () {
       try {
-        const content = await gitAgent.getFile(currentRepository, fileName)
+        const content = await gitAgent.getFile(fileName)
         const { attributes: data, body: markdownContent } =
           lireFrontMatter(content)
         return {

@@ -1,6 +1,7 @@
 //@ts-check
 
 import './../types.js'
+import GitAgent from '../GitAgent.js'
 
 /**
  * @implements {OAuthServiceAPI}
@@ -9,7 +10,7 @@ export default class GitLabAPI {
   /**
    * @param {string} accessToken
    * @param {string} origin
-   * @param {import('../gitAgent.js').GitAgent} gitAgent
+   * @param {GitAgent} gitAgent
    */
   constructor(accessToken, origin, gitAgent) {
     /** @type {string | undefined} */
@@ -117,7 +118,7 @@ export default class GitLabAPI {
   /** @type {OAuthServiceAPI["deploy"]} */
   deploy(scribouilliGitRepo) {
     console.log('gitlab.deploy', scribouilliGitRepo)
-    return this.gitAgent.currentBranch(scribouilliGitRepo).then(branch => {
+    return this.gitAgent.currentBranch().then(branch => {
       console.log('branch', branch)
       return this.callAPI(
         `${this.apiBaseUrl}/projects/${encodeURIComponent(
