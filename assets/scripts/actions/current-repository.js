@@ -80,7 +80,7 @@ export const setCurrentRepositoryFromQuerystring = async querystring => {
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   const gitAgent = new GitAgent({
-    repoId: makeRepoId(owner, repoName),
+    repoId,
     remoteURL: `${origin}/${repoId}.git`,
     onMergeConflict : resolutionOptions => {
       store.mutations.setConflict(resolutionOptions)

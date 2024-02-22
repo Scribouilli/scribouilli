@@ -4,7 +4,7 @@
   "description": "scribouilli, c'est cool",
   "main": "index.js",
   "scripts": {
-    "start": "echo 'http://localhost:8080/' && http-server -a localhost -s",
+    "start": "echo 'http://localhost:8080/' && http-server -a localhost -s -c-1",
     "ts": "tsc && echo 'Tout va bien 🎉'",
     "dev": "rollup -c -w",
     "build": "rollup -c",

@@ -4,12 +4,13 @@ import page from 'page'
 
 import store from './../store.js'
 import ScribouilliGitRepo, {
-  makePublicRepositoryURL,
+  makePublicRepositoryURL, makeRepoId,
 } from './../scribouilliGitRepo.js'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
 import { makeAtelierListPageURL } from './../routes/urls.js'
 import { logMessage } from './../utils.js'
 import { setBaseUrlInConfigIfNecessary } from './current-repository.js'
+import GitAgent from '../GitAgent.js'
 
 import '../types.js'
 
@@ -115,9 +116,9 @@ export function guessBaseURL({ owner, repoName, origin }) {
  *
  */
 export const createRepositoryForCurrentAccount = async (repoName, template) => {
-  const login = await store.state.login
+  const owner = await store.state.login
 
-  if (!login) {
+  if (!owner) {
     throw new TypeError(`missing login in createRepositoryForCurrentAccount`)
   }
 
@@ -137,11 +138,11 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
   const origin = oAuthProvider.origin
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
-    owner: login,
+    owner: owner,
     repoName: escapedRepoName,
     origin: origin,
     publicRepositoryURL: makePublicRepositoryURL(
-      login,
+      owner,
       escapedRepoName,
       origin,
     ),
@@ -149,6 +150,19 @@ export const createRepositoryForCurrentAccount = async (repoName, template) => {
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
+
+  const repoId = makeRepoId(owner, repoName)
+
+  const gitAgent = new GitAgent({
+    repoId,
+    remoteURL: `${origin}/${repoId}.git`,
+    onMergeConflict : (/** @type {import("./../store.js").ResolutionOption[] | undefined} */ resolutionOptions) => {
+      store.mutations.setConflict(resolutionOptions)
+    },
+    auth: getOAuthServiceAPI().getOauthUsernameAndPassword()
+  })
+
+  store.mutations.setGitAgent(gitAgent)
 
   return (
     getOAuthServiceAPI()
