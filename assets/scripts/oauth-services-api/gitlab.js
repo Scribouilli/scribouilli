@@ -7,17 +7,22 @@ import GitAgent from '../GitAgent.js'
  * @implements {OAuthServiceAPI}
  */
 export default class GitLabAPI {
+  #gitAgentGetter
   /**
    * @param {string} accessToken
    * @param {string} origin
-   * @param {GitAgent} gitAgent
+   * @param {() => GitAgent} gitAgent
    */
   constructor(accessToken, origin, gitAgent) {
     /** @type {string | undefined} */
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
-    this.gitAgent = gitAgent
+    this.#gitAgentGetter = gitAgent
+  }
+
+  get gitAgent(){
+    return this.#gitAgentGetter()
   }
 
   get apiBaseUrl() {

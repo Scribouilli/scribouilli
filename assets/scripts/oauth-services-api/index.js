@@ -29,13 +29,16 @@ import './../types.js'
 const makeOAuthServiceAPI = ({ accessToken, origin }) => {
   const hostname = new URL(origin).hostname
 
-  if (hostname === 'github.com') return new GitHubAPI(accessToken)
+  if (hostname === 'github.com') 
+    return new GitHubAPI(accessToken)
   else {
-    if(!store.state.gitAgent){
-      throw new TypeError('store.state.gitAgent is undefined')
-    }
     // assuming a gitlab instance
-    return new GitlabAPI(accessToken, origin, store.state.gitAgent)
+    return new GitlabAPI(accessToken, origin, () => {
+      if(!store.state.gitAgent){
+        throw new TypeError('store.state.gitAgent is undefined')
+      }
+      return store.state.gitAgent
+    })
   }
 }
 
