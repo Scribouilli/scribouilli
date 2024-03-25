@@ -120,7 +120,7 @@
                 </div>
               {:else}
                 <a
-                  href="{atelierPrefix}?path={contenu.path}&repoName={repoName}&account={account}"
+                  href="{atelierPrefix}?path={encodeURIComponent(contenu.path)}&repoName={repoName}&account={account}"
                 >
                   Modifier</a
                 >

@@ -86,7 +86,7 @@ export default async ({ querystring }) => {
   }
 
   const state = store.state
-  const fileName = new URLSearchParams(querystring).get('path') ?? ''
+  const fileName = decodeURIComponent(new URLSearchParams(querystring).get('path') ?? '')
   const mapStateToProps = makeMapStateToProps(fileName)
 
   const articleContenu = new ArticleContenu({
