@@ -31,7 +31,7 @@ export async function getArticlesList() {
       )
       return {
         title: data?.title,
-        path: filename,
+        path: fullName,
         content: markdownContent,
       }
     }),
