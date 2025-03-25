@@ -358,3 +358,8 @@ ul.list-with-dot {
   padding-left: 1rem;
   list-style-type: disc;
 }
+
+ol {
+  padding-left: 1rem; 
+}
+
