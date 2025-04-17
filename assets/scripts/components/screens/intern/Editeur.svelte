@@ -238,7 +238,7 @@
             {#if preview}
               <div class="preview">
                 <h4>Aperçu</h4>
-                <div>{@html preview}</div>
+                <div class="markdown-preview">{@html preview}</div>
               </div>
             {/if}
           </div>
@@ -379,4 +379,18 @@
       background-color: rgba(255, 255, 255, 0.4);
     }
   }
+  :global(.markdown-preview ul) {
+  list-style-type: disc !important;
+  padding-left: 1rem !important;
+}
+
+:global(.markdown-preview ol) {
+  list-style-type: decimal !important;
+  padding-left: 1rem !important;
+}
+
+:global(.markdown-preview li) {
+  margin-bottom: 0.5rem !important;
+}
+
 </style>
