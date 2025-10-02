@@ -318,6 +318,7 @@
 
     & > div {
       flex-basis: 50%;
+      flex-shrink: 0;
     }
 
     @media (max-width: 960px) {
