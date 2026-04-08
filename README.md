@@ -27,6 +27,13 @@ Voilà à quoi ça peut ressembler : [github.com/yaf/scribouilli](https://github
 
 Une fois les développements réalisés, vous pouvez faire une PR dans Scribouilli, en précisant votre url de développement pour que l'on puisse tester la modification.
 
+
+### Limite connue
+
+Pour le moment, il n'est pas possible de tester en local des sites hébergés sur gitlab ou scribougit (`git.scribouilli.org`)
+On peut le faire, mais ça demande de changer la config de toctoctoc en prod (et donc, ça casse la prod pour les sites ; une histoire de `redirect_uri`)
+
+
 ### Outils de développement
 
 Des pre-commit hooks sont installés automatiquement avec `husky`. Si jamais il sont trop contraignants,
