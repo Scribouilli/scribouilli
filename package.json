@@ -43,6 +43,7 @@
     "@types/sinon": "^17.0.1",
     "@types/sinon-chai": "^3.2.12",
     "chai": "^4.3.10",
+    "dotenv": "^17.4.2",
     "eslint": "^8.53.0",
     "fake-indexeddb": "^5.0.1",
     "http-server": "^14.1.1",

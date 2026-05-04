@@ -7,3 +7,4 @@ build
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/tests/e2e/.env
