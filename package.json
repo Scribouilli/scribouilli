@@ -10,7 +10,8 @@
     "build": "rollup -c",
     "test": "mocha --recursive tests",
     "prepare": "husky install",
-    "svelte-check": "svelte-check --tsconfig tsconfig.json"
+    "svelte-check": "svelte-check --tsconfig tsconfig.json",
+    "test:e2e": "playwright test tests/e2e"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@rollup/plugin-commonjs": "^12.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-terser": "^0.4.4",
@@ -36,6 +38,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.5",
     "@types/mocha": "^10.0.4",
+    "@types/node": "^25.6.0",
     "@types/page": "^1.11.8",
     "@types/sinon": "^17.0.1",
     "@types/sinon-chai": "^3.2.12",
