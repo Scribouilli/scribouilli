@@ -25,8 +25,8 @@
   export let currentRepository
 
   import { createEventDispatcher } from 'svelte'
-  import marked from 'marked'
-  import * as DOMPurify from 'dompurify'
+  import {marked} from 'marked'
+  import DOMPurify from 'dompurify'
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
   import store from '../../../store'
