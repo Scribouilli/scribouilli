@@ -4,8 +4,7 @@ import page from 'page'
 
 import store from '../store.js'
 import { fetchCurrentUserRepositories } from '../actions/current-user.js'
-import { svelteTarget } from '../config.js'
-import { replaceComponent } from '../routeComponentLifeCycle.js'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
 
 import Welcome from '../components/screens/Welcome.svelte'
 
@@ -39,10 +38,5 @@ export default () => {
     }
   }
 
-  const welcome = new Welcome({
-    target: svelteTarget,
-    props,
-  })
-
-  replaceComponent(welcome, () => {})
+  replaceComponent(Welcome, () => { return props })
 }

@@ -1,9 +1,7 @@
 // @ts-check
 
 import AtelierArticles from '../components/screens/AtelierArticles.svelte'
-import { svelteTarget } from '../config'
-import { replaceComponent } from '../routeComponentLifeCycle'
-import store from '../store'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import {
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
@@ -35,15 +33,9 @@ function mapStateToProps(state) {
 export default async ({ querystring }) => {
   await setCurrentRepositoryFromQuerystring(querystring)
 
-  const state = store.state
-  const atelierArticles = new AtelierArticles({
-    target: svelteTarget,
-    props: mapStateToProps(state),
-  })
-
   getCurrentRepoArticles()
 
-  replaceComponent(atelierArticles, mapStateToProps)
+  replaceComponent(AtelierArticles, mapStateToProps)
 }
 
 /**

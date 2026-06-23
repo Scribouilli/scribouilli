@@ -1,12 +1,6 @@
-import { svelteTarget } from '../config'
-import { replaceComponent } from '../routeComponentLifeCycle'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import SelectOrCreateSite from '../components/screens/SelectOrCreateSite.svelte'
 
 export default () => {
-  const selectOrCreateSite = new SelectOrCreateSite({
-    target: svelteTarget,
-    props: {},
-  })
-
-  replaceComponent(selectOrCreateSite, () => {})
+  replaceComponent(SelectOrCreateSite, () => {})
 }

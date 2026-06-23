@@ -1,12 +1,10 @@
 //@ts-check
 
-import store from '../store.js'
 import {
   fetchCurrentUserRepositories,
   fetchAuthenticatedUserLogin,
 } from '../actions/current-user.js'
-import { svelteTarget } from '../config.js'
-import { replaceComponent } from '../routeComponentLifeCycle.js'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
 import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
 
 /**
@@ -28,10 +26,5 @@ export default () => {
   fetchAuthenticatedUserLogin()
   fetchCurrentUserRepositories()
 
-  const selectCurrentSite = new SelectCurrentSite({
-    target: svelteTarget,
-    props: mapStateToProps(store.state),
-  })
-
-  replaceComponent(selectCurrentSite, mapStateToProps)
+  replaceComponent(SelectCurrentSite, mapStateToProps)
 }

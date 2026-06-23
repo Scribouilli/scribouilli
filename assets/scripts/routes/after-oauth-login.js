@@ -4,13 +4,12 @@ import page from 'page'
 import remember from 'remember'
 
 import {
-  svelteTarget,
   OAUTH_PROVIDER_STORAGE_KEY,
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
 } from '../config.js'
-import { replaceComponent } from '../routeComponentLifeCycle'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
 import { fetchCurrentUserRepositories } from '../actions/current-user.js'
@@ -86,13 +85,6 @@ export default () => {
     throw new Error(`Unknown OAuth provider type: ${type}`)
   }
 
-  const afterOauthLogin = new AfterOauthLogin({
-    target: svelteTarget,
-    props: {
-      // @ts-ignore
-      currentUserReposP,
-    },
-  })
-
-  replaceComponent(afterOauthLogin, () => {})
+  // TODO: pareil que dans account.js ici
+  replaceComponent(AfterOauthLogin, () => { return { currentUserReposP } })
 }

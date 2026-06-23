@@ -1,11 +1,14 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
 
-  /** @type {string} */
-  export let href;
+  /**
+   * @typedef {Object} Props
+   * @property {string} href
+   * @property {string} gitProvider
+   */
 
-  /** @type {string} */
-  export let gitProvider
+  /** @type {Props} */
+  let { href, gitProvider } = $props();
 
 </script>
 

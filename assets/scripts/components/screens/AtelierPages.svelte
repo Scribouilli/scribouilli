@@ -1,21 +1,25 @@
 <script>
   import ListContenu from './intern/ListContenu.svelte'
 
-  /** @type any */
-  export let buildStatus
-
-  /** @type {any[] | undefined} */
-  export let pages
-
-  /** @type {boolean | undefined} */
-  export let showArticles
-
-  /** @type {ScribouilliGitRepo} */
-  export let currentRepository
-  
   /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type {ScribouilliState["conflict"]}*/
-  export let conflict
+  
+  /**
+   * @typedef {Object} Props
+   * @property {any} buildStatus
+   * @property {any[] | undefined} pages
+   * @property {boolean | undefined} showArticles
+   * @property {ScribouilliGitRepo} currentRepository
+   * @property {ScribouilliState["conflict"]} conflict
+   */
+
+  /** @type {Props} */
+  let {
+    buildStatus,
+    pages,
+    showArticles,
+    currentRepository,
+    conflict
+  } = $props();
 </script>
 
 <ListContenu

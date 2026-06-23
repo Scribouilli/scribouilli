@@ -1,8 +1,7 @@
 // @ts-check
 
 import CreateAccount from '../components/screens/CreateAccount.svelte'
-import { svelteTarget } from '../config'
-import { replaceComponent } from '../routeComponentLifeCycle'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 
 /**
  * @param {import('page').Context} _
@@ -15,10 +14,5 @@ export default ({ querystring }) => {
     throw new TypeError(`Missing 'provider' parameter`)
   }
 
-  const createAccount = new CreateAccount({
-    target: svelteTarget,
-    props: { gitProvider },
-  })
-
-  replaceComponent(createAccount, () => {})
+  replaceComponent(CreateAccount, () => { return { gitProvider } })
 }

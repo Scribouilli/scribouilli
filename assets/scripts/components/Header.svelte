@@ -1,21 +1,30 @@
 <script>
-  /** @type {{ status: BuildStatus }} */
-  export let buildStatus
+  import { run } from 'svelte/legacy';
 
   /** @typedef {import("./../store.js").ScribouilliState} ScribouilliState */
-  /** @type {ScribouilliState["currentRepository"] | undefined} */
-  export let currentRepository
 
-  /** @type {boolean} */
-  export let showArticles
+  /**
+   * @typedef {Object} Props
+   * @property {{ status: BuildStatus }} buildStatus
+   * @property {ScribouilliState["currentRepository"] | undefined} currentRepository
+   * @property {boolean} showArticles
+   * @property {ScribouilliState["conflict"]} conflict
+   */
 
-  /** @type {ScribouilliState["conflict"]}*/
-  export let conflict
+  /** @type {Props} */
+  let {
+    buildStatus,
+    currentRepository,
+    showArticles,
+    conflict
+  } = $props();
 
   /** @type {string} */
-  let status
+  let status = $state()
 
-  $: status = buildStatus?.status
+  run(() => {
+    status = buildStatus?.status
+  });
 
   if (buildStatus) {
     // @ts-ignore
@@ -27,32 +36,32 @@
   }
 
   /** @type {boolean}*/
-  let needsAccountVerification
-  $: needsAccountVerification = status === 'needs_account_verification'
+  let needsAccountVerification = $derived(status === 'needs_account_verification')
+  
 
-  $: buildStatusClass = buildStatus ? `build-${status}` : undefined
+  let buildStatusClass = $derived(buildStatus ? `build-${status}` : undefined)
 
   /** @type {Promise<string> | undefined } */
-  let publishedWebsiteURL
-  $: publishedWebsiteURL = currentRepository?.publishedWebsiteURL
+  let publishedWebsiteURL = $derived(currentRepository?.publishedWebsiteURL)
+  
 
   /** @type {string | undefined} */
-  let repositoryURL
-  $: repositoryURL = currentRepository?.publicRepositoryURL
+  let repositoryURL = $derived(currentRepository?.publicRepositoryURL)
+  
 
   /** @type {string | undefined} */
-  let repoName
-  $: repoName = currentRepository?.repoName
+  let repoName = $derived(currentRepository?.repoName)
+  
 
   /** @type {string | undefined} */
-  let account
-  $: account = currentRepository?.owner
+  let account = $derived(currentRepository?.owner)
+  
 
   /** @type {string | undefined} */
-  $: homeURL =
-    repoName && account
+  let homeURL =
+    $derived(repoName && account
       ? `/atelier-list-pages?repoName=${repoName}&account=${account}`
-      : '/'
+      : '/')
   /**
    *
    * @param {string} account
@@ -64,8 +73,8 @@
   }
 
   /** @type {string} */
-  let resolutionURL;
-  $: resolutionURL = makeResolutionDesynchronisationURL(account || '', repoName || '')
+  let resolutionURL = $derived(makeResolutionDesynchronisationURL(account || '', repoName || ''));
+  
 
 </script>
 
@@ -77,7 +86,7 @@
           (L'adresse du site va apparaître ici…)
         </p>
         {#if buildStatusClass}
-          <p class={buildStatusClass} />
+          <p class={buildStatusClass}></p>
         {/if}
       </div>
     {:then publishedURL}
@@ -92,7 +101,7 @@
           </a>
         </p>
         {#if buildStatusClass}
-          <p class={buildStatusClass} />
+          <p class={buildStatusClass}></p>
         {/if}
       </div>
     {/await}

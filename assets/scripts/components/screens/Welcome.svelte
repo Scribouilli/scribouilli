@@ -1,8 +1,17 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
 
-  export let showWelcome = false;
-  export let isFetchingCurrentUserRepos = false;
+  /** 
+   * @typedef Props
+   * @property {boolean} showWelcome
+   * @property {boolean} isFetchingCurrentUserRepos
+   */
+
+   /** @type {Props} */
+   const {
+     showWelcome = false,
+     isFetchingCurrentUserRepos = false,
+   } = $props()
 </script>
 
 <Skeleton>
@@ -11,7 +20,7 @@
       <h2>Créez votre petit site facilement !</h2>
 
       <a href="./choose-account" class="btn">C'est parti !</a>
-    {:else if isFetchingCurrentUserRepos }
+    {:else if isFetchingCurrentUserRepos}
       <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
       <img
         src="./assets/images/hearts.svg"

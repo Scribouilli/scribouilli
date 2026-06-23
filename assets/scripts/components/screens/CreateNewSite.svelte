@@ -1,15 +1,17 @@
 <script>
+  import { preventDefault } from 'svelte/legacy';
+
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
   import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
   import { templates } from '../../config.js';
 
-  let name = "";
-  let loading = false;
-  let hasError = false
+  let name = $state("");
+  let loading = $state(false);
+  let hasError = $state(false)
 
   /** @type {GitSiteTemplate} */
-  let selectedTemplate;
+  let selectedTemplate = $state();
 
   // @ts-ignore
   const onSubmit = (e) => {
@@ -39,7 +41,7 @@
       <h3>Créer un nouveau site</h3>
 
       <div class="wrapper">
-        <form on:submit|preventDefault={onSubmit}>
+        <form onsubmit={preventDefault(onSubmit)}>
           <div>
             <label for="name">Nom de votre site</label>
             <input
