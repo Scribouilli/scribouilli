@@ -44,25 +44,9 @@ export interface OAuthServiceAPI {
   ) => Promise<string | undefined>
 }
 
-interface GithubOptions {
-  accessToken: string
-}
-
-interface GitlabOptions {
-  accessToken: string
-  origin: string
-  refreshToken: string
-  expiredIn: string
-  state: string
-}
-
 interface AuthenticatedUserEmails {
   email: string
   primary: boolean
-}
-
-interface GithubDeployment {
-  statuses_url: string
 }
 
 export interface GithubRepository {
@@ -70,26 +54,4 @@ export interface GithubRepository {
   owner: {
     login: string
   }
-}
-
-/**
- * A git commit object.
- */
-interface CommitObject {
-  message: string
-  tree: string
-  parent: string[]
-  author: {
-    name: string
-    email: string
-    timestamp: number
-    timezoneOffset: number
-  }
-  committer: {
-    name: string
-    email: string
-    timestamp: number
-    timezoneOffset: number
-  }
-  gpgsig?: string
 }
