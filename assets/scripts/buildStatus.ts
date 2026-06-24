@@ -1,66 +1,38 @@
 import GitAgent from './GitAgent.js'
 import { getOAuthServiceAPI } from './oauth-services-api/index.js'
 import ScribouilliGitRepo from './scribouilliGitRepo.js'
+import store from './store.js'
 import { BuildStatus } from './types/git.js'
 import { isItStillCompiling } from './utils.js'
 
-export default function (
+let timeout: ReturnType<typeof setTimeout> | undefined
+
+export function scheduleCheck(
   scribouilliGitRepo: ScribouilliGitRepo,
   gitAgent: GitAgent,
+  delay = 5000,
 ) {
-  let repoStatus: BuildStatus = 'in_progress'
-  let reaction: (status: BuildStatus) => any
-  let timeout: ReturnType<typeof setTimeout> | undefined
-
-  function scheduleCheck(delay = 5000) {
-    if (!timeout) {
-      timeout = setTimeout(() => {
-        buildStatusObject.checkStatus()
-        timeout = undefined
-      }, delay)
-    }
-  }
-
-  const buildStatusObject = {
-    get status() {
-      return repoStatus
-    },
-    subscribe(callback: (status: BuildStatus) => any) {
-      reaction = callback
-    },
-    checkStatus() {
-      return getBuildStatus(scribouilliGitRepo, gitAgent)
-        .then(status => {
-          repoStatus = status
-          if (reaction) {
-            reaction(repoStatus)
-          }
-
-          if (
-            repoStatus === 'in_progress' ||
-            repoStatus === 'needs_account_verification'
-          ) {
-            scheduleCheck()
-          }
-        })
-        .catch(() => {
-          repoStatus = 'error'
-          if (reaction) {
-            reaction(repoStatus)
-          }
-        })
-    },
-    setBuildingAndCheckStatusLater(t = 30000) {
-      repoStatus = 'in_progress'
-      // @ts-ignore
-      clearTimeout(timeout)
+  if (!timeout) {
+    timeout = setTimeout(async () => {
+      const status = await getBuildStatus(scribouilliGitRepo, gitAgent).catch(
+        () => 'error' as const,
+      )
+      store.mutations.setBuildStatus(status)
       timeout = undefined
-      scheduleCheck(t)
-    },
+    }, delay)
   }
+}
 
-  buildStatusObject.checkStatus()
-  return buildStatusObject
+export function setBuildingAndCheckStatusLater(
+  scribouilliGitRepo: ScribouilliGitRepo,
+  gitAgent: GitAgent,
+  t = 30000,
+) {
+  store.mutations.setBuildStatus('in_progress')
+  // @ts-ignore
+  clearTimeout(timeout)
+  timeout = undefined
+  scheduleCheck(scribouilliGitRepo, gitAgent, t)
 }
 
 /**

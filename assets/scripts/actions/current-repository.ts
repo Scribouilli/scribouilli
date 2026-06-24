@@ -9,12 +9,16 @@ import ScribouilliGitRepo, {
 import GitAgent from '../GitAgent.js'
 import { handleErrors, logMessage } from './../utils.js'
 import { fetchAuthenticatedUserLogin } from './current-user.js'
-import makeBuildStatus from './../buildStatus.js'
+import {
+  scheduleCheck,
+  setBuildingAndCheckStatusLater,
+} from './../buildStatus.js'
 import { file } from './file.js'
 import { getPagesList } from './page.js'
 import { getArticlesList } from './article.js'
 import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
 import { CUSTOM_CSS_PATH } from '../config.js'
+import { BuildStatus } from '../types/git.js'
 
 export const getCurrentRepoPages = () => {
   return getPagesList().then(store.mutations.setPages).catch(handleErrors)
@@ -102,13 +106,22 @@ export const setBuildStatus = (
   scribouilliGitRepo: ScribouilliGitRepo,
   gitAgent: GitAgent,
 ) => {
-  store.mutations.setBuildStatus(makeBuildStatus(scribouilliGitRepo, gitAgent))
-  /*
-  Appel sans vérification,
-  On suppose qu'au chargement initial,
-  on peut faire confiance à ce que renvoit l'API
-  */
-  store.state.buildStatus.checkStatus()
+  store.mutations.setBuildStatus('in_progress')
+  let lastBuildStatus: BuildStatus | undefined = undefined
+  store.subscribe(state => {
+    if (state.buildStatus !== lastBuildStatus) {
+      lastBuildStatus = state.buildStatus
+
+      if (
+        state.buildStatus === 'in_progress' ||
+        state.buildStatus === 'needs_account_verification'
+      ) {
+        scheduleCheck(scribouilliGitRepo, gitAgent)
+      }
+    }
+  })
+
+  scheduleCheck(scribouilliGitRepo, gitAgent)
 }
 
 /**
@@ -237,10 +250,17 @@ const getCurrentRepoConfig = (): Promise<any> => {
 
 export function saveCustomCSS(
   css: string,
-  localStore = store,
-): ReturnType<typeof file.writeFileAndPushChanges> {
-  localStore.mutations.setTheme(css)
-  localStore.state.buildStatus.setBuildingAndCheckStatusLater(10000)
+): ReturnType<typeof file.writeFileAndPushChanges> | Promise<void> {
+  if (!store.state.currentRepository || !store.state.gitAgent) {
+    return Promise.resolve()
+  }
+
+  store.mutations.setTheme(css)
+  setBuildingAndCheckStatusLater(
+    store.state.currentRepository,
+    store.state.gitAgent,
+    10000,
+  )
   return file.writeFileAndPushChanges(
     CUSTOM_CSS_PATH,
     css,

@@ -10,11 +10,12 @@ import { deletePage, createPage, updatePage } from './../actions/page'
 import { makeAtelierListPageURL } from './urls.js'
 import { showArticles } from '../actions/article'
 import { EditeurFile } from '../types/atelier.js'
+import { setBuildingAndCheckStatusLater } from '../buildStatus'
 
 const makeMapStateToProps =
   (fileName: string): ((state: ScribouilliState) => any) =>
   state => {
-    const onSave: (file: EditeurFile) => Promise<void> | void = ({
+    const onSave: (file: EditeurFile) => Promise<void> = async ({
       fileName,
       title,
       content,
@@ -22,35 +23,40 @@ const makeMapStateToProps =
       previousContent,
       index,
       blogIndex,
-    }): Promise<void> | void => {
-      const currentRepository = state.currentRepository
-      if (!currentRepository) return
+    }): Promise<void> => {
+      if (!state.currentRepository || !state.gitAgent) return
 
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
 
       // If no content changed, just redirect
       if (!hasTitleChanged && !hasContentChanged) {
-        page(makeAtelierListPageURL(currentRepository))
+        page(makeAtelierListPageURL(state.currentRepository))
         return
       }
-      //
+
       // If the file name is empty, it means that we are creating a new page.
       if (fileName === '') {
-        return createPage(content, title, index)
-          .then(() => {
-            state.buildStatus.setBuildingAndCheckStatusLater()
-            page(makeAtelierListPageURL(currentRepository))
-          })
-          .catch(msg => handleErrors(msg))
+        try {
+          await createPage(content, title, index)
+          setBuildingAndCheckStatusLater(
+            state.currentRepository,
+            state.gitAgent,
+          )
+          page(makeAtelierListPageURL(state.currentRepository))
+          return
+        } catch (msg: any) {
+          handleErrors(msg)
+        }
       }
 
-      updatePage(fileName, title, content, index, blogIndex)
-        .then(() => {
-          state.buildStatus.setBuildingAndCheckStatusLater()
-          page(makeAtelierListPageURL(currentRepository))
-        })
-        .catch(msg => handleErrors(msg))
+      try {
+        await updatePage(fileName, title, content, index, blogIndex)
+        setBuildingAndCheckStatusLater(state.currentRepository, state.gitAgent)
+        page(makeAtelierListPageURL(state.currentRepository))
+      } catch (msg: any) {
+        handleErrors(msg)
+      }
     }
 
     // Display existing file
@@ -64,8 +70,11 @@ const makeMapStateToProps =
       const onDelete = () => {
         deletePage(fileName)
           .then(() => {
-            if (!state.currentRepository) return
-            state.buildStatus.setBuildingAndCheckStatusLater()
+            if (!state.currentRepository || !state.gitAgent) return
+            setBuildingAndCheckStatusLater(
+              state.currentRepository,
+              state.gitAgent,
+            )
             page(makeAtelierListPageURL(state.currentRepository))
           })
           .catch(msg => handleErrors(msg))

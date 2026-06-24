@@ -2,6 +2,7 @@ import Store, { BareduxStore } from 'baredux'
 import GitAgent from './GitAgent'
 import ScribouilliGitRepo from './scribouilliGitRepo'
 import { Page, Article } from './types/atelier'
+import { BuildStatus } from './types/git'
 /**
  * Un store baredux a pour vocation de refléter notamment le modèle mental de la
  * personne face à Scribouilli. Le store stocke donc principalement des données (et parfois des singletons)
@@ -36,7 +37,7 @@ export interface ScribouilliState {
   reposByAccount: any
   pages?: Page[]
   articles?: Article[]
-  buildStatus: any
+  buildStatus: BuildStatus
   basePath: string
   theme: { css?: string }
 }
@@ -54,7 +55,7 @@ const state: ScribouilliState = {
   },
   pages: [],
   articles: undefined,
-  buildStatus: undefined,
+  buildStatus: 'in_progress',
   basePath: location.hostname.endsWith('.github.io') ? '/scribouilli' : '',
   theme: {
     css: undefined,
@@ -124,7 +125,7 @@ const mutations = {
     })
   },
 
-  setBuildStatus(state: ScribouilliState, buildStatus: any) {
+  setBuildStatus(state: ScribouilliState, buildStatus: BuildStatus) {
     state.buildStatus = buildStatus
   },
 

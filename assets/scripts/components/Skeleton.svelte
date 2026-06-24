@@ -3,10 +3,11 @@
   import Footer from "./Footer.svelte";
   import type { ScribouilliState } from "../store"
   import type { Snippet } from "svelte"
+  import type { BuildStatus } from "../types/git"
 
   interface Props {
     showArticles?: boolean
-    buildStatus?: any
+    buildStatus: BuildStatus
     currentRepository?: ScribouilliState["currentRepository"] | undefined
     conflict?: ScribouilliState["conflict"]
     children?: Snippet
@@ -14,7 +15,7 @@
 
   let {
     showArticles = false,
-    buildStatus = undefined,
+    buildStatus = "in_progress" as const,
     currentRepository = undefined,
     conflict = undefined,
     children

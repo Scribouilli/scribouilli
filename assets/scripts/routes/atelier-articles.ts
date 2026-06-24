@@ -15,18 +15,19 @@ import {
 } from '../actions/article'
 import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
 import { EditeurFile } from '../types/atelier.js'
+import { setBuildingAndCheckStatusLater } from '../buildStatus'
 
 const makeMapStateToProps =
   (fileName: string): ((state: ScribouilliState) => any) =>
   state => {
-    const onSave: (file: EditeurFile) => Promise<void> | void = ({
+    const onSave: (file: EditeurFile) => Promise<void> = async ({
       fileName,
       content,
       previousContent,
       title,
       previousTitle,
-    }): Promise<void> | void => {
-      if (!state.currentRepository) return
+    }): Promise<void> => {
+      if (!state.currentRepository || !state.gitAgent) return
 
       const hasContentChanged = content !== previousContent
       const hasTitleChanged = title !== previousTitle
@@ -39,20 +40,27 @@ const makeMapStateToProps =
 
       // If the file name is empty, it means that we are creating a new article.
       if (fileName === '') {
-        return createArticle(title, content)
-          .then(() => {
-            state.buildStatus.setBuildingAndCheckStatusLater()
-            page(articlePageUrl)
-          })
-          .catch(msg => handleErrors(msg))
+        try {
+          await createArticle(title, content)
+          setBuildingAndCheckStatusLater(
+            state.currentRepository,
+            state.gitAgent,
+          )
+          page(articlePageUrl)
+          return
+        } catch (msg: any) {
+          handleErrors(msg)
+        }
       }
 
-      updateArticle(fileName, title, content)
-        .then(() => {
-          state.buildStatus.setBuildingAndCheckStatusLater()
-          page(articlePageUrl)
-        })
-        .catch(msg => handleErrors(msg))
+      try {
+        await updateArticle(fileName, title, content)
+        setBuildingAndCheckStatusLater(state.currentRepository, state.gitAgent)
+        page(articlePageUrl)
+        return
+      } catch (msg: any) {
+        handleErrors(msg)
+      }
     }
 
     if (fileName) {
@@ -65,9 +73,12 @@ const makeMapStateToProps =
       const onDelete = () => {
         deleteArticle(fileName)
           .then(() => {
-            if (!state.currentRepository) return
+            if (!state.currentRepository || !state.gitAgent) return
 
-            state.buildStatus.setBuildingAndCheckStatusLater()
+            setBuildingAndCheckStatusLater(
+              state.currentRepository,
+              state.gitAgent,
+            )
             page(makeAtelierListArticlesURL(state.currentRepository))
           })
           .catch(msg => handleErrors(msg))

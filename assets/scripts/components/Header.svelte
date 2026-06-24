@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
   import type { BuildStatus } from '../types/git.js'
   import type { ScribouilliState } from '../store.js'
 
   interface Props {
-    buildStatus: { status: BuildStatus} 
+    buildStatus: BuildStatus
     currentRepository: ScribouilliState["currentRepository"] | undefined
     showArticles: boolean
     conflict: ScribouilliState["conflict"]
@@ -17,23 +16,8 @@
     conflict
   }: Props = $props();
 
-  let status: string | undefined = $state()
-
-  run(() => {
-    status = buildStatus?.status
-  });
-
-  if (buildStatus) {
-    // @ts-ignore
-    buildStatus.subscribe(s => {
-      if (s) { 
-        status = s
-      }
-    })
-  }
-
-  let needsAccountVerification: boolean = $derived(status === 'needs_account_verification')
-  let buildStatusClass = $derived(buildStatus ? `build-${status}` : undefined)
+  let needsAccountVerification: boolean = $derived(buildStatus === 'needs_account_verification')
+  let buildStatusClass = $derived(buildStatus ? `build-${buildStatus}` : undefined)
   let publishedWebsiteURL: Promise<string> | undefined = $derived(currentRepository?.publishedWebsiteURL)
   let repositoryURL: string | undefined = $derived(currentRepository?.publicRepositoryURL)
   let repoName: string | undefined = $derived(currentRepository?.repoName)
