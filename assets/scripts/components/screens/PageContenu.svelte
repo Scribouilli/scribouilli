@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { makeAtelierListPageURL } from '../../routes/urls.js'
-  import ScribouilliGitRepo from '../../scribouilliGitRepo.js'
-  import type { EditeurFile, FileContenu } from '../../types/atelier.js'
+  import { makeAtelierListPageURL } from '../../routes/urls.ts'
+  import ScribouilliGitRepo from '../../scribouilliGitRepo.ts'
+  import type { EditeurFile, FileContenu } from '../../types/atelier.ts'
   import Editeur from "./intern/Editeur.svelte";
   
   interface Props {

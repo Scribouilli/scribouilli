@@ -1,6 +1,6 @@
 import { mount, unmount } from 'svelte'
-import store, { type ScribouilliState } from './store.js'
-import { svelteTarget } from './config.js'
+import store, { type ScribouilliState } from './store.ts'
+import { svelteTarget } from './config.ts'
 
 import { Component } from 'svelte'
 

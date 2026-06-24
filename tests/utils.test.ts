@@ -1,5 +1,5 @@
-import './setup.js'
-import { isItStillCompiling } from '../assets/scripts/utils.js'
+import './setup.ts'
+import { isItStillCompiling } from '../assets/scripts/utils.ts'
 
 describe('Utils function', () => {
   let now, clock

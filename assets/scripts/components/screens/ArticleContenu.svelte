@@ -1,7 +1,7 @@
 <script lang="ts">
-  import {makeAtelierListArticlesURL} from '../../routes/atelier-list-articles.js'
-  import type { EditeurFile, FileContenu } from '../../types/atelier.js'
-  import ScribouilliGitRepo from '../../scribouilliGitRepo.js';
+  import {makeAtelierListArticlesURL} from '../../routes/atelier-list-articles.ts'
+  import type { EditeurFile, FileContenu } from '../../types/atelier.ts'
+  import ScribouilliGitRepo from '../../scribouilliGitRepo.ts';
 
   import Editeur from "./intern/Editeur.svelte";
   

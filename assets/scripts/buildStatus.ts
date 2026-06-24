@@ -1,9 +1,9 @@
-import GitAgent from './GitAgent.js'
-import { getOAuthServiceAPI } from './oauth-services-api/index.js'
-import ScribouilliGitRepo from './scribouilliGitRepo.js'
-import store from './store.js'
-import { BuildStatus } from './types/git.js'
-import { isItStillCompiling } from './utils.js'
+import GitAgent from './GitAgent.ts'
+import { getOAuthServiceAPI } from './oauth-services-api/index.ts'
+import ScribouilliGitRepo from './scribouilliGitRepo.ts'
+import store from './store.ts'
+import type { BuildStatus } from './types/git.ts'
+import { isItStillCompiling } from './utils.ts'
 
 let timeout: ReturnType<typeof setTimeout> | undefined
 

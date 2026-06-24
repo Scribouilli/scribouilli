@@ -6,11 +6,11 @@ import {
   TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
-} from '../config.js'
-import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
+} from '../config.ts'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.ts'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
-import { fetchCurrentUserRepositories } from '../actions/current-user.js'
+import { fetchCurrentUserRepositories } from '../actions/current-user.ts'
 
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)

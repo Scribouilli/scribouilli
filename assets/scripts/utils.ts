@@ -1,8 +1,8 @@
 import page from 'page'
 import { format } from 'date-fns'
 
-import store from './store.js'
-import { CommitObject } from 'isomorphic-git'
+import store from './store.ts'
+import type { CommitObject } from 'isomorphic-git'
 
 /**
  * @summary Handle errors catched by Promises

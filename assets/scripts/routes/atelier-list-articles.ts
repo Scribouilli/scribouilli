@@ -3,10 +3,10 @@ import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import {
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
-} from '../actions/current-repository.js'
+} from '../actions/current-repository.ts'
 import { showArticles } from '../actions/article'
-import type { ScribouilliState } from '../store.js'
-import ScribouilliGitRepo from '../scribouilliGitRepo.js'
+import type { ScribouilliState } from '../store.ts'
+import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import { Context } from 'page'
 
 function mapStateToProps(state: ScribouilliState) {

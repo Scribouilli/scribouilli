@@ -6,7 +6,7 @@ import {
   getCurrentRepoArticles,
   setCurrentRepositoryFromQuerystring,
   saveCustomCSS,
-} from '../actions/current-repository.js'
+} from '../actions/current-repository.ts'
 import { handleErrors } from '../utils'
 import Settings from '../components/screens/Settings.svelte'
 import { writeFileAndCommit, deleteFileAndCommit } from '../actions/file'

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Skeleton from "../Skeleton.svelte";
     import {addConflictRemovalAndRedirectToResolution} from
-    '../../actions/current-user.js'
+    '../../actions/current-user.ts'
   import type { ScribouilliState } from "../../store"
 
     interface Props {

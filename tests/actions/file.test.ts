@@ -1,18 +1,20 @@
-import './../setup.js'
-import { fakeStateWithOneSite } from './../fixtures.js'
+import './../setup.ts'
+import { fakeStateWithOneSite } from './../fixtures.ts'
 import {
   writeFileAndCommit,
   writeFileAndPushChanges,
   deleteFileAndCommit,
   deleteFileAndPushChanges,
-} from './../../assets/scripts/actions/file.js'
-import gitAgent from './../../assets/scripts/GitAgent.js'
-import store from './../../assets/scripts/store.js'
+} from './../../assets/scripts/actions/file.ts'
+import gitAgent from './../../assets/scripts/GitAgent.ts'
+import store from './../../assets/scripts/store.ts'
+import sinon from 'sinon'
+import { expect } from 'chai'
 
 // Use a common sandbox for all tests so we can easily restore it after each test.
 const sandbox = sinon.createSandbox()
 
-describe('actions/file.js', () => {
+describe('actions/file.ts', () => {
   beforeEach(() => {
     sandbox.stub(store, 'state').value(fakeStateWithOneSite)
   })
@@ -30,9 +32,10 @@ describe('actions/file.js', () => {
             commit: sinon.stub(),
           },
         },
+        mutations: {},
       }
       writeFileAndCommit(
-        'test.js',
+        'test.ts',
         'Curiouser and curiouser!',
         undefined,
         fakeStore,
@@ -40,12 +43,12 @@ describe('actions/file.js', () => {
       done()
       expect(fakeStore.state.gitAgent.writeFile).to.have.been.calledWith(
         'bla',
-        'test.js',
+        'test.ts',
         'Curiouser and curiouser!',
       )
-      expect(faceStore.state.gitAgent.commit).to.have.been.calledWith(
+      expect(fakeStore.state.gitAgent.commit).to.have.been.calledWith(
         'fanne',
-        'Modification du fichier test.js',
+        'Modification du fichier test.ts',
       )
     })
   })
@@ -61,7 +64,7 @@ describe('actions/file.js', () => {
         },
       }
       writeFileAndPushChanges(
-        'test.js',
+        'test.ts',
         'Curiouser and curiouser!',
         undefined,
         fakeStore,
@@ -69,7 +72,7 @@ describe('actions/file.js', () => {
       done()
       expect(gitAgent.writeFile).to.have.been.calledWith(
         store.state.currentRepository,
-        'test.js',
+        'test.ts',
         'Curiouser and curiouser!',
       )
       expect(gitAgent.commit).to.have.been.calledWith(
@@ -93,7 +96,7 @@ describe('actions/file.js', () => {
         },
       }
 
-      deleteFileAndCommit('test.js', undefined, fakeStore)
+      deleteFileAndCommit('test.ts', undefined, fakeStore)
       done()
       expect(fakeStore.state.gitAgent.removeFile).to.have.been.calledOnce
       expect(fakeStore.state.gitAgent.commit).to.have.been.calledOnce
@@ -111,7 +114,7 @@ describe('actions/file.js', () => {
           },
         },
       }
-      deleteFileAndPushChanges('test.js', undefined, fakeStore)
+      deleteFileAndPushChanges('test.ts', undefined, fakeStore)
       expect(fakeStore.state.gitAgent.safePush).to.have.been.calledOnce
       done()
     })

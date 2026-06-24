@@ -1,9 +1,9 @@
 import lireFrontMatter from 'front-matter'
 
-import store from './../store.js'
-import { makeFileNameFromTitle, makePageFrontMatter } from './../utils.js'
-import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file.js'
-import { Page } from '../types/atelier.js'
+import store from './../store.ts'
+import { makeFileNameFromTitle, makePageFrontMatter } from './../utils.ts'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file.ts'
+import type { Page } from '../types/atelier.ts'
 
 export function keepMarkdownAndHTMLFiles(filename: string): boolean {
   return filename.endsWith('.md') || filename.endsWith('.html')

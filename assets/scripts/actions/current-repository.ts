@@ -1,24 +1,24 @@
 import page from 'page'
 import yaml from 'js-yaml'
 
-import store from './../store.js'
+import store, { type PartialStore } from './../store.ts'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
-} from './../scribouilliGitRepo.js'
-import GitAgent from '../GitAgent.js'
-import { handleErrors, logMessage } from './../utils.js'
-import { fetchAuthenticatedUserLogin } from './current-user.js'
+} from './../scribouilliGitRepo.ts'
+import GitAgent from '../GitAgent.ts'
+import { handleErrors, logMessage } from './../utils.ts'
+import { fetchAuthenticatedUserLogin } from './current-user.ts'
 import {
   scheduleCheck,
   setBuildingAndCheckStatusLater,
-} from './../buildStatus.js'
-import { file } from './file.js'
-import { getPagesList } from './page.js'
-import { getArticlesList } from './article.js'
-import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
-import { CUSTOM_CSS_PATH } from '../config.js'
-import { BuildStatus } from '../types/git.js'
+} from './../buildStatus.ts'
+import { file } from './file.ts'
+import { getPagesList } from './page.ts'
+import { getArticlesList } from './article.ts'
+import { getOAuthServiceAPI } from '../oauth-services-api/index.ts'
+import { CUSTOM_CSS_PATH } from '../config.ts'
+import type { BuildStatus } from '../types/git.ts'
 
 export const getCurrentRepoPages = () => {
   return getPagesList().then(store.mutations.setPages).catch(handleErrors)
@@ -248,8 +248,13 @@ const getCurrentRepoConfig = (): Promise<any> => {
     .catch(handleErrors)
 }
 
+const defaultStore = store
 export function saveCustomCSS(
   css: string,
+  store: PartialStore<
+    'currentRepository' | 'gitAgent',
+    'setTheme'
+  > = defaultStore,
 ): ReturnType<typeof file.writeFileAndPushChanges> | Promise<void> {
   if (!store.state.currentRepository || !store.state.gitAgent) {
     return Promise.resolve()

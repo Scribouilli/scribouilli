@@ -16,7 +16,7 @@ import http from 'isomorphic-git/http/web'
 const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 
 import type { CommitObject, GitAuth } from 'isomorphic-git'
-import { ResolutionOption } from './store'
+import type { ResolutionOption } from './store.ts'
 
 export default class GitAgent {
   #fs

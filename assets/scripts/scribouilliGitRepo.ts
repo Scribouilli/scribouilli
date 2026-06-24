@@ -1,4 +1,4 @@
-import { OAuthServiceAPI } from './types/git'
+import type { OAuthServiceAPI } from './types/git.ts'
 
 export default class ScribouilliGitRepo {
   // TODO: better typing of these fields

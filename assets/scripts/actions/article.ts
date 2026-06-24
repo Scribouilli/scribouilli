@@ -1,10 +1,10 @@
 import lireFrontMatter from 'front-matter'
 
-import store, { type ScribouilliState } from './../store.js'
-import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file.js'
-import { keepMarkdownAndHTMLFiles } from './page.js'
-import { makeArticleFileName, makeArticleFrontMatter } from './../utils.js'
-import { Article } from '../types/atelier.js'
+import store, { type ScribouilliState } from './../store.ts'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from './file.ts'
+import { keepMarkdownAndHTMLFiles } from './page.ts'
+import { makeArticleFileName, makeArticleFrontMatter } from './../utils.ts'
+import type { Article } from '../types/atelier.ts'
 
 /** Return whether the blog is enabled or not and whether the "Articles" section
  * should be available.

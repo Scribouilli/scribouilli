@@ -1,9 +1,9 @@
 <script lang="ts">
-  import store, { type ScribouilliState } from '../../../store.js'
+  import store, { type ScribouilliState } from '../../../store.ts'
   import Skeleton from '../../Skeleton.svelte'
-  import { makePageFrontMatter } from '../../../utils.js'
-  import ScribouilliGitRepo from '../../../scribouilliGitRepo.js'
-  import type { FileContenu } from '../../../types/atelier.js';
+  import { makePageFrontMatter } from '../../../utils.ts'
+  import ScribouilliGitRepo from '../../../scribouilliGitRepo.ts'
+  import type { FileContenu } from '../../../types/atelier.ts';
   
   interface Props {
     buildStatus: any

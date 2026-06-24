@@ -1,8 +1,7 @@
-
-import GitAgent from '../assets/scripts/GitAgent.js'
+import GitAgent from '../assets/scripts/GitAgent.ts'
 
 //@ts-ignore
-export const fakeStateWithOneSite = (sandbox) => ({
+export const fakeStateWithOneSite = sandbox => ({
   oAuthProvider: {
     origin: 'https://github.com',
     accessToken: '1234567890',
@@ -34,6 +33,6 @@ export const fakeStateWithOneSite = (sandbox) => ({
     ],
   },
   buildStatus: {
-    setBuildingAndCheckStatusLater(){}
-  }
+    setBuildingAndCheckStatusLater() {},
+  },
 })

@@ -1,8 +1,8 @@
-import Store, { BareduxStore } from 'baredux'
-import GitAgent from './GitAgent'
-import ScribouilliGitRepo from './scribouilliGitRepo'
-import { Page, Article } from './types/atelier'
-import { BuildStatus } from './types/git'
+import Store, { type BareduxStore } from 'baredux'
+import GitAgent from './GitAgent.ts'
+import ScribouilliGitRepo from './scribouilliGitRepo.ts'
+import type { Page, Article } from './types/atelier.ts'
+import type { BuildStatus } from './types/git.ts'
 /**
  * Un store baredux a pour vocation de refléter notamment le modèle mental de la
  * personne face à Scribouilli. Le store stocke donc principalement des données (et parfois des singletons)
@@ -14,7 +14,7 @@ import { BuildStatus } from './types/git'
  *
  */
 // DO NOT import x from 'remember' // do it in an action instead
-// DO NOT import x from './actions/*.js' // you're making an action, so add an action instead
+// DO NOT import x from './actions/*.ts' // you're making an action, so add an action instead
 
 export interface ResolutionOption {
   message: string
@@ -176,5 +176,17 @@ const store: BareduxStore<ScribouilliState, ScribouilliMutations> = Store({
   state,
   mutations,
 })
+
+type PartialMutations<State, Mutations extends keyof ScribouilliMutations> = {
+  [mutation in Mutations]: (state: State, ...others: any[]) => void | State
+}
+
+export type PartialStore<
+  S extends keyof ScribouilliState = keyof ScribouilliState,
+  M extends keyof ScribouilliMutations = keyof ScribouilliMutations,
+> = BareduxStore<
+  Pick<ScribouilliState, S>,
+  PartialMutations<Pick<ScribouilliState, S>, M>
+>
 
 export default store

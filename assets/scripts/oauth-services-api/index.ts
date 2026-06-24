@@ -1,8 +1,8 @@
 import page from 'page'
-import store, { OAuthProvider } from '../store.js'
-import GitHubAPI from './github.js'
-import GitlabAPI from './gitlab.js'
-import { OAuthServiceAPI } from '../types/git.js'
+import store, { type OAuthProvider } from '../store.ts'
+import GitHubAPI from './github.ts'
+import GitlabAPI from './gitlab.ts'
+import type { OAuthServiceAPI } from '../types/git.ts'
 
 const makeOAuthServiceAPI = ({
   accessToken,

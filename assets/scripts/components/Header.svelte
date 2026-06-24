@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { BuildStatus } from '../types/git.js'
-  import type { ScribouilliState } from '../store.js'
+  import type { BuildStatus } from '../types/git.ts'
+  import type { ScribouilliState } from '../store.ts'
 
   interface Props {
     buildStatus: BuildStatus

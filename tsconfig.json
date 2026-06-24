@@ -9,6 +9,7 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "target": "esnext",
     "lib": ["ES2022", "dom", "dom.iterable"],
     "types": ["node", "mocha"],

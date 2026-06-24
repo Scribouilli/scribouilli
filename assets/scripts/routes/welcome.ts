@@ -1,8 +1,8 @@
 import page from 'page'
 
-import store from '../store.js'
-import { fetchCurrentUserRepositories } from '../actions/current-user.js'
-import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
+import store from '../store.ts'
+import { fetchCurrentUserRepositories } from '../actions/current-user.ts'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.ts'
 
 import Welcome from '../components/screens/Welcome.svelte'
 

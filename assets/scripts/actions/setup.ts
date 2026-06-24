@@ -1,17 +1,17 @@
 import page from 'page'
 
-import store, { ResolutionOption } from './../store.js'
+import store, { ResolutionOption } from './../store.ts'
 import ScribouilliGitRepo, {
   makePublicRepositoryURL,
   makeRepoId,
-} from './../scribouilliGitRepo.js'
-import { getOAuthServiceAPI } from './../oauth-services-api/index.js'
-import { makeAtelierListPageURL } from './../routes/urls.js'
-import { logMessage } from './../utils.js'
-import { setBaseUrlInConfigIfNecessary } from './current-repository.js'
-import GitAgent from '../GitAgent.js'
+} from './../scribouilliGitRepo.ts'
+import { getOAuthServiceAPI } from './../oauth-services-api/index.ts'
+import { makeAtelierListPageURL } from './../routes/urls.ts'
+import { logMessage } from './../utils.ts'
+import { setBaseUrlInConfigIfNecessary } from './current-repository.ts'
+import GitAgent from '../GitAgent.ts'
 import git from 'isomorphic-git'
-import type { GitSiteTemplate } from '../types/git.js'
+import type { GitSiteTemplate } from '../types/git.ts'
 
 const waitRepoReady = (
   scribouilliGitRepo: ScribouilliGitRepo,

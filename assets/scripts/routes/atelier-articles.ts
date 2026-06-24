@@ -6,15 +6,15 @@ import { handleErrors } from '../utils'
 
 import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import ArticleContenu from '../components/screens/ArticleContenu.svelte'
-import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.ts'
 import {
   deleteArticle,
   createArticle,
   updateArticle,
   showArticles,
 } from '../actions/article'
-import { makeAtelierListArticlesURL } from './atelier-list-articles.js'
-import { EditeurFile } from '../types/atelier.js'
+import { makeAtelierListArticlesURL } from './atelier-list-articles.ts'
+import type { EditeurFile } from '../types/atelier.ts'
 import { setBuildingAndCheckStatusLater } from '../buildStatus'
 
 const makeMapStateToProps =

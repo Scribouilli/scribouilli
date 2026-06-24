@@ -1,10 +1,10 @@
 import {
   fetchCurrentUserRepositories,
   fetchAuthenticatedUserLogin,
-} from '../actions/current-user.js'
-import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
+} from '../actions/current-user.ts'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.ts'
 import SelectCurrentSite from '../components/screens/SelectCurrentSite.svelte'
-import type { ScribouilliState } from '../store.js'
+import type { ScribouilliState } from '../store.ts'
 
 const mapStateToProps = (state: ScribouilliState) => {
   const { login, reposByAccount } = state

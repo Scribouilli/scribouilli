@@ -1,9 +1,9 @@
 import { replaceComponent } from '../routeComponentLifeCycle.svelte'
-import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
+import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.ts'
 import AtelierPages from '../components/screens/AtelierPages.svelte'
 import { showArticles } from '../actions/article'
 import { Context } from 'page'
-import type { ScribouilliState } from '../store.js'
+import type { ScribouilliState } from '../store.ts'
 
 const mapStateToProps = (state: ScribouilliState) => {
   if (!state.currentRepository) {

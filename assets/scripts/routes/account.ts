@@ -1,6 +1,6 @@
 import { Context } from 'page'
 import Account from '../components/screens/Account.svelte'
-import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.ts'
 
 export default ({ querystring }: Context) => {
   const params = new URLSearchParams(querystring)

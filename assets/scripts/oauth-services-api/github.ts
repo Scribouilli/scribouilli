@@ -1,6 +1,6 @@
-import { gitHubApiBaseUrl } from './../config.js'
-import type { GitSiteTemplate, OAuthServiceAPI } from '../types/git.js'
-import ScribouilliGitRepo from '../scribouilliGitRepo.js'
+import { gitHubApiBaseUrl } from './../config.ts'
+import type { GitSiteTemplate, OAuthServiceAPI } from '../types/git.ts'
+import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 
 const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
 

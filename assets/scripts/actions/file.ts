@@ -1,11 +1,11 @@
-import GitAgent from '../GitAgent.js'
-import store from '../store.js'
+import GitAgent from '../GitAgent.ts'
+import store, { type PartialStore } from '../store.ts'
 
 export const writeFileAndCommit = async (
   fileName: string,
   content: string | Uint8Array,
-  commitMessage: string,
-  localStore = store,
+  commitMessage?: string,
+  localStore: PartialStore<'gitAgent', never> = store,
 ): Promise<string> => {
   if (typeof commitMessage !== 'string' || commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`

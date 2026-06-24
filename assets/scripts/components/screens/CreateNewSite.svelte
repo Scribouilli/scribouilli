@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Skeleton from "./../Skeleton.svelte";
-  import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
-  import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
-  import { DEFAULT_TEMPLATE, templates } from '../../config.js';
+  import Skeleton from './../Skeleton.svelte';
+  import SiteCreationLoader from './../loaders/SiteCreationLoader.svelte';
+  import { createRepositoryForCurrentAccount } from '../../actions/setup.ts';
+  import { DEFAULT_TEMPLATE, templates } from '../../config.ts';
   import type { GitSiteTemplate } from '../../types/git'
 
   let name = $state("");

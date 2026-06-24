@@ -1,10 +1,10 @@
 import page from 'page'
 import { forget } from 'remember'
 
-import { getOAuthServiceAPI } from '../oauth-services-api/index.js'
-import store, { ResolutionOption } from '../store.js'
-import { logMessage } from '../utils.js'
-import { OAUTH_PROVIDER_STORAGE_KEY } from '../config.js'
+import { getOAuthServiceAPI } from '../oauth-services-api/index.ts'
+import store, { type ResolutionOption } from '../store.ts'
+import { logMessage } from '../utils.ts'
+import { OAUTH_PROVIDER_STORAGE_KEY } from '../config.ts'
 
 const logout = () => {
   forget(OAUTH_PROVIDER_STORAGE_KEY)

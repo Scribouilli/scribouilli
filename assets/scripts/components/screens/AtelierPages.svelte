@@ -1,6 +1,6 @@
 <script lang="ts">
   import ScribouilliGitRepo from '../../scribouilliGitRepo'
-  import type { ScribouilliState } from './../../store.js'
+  import type { ScribouilliState } from './../../store.ts'
   import ListContenu from './intern/ListContenu.svelte'
 
   interface Props {

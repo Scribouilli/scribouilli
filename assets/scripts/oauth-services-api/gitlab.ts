@@ -1,10 +1,10 @@
-import GitAgent from '../GitAgent.js'
-import ScribouilliGitRepo from '../scribouilliGitRepo.js'
+import GitAgent from '../GitAgent.ts'
+import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
   BuildStatus,
   GitSiteTemplate,
   OAuthServiceAPI,
-} from '../types/git.js'
+} from '../types/git.ts'
 
 export default class GitLabAPI implements OAuthServiceAPI {
   #gitAgentGetter
