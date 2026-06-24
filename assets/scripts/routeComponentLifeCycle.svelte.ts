@@ -10,8 +10,8 @@ let currentComponent: Record<string, any>
 let currentProps: Record<string, any>
 let currentMapStateToProps: MapStateToPropsFunction = _ => ({})
 
-export function replaceComponent(
-  newComponent: Component,
+export function replaceComponent<P extends Record<string, any>>(
+  newComponent: Component<P>,
   newMapStateToProps: MapStateToPropsFunction,
 ) {
   console.log('replaceComponent newMapStateToProps', newMapStateToProps)
@@ -27,7 +27,14 @@ export function replaceComponent(
   currentProps = props
 
   currentComponent = mount<Record<string, any>, Record<string, any>>(
-    newComponent,
+    // Astuce pour faire la conversion de Component<P> vers
+    // Component<Record<string, any>>: On fait oublier le type à TypeScript en
+    // faisant une première conversion vers unknown, puis on le passe dans le
+    // type qu'on veut vraiment.
+    //
+    // Sans ça, il râle parce que rien ne garanti que P soit strictement égal à
+    // Record<string, any>.
+    newComponent as unknown as Component<Record<string, any>>,
     {
       target: svelteTarget,
       props: currentProps,
