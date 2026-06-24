@@ -1,24 +1,18 @@
-<script>
-  // @ts-check
-
+<script lang="ts">
   import Skeleton from '../Skeleton.svelte'
   import { createEventDispatcher } from 'svelte'
 
   const dispatch = createEventDispatcher()
 
-  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
+  interface Props {
+    buildStatus: any
+    theme: any
+    deleteRepositoryUrl: any
+    blogEnabled: any
+    showArticles: boolean | undefined
+    currentRepository: any
+  }
 
-  /**
-   * @typedef {Object} Props
-   * @property {any} buildStatus
-   * @property {any} theme
-   * @property {any} deleteRepositoryUrl
-   * @property {any} blogEnabled
-   * @property {boolean|undefined} showArticles
-   * @property {any} currentRepository
-   */
-
-  /** @type {Props} */
   let {
     buildStatus,
     theme = $bindable(),
@@ -26,15 +20,11 @@
     blogEnabled = $bindable(),
     showArticles,
     currentRepository
-  } = $props();
+  }: Props = $props();
 
   let notification = $state('')
 
-  /**
-   * @param {string} color
-   * @returns {boolean}
-   */
-  const checkThemeColor = color => {
+  const checkThemeColor = (color: string): boolean => {
     const themeColor = theme.css?.replace(
       /(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs,
       '#$<color>',

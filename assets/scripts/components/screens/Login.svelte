@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
   import Skeleton from "../Skeleton.svelte";
 
-  /**
-   * @typedef {Object} Props
-   * @property {string} href
-   * @property {string} gitProvider
-   */
+  interface Props {
+    href: string
+    gitProvider: string
+  }
 
-  /** @type {Props} */
-  let { href, gitProvider } = $props();
+  let { href, gitProvider }: Props = $props();
 
 </script>
 

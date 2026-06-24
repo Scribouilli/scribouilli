@@ -1,17 +1,12 @@
-<script>
+<script lang="ts">
   import Skeleton from "../Skeleton.svelte";
 
-  /** 
-   * @typedef Props
-   * @property {boolean} showWelcome
-   * @property {boolean} isFetchingCurrentUserRepos
-   */
+  interface Props {
+    showWelcome?: boolean;
+    isFetchingCurrentUserRepos?: boolean;
+  }
 
-   /** @type {Props} */
-   const {
-     showWelcome = false,
-     isFetchingCurrentUserRepos = false,
-   } = $props()
+  let { showWelcome = false, isFetchingCurrentUserRepos = false }: Props = $props();
 </script>
 
 <Skeleton>

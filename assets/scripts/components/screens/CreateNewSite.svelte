@@ -1,15 +1,15 @@
-<script>
+<script lang="ts">
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
   import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
-  import { templates } from '../../config.js';
+  import { DEFAULT_TEMPLATE, templates } from '../../config.js';
+  import type { GitSiteTemplate } from '../../types/git'
 
   let name = $state("");
   let loading = $state(false);
   let hasError = $state(false)
 
-  /** @type {GitSiteTemplate} */
-  let selectedTemplate = $state();
+  let selectedTemplate: GitSiteTemplate = $state(DEFAULT_TEMPLATE);
 
   // @ts-ignore
   const onSubmit = (e) => {
@@ -54,7 +54,7 @@
             <label for="template">Je veux créer :</label>
             <select id="template" bind:value={selectedTemplate}>
               {#each templates as template}
-                <option value={template} selected={template === templates.default}>{template.description}</option>
+                <option value={template} selected={template === DEFAULT_TEMPLATE}>{template.description}</option>
               {/each}
             </select>
           </div>

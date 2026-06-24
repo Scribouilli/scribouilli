@@ -1,5 +1,5 @@
 {
-  "include": ["declarations.d.ts", "assets/scripts/**/*.js"],
+  "include": ["declarations.d.ts", "assets/scripts/**/*.ts"],
   "exclude": ["node_modules", "tests/**/*.js"],
   "compilerOptions": {
     "allowJs": true,
@@ -13,6 +13,7 @@
     "lib": ["ES2022", "dom", "dom.iterable"],
     "types": ["node", "mocha"],
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "outDir": "build",
   }
 }

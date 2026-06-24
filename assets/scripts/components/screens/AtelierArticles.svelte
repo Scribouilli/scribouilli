@@ -1,25 +1,23 @@
-<script>
+<script lang="ts">
+  import ScribouilliGitRepo from '../../scribouilliGitRepo'
+  import type { ScribouilliState } from './../../store.js'
   import ListContenu from './intern/ListContenu.svelte'
 
-  /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  
-  /**
-   * @typedef {Object} Props
-   * @property {any} buildStatus
-   * @property {any[] | undefined} articles
-   * @property {boolean | undefined} showArticles
-   * @property {ScribouilliGitRepo} currentRepository
-   * @property {ScribouilliState["conflict"]} conflict
-   */
+  interface Props {
+    buildStatus: any
+    articles: any[] | undefined
+    showArticles: boolean | undefined
+    currentRepository: ScribouilliGitRepo
+    conflict: ScribouilliState["conflict"]
+  }
 
-  /** @type {Props} */
   let {
     buildStatus,
     articles,
     showArticles,
     currentRepository,
     conflict
-  } = $props();
+  }: Props = $props();
 </script>
 
 <ListContenu

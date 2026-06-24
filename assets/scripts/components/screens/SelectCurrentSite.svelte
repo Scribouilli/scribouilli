@@ -1,21 +1,18 @@
-<script>
-  // @ts-check
+<script lang="ts">
   import page from "page";
 
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
+  import type { GithubRepository } from "../../types/git"
 
-  /**
-   * @typedef {Object} Props
-   * @property {string | Promise<string> | undefined} currentAccount
-   * @property {GithubRepository[]} currentAccountRepositories
-   */
+  interface Props {
+    currentAccount: string | Promise<string> | undefined
+    currentAccountRepositories: GithubRepository[]
+  }
 
-  /** @type {Props} */
-  let { currentAccount, currentAccountRepositories } = $props();
+  let { currentAccount, currentAccountRepositories }: Props = $props();
 
-  /** @type {GithubRepository} */
-  let repo = $state()
+  let repo: GithubRepository | undefined = $state()
   let loading = $state(false);
 
   // @ts-ignore
@@ -30,6 +27,8 @@
   // @ts-ignore
   const onSubmit = (e) => {
     e.preventDefault();
+    
+    if (!repo) return
 
     loading = true;
 

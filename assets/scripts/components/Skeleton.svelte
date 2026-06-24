@@ -1,26 +1,24 @@
-<script>
+<script lang="ts">
   import Header from "./Header.svelte";
   import Footer from "./Footer.svelte";
+  import type { ScribouilliState } from "../store"
+  import type { Snippet } from "svelte"
 
-  /** @typedef {import("./../store.js").ScribouilliState} ScribouilliState */
+  interface Props {
+    showArticles?: boolean
+    buildStatus?: any
+    currentRepository?: ScribouilliState["currentRepository"] | undefined
+    conflict?: ScribouilliState["conflict"]
+    children?: Snippet
+  }
 
-  /**
-   * @typedef {Object} Props
-   * @property {boolean} [showArticles]
-   * @property {any} [buildStatus]
-   * @property {ScribouilliState["currentRepository"] | undefined} [currentRepository]
-   * @property {ScribouilliState["conflict"]} [conflict]
-   * @property {import('svelte').Snippet} [children]
-   */
-
-  /** @type {Props} */
   let {
     showArticles = false,
     buildStatus = undefined,
     currentRepository = undefined,
     conflict = undefined,
     children
-  } = $props();
+  }: Props = $props();
 </script>
 
 <Header {showArticles} {currentRepository} {buildStatus} {conflict} />
