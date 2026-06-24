@@ -62,13 +62,16 @@
     blogIndex: false
   })
 
+  // TODO: fix the warning here by passing an already resolved object. The
+  // parent component should be responsible for awaiting the promise and
+  // displaying a loading screen.
   fileP.then(_file => {
     file = _file
   })
 
   let deleteDisabled = $state(true)
 
-  let filesPath = contenus.map(contenu => contenu.path)
+  let filesPath = $derived(contenus.map(contenu => contenu.path))
 
   // @ts-ignore
   const validateTitle = e => {
