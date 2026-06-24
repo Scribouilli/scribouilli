@@ -1,5 +1,4 @@
-<script>
-  import { run } from 'svelte/legacy';
+ <script>
   /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
   import {marked} from 'marked'
   import DOMPurify from 'dompurify'
@@ -42,7 +41,14 @@
   let image = $derived(files && files[0])
   let imageMd = $state('')
 
-  let preview = $state('')
+  let preview = $derived.by(async () => {
+    try {
+      const html = await marked.parse(file.content)
+      return DOMPurify.sanitize(html)
+    } catch {
+      return 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
+    }
+  })
 
   /** @type {EditeurFile} */
   let file = $state({
@@ -130,16 +136,6 @@
     const imageLink = `{% link ${imageFilePath} %}`
     imageMd = `![Texte décrivant l'image](${imageLink})`
   }
-
-  run(() => {
-    try {
-      const html = marked.parse(file.content)
-      preview = DOMPurify.sanitize(html)
-    } catch (e) {
-      preview =
-        'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
-    }
-  });
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>

@@ -1,6 +1,4 @@
 <script>
-  import { preventDefault } from 'svelte/legacy';
-
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
   import { createRepositoryForCurrentAccount } from "../../actions/setup.js";
@@ -41,7 +39,7 @@
       <h3>Créer un nouveau site</h3>
 
       <div class="wrapper">
-        <form onsubmit={preventDefault(onSubmit)}>
+        <form onsubmit={onSubmit}>
           <div>
             <label for="name">Nom de votre site</label>
             <input
