@@ -63,6 +63,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@github/markdown-toolbar-element": "^2.2.3",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "baredux": "github:DavidBruant/baredux#v1.0.8",
     "d3-fetch": "^3.0.1",
