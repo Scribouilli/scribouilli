@@ -1,35 +1,29 @@
-<script>
+<script lang="ts">
     import Skeleton from "../Skeleton.svelte";
     import {addConflictRemovalAndRedirectToResolution} from
-    '../../actions/current-user.js'
+    '../../actions/current-user.ts'
+  import type { ScribouilliState } from "../../store"
 
-    /** @typedef {import("../../store.js").ScribouilliState} ScribouilliState */
+    interface Props {
+        buildStatus: any
+        showArticles: boolean | undefined
+        currentRepository: ScribouilliState["currentRepository"]
+        conflict: ScribouilliState["conflict"]
+    }
 
-    /**
-     * @typedef {Object} Props
-     * @property {any} buildStatus
-     * @property {boolean | undefined} showArticles
-     * @property {ScribouilliState["currentRepository"]} currentRepository
-     * @property {ScribouilliState["conflict"]} conflict
-     */
-
-    /** @type {Props} */
     let {
         buildStatus,
         showArticles,
         currentRepository,
         conflict
-    } = $props();
+    }: Props = $props();
 
-    /** @type {ScribouilliState["conflict"]} */
-    let newConflictOptions = $derived(conflict && conflict.map(({message, resolution}) => {
+    let newConflictOptions: ScribouilliState["conflict"] = $derived(conflict && conflict.map(({message, resolution}) => {
         return {
             message,
             resolution: addConflictRemovalAndRedirectToResolution(resolution)
         }
     }));
-    
-
 </script>
 
 <!-- Ne pas montrer la bannière d'avertissement de conflit dans le header dans l'écran de résolution de conflit -->

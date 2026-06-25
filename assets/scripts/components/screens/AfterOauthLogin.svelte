@@ -1,14 +1,13 @@
-<script>
+<script lang="ts">
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
+  import type { GithubRepository } from "../../types/git";
 
-  /**
-   * @typedef {Object} Props
-   * @property {Promise<GithubRepository[]|Void>} currentUserReposP
-   */
+  interface Props {
+    currentUserReposP: Promise<GithubRepository[] | void>
+  }
 
-  /** @type {Props} */
-  let { currentUserReposP } = $props();
+  let { currentUserReposP }: Props = $props();
   
 </script>
 

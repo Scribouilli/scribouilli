@@ -1,19 +1,20 @@
-<script>
-  import {makeAtelierListArticlesURL} from '../../routes/atelier-list-articles.js'
+<script lang="ts">
+  import {makeAtelierListArticlesURL} from '../../routes/atelier-list-articles.ts'
+  import type { EditeurFile, FileContenu } from '../../types/atelier.ts'
+  import ScribouilliGitRepo from '../../scribouilliGitRepo.ts';
 
   import Editeur from "./intern/Editeur.svelte";
-  /**
-   * @typedef {Object} Props
-   * @property {Promise<EditeurFile>} fileP
-   * @property {any} buildStatus
-   * @property {FileContenu[]} contenus
-   * @property {boolean} showArticles
-   * @property {ScribouilliGitRepo} currentRepository
-   * @property {() => void} onDelete
-   * @property {(file: EditeurFile) => void} onSave
-   */
+  
+  interface Props {
+    fileP: Promise<EditeurFile>
+    buildStatus: any
+    contenus: FileContenu[]
+    showArticles: boolean
+    currentRepository: ScribouilliGitRepo
+    onDelete: () => void
+    onSave: (file: EditeurFile) => void
+  }
 
-  /** @type {Props} */
   let {
     fileP,
     buildStatus,
@@ -22,7 +23,7 @@
     currentRepository,
     onDelete,
     onSave,
-  } = $props();
+  }: Props = $props();
 </script>
 
 <Editeur

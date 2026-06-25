@@ -1,5 +1,5 @@
 {
-  "include": ["declarations.d.ts", "assets/scripts/**/*.js"],
+  "include": ["declarations.d.ts", "assets/scripts/**/*.ts"],
   "exclude": ["node_modules", "tests/**/*.js"],
   "compilerOptions": {
     "allowJs": true,
@@ -9,11 +9,12 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "target": "esnext",
     "lib": ["ES2022", "dom", "dom.iterable"],
-    "downlevelIteration": true,
     "types": ["node", "mocha"],
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "outDir": "build",
   }
 }

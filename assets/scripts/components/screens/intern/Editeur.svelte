@@ -1,5 +1,4 @@
- <script>
-  /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
+<script lang="ts">
   import {marked} from 'marked'
   import DOMPurify from 'dompurify'
   import Skeleton from '../../Skeleton.svelte'
@@ -7,21 +6,21 @@
   import store from '../../../store'
   import { writeFileAndCommit } from '../../../actions/file'
   import './../../../../styles/editeur-preview/framalibre.css'
-  /**
-   * @typedef {Object} Props
-   * @property {Promise<EditeurFile>} fileP
-   * @property {any} buildStatus
-   * @property {FileContenu[]} [contenus]
-   * @property {string} editionTitle
-   * @property {string} listPrefix
-   * @property {string} deleteTitle
-   * @property {boolean} showArticles
-   * @property {any} currentRepository
-   * @property {() => void} onDelete
-   * @property {(file: EditeurFile) => void} onSave
-   */
+  import type { EditeurFile, FileContenu } from "../../../types/atelier"
+  
+  interface Props {
+    fileP: Promise<EditeurFile>
+    buildStatus: any
+    contenus?: FileContenu[]
+    editionTitle: string
+    listPrefix: string
+    deleteTitle: string
+    showArticles: boolean
+    currentRepository: any
+    onDelete: () => void
+    onSave: (file: EditeurFile) => void
+  }
 
-  /** @type {Props} */
   let {
     fileP,
     buildStatus,
@@ -33,10 +32,9 @@
     currentRepository,
     onDelete,
     onSave,
-  } = $props();
+  }: Props = $props();
 
-  /** @type {FileList} */
-  let files = $state()
+  let files: FileList | undefined = $state()
   // single-image selection
   let image = $derived(files && files[0])
   let imageMd = $state('')
@@ -50,8 +48,7 @@
     }
   })
 
-  /** @type {EditeurFile} */
-  let file = $state({
+  let file: EditeurFile = $state({
     fileName: '',
     content: '',
     previousContent: undefined,
@@ -126,6 +123,8 @@
 
   // @ts-ignore
   const imageSelect = async () => {
+    if (!image) return
+
     imageMd = 'Mise en ligne en cours…'
     const buffer = new Uint8Array(await image.arrayBuffer())
     const imageFilePath = `images/${image.name}`

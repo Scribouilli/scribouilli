@@ -1,22 +1,22 @@
-<script>
-  import store from '../../../store.js'
+<script lang="ts">
+  import store, { type ScribouilliState } from '../../../store.ts'
   import Skeleton from '../../Skeleton.svelte'
-  import { makePageFrontMatter } from '../../../utils.js'
+  import { makePageFrontMatter } from '../../../utils.ts'
+  import ScribouilliGitRepo from '../../../scribouilliGitRepo.ts'
+  import type { FileContenu } from '../../../types/atelier.ts';
   
-  /**
-   * @typedef {Object} Props
-   * @property {any} buildStatus
-   * @property {FileContenu[]} [listContenu]
-   * @property {string} title
-   * @property {string} atelierPrefix
-   * @property {string} newContentButtonText
-   * @property {boolean | undefined} showArticles
-   * @property {ScribouilliGitRepo} currentRepository
-   * @property {boolean} allowModification
-   * @property {import('../../../store').ScribouilliState["conflict"]} conflict
-   */
+  interface Props {
+    buildStatus: any
+    listContenu?: FileContenu[]
+    title: string
+    atelierPrefix: string
+    newContentButtonText: string
+    showArticles: boolean | undefined
+    currentRepository: ScribouilliGitRepo
+    allowModification: boolean
+    conflict: ScribouilliState["conflict"]
+  }
 
-  /** @type {Props} */
   let {
     buildStatus,
     listContenu = [],
@@ -27,16 +27,10 @@
     currentRepository,
     allowModification,
     conflict
-  } = $props();
+  }: Props = $props();
 
-  /** @type {string} */
   let repoName = $derived(currentRepository.repoName)
-  
-
-  /** @type {string} */
-  let account = $derived(currentRepository.owner)
-  
-
+  let account = $derived(currentRepository.owner) 
   let modification = $state(false)
 
   const gitAgent = store.state.gitAgent
