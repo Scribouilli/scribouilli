@@ -1,48 +1,57 @@
-<script>
-  /** @type Promise<EditeurFile> */
-  export let fileP
-
-  /** @type any */
-  export let buildStatus
-
-  /** @type {FileContenu[]} */
-  export let contenus = []
-
-  /** @type {string} */
-  export let editionTitle
-
-  /** @type {string} */
-  export let listPrefix
-
-  /** @type {string} */
-  export let deleteTitle
-
-  /** @type {boolean} */
-  export let showArticles
-
+ <script>
   /** @typedef {import("./../../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["currentRepository"] */
-  export let currentRepository
-
-  import { createEventDispatcher } from 'svelte'
-  import marked from 'marked'
-  import * as DOMPurify from 'dompurify'
+  import {marked} from 'marked'
+  import DOMPurify from 'dompurify'
   import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
   import store from '../../../store'
   import { writeFileAndCommit } from '../../../actions/file'
   import './../../../../styles/editeur-preview/framalibre.css'
+  /**
+   * @typedef {Object} Props
+   * @property {Promise<EditeurFile>} fileP
+   * @property {any} buildStatus
+   * @property {FileContenu[]} [contenus]
+   * @property {string} editionTitle
+   * @property {string} listPrefix
+   * @property {string} deleteTitle
+   * @property {boolean} showArticles
+   * @property {any} currentRepository
+   * @property {() => void} onDelete
+   * @property {(file: EditeurFile) => void} onSave
+   */
+
+  /** @type {Props} */
+  let {
+    fileP,
+    buildStatus,
+    contenus = [],
+    editionTitle,
+    listPrefix,
+    deleteTitle,
+    showArticles,
+    currentRepository,
+    onDelete,
+    onSave,
+  } = $props();
 
   /** @type {FileList} */
-  let files
+  let files = $state()
   // single-image selection
-  $: image = files && files[0]
-  let imageMd = ''
+  let image = $derived(files && files[0])
+  let imageMd = $state('')
 
-  let preview = ''
+  let preview = $derived.by(async () => {
+    try {
+      const html = await marked.parse(file.content)
+      return DOMPurify.sanitize(html)
+    } catch {
+      return 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
+    }
+  })
 
   /** @type {EditeurFile} */
-  let file = {
+  let file = $state({
     fileName: '',
     content: '',
     previousContent: undefined,
@@ -51,17 +60,18 @@
     index: store.state.pages.length + 1,
     previousTitle: undefined,
     blogIndex: false
-  }
+  })
 
+  // TODO: fix the warning here by passing an already resolved object. The
+  // parent component should be responsible for awaiting the promise and
+  // displaying a loading screen.
   fileP.then(_file => {
     file = _file
   })
 
-  let deleteDisabled = true
+  let deleteDisabled = $state(true)
 
-  let filesPath = contenus.map(contenu => contenu.path)
-
-  const dispatch = createEventDispatcher()
+  let filesPath = $derived(contenus.map(contenu => contenu.path))
 
   // @ts-ignore
   const validateTitle = e => {
@@ -86,7 +96,7 @@
     e.preventDefault()
 
     if (e.target.checkValidity()) {
-      dispatch('save', {
+      onSave({
         fileName: file.fileName,
         content: file.content.trim(),
         previousContent: file.previousContent,
@@ -129,16 +139,6 @@
     const imageLink = `{% link ${imageFilePath} %}`
     imageMd = `![Texte décrivant l'image](${imageLink})`
   }
-
-  $: {
-    try {
-      const html = marked.parse(file.content)
-      preview = DOMPurify.sanitize(html)
-    } catch (e) {
-      preview =
-        'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
-    }
-  }
 </script>
 
 <Skeleton {currentRepository} {buildStatus} {showArticles}>
@@ -149,12 +149,12 @@
       <img src="./assets/images/oval.svg" alt="Chargement du contenu" />
     {:then}
       <div class="wrapper">
-        <form on:submit={onSubmit}>
+        <form onsubmit={onSubmit}>
           <div>
             <label for="title">Titre</label>
             <input
               bind:value={file.title}
-              on:change={validateTitle}
+              onchange={validateTitle}
               type="text"
               id="title"
               required
@@ -204,7 +204,7 @@
                       id="image"
                       name="image"
                       type="file"
-                      on:change={imageSelect}
+                      onchange={imageSelect}
                     />
                   </li>
                   <li>
@@ -233,17 +233,23 @@
                 id="content"
                 cols="30"
                 rows="10"
-              />
+              ></textarea>
             </div>
-            {#if preview}
+            
               <div class="preview">
                 <h4>Aperçu</h4>
-                <div class="markdown-preview">{@html preview}</div>
+                <div class="markdown-preview">
+                  <!-- svelte-ignore block_empty -->
+                  {#await preview}
+                    
+                  {:then preview}
+                    {@html preview}
+                  {/await}  
+                </div>
               </div>
-            {/if}
           </div>
           <div class="actions-zone">
-            <a href={listPrefix} class="btn__retour" on:click={onBackClick}
+            <a href={listPrefix} class="btn__retour" onclick={onBackClick}
               >Retour</a
             >
             <button type="submit" class="btn__medium btn"
@@ -257,7 +263,7 @@
               <label>
                 <input
                   type="checkbox"
-                  on:change={() => {
+                  onchange={() => {
                     deleteDisabled = !deleteDisabled
                   }}
                 />
@@ -265,7 +271,7 @@
               </label>
               <button
                 type="button"
-                on:click={() => dispatch('delete')}
+                onclick={onDelete}
                 disabled={deleteDisabled}
                 class=" btn__medium btn btn__danger"
               >

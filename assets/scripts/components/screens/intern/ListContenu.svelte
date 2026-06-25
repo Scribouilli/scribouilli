@@ -2,43 +2,42 @@
   import store from '../../../store.js'
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils.js'
+  
+  /**
+   * @typedef {Object} Props
+   * @property {any} buildStatus
+   * @property {FileContenu[]} [listContenu]
+   * @property {string} title
+   * @property {string} atelierPrefix
+   * @property {string} newContentButtonText
+   * @property {boolean | undefined} showArticles
+   * @property {ScribouilliGitRepo} currentRepository
+   * @property {boolean} allowModification
+   * @property {import('../../../store').ScribouilliState["conflict"]} conflict
+   */
 
-  /** @type {any} */
-  export let buildStatus
-
-  /** @type {FileContenu[]} */
-  export let listContenu = []
-
-  /** @type {string} */
-  export let title
-
-  /** @type {string} */
-  export let atelierPrefix
-
-  /** @type {string} */
-  export let newContentButtonText
-
-  /** @type {boolean | undefined} */
-  export let showArticles
-
-  /** @type {ScribouilliGitRepo} */
-  export let currentRepository
-
-  /** @type {boolean} */
-  export let allowModification
-
-  /** @type {import('../../../store').ScribouilliState["conflict"]}*/
-  export let conflict
-
-  /** @type {string} */
-  let repoName
-  $: repoName = currentRepository.repoName
+  /** @type {Props} */
+  let {
+    buildStatus,
+    listContenu = [],
+    title,
+    atelierPrefix,
+    newContentButtonText,
+    showArticles,
+    currentRepository,
+    allowModification,
+    conflict
+  } = $props();
 
   /** @type {string} */
-  let account
-  $: account = currentRepository.owner
+  let repoName = $derived(currentRepository.repoName)
+  
 
-  let modification = false
+  /** @type {string} */
+  let account = $derived(currentRepository.owner)
+  
+
+  let modification = $state(false)
 
   const gitAgent = store.state.gitAgent
 
@@ -129,7 +128,7 @@
           {/each}
         </ul>
         {#if allowModification}
-          <button class="btn btn_small btn_secondary" on:click={editClick}
+          <button class="btn btn_small btn_secondary" onclick={editClick}
             >{#if modification}
               Enregistrer
             {:else}

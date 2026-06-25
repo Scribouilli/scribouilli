@@ -1,22 +1,27 @@
 <script>
   import {makeAtelierListPageURL} from '../../routes/urls.js'
-
-  /** @type {Promise<EditeurFile>} */
-  export let fileP;
-
-  /** @type any */
-  export let buildStatus;
-
-  /** @type {FileContenu[]} */
-  export let contenus;
-
-  /** @type {boolean} */
-  export let showArticles
-
-  /** @type {ScribouilliGitRepo} */
-  export let currentRepository;
-
   import Editeur from "./intern/Editeur.svelte";
+  /**
+   * @typedef {Object} Props
+   * @property {Promise<EditeurFile>} fileP
+   * @property {any} buildStatus
+   * @property {FileContenu[]} contenus
+   * @property {boolean} showArticles
+   * @property {ScribouilliGitRepo} currentRepository
+   * @property {() => void} onDelete
+   * @property {(file: EditeurFile) => void} onSave
+   */
+
+  /** @type {Props} */
+  let {
+    fileP,
+    buildStatus,
+    contenus,
+    showArticles,
+    currentRepository,
+    onDelete,
+    onSave,
+  } = $props();
 </script>
 
 <Editeur
@@ -28,6 +33,6 @@
   editionTitle="Édition d'une page"
   listPrefix={makeAtelierListPageURL(currentRepository)}
   deleteTitle="Supprimer la page"
-  on:save
-  on:delete
+  {onDelete}
+  {onSave}
 />

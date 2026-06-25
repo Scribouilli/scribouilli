@@ -6,26 +6,29 @@
 
   const dispatch = createEventDispatcher()
 
-  /** @type any */
-  export let buildStatus
-
   /** @typedef {import("./../../store.js").ScribouilliState} ScribouilliState */
-  /** @type ScribouilliState["theme"] */
-  export let theme
 
-  /** @type string} */
-  export let deleteRepositoryUrl
+  /**
+   * @typedef {Object} Props
+   * @property {any} buildStatus
+   * @property {any} theme
+   * @property {any} deleteRepositoryUrl
+   * @property {any} blogEnabled
+   * @property {boolean|undefined} showArticles
+   * @property {any} currentRepository
+   */
 
-  /** @type boolean */
-  export let blogEnabled
+  /** @type {Props} */
+  let {
+    buildStatus,
+    theme = $bindable(),
+    deleteRepositoryUrl,
+    blogEnabled = $bindable(),
+    showArticles,
+    currentRepository
+  } = $props();
 
-  /** @type {boolean|undefined} */
-  export let showArticles
-
-  /** @type ScribouilliState["currentRepository"] */
-  export let currentRepository
-
-  let notification = ''
+  let notification = $state('')
 
   /**
    * @param {string} color
@@ -124,7 +127,7 @@
         <input
           type="checkbox"
           bind:checked={blogEnabled}
-          on:change={toggleBlog}
+          onchange={toggleBlog}
         />
         Ajouter une page articles
       </label>
@@ -139,7 +142,7 @@
             {#each mesCouleurs as { id, color, name }}
               <div class="radio">
                 <input
-                  on:click={setColor}
+                  onclick={setColor}
                   type="radio"
                   name="theme-color-select"
                   {id}
@@ -147,7 +150,7 @@
                   checked={checkThemeColor(color)}
                 />
                 <label for={id}>
-                  <span style="background-color: {color}" /> {name}</label
+                  <span style="background-color: {color}"></span> {name}</label
                 >
               </div>
             {/each}
@@ -158,7 +161,7 @@
       </div>
 
       <div>
-        <button class="btn btn__medium" on:click={saveTheme}
+        <button class="btn btn__medium" onclick={saveTheme}
           >Changer la couleur (~&nbsp;2&nbsp;min.)</button
         >
       </div>
@@ -180,10 +183,10 @@
         aria-labelledby="customCSS"
         cols="20"
         rows="8"
-        on:change={setTheme}
+        onchange={setTheme}
         >{theme.css || 'Chargement du thème personnalisé...'}</textarea
       >
-      <button type="button" class="btn btn__medium" on:click={saveTheme}
+      <button type="button" class="btn btn__medium" onclick={saveTheme}
         >Enregistrer le CSS</button
       >
     </div>

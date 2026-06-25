@@ -1,8 +1,13 @@
 <script>
   import Skeleton from "../Skeleton.svelte";
 
-  /** @type {string} */
-  export let gitProvider
+  /**
+   * @typedef {Object} Props
+   * @property {string} gitProvider
+   */
+
+  /** @type {Props} */
+  let { gitProvider } = $props();
 </script>
 
 <Skeleton>

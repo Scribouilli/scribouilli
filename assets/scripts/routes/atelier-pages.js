@@ -3,8 +3,7 @@
 import lireFrontMatter from 'front-matter'
 import page from 'page'
 
-import { svelteTarget } from '../config'
-import { replaceComponent } from '../routeComponentLifeCycle'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import store from '../store'
 import { handleErrors, logMessage, makeFileNameFromTitle } from '../utils'
 import { setCurrentRepositoryFromQuerystring } from '../actions/current-repository.js'
@@ -19,12 +18,62 @@ import { showArticles } from '../actions/article'
  * @returns {(state: import('../store').ScribouilliState) => any}
  */
 const makeMapStateToProps = fileName => state => {
+  /** @type {(file: EditeurFile) => Promise<void> | void} */
+  const onSave = ({
+    fileName,
+    title,
+    content,
+    previousTitle,
+    previousContent,
+    index,
+    blogIndex,
+  }) => {
+    const currentRepository = state.currentRepository
+    if (!currentRepository) return
+
+    const hasContentChanged = content !== previousContent
+    const hasTitleChanged = title !== previousTitle
+
+    // If no content changed, just redirect
+    if (!hasTitleChanged && !hasContentChanged) {
+      page(makeAtelierListPageURL(currentRepository))
+      return
+    }
+    //
+    // If the file name is empty, it means that we are creating a new page.
+    if (fileName === '') {
+      return createPage(content, title, index)
+        .then(() => {
+          state.buildStatus.setBuildingAndCheckStatusLater()
+          page(makeAtelierListPageURL(currentRepository))
+        })
+        .catch(msg => handleErrors(msg))
+    }
+
+    updatePage(fileName, title, content, index, blogIndex)
+      .then(() => {
+        state.buildStatus.setBuildingAndCheckStatusLater()
+        page(makeAtelierListPageURL(currentRepository))
+      })
+      .catch(msg => handleErrors(msg))
+  }
+
   // Display existing file
   if (fileName) {
     const { gitAgent } = store.state
 
     if (!gitAgent) {
       throw new TypeError('gitAgent is undefined')
+    }
+
+    const onDelete = () => {
+      deletePage(fileName)
+        .then(() => {
+          if (!state.currentRepository) return
+          state.buildStatus.setBuildingAndCheckStatusLater()
+          page(makeAtelierListPageURL(state.currentRepository))
+        })
+        .catch(msg => handleErrors(msg))
     }
 
     /** @type {() => Promise<EditeurFile | undefined>} */
@@ -54,6 +103,8 @@ const makeMapStateToProps = fileName => state => {
       buildStatus: state.buildStatus,
       showArticles: showArticles(state),
       currentRepository: state.currentRepository,
+      onDelete,
+      onSave,
     }
   } else {
     return {
@@ -72,6 +123,8 @@ const makeMapStateToProps = fileName => state => {
       buildStatus: state.buildStatus,
       showArticles: showArticles(state),
       currentRepository: state.currentRepository,
+      onDelete: () => {},
+      onSave,
     }
   }
 }
@@ -82,7 +135,6 @@ const makeMapStateToProps = fileName => state => {
 export default async ({ querystring }) => {
   await setCurrentRepositoryFromQuerystring(querystring)
 
-  const state = store.state
   const fileName = decodeURIComponent(
     new URLSearchParams(querystring).get('path') ?? '',
   )
@@ -94,61 +146,5 @@ export default async ({ querystring }) => {
     throw new TypeError('currentRepository is undefined')
   }
 
-  const pageContenu = new PageContenu({
-    target: svelteTarget,
-    props: mapStateToProps(state),
-  })
-
-  replaceComponent(pageContenu, mapStateToProps)
-
-  pageContenu.$on('delete', () => {
-    deletePage(fileName)
-      .then(() => {
-        state.buildStatus.setBuildingAndCheckStatusLater()
-        page(makeAtelierListPageURL(currentRepository))
-      })
-      .catch(msg => handleErrors(msg))
-  })
-
-  // @ts-ignore
-  pageContenu.$on(
-    'save',
-    ({
-      detail: {
-        fileName,
-        title,
-        content,
-        previousTitle,
-        previousContent,
-        index,
-        blogIndex,
-      },
-    }) => {
-      const hasContentChanged = content !== previousContent
-      const hasTitleChanged = title !== previousTitle
-
-      // If no content changed, just redirect
-      if (!hasTitleChanged && !hasContentChanged) {
-        page(makeAtelierListPageURL(currentRepository))
-        return
-      }
-      //
-      // If the file name is empty, it means that we are creating a new page.
-      if (fileName === '') {
-        return createPage(content, title, index)
-          .then(() => {
-            state.buildStatus.setBuildingAndCheckStatusLater()
-            page(makeAtelierListPageURL(currentRepository))
-          })
-          .catch(msg => handleErrors(msg))
-      }
-
-      updatePage(fileName, title, content, index, blogIndex)
-        .then(() => {
-          state.buildStatus.setBuildingAndCheckStatusLater()
-          page(makeAtelierListPageURL(currentRepository))
-        })
-        .catch(msg => handleErrors(msg))
-    },
-  )
+  replaceComponent(PageContenu, mapStateToProps)
 }

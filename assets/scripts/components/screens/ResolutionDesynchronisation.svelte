@@ -5,26 +5,30 @@
 
     /** @typedef {import("../../store.js").ScribouilliState} ScribouilliState */
 
-    /** @type {any} */
-    export let buildStatus
+    /**
+     * @typedef {Object} Props
+     * @property {any} buildStatus
+     * @property {boolean | undefined} showArticles
+     * @property {ScribouilliState["currentRepository"]} currentRepository
+     * @property {ScribouilliState["conflict"]} conflict
+     */
 
-    /** @type {boolean | undefined} */
-    export let showArticles
-
-    /** @type {ScribouilliState["currentRepository"]} */
-    export let currentRepository
+    /** @type {Props} */
+    let {
+        buildStatus,
+        showArticles,
+        currentRepository,
+        conflict
+    } = $props();
 
     /** @type {ScribouilliState["conflict"]} */
-    export let conflict;
-
-    /** @type {ScribouilliState["conflict"]} */
-    let newConflictOptions;
-    $: newConflictOptions = conflict && conflict.map(({message, resolution}) => {
+    let newConflictOptions = $derived(conflict && conflict.map(({message, resolution}) => {
         return {
             message,
             resolution: addConflictRemovalAndRedirectToResolution(resolution)
         }
-    })
+    }));
+    
 
 </script>
 
@@ -60,7 +64,7 @@
             <ul class="options">
                 {#each newConflictOptions as {message, resolution}}
                     <li>
-                        <button class="btn" on:click={resolution}>{message}</button>
+                        <button class="btn" onclick={resolution}>{message}</button>
                     </li>
                 {/each}
             </ul>

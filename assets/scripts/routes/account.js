@@ -1,8 +1,7 @@
 // @ts-check
 
 import Account from '../components/screens/Account.svelte'
-import { svelteTarget } from '../config.js'
-import { replaceComponent } from '../routeComponentLifeCycle.js'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte.js'
 
 /**
  * @param {import('page').Context} _
@@ -17,10 +16,7 @@ export default ({ querystring }) => {
     throw new TypeError(`Missing 'provider' parameter`)
   }
 
-  const account = new Account({
-    target: svelteTarget,
-    props: { gitProvider },
-  })
-
-  replaceComponent(account, () => {})
+  // TODO: vérifier que c'est ok d'avoir des props qui viennent pas du state,
+  // mais du monde extérieur (ici l'URL de la page)
+  replaceComponent(Account, () => { return { gitProvider } })
 }

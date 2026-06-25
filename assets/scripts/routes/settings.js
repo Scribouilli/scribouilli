@@ -1,7 +1,7 @@
 // @ts-check
 
-import { svelteTarget, CUSTOM_CSS_PATH } from '../config'
-import { replaceComponent } from '../routeComponentLifeCycle'
+import { CUSTOM_CSS_PATH } from '../config'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import store from '../store'
 import {
   getCurrentRepoPages,
@@ -44,7 +44,12 @@ blog_index: true
  */
 function mapStateToProps(state) {
   const blogFile = blogIndex(state)
-  const currentRepository = store.state.currentRepository
+  // TODO: this should probably be `state` not `store.state`
+  const { currentRepository, gitAgent } = store.state
+
+  if (!gitAgent) {
+    throw new TypeError('gitAgent is undefined')
+  }
 
   if (!currentRepository) {
     throw new TypeError('currentRepository is undefined')
@@ -57,6 +62,27 @@ function mapStateToProps(state) {
     blogEnabled: blogFile !== undefined,
     showArticles: showArticles(state),
     currentRepository: state.currentRepository,
+    /** @type {(theme: { css: string}) => void} */
+    onUpdateTheme: (theme) => {
+      saveCustomCSS(theme.css).catch(handleErrors)
+    },
+    /** @type {(activated: boolean) => Promise<void>} */
+    onToggleBlog: async (activated) => {
+      try {
+        if (activated) {
+          await writeFileAndCommit('blog.md', blogMdContent, 'Activation du blog')
+        } else {
+          await deleteFileAndCommit('blog.md', 'Désactivation du blog')
+        }
+        await getCurrentRepoArticles()
+        await getCurrentRepoPages()
+
+        gitAgent.safePush()
+      } catch (msg) {
+        //@ts-ignore
+        handleErrors(msg)
+      }
+    },
   }
 }
 
@@ -67,37 +93,11 @@ export default async ({ querystring }) => {
   await setCurrentRepositoryFromQuerystring(querystring)
 
   const { gitAgent } = store.state
-
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
   }
 
-  const settings = new Settings({
-    target: svelteTarget,
-    props: mapStateToProps(store.state),
-  })
-
-  settings.$on('update-theme', ({ detail: { theme } }) => {
-    saveCustomCSS(theme.css).catch(handleErrors)
-  })
-
-  settings.$on('toggle-blog', async ({ detail: { activated } }) => {
-    try {
-      if (activated) {
-        await writeFileAndCommit('blog.md', blogMdContent, 'Activation du blog')
-      } else {
-        await deleteFileAndCommit('blog.md', 'Désactivation du blog')
-      }
-      await getCurrentRepoArticles()
-      await getCurrentRepoPages()
-
-      gitAgent.safePush()
-    } catch (msg) {
-      //@ts-ignore
-      handleErrors(msg)
-    }
-  })
-
+  // TODO: should that really be here?
   if (!store.state.theme.css) {
     gitAgent
       .getFile(CUSTOM_CSS_PATH)
@@ -109,5 +109,5 @@ export default async ({ querystring }) => {
 
   getCurrentRepoPages()
 
-  replaceComponent(settings, mapStateToProps)
+  replaceComponent(Settings, mapStateToProps)
 }

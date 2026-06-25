@@ -1,7 +1,6 @@
 // @ts-check
 
-import { svelteTarget } from '../config'
-import { replaceComponent } from '../routeComponentLifeCycle'
+import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import store from '../store'
 import Login from '../components/screens/Login.svelte'
 
@@ -86,13 +85,10 @@ export default ({ querystring }) => {
   const redirect_url = redirectURLByProvider(gitProvider, destination)
   const loginHref = makeLoginHref(gitProvider, client_id, redirect_url)
 
-  const login = new Login({
-    target: svelteTarget,
-    props: {
+  replaceComponent(Login, () => {
+    return {
       href: loginHref,
       gitProvider,
-    },
+    }
   })
-
-  replaceComponent(login, () => {})
 }

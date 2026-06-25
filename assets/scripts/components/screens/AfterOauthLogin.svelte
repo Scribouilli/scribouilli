@@ -2,9 +2,14 @@
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
 
-  /** @type {Promise<GithubRepository[]|Void>} */
-  export let currentUserReposP;
-  /** @type {string} */
+  /**
+   * @typedef {Object} Props
+   * @property {Promise<GithubRepository[]|Void>} currentUserReposP
+   */
+
+  /** @type {Props} */
+  let { currentUserReposP } = $props();
+  
 </script>
 
 <Skeleton>

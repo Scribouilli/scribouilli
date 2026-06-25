@@ -1,5 +1,4 @@
 /**
- *
  * @param {ScribouilliGitRepo} scribouilliGitRepo
  * @returns {string}
  */

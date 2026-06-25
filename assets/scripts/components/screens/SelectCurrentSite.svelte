@@ -5,15 +5,18 @@
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
 
-  /** @type {string | Promise<string> | undefined} */
-  export let currentAccount
+  /**
+   * @typedef {Object} Props
+   * @property {string | Promise<string> | undefined} currentAccount
+   * @property {GithubRepository[]} currentAccountRepositories
+   */
 
-  /** @type {GithubRepository[]} */
-  export let currentAccountRepositories;
+  /** @type {Props} */
+  let { currentAccount, currentAccountRepositories } = $props();
 
   /** @type {GithubRepository} */
-  let repo
-  let loading = false;
+  let repo = $state()
+  let loading = $state(false);
 
   // @ts-ignore
   const displayRepoName = repo => {
@@ -44,7 +47,7 @@
       <Loader />
     {:else}
       <div class="wrapper">
-        <form on:submit={onSubmit}>
+        <form onsubmit={onSubmit}>
           <div>
             <label for="name">Nom de votre site</label>
             <select id="name" bind:value={repo}>
