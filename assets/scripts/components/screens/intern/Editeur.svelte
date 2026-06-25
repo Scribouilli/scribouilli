@@ -33,6 +33,8 @@
   import { writeFileAndCommit } from '../../../actions/file'
   import './../../../../styles/editeur-preview/framalibre.css'
 
+  import '@github/markdown-toolbar-element'
+
   /** @type {FileList} */
   let files
   // single-image selection
@@ -228,6 +230,21 @@
           <div class="content-preview">
             <div class="content">
               <label for="content">Contenu</label>
+              <markdown-toolbar for="content">
+  <md-bold>bold</md-bold>
+  <md-header>header</md-header>
+  <md-italic>italic</md-italic>
+  <md-quote>quote</md-quote>
+  <md-code>code</md-code>
+  <md-link>link</md-link>
+  <md-image>image</md-image>
+  <md-unordered-list>unordered-list</md-unordered-list>
+  <md-ordered-list>ordered-list</md-ordered-list>
+  <md-task-list>task-list</md-task-list>
+  <md-mention>mention</md-mention>
+  <md-ref>ref</md-ref>
+  <button data-md-button>Custom button</button>
+</markdown-toolbar>
               <textarea
                 bind:value={file.content}
                 id="content"
