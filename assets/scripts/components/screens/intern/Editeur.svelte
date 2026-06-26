@@ -1,35 +1,27 @@
 <script lang="ts">
   import {marked} from 'marked'
   import DOMPurify from 'dompurify'
-  import Skeleton from '../../Skeleton.svelte'
   import { makeFileNameFromTitle } from '../../../utils'
-  import store from '../../../store'
   import { writeFileAndCommit } from '../../../actions/file'
   import './../../../../styles/editeur-preview/framalibre.css'
-  import type { EditeurFile, FileContenu } from "../../../types/atelier"
+  import type { EditeurFile } from "../../../types/atelier"
   
   interface Props {
-    fileP: Promise<EditeurFile>
-    buildStatus: any
-    contenus?: FileContenu[]
+    file: EditeurFile
+    contenus: { path: string }[]
     editionTitle: string
     listPrefix: string
     deleteTitle: string
-    showArticles: boolean
-    currentRepository: any
     onDelete: () => void
     onSave: (file: EditeurFile) => void
   }
 
   let {
-    fileP,
-    buildStatus,
-    contenus = [],
+    file: f,
+    contenus,
     editionTitle,
     listPrefix,
     deleteTitle,
-    showArticles,
-    currentRepository,
     onDelete,
     onSave,
   }: Props = $props();
@@ -39,6 +31,16 @@
   let image = $derived(files && files[0])
   let imageMd = $state('')
 
+  let peutÊtreFile: EditeurFile | undefined = undefined
+  let file = $derived.by(() => {
+    if (peutÊtreFile) {
+      return peutÊtreFile
+    }
+
+    peutÊtreFile = f
+    return f
+  })
+
   let preview = $derived.by(async () => {
     try {
       const html = await marked.parse(file.content)
@@ -46,24 +48,6 @@
     } catch {
       return 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
     }
-  })
-
-  let file: EditeurFile = $state({
-    fileName: '',
-    content: '',
-    previousContent: undefined,
-    title: '',
-    // @ts-ignore
-    index: store.state.pages.length + 1,
-    previousTitle: undefined,
-    blogIndex: false
-  })
-
-  // TODO: fix the warning here by passing an already resolved object. The
-  // parent component should be responsible for awaiting the promise and
-  // displaying a loading screen.
-  fileP.then(_file => {
-    file = _file
   })
 
   let deleteDisabled = $state(true)
@@ -140,149 +124,140 @@
   }
 </script>
 
-<Skeleton {currentRepository} {buildStatus} {showArticles}>
-  <section class="screen">
-    <h3>{editionTitle}</h3>
+<section class="screen">
+  <h3>{editionTitle}</h3>
 
-    {#await file}
-      <img src="./assets/images/oval.svg" alt="Chargement du contenu" />
-    {:then}
-      <div class="wrapper">
-        <form onsubmit={onSubmit}>
-          <div>
-            <label for="title">Titre</label>
-            <input
-              bind:value={file.title}
-              onchange={validateTitle}
-              type="text"
-              id="title"
-              required
-            />
-          </div>
-
-          <div class="accordion aide-editeur">
-            <h4 class="label">Aide</h4>
-            <details>
-              <summary>Mettre en forme le contenu</summary>
-              <div>
-                <p>
-                  Pour mettre en forme votre contenu, vous pouvez bidouiller
-                  <a
-                    href="https://flus.fr/carnet/markdown.html"
-                    target="_blank"
-                  >
-                    avec du Markdown
-                  </a>
-                  … ou avec du HTML grâce 
-                  <a
-                    href="https://scribouilli.org/aide.html"
-                    target="_blank"
-                  >
-                    à nos exemples
-                  </a>
-                  d'encart ou de bouton, ou 
-                  <a
-                    href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
-                    target="_blank"
-                  >
-                    avec ce guide.
-                  </a>
-                </p>
-              </div>
-            </details>
-
-            <details>
-              <summary>Ajouter une image</summary>
-              <div>
-                <ol>
-                  <li>
-                    <label for="image">Sélectionnez votre image :</label>
-                    <input
-                      accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
-                      bind:files={files}
-                      id="image"
-                      name="image"
-                      type="file"
-                      onchange={imageSelect}
-                    />
-                  </li>
-                  <li>
-                    Insérez la ligne suivante là où vous souhaitez que votre
-                    image apparaisse :
-                  </li>
-                  <figure>
-                    {imageMd}
-                  </figure>
-
-                  <li>
-                    Remplacez le texte entre crochets par une description pour
-                    les personnes malvoyantes (il s'affichera si l'image ne
-                    charge pas)
-                  </li>
-                </ol>
-              </div>
-            </details>
-          </div>
-
-          <div class="content-preview">
-            <div class="content">
-              <label for="content">Contenu</label>
-              <textarea
-                bind:value={file.content}
-                id="content"
-                cols="30"
-                rows="10"
-              ></textarea>
-            </div>
-            
-              <div class="preview">
-                <h4>Aperçu</h4>
-                <div class="markdown-preview">
-                  <!-- svelte-ignore block_empty -->
-                  {#await preview}
-                    
-                  {:then preview}
-                    {@html preview}
-                  {/await}  
-                </div>
-              </div>
-          </div>
-          <div class="actions-zone">
-            <a href={listPrefix} class="btn__retour" onclick={onBackClick}
-              >Retour</a
-            >
-            <button type="submit" class="btn__medium btn"
-              >Lancer la publication (~ 2 min)</button
-            >
-          </div>
-
-          {#if file.fileName && file.fileName !== 'index.md'}
-            <div class="wrapper white-zone">
-              <h3>{deleteTitle}</h3>
-              <label>
-                <input
-                  type="checkbox"
-                  onchange={() => {
-                    deleteDisabled = !deleteDisabled
-                  }}
-                />
-                Afficher le bouton de suppression
-              </label>
-              <button
-                type="button"
-                onclick={onDelete}
-                disabled={deleteDisabled}
-                class=" btn__medium btn btn__danger"
-              >
-                {deleteTitle}
-              </button>
-            </div>
-          {/if}
-        </form>
+  <div class="wrapper">
+    <form onsubmit={onSubmit}>
+      <div>
+        <label for="title">Titre</label>
+        <input
+          bind:value={file.title}
+          onchange={validateTitle}
+          type="text"
+          id="title"
+          required
+        />
       </div>
-    {/await}
-  </section>
-</Skeleton>
+
+      <div class="accordion aide-editeur">
+        <h4 class="label">Aide</h4>
+        <details>
+          <summary>Mettre en forme le contenu</summary>
+          <div>
+            <p>
+              Pour mettre en forme votre contenu, vous pouvez bidouiller
+              <a
+                href="https://flus.fr/carnet/markdown.html"
+                target="_blank"
+              >
+                avec du Markdown
+              </a>
+              … ou avec du HTML grâce 
+              <a
+                href="https://scribouilli.org/aide.html"
+                target="_blank"
+              >
+                à nos exemples
+              </a>
+              d'encart ou de bouton, ou 
+              <a
+                href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
+                target="_blank"
+              >
+                avec ce guide.
+              </a>
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Ajouter une image</summary>
+          <div>
+            <ol>
+              <li>
+                <label for="image">Sélectionnez votre image :</label>
+                <input
+                  accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
+                  bind:files={files}
+                  id="image"
+                  name="image"
+                  type="file"
+                  onchange={imageSelect}
+                />
+              </li>
+              <li>
+                Insérez la ligne suivante là où vous souhaitez que votre
+                image apparaisse :
+              </li>
+              <figure>
+                {imageMd}
+              </figure>
+
+              <li>
+                Remplacez le texte entre crochets par une description pour
+                les personnes malvoyantes (il s'affichera si l'image ne
+                charge pas)
+              </li>
+            </ol>
+          </div>
+        </details>
+      </div>
+
+      <div class="content-preview">
+        <div class="content">
+          <label for="content">Contenu</label>
+          <textarea
+            bind:value={file.content}
+            id="content"
+            cols="30"
+            rows="10"
+          ></textarea>
+        </div>
+        
+          <div class="preview">
+            <h4>Aperçu</h4>
+            <div class="markdown-preview">
+              {#await preview then preview}
+                {@html preview}
+              {/await}  
+            </div>
+          </div>
+      </div>
+      <div class="actions-zone">
+        <a href={listPrefix} class="btn__retour" onclick={onBackClick}
+          >Retour</a
+        >
+        <button type="submit" class="btn__medium btn"
+          >Lancer la publication (~ 2 min)</button
+        >
+      </div>
+
+      {#if file.fileName && file.fileName !== 'index.md'}
+        <div class="wrapper white-zone">
+          <h3>{deleteTitle}</h3>
+          <label>
+            <input
+              type="checkbox"
+              onchange={() => {
+                deleteDisabled = !deleteDisabled
+              }}
+            />
+            Afficher le bouton de suppression
+          </label>
+          <button
+            type="button"
+            onclick={onDelete}
+            disabled={deleteDisabled}
+            class=" btn__medium btn btn__danger"
+          >
+            {deleteTitle}
+          </button>
+        </div>
+      {/if}
+    </form>
+  </div>
+</section>
 
 <style lang="scss">
   .accordion {
