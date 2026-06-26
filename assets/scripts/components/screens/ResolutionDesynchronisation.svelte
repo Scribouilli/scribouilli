@@ -72,20 +72,16 @@
 </Skeleton>
 
 <style lang="scss">
-    article{
+    article {
         max-width: 60rem;
         margin: 0 auto;
 
-        ul.options{
+        ul.options {
             display: flex;
             flex-direction: row;
             justify-content: space-around;
 
-            p{
-                font-weight: bold;
-            }
-
-            li{
+            li {
                 max-width: 25rem;
             }
         }

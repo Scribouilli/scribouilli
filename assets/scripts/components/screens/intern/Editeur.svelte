@@ -351,12 +351,12 @@
       background-color: white;
     }
 
-    ul,
-    ol {
+    :global(ul),
+    :global(ol) {
       margin-left: 1.5rem;
     }
 
-    ul {
+    :global(ul) {
       list-style-type: disc;
     }
   }

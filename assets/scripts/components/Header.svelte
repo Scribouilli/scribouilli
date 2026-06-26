@@ -196,16 +196,15 @@
     .centered {
       text-align: center;
     }
-
-    &-center {
-      text-align: center;
-
-      strong {
-        display: block;
-      }
-    }
   }
 
+  .warning-center {
+    text-align: center;
+
+    strong {
+      display: block;
+    }
+  }
 
   [class^='build-'] {
     margin-top: 0.3rem;
