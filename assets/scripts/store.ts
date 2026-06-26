@@ -3,6 +3,7 @@ import GitAgent from './GitAgent.ts'
 import ScribouilliGitRepo from './scribouilliGitRepo.ts'
 import type { Page, Article } from './types/atelier.ts'
 import type { BuildStatus } from './types/git.ts'
+
 /**
  * Un store baredux a pour vocation de refléter notamment le modèle mental de la
  * personne face à Scribouilli. Le store stocke donc principalement des données (et parfois des singletons)
@@ -62,7 +63,7 @@ const state: ScribouilliState = {
   },
 }
 
-const mutations = {
+export const mutations = {
   setOAuthProvider(
     state: ScribouilliState,
     oAuthProvider: ScribouilliState['oAuthProvider'],
@@ -176,17 +177,5 @@ const store: BareduxStore<ScribouilliState, ScribouilliMutations> = Store({
   state,
   mutations,
 })
-
-type PartialMutations<State, Mutations extends keyof ScribouilliMutations> = {
-  [mutation in Mutations]: (state: State, ...others: any[]) => void | State
-}
-
-export type PartialStore<
-  S extends keyof ScribouilliState = keyof ScribouilliState,
-  M extends keyof ScribouilliMutations = keyof ScribouilliMutations,
-> = BareduxStore<
-  Pick<ScribouilliState, S>,
-  PartialMutations<Pick<ScribouilliState, S>, M>
->
 
 export default store

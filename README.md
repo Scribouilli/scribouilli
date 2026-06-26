@@ -45,6 +45,12 @@ Vous pouvez également lancer les tests en local avec :
 npm run test
 ```
 
+Les tests sont dans le dossier `tests/` et finissent en `.test.ts`. Les autres
+fichiers `.ts` servent à configurer l'environnement de test. En particulier, le
+vrai store Baredux est remplacé par un faux store avec des fausses données comme
+si on était connecté à Scribouilli et qu'on avait ouvert un site. Ces fausses
+données sont dans `tests/fake-store.ts`. 
+
 ### Note
 
 Pour rendre accessible une nouvelle route :

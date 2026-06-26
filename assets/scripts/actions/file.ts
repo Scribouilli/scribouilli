@@ -1,16 +1,15 @@
 import GitAgent from '../GitAgent.ts'
-import store, { type PartialStore } from '../store.ts'
+import store from '../store.ts'
 
 export const writeFileAndCommit = async (
   fileName: string,
   content: string | Uint8Array,
   commitMessage?: string,
-  localStore: PartialStore<'gitAgent', never> = store,
 ): Promise<string> => {
   if (typeof commitMessage !== 'string' || commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`
   }
-  const { gitAgent } = localStore.state
+  const { gitAgent } = store.state
 
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
@@ -24,9 +23,8 @@ export const writeFileAndPushChanges = async (
   fileName: string,
   content: string | Uint8Array,
   commitMessage: string = '',
-  localStore = store,
 ): ReturnType<typeof GitAgent.prototype.safePush> => {
-  const { gitAgent } = localStore.state
+  const { gitAgent } = store.state
 
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
@@ -39,9 +37,8 @@ export const writeFileAndPushChanges = async (
 export const deleteFileAndCommit = async (
   fileName: string,
   commitMessage: string = '',
-  localStore = store,
 ): ReturnType<typeof GitAgent.prototype.commit> => {
-  const { gitAgent } = localStore.state
+  const { gitAgent } = store.state
 
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
@@ -58,15 +55,14 @@ export const deleteFileAndCommit = async (
 export const deleteFileAndPushChanges = (
   fileName: string,
   commitMessage: string,
-  localStore = store,
 ): ReturnType<typeof GitAgent.prototype.safePush> => {
-  const { gitAgent } = localStore.state
+  const { gitAgent } = store.state
 
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
   }
 
-  deleteFileAndCommit(fileName, commitMessage, localStore)
+  deleteFileAndCommit(fileName, commitMessage)
   return gitAgent.safePush()
 }
 

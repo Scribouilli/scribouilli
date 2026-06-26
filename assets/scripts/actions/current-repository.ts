@@ -1,7 +1,7 @@
 import page from 'page'
 import yaml from 'js-yaml'
 
-import store, { type PartialStore } from './../store.ts'
+import store from './../store.ts'
 import ScribouilliGitRepo, {
   makeRepoId,
   makePublicRepositoryURL,
@@ -248,13 +248,8 @@ const getCurrentRepoConfig = (): Promise<any> => {
     .catch(handleErrors)
 }
 
-const defaultStore = store
 export function saveCustomCSS(
   css: string,
-  store: PartialStore<
-    'currentRepository' | 'gitAgent',
-    'setTheme'
-  > = defaultStore,
 ): ReturnType<typeof file.writeFileAndPushChanges> | Promise<void> {
   if (!store.state.currentRepository || !store.state.gitAgent) {
     return Promise.resolve()
