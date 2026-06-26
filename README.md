@@ -10,10 +10,14 @@ avec son contenu.
 - Ouvrir un terminal
 - Récupérer le repo `git clone git@github.com:lechappeebelle/scribouilli.git` dans le dossier qui va bien
 - Rentrer dans le dossier `scribouilli`
-- Faire `npm install`
+- Faire `npm install --ignore-scripts`
 - Builder le projet avec `npm run dev`
 - Lancer le projet avec `npm start` dans un autre terminal
 - Ouvrir dans votre navigateur préféré `http://localhost:8080/`
+
+Le site en local fonctionne par défaut avec l'authentification à GitHub. Pour 
+s'authentifier avec GitLab ou Scribougit, il est nécessaire d'[installer une
+instance de toctoctoc en local](/docs/installer-toctoctoc-en-local.md)
 
 ## Développement
 
