@@ -34,9 +34,14 @@ Une fois les développements réalisés, vous pouvez faire une PR dans Scribouil
 
 ### Limite connue
 
-Pour le moment, il n'est pas possible de tester en local des sites hébergés sur gitlab ou scribougit (`git.scribouilli.org`)
+Pour le moment, à l'installation de Scribouilli, il n'est pas possible de tester 
+en local des sites hébergés sur gitlab ou scribougit (`git.scribouilli.org`).
+
 On peut le faire, mais ça demande de changer la config de toctoctoc en prod (et donc, ça casse la prod pour les sites ; une histoire de `redirect_uri`)
 
+Une manière de faire, c'est d'[installer une
+instance de toctoctoc en local](/docs/installer-toctoctoc-en-local.md) et de la 
+configurer avec une application OAuth GitLab et une application OAuth sur git.scribouilli.org qui redirigent vers `localhost`.
 
 ### Outils de développement
 

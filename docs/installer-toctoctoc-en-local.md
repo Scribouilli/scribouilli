@@ -1,8 +1,5 @@
 # Installer toctoctoc en local
 
-Par défaut, Scribouilli en local fonctionne avec l'authentification à GitHub. Pour s'authentifier avec GitLab, il est nécessaire d'installer une
-instance de [toctoctoc](https://github.com/Scribouilli/toctoctoc) en local. 
-
 ## C'est quoi toctoctoc ? 
 
 [toctoctoc](https://github.com/Scribouilli/toctoctoc) est un serveur générique 
@@ -11,10 +8,17 @@ qui permet de s'authentifier à un service d'identité via OAuth.
 Dans le cas de Scribouilli, il permet de s'authentifier via GitHub, GitLab et 
 Scribougit (qui est une instance de GitLab).
 
+Par défaut, Scribouilli en local fonctionne avec l'authentification à GitHub sur
+le serveur de production de toctoctoc. 
+
+Pour s'authentifier avec GitLab, il est nécessaire d'installer une
+instance de [toctoctoc](https://github.com/Scribouilli/toctoctoc) en local. 
+
+
 ## Installation
 
-Dans cette installation, on va installer un serveur toctoctoc qui sera accessible 
-à l'URL http://localhost:4000.
+Dans cette installation, on va installer un serveur toctoctoc qui permet 
+l'authentification via GitLab et qui sera accessible à l'URL http://localhost:4000.
 
 ### 1. Prérequis
 
@@ -65,18 +69,6 @@ npm run start:no-config
 
 ### 4. Configurer GitLab en tant que service d'authentification
 
-```
-{
-    "gitlab": [
-        {
-            "origin": "https://gitlab.com",
-            "client_id": "a8146ce80b869879b5615ae9c565396db6e5536e31fb4834f23b051924542952",
-            "client_secret": "gloas-1807964be991797511c71199efe670b50a882a8809989ea000685fd413e8282e"
-        }
-    ]
-}
-```
-
 - Aller sur l'URL : http://localhost:4000/oauth-services-config.
 - Cliquer sur le bouton `Renew` pour obtenir une clé de déchiffrage (`OAUTH_SERVICES_DECRYPTION_KEY`).
 - Dans `JSON configuration content`, copier la configuration suivante avec 
@@ -105,6 +97,22 @@ TOCTOCTOC_ORIGIN=http://localhost:4000
 - Mettre à jour le fichier `oauth-services.json.encrypted` à la racine du dépôt avec le 
   contenu chiffré de la configuration (qu'on a généré dans le champ `Encrypted`).
 
-## Tester avc Scribouilli en local
+## Tester avec Scribouilli en local
 
 toctoctoc est maintenant accessible sur http://localhost:4000.
+
+Dans le dépôt de Scribouilli, ouvrir le fichier `assets/scripts/routes/login.ts`.
+En haut du fichier, mettre en commentaire la variable `TOCTOCTOC_ORIGIN` qui pointe
+vers le serveur toctoctoc de production et ajouter une variable qui pointe sur
+son serveur local de toctoctoc : 
+```ts
+// assets/scripts/routes/login.ts
+
+/* const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team` */
+const TOCTOCTOC_ORIGIN = `http://localhost:4000`
+``` 
+
+- Relancer le build de Scribouilli avec `npm run dev`
+- et le lancer avec `npm start` dans un autre terminal.
+
+On peut maintenant se connecter à GitLab sur son Scribouilli local 🎉
