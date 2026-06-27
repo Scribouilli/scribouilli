@@ -92,7 +92,9 @@ export const logMessage = (
 export const delay = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms))
 
-export const isItStillCompiling = (lastCommit: CommitObject): boolean => {
+export const isItStillCompiling = (
+  lastCommit: Pick<CommitObject, 'committer'>,
+): boolean => {
   // Delay (in seconds) after which a non-updated website is assumed to have failed to build.
   const ERROR_DELAY = 60 * 1000
   const currentTime = new Date().getTime() / 1000
