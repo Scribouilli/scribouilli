@@ -11,6 +11,7 @@
     blogEnabled: any
     showArticles: boolean | undefined
     currentRepository: any
+    onUpdateTheme: (theme: {css: string}) => void
   }
 
   let {
@@ -19,7 +20,8 @@
     deleteRepositoryUrl,
     blogEnabled = $bindable(),
     showArticles,
-    currentRepository
+    currentRepository,
+    onUpdateTheme
   }: Props = $props();
 
   let notification = $state('')
@@ -35,7 +37,7 @@
 
   // @ts-ignore
   const saveTheme = e => {
-    dispatch('update-theme', { theme })
+    onUpdateTheme(theme)
     notification =
       'Le thème sera mis à jour après le déploiement des modifications (~ 2min)'
 
