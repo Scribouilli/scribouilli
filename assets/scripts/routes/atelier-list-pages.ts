@@ -61,7 +61,8 @@ const mapStateToProps = (state: ScribouilliState) => {
             'Activation du blog',
           )
         } else {
-          await deleteFileAndCommit('index.md', 'Désactivation du blog')
+          const blogPath = blogIndex(state) as string
+          await deleteFileAndCommit(blogPath, 'Désactivation du blog')
         }
         await getCurrentRepoArticles()
         await getCurrentRepoPages()
