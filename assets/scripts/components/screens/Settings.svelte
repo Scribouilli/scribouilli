@@ -1,8 +1,5 @@
 <script lang="ts">
   import Skeleton from '../Skeleton.svelte'
-  import { createEventDispatcher } from 'svelte'
-
-  const dispatch = createEventDispatcher()
 
   interface Props {
     buildStatus: any
@@ -12,6 +9,7 @@
     showArticles: boolean | undefined
     currentRepository: any
     onUpdateTheme: (theme: {css: string}) => void
+    onToggleBlog: (activated: boolean) => Promise<void>
   }
 
   let {
@@ -21,7 +19,8 @@
     blogEnabled = $bindable(),
     showArticles,
     currentRepository,
-    onUpdateTheme
+    onUpdateTheme,
+    onToggleBlog
   }: Props = $props();
 
   let notification = $state('')
@@ -59,7 +58,7 @@
 
   // @ts-ignore
   const toggleBlog = e => {
-    dispatch('toggle-blog', { activated: e.target.checked })
+    onToggleBlog(e.target.checked)
     if (e.target.checked) {
       notification = 'Une section « Articles » a été ajoutée dans le menu'
     } else {
