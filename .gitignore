@@ -1,2 +1,5 @@
 node_modules
 build
+
+# Pour garder secrète la config gitlab
+oauth-services.json
