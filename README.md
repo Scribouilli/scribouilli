@@ -37,7 +37,7 @@ La marche à suivre est la suivante :
   - avec les *scopes* `api` et `read_api`
   - avec la `Redirect URI` à `http://localhost:4000/` (ou le port que vous comptez utiliser pour toctoctoc en local)
   - noter l'`Application ID` et le `Secret` quelque part
-- Créer un fichier **secret** `oauth-services.json` en copiant et remplissant: 
+- Créer un fichier **secret** `toctoctoc-config.json` en copiant et remplissant: 
 ```json
 {
     "gitlab": [
@@ -50,12 +50,9 @@ La marche à suivre est la suivante :
 }
 ```
   - ⚠️ la sécurité de l'app gitlab créée dépend du fait de garder ce fichier secret.\
-  Le nom `oauth-services.json` a été ajouté au .gitginore de ce repo pour aider à stocker les infos en clair dans le repo sans risque de les versionner
-
-ICIIIIIIIIIIIIIIIII
-- (PPP) rajouter la doc pour chiffrer la config....... ou alors modifier toctoctoc pour charger une config non-chiffrée ?
-- ajouter un allowlist (PPP)
-ICIIIIIIIIIIIIIIIII
+  Le nom `toctoctoc-config.json` a été ajouté au .gitginore de ce repo pour aider à stocker les infos en clair dans le repo sans risque de les versionner
+- lancer toctoctoc en local 
+  `npx toctoctoc --config-file ./toctoctoc-config.json --allowlist-file ./toctoctoc-allowlist.csv`
 
 
 Pour le moment, il n'est pas possible de tester en local des sites hébergés sur gitlab ou scribougit (`git.scribouilli.org`)
