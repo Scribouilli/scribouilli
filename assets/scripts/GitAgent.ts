@@ -13,16 +13,15 @@ import FS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web'
 
-const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
-
-import type { CommitObject, GitAuth } from 'isomorphic-git'
+import type { CommitObject } from 'isomorphic-git'
 import type { ResolutionOption } from './store.ts'
+import { OAuthServiceAPI } from './types/git.ts'
 
 export default class GitAgent {
   #fs
   #remoteURL
   #repoId
-  #corsProxyURL
+  #corsProxyURL: string | undefined = undefined
   #onAuth
   #onMergeConflict
 
@@ -34,14 +33,14 @@ export default class GitAgent {
   constructor({
     repoId,
     remoteURL,
-    corsProxyURL = DEFAULT_CORS_PROXY_URL,
-    auth,
+    corsProxyURL,
+    gitServiceProvider,
     onMergeConflict,
   }: {
     repoId: string
     remoteURL: string
-    corsProxyURL?: string
-    auth: GitAuth
+    corsProxyURL?: string,
+    gitServiceProvider: OAuthServiceAPI,
     onMergeConflict?:
       | ((resolutionOptions: ResolutionOption[]) => void)
       | undefined
@@ -50,6 +49,8 @@ export default class GitAgent {
 
     this.#repoId = repoId
     this.#remoteURL = remoteURL
+    const auth = gitServiceProvider.getOauthUsernameAndPassword()
+
     this.#onAuth = () => auth
     this.#onMergeConflict = onMergeConflict
     this.#corsProxyURL = corsProxyURL
@@ -83,6 +84,7 @@ export default class GitAgent {
       singleBranch: true,
       corsProxy: this.#corsProxyURL,
       depth: 5,
+      onAuth: this.#onAuth,
     })
   }
 
@@ -191,6 +193,7 @@ export default class GitAgent {
       singleBranch: false, // we want all the branches
       dir: this.#repoDirectory,
       corsProxy: this.#corsProxyURL,
+      onAuth: this.#onAuth,
     })
   }
 

@@ -22,9 +22,10 @@ export interface ResolutionOption {
 }
 
 export interface OAuthProvider {
-  name: string
+  type: string
   accessToken: string
   origin: string
+  id: string
 }
 
 export interface ScribouilliState {

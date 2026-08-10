@@ -1,7 +1,10 @@
+import { BackendType } from "./atelier"
+
 interface ScribouilliGitRepo {
   repoId: string
   owner: string
   repoName: string
+  repoType: BackendType,
   origin: string
   publishedWebsiteURL: Promise<string>
   publicRepositoryURL: string
@@ -42,6 +45,8 @@ export interface OAuthServiceAPI {
   getPublishedWebsiteURL: (
     scribouilliGitRepo: ScribouilliGitRepo,
   ) => Promise<string | undefined>
+  makeRepoId: (owner: string, repoName: string) => string
+  makePublicRepositoryURL: (owner: string, repoName: string) => string
 }
 
 interface AuthenticatedUserEmails {

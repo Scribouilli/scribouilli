@@ -1,35 +1,37 @@
 <script lang="ts">
-  import Skeleton from "../Skeleton.svelte";
+  import { BackendType } from "../../types/atelier"
+  import Skeleton from "../Skeleton.svelte"
 
   interface Props {
     href: string
-    gitProvider: string
+    providerType: BackendType,
+    providerId: string,
   }
 
-  let { href, gitProvider }: Props = $props();
+  let { href, providerType, providerId }: Props = $props();
 
 </script>
 
 <Skeleton>
-  {#if gitProvider === 'github.com'}
+  {#if providerType === 'github'}
   <section class="screen" id="login">
     <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
 
     <a {href} class="btn">Je me connecte via GitHub</a>
   </section>
   {/if}
-  {#if gitProvider === 'gitlab.com'}
+  {#if providerType === 'gitlab'}
   <section class="screen" id="login">
     <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
 
-    <a {href} class="btn">Je me connecte via gitlab.com</a>
+    <a {href} class="btn">Je me connecte via {providerId}</a>
   </section>
   {/if}
-  {#if gitProvider === 'git.scribouilli.org'}
+  {#if providerType === 'scribouilli'}
   <section class="screen" id="login">
     <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
 
-    <a {href} class="btn">Je me connecte via git.scribouilli.org</a>
+    <a {href} class="btn">Je me connecte</a>
   </section>
   {/if}
 </Skeleton>

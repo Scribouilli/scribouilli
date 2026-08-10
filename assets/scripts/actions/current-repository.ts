@@ -2,10 +2,7 @@ import page from 'page'
 import yaml from 'js-yaml'
 
 import store, { type PartialStore } from './../store.ts'
-import ScribouilliGitRepo, {
-  makeRepoId,
-  makePublicRepositoryURL,
-} from './../scribouilliGitRepo.ts'
+import ScribouilliGitRepo from './../scribouilliGitRepo.ts'
 import GitAgent from '../GitAgent.ts'
 import { handleErrors, logMessage } from './../utils.ts'
 import { fetchAuthenticatedUserLogin } from './current-user.ts'
@@ -17,7 +14,7 @@ import { file } from './file.ts'
 import { getPagesList } from './page.ts'
 import { getArticlesList } from './article.ts'
 import { getOAuthServiceAPI } from '../oauth-services-api/index.ts'
-import { CUSTOM_CSS_PATH } from '../config.ts'
+import { CUSTOM_CSS_PATH, PROVIDERS_MAP } from '../config.ts'
 import type { BuildStatus } from '../types/git.ts'
 
 export const getCurrentRepoPages = () => {
@@ -65,26 +62,30 @@ export const setCurrentRepositoryFromQuerystring = async (
   }
 
   const origin = oAuthProvider.origin
-  const repoId = makeRepoId(owner, repoName)
+  const provider = PROVIDERS_MAP.get(oAuthProvider.id)
+  if (!provider) {
+    throw new TypeError(`Unkown provider ${oAuthProvider.id}`)
+  }
+  const oAuthServiceAPI = getOAuthServiceAPI()
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,
     repoName,
-    repoId,
+    repoType: provider.type,
     origin: origin,
-    publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
     gitServiceProvider: getOAuthServiceAPI(),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   const gitAgent = new GitAgent({
-    repoId,
-    remoteURL: `${origin}/${repoId}.git`,
+    repoId: oAuthServiceAPI.makeRepoId(owner, repoName),
+    remoteURL: oAuthServiceAPI.makePublicRepositoryURL(owner, repoName),
+    corsProxyURL: provider.corsProxy,
+    gitServiceProvider: oAuthServiceAPI,
     onMergeConflict: resolutionOptions => {
       store.mutations.setConflict(resolutionOptions)
     },
-    auth: getOAuthServiceAPI().getOauthUsernameAndPassword(),
   })
 
   store.mutations.setGitAgent(gitAgent)

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Skeleton from '../Skeleton.svelte'
+  import { PROVIDERS } from '../../config'
 </script>
 
 <Skeleton>
@@ -14,21 +15,15 @@
     </p>
 
     <ul class="descriptions">
-      <li>
-        <strong>Gitlab.com</strong> qui est un hébergeur professionnel.<br>
-        Si vous n'avez pas encore de compte, Gitlab demandera à <a href="https://docs.gitlab.com/ee/security/identity_verification.html" target="_blank">vérifier votre identité</a> avec un n° de téléphone ou de carte bleue.
-      </li>
-      <li>
-        <strong>ScribouGit</strong>, l'hébergement géré par l'équipe de Scribouilli.<br>
-        Si vous n'avez pas encore de compte, nous prendrons le temps de le valider manuellement (cela peut prendre quelques jours).
-      </li>
-      <li>Microsoft GitHub®, si vous l'utilisez déjà.</li>
+      {#each PROVIDERS as provider }
+      <li>{@html provider.description}</li>
+      {/each}
     </ul>
 
     <ul class="buttons">
-      <li><a href="./account?provider=gitlab.com" class="btn">Gitlab</a></li>
-      <li><a href="./account?provider=git.scribouilli.org" class="btn">ScribouGit</a></li>
-      <li><a href="./account?provider=github.com" class="btn">Github</a></li>
+      {#each PROVIDERS as provider }
+      <li><a href="./account?provider={provider.id}" class="btn">{provider.name}</a></li>
+      {/each}
     </ul>
   </section>
 </Skeleton>

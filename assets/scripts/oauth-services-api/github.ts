@@ -1,6 +1,7 @@
 import { gitHubApiBaseUrl } from './../config.ts'
 import type { GitSiteTemplate, OAuthServiceAPI } from '../types/git.ts'
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
+import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from './index.ts'
 
 const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
 
@@ -194,5 +195,11 @@ export default class GitHubAPI implements OAuthServiceAPI {
       }
       return httpResp
     })
+  }
+
+  makeRepoId = defaultMakeRepoId
+
+  makePublicRepositoryURL(owner: string, repoName: string ): string {
+      return defaultMakePublicRepositoryURL(owner, repoName, 'https://github.com')
   }
 }

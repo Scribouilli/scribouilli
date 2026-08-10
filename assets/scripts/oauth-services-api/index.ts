@@ -3,22 +3,33 @@ import store, { type OAuthProvider } from '../store.ts'
 import GitHubAPI from './github.ts'
 import GitlabAPI from './gitlab.ts'
 import type { OAuthServiceAPI } from '../types/git.ts'
+import ScribouilliBackend from './scribouilli.ts'
+import { PROVIDERS_MAP } from '../config.ts'
 
 const makeOAuthServiceAPI = ({
   accessToken,
   origin,
+  id,
 }: OAuthProvider): OAuthServiceAPI => {
-  const hostname = new URL(origin).hostname
+  let provider = PROVIDERS_MAP.get(id)
 
-  if (hostname === 'github.com') return new GitHubAPI(accessToken)
-  else {
-    // assuming a gitlab instance
+  if (!provider) {
+    throw new TypeError(`Unkown provider ${id}`)
+  }
+
+  if (provider.type === 'github') {
+    return new GitHubAPI(accessToken)
+  } else if (provider.type === 'gitlab') {
     return new GitlabAPI(accessToken, origin, () => {
       if (!store.state.gitAgent) {
         throw new TypeError('store.state.gitAgent is undefined')
       }
       return store.state.gitAgent
     })
+  } else if (provider.type === 'scribouilli') {
+    return new ScribouilliBackend(accessToken, origin)
+  } else {
+    throw new Error('unreachable')
   }
 }
 
@@ -42,4 +53,23 @@ export const getOAuthServiceAPI = (): OAuthServiceAPI => {
   oAuthServiceAPI = makeOAuthServiceAPI(oAuthProvider)
 
   return oAuthServiceAPI
+}
+
+
+/**
+ * @param owner may be an individual Github user or an organisation
+ */
+export function defaultMakeRepoId(owner: string, repoName: string): string {
+  return `${owner}/${repoName}`
+}
+
+/**
+ * @param owner may be an individual Github user or an organisation
+ */
+export function defaultMakePublicRepositoryURL(
+  owner: string,
+  repoName: string,
+  origin: string,
+): string {
+  return `${origin}/${owner}/${repoName}`
 }

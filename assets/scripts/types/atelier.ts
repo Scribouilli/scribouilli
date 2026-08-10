@@ -31,3 +31,21 @@ export interface FileContenu {
   inMenu: boolean
   blogIndex: boolean
 }
+
+export type BackendType =
+  | 'github'
+  | 'gitlab'
+  | 'scribouilli'
+
+export interface ScribouilliBackendProvider {
+  id: string,
+  origin: string,
+  clientId?: string,
+  type: BackendType,
+  description: string,
+  name: string,
+  signupInstructions?: string,
+  signupEnabled: boolean,
+  signupLink?: string,
+  corsProxy?: string,
+}

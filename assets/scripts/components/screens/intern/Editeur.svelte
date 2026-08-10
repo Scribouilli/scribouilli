@@ -7,7 +7,7 @@
   import { writeFileAndCommit } from '../../../actions/file'
   import './../../../../styles/editeur-preview/framalibre.css'
   import type { EditeurFile, FileContenu } from "../../../types/atelier"
-  
+
   interface Props {
     fileP: Promise<EditeurFile>
     buildStatus: any
@@ -173,14 +173,14 @@
                   >
                     avec du Markdown
                   </a>
-                  … ou avec du HTML grâce 
+                  … ou avec du HTML grâce
                   <a
                     href="https://scribouilli.org/aide.html"
                     target="_blank"
                   >
                     à nos exemples
                   </a>
-                  d'encart ou de bouton, ou 
+                  d'encart ou de bouton, ou
                   <a
                     href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
                     target="_blank"
@@ -234,16 +234,16 @@
                 rows="10"
               ></textarea>
             </div>
-            
+
               <div class="preview">
                 <h4>Aperçu</h4>
                 <div class="markdown-preview">
                   <!-- svelte-ignore block_empty -->
                   {#await preview}
-                    
+
                   {:then preview}
                     {@html preview}
-                  {/await}  
+                  {/await}
                 </div>
               </div>
           </div>

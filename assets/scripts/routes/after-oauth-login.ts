@@ -15,32 +15,33 @@ import { fetchCurrentUserRepositories } from '../actions/current-user.ts'
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
 
-  console.log(
-    'type',
-    url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER),
-  )
-
   const accessToken = url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER)
-  const providerName = url.searchParams.get(
+  const providerType = url.searchParams.get(
     TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
   )
-
   let origin = url.searchParams.get(TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER)
 
+  console.log('type', providerType, 'origin', origin)
+
   if (!origin) {
-    if (providerName === 'github') {
+    if (providerType === 'github') {
       origin = 'https://github.com'
     } else {
       throw new TypeError('missing origin')
     }
   }
 
-  if (accessToken && providerName) {
+  const providerId = new URL(origin).hostname
+
+  if (providerType && accessToken) {
     const oAuthProvider = {
-      name: providerName,
+      type: providerType,
       accessToken,
       origin,
+      id: providerId,
     }
+
+    console.log(oAuthProvider)
 
     store.mutations.setOAuthProvider(oAuthProvider)
 
@@ -52,7 +53,7 @@ export default () => {
   storeOAuthProviderAccess()
 
   const oAuthProvider = store.state.oAuthProvider
-  let type = oAuthProvider?.name
+  let type = oAuthProvider?.type
 
   console.log('type', type)
   console.log('oAuthProvider', oAuthProvider)
@@ -64,7 +65,7 @@ export default () => {
 
   let currentUserReposP
 
-  if (type === 'github' || type === 'gitlab') {
+  if (type === 'github' || type === 'gitlab' || type == 'scribouilli') {
     currentUserReposP = fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 0) {
         page.redirect('/creer-un-nouveau-site')

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { BuildStatus } from '../types/git.ts'
   import type { ScribouilliState } from '../store.ts'
+  import { BackendType } from '../types/atelier.ts'
 
   interface Props {
     buildStatus: BuildStatus
@@ -20,8 +21,9 @@
   let buildStatusClass = $derived(buildStatus ? `build-${buildStatus}` : undefined)
   let publishedWebsiteURL: Promise<string> | undefined = $derived(currentRepository?.publishedWebsiteURL)
   let repositoryURL: string | undefined = $derived(currentRepository?.publicRepositoryURL)
+  let repositoryType: BackendType | undefined = $derived(currentRepository?.repoType)
   let repoName: string | undefined = $derived(currentRepository?.repoName)
-  let account: string | undefined = $derived(currentRepository?.owner)  
+  let account: string | undefined = $derived(currentRepository?.owner)
   let homeURL: string | undefined =
     $derived(repoName && account
       ? `/atelier-list-pages?repoName=${repoName}&account=${account}`
@@ -96,13 +98,13 @@
             Paramètres
           </a>
         </li>
-        <li>
-          {#if repositoryURL}
+        {#if repositoryURL && repositoryType !== 'scribouilli' }
+          <li>
             {#await repositoryURL then urlrepository}
               <a href={urlrepository} target="_blank">Sur {(new URL(urlrepository)).hostname}</a>
             {/await}
-          {/if}
-        </li>
+          </li>
+        {/if}
       </ul>
     </nav>
   {/if}

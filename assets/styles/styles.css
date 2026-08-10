@@ -358,3 +358,24 @@ ul.list-with-dot {
   padding-left: 1rem;
   list-style-type: disc;
 }
+
+.config-content {
+  ol {
+    text-align: left;
+
+    li {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .text-align-start {
+    text-align: start;
+  }
+
+  .simple-list {
+    padding: 1rem 5rem;
+    text-align: left;
+    list-style-type: disc;
+    list-style-position: inside;
+   }
+}

@@ -2,54 +2,42 @@ import { replaceComponent } from '../routeComponentLifeCycle.svelte'
 import store from '../store'
 import Login from '../components/screens/Login.svelte'
 import { Context } from 'page'
+import {
+  TOCTOCTOC_ORIGIN,
+  TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
+  TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
+  PROVIDERS_MAP
+} from '../config'
+import { ScribouilliBackendProvider } from '../types/atelier'
 
-const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team`
 
-const oAuthAppByProvider = new Map([
-  [
-    'github.com',
-    {
-      origin: 'https://github.com',
-      client_id: '64ecce0b01397c2499a6',
-    },
-  ],
-  [
-    'gitlab.com',
-    {
-      origin: 'https://gitlab.com',
-      client_id:
-        'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
-    },
-  ],
-  [
-    'git.scribouilli.org',
-    {
-      origin: 'https://git.scribouilli.org',
-      client_id:
-        '3e8ac6636615d396a8f73e02fa3880e7e2140981b0ca27b0f240a450f69f1c76',
-    },
-  ],
-])
 
-function redirectURLByProvider(gitProvider: string, destination: string) {
-  if (gitProvider === 'github.com') {
+function redirectURLByProvider(
+  { type: providerType, origin }: ScribouilliBackendProvider,
+  destination: string
+) {
+  if (providerType === 'github') {
     return `${TOCTOCTOC_ORIGIN}/github-callback?destination=${destination}`
+  } else if (providerType === 'gitlab') {
+    return `${TOCTOCTOC_ORIGIN}/gitlab-callback/${origin}/?destination=${destination}`
+  } else if (providerType === 'scribouilli') {
+    // TODO: get rid of origin parameter when not used?
+    return `${destination}?${TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER}=scribouilli&${TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER}=${origin}`
   } else {
-    // assume Gitlab and assume HTTPS
-    return `${TOCTOCTOC_ORIGIN}/gitlab-callback/https://${gitProvider}/?destination=${destination}`
+    throw new Error('unreachable')
   }
 }
 
 function makeLoginHref(
-  gitProvider: string,
-  client_id: string,
-  redirect_url: string,
+  {clientId, type: providerType, origin}: ScribouilliBackendProvider,
+  redirectUrl: string,
 ) {
-  if (gitProvider === 'github.com') {
-    return `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=public_repo,user:email&redirect_uri=${redirect_url}`
+  if (providerType === 'github') {
+    return `${origin}/login/oauth/authorize?client_id=${clientId}&scope=public_repo,user:email&redirect_uri=${redirectUrl}`
+  } else if (providerType == 'gitlab') {
+    return `${origin}/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}&response_type=code&scope=api+read_api`
   } else {
-    // assume HTTPS
-    return `https://${gitProvider}/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_url}&response_type=code&scope=api+read_api`
+    return `${origin}/login?redirect_to=${encodeURIComponent(redirectUrl)}`
   }
 }
 
@@ -63,20 +51,24 @@ export default ({ querystring }: Context) => {
     throw new TypeError(`Missing 'provider' parameter`)
   }
 
+
   const destination =
-    location.origin + store.state.basePath + '/after-oauth-login'
-  const client_id = oAuthAppByProvider.get(gitProvider)?.client_id
-  if (!client_id) {
-    throw new TypeError(`Missing client_id`)
+  location.origin + store.state.basePath + '/after-oauth-login'
+
+  const provider = PROVIDERS_MAP.get(gitProvider)
+
+  if (!provider) {
+    throw new TypeError(`Unknown provider ${gitProvider}`)
   }
 
-  const redirect_url = redirectURLByProvider(gitProvider, destination)
-  const loginHref = makeLoginHref(gitProvider, client_id, redirect_url)
+  const redirectUrl = redirectURLByProvider(provider, destination)
+  const loginHref = makeLoginHref(provider, redirectUrl)
 
   replaceComponent(Login, () => {
     return {
       href: loginHref,
-      gitProvider,
+      providerType: provider.type,
+      providerId: provider.id,
     }
   })
 }

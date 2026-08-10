@@ -1,10 +1,7 @@
 import page from 'page'
 
 import store, { ResolutionOption } from './../store.ts'
-import ScribouilliGitRepo, {
-  makePublicRepositoryURL,
-  makeRepoId,
-} from './../scribouilliGitRepo.ts'
+import ScribouilliGitRepo from './../scribouilliGitRepo.ts'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.ts'
 import { makeAtelierListPageURL } from './../routes/urls.ts'
 import { logMessage } from './../utils.ts'
@@ -12,6 +9,7 @@ import { setBaseUrlInConfigIfNecessary } from './current-repository.ts'
 import GitAgent from '../GitAgent.ts'
 import git from 'isomorphic-git'
 import type { GitSiteTemplate } from '../types/git.ts'
+import { PROVIDERS_MAP } from '../config.ts'
 
 const waitRepoReady = (
   scribouilliGitRepo: ScribouilliGitRepo,
@@ -130,34 +128,36 @@ export const createRepositoryForCurrentAccount = async (
   }
 
   const origin = oAuthProvider.origin
+  const provider = PROVIDERS_MAP.get(oAuthProvider.id)
+  if (!provider) {
+    throw new TypeError(`Unkown provider ${oAuthProvider.id}`)
+  }
+  const oAuthServiceAPI = getOAuthServiceAPI()
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner: owner,
     repoName: escapedRepoName,
+    repoType: provider.type,
     origin: origin,
-    publicRepositoryURL: makePublicRepositoryURL(
-      owner,
-      escapedRepoName,
-      origin,
-    ),
-    gitServiceProvider: getOAuthServiceAPI(),
+    gitServiceProvider: oAuthServiceAPI,
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   return (
-    getOAuthServiceAPI()
+    oAuthServiceAPI
       .createDefaultRepository(scribouilliGitRepo, template)
       .then(({ remoteURL }) => {
         const gitAgent = new GitAgent({
-          repoId: makeRepoId(owner, escapedRepoName),
+          repoId: oAuthServiceAPI.makeRepoId(owner, escapedRepoName),
           remoteURL: remoteURL,
+          corsProxyURL: provider.corsProxy,
           onMergeConflict: (
             resolutionOptions: ResolutionOption[] | undefined,
           ) => {
             store.mutations.setConflict(resolutionOptions)
           },
-          auth: getOAuthServiceAPI().getOauthUsernameAndPassword(),
+          gitServiceProvider: oAuthServiceAPI,
         })
 
         store.mutations.setGitAgent(gitAgent)
