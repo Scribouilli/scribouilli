@@ -143,6 +143,8 @@ export const createRepositoryForCurrentAccount = async (
     gitServiceProvider: oAuthServiceAPI,
   })
 
+  const { repoId } = scribouilliGitRepo
+
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
   return (
@@ -150,7 +152,7 @@ export const createRepositoryForCurrentAccount = async (
       .createDefaultRepository(scribouilliGitRepo, template)
       .then(({ remoteURL }) => {
         const gitAgent = new GitAgent({
-          repoId: oAuthServiceAPI.makeRepoId(owner, escapedRepoPath),
+          repoId,
           remoteURL: remoteURL,
           corsProxyURL: provider.corsProxy,
           onMergeConflict: (

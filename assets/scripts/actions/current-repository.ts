@@ -75,8 +75,10 @@ export const setCurrentRepositoryFromQuerystring = async (
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
+  const { repoId } = scribouilliGitRepo
+
   const gitAgent = new GitAgent({
-    repoId: oAuthServiceAPI.makeRepoId(owner, repoPath),
+    repoId: repoId,
     remoteURL: oAuthServiceAPI.makePublicRepositoryURL(owner, repoPath),
     corsProxyURL: provider.corsProxy,
     gitServiceProvider: oAuthServiceAPI,
