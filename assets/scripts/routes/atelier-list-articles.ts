@@ -33,7 +33,7 @@ export default async ({ querystring }: Context) => {
 
 export function makeAtelierListArticlesURL({
   owner,
-  repoName,
+  repoPath,
 }: ScribouilliGitRepo): string {
-  return `/atelier-list-articles?account=${owner}&repoName=${repoName}`
+  return `/atelier-list-articles?account=${owner}&repoPath=${repoPath}`
 }

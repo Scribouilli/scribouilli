@@ -3,7 +3,7 @@ import type { BackendType } from './atelier'
 interface ScribouilliGitRepo {
   repoId: string
   owner: string
-  repoName: string
+  repoPath: string
   repoType: BackendType
   origin: string
   publishedWebsiteURL: Promise<string>
@@ -37,7 +37,7 @@ export interface OAuthServiceAPI {
   isRepositoryReady: (
     scribouilliGitRepo: ScribouilliGitRepo,
   ) => Promise<boolean>
-  getCurrentUserRepositories: () => Promise<GithubRepository[]>
+  getCurrentUserRepositories: () => Promise<GitRepository[]>
   deploy: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>
   getPagesWebsiteDeploymentStatus: (
     scribouilliGitRepo: ScribouilliGitRepo,
@@ -48,8 +48,8 @@ export interface OAuthServiceAPI {
   getPublishedWebsiteURL: (
     scribouilliGitRepo: ScribouilliGitRepo,
   ) => Promise<string | undefined>
-  makeRepoId: (owner: string, repoName: string) => string
-  makePublicRepositoryURL: (owner: string, repoName: string) => string
+  makeRepoId: (owner: string, repoPath: string) => string
+  makePublicRepositoryURL: (owner: string, repoPath: string) => string
 }
 
 interface AuthenticatedUserEmails {
@@ -57,8 +57,9 @@ interface AuthenticatedUserEmails {
   primary: boolean
 }
 
-export interface GithubRepository {
+export interface GitRepository {
   name: string
+  path?: string
   owner: {
     login: string
   }
