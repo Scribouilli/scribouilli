@@ -2,10 +2,7 @@ import page from 'page'
 import yaml from 'js-yaml'
 
 import store, { type PartialStore } from './../store.ts'
-import ScribouilliGitRepo, {
-  makeRepoId,
-  makePublicRepositoryURL,
-} from './../scribouilliGitRepo.ts'
+import ScribouilliGitRepo, { makeRepoId } from './../scribouilliGitRepo.ts'
 import GitAgent from '../GitAgent.ts'
 import { handleErrors, logMessage } from './../utils.ts'
 import { fetchAuthenticatedUserLogin } from './current-user.ts'
@@ -65,18 +62,17 @@ export const setCurrentRepositoryFromQuerystring = async (
   }
 
   const origin = oAuthProvider.origin
-  const repoId = makeRepoId(owner, repoPath)
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,
     repoPath,
-    repoId,
     origin: origin,
-    publicRepositoryURL: makePublicRepositoryURL(owner, repoPath, origin),
     gitServiceProvider: getOAuthServiceAPI(),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
+
+  const { repoId } = scribouilliGitRepo
 
   const gitAgent = new GitAgent({
     repoId,

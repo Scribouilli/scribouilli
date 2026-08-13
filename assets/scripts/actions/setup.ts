@@ -1,10 +1,7 @@
 import page from 'page'
 
 import store, { ResolutionOption } from './../store.ts'
-import ScribouilliGitRepo, {
-  makePublicRepositoryURL,
-  makeRepoId,
-} from './../scribouilliGitRepo.ts'
+import ScribouilliGitRepo from './../scribouilliGitRepo.ts'
 import { getOAuthServiceAPI } from './../oauth-services-api/index.ts'
 import { makeAtelierListPageURL } from './../routes/urls.ts'
 import { logMessage } from './../utils.ts'
@@ -136,13 +133,10 @@ export const createRepositoryForCurrentAccount = async (
     owner: owner,
     repoPath: escapedRepoPath,
     origin: origin,
-    publicRepositoryURL: makePublicRepositoryURL(
-      owner,
-      escapedRepoPath,
-      origin,
-    ),
     gitServiceProvider: getOAuthServiceAPI(),
   })
+
+  const { repoId } = scribouilliGitRepo
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
 
@@ -151,7 +145,7 @@ export const createRepositoryForCurrentAccount = async (
       .createDefaultRepository(scribouilliGitRepo, template)
       .then(({ remoteURL }) => {
         const gitAgent = new GitAgent({
-          repoId: makeRepoId(owner, escapedRepoPath),
+          repoId,
           remoteURL: remoteURL,
           onMergeConflict: (
             resolutionOptions: ResolutionOption[] | undefined,
