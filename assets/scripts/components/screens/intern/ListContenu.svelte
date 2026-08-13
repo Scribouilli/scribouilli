@@ -4,7 +4,7 @@
   import { makePageFrontMatter } from '../../../utils.ts'
   import ScribouilliGitRepo from '../../../scribouilliGitRepo.ts'
   import type { FileContenu } from '../../../types/atelier.ts';
-  
+
   interface Props {
     buildStatus: any
     listContenu?: FileContenu[]
@@ -29,8 +29,8 @@
     conflict
   }: Props = $props();
 
-  let repoName = $derived(currentRepository.repoName)
-  let account = $derived(currentRepository.owner) 
+  let repoPath = $derived(currentRepository.repoPath)
+  let account = $derived(currentRepository.owner)
   let modification = $state(false)
 
   const gitAgent = store.state.gitAgent
@@ -78,7 +78,7 @@
           {title}
         </h2>
         <a
-          href="{atelierPrefix}?repoName={repoName}&account={account}"
+          href="{atelierPrefix}?repoPath={repoPath}&account={account}"
           class="btn btn__medium">{newContentButtonText}</a
         >
       </header>
@@ -113,7 +113,7 @@
                 </div>
               {:else}
                 <a
-                  href="{atelierPrefix}?path={encodeURIComponent(contenu.path)}&repoName={repoName}&account={account}"
+                  href="{atelierPrefix}?path={encodeURIComponent(contenu.path)}&repoPath={repoPath}&account={account}"
                 >
                   Modifier</a
                 >

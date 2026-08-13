@@ -71,14 +71,14 @@ export const setupLocalRepository = async (): Promise<
  */
 export function guessBaseURL({
   owner,
-  repoName,
+  repoPath,
   origin,
 }: ScribouilliGitRepo): string {
   if (origin === 'https://github.com') {
     const publishedHostname = `${owner.toLowerCase()}.github.io`
-    repoName = repoName.toLowerCase()
+    repoPath = repoPath.toLowerCase()
 
-    return publishedHostname === repoName ? '' : `/${repoName}`
+    return publishedHostname === repoPath ? '' : `/${repoPath}`
   } else if (
     origin === 'https://gitlab.com' ||
     origin === 'https://git.scribouilli.org'
@@ -116,7 +116,8 @@ export const createRepositoryForCurrentAccount = async (
     throw new TypeError(`missing login in createRepositoryForCurrentAccount`)
   }
 
-  const escapedRepoName = repoName
+  // On creation, on both GitHub and GitLab, the name matches the repository path
+  const escapedRepoPath = repoName
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\w\.-]/g, '-') // see https://stackoverflow.com/a/59082561
@@ -133,11 +134,11 @@ export const createRepositoryForCurrentAccount = async (
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner: owner,
-    repoName: escapedRepoName,
+    repoPath: escapedRepoPath,
     origin: origin,
     publicRepositoryURL: makePublicRepositoryURL(
       owner,
-      escapedRepoName,
+      escapedRepoPath,
       origin,
     ),
     gitServiceProvider: getOAuthServiceAPI(),
@@ -150,7 +151,7 @@ export const createRepositoryForCurrentAccount = async (
       .createDefaultRepository(scribouilliGitRepo, template)
       .then(({ remoteURL }) => {
         const gitAgent = new GitAgent({
-          repoId: makeRepoId(owner, escapedRepoName),
+          repoId: makeRepoId(owner, escapedRepoPath),
           remoteURL: remoteURL,
           onMergeConflict: (
             resolutionOptions: ResolutionOption[] | undefined,

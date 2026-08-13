@@ -5,7 +5,7 @@ export default class ScribouilliGitRepo {
   public origin
   public publicRepositoryURL
   public owner
-  public repoName
+  public repoPath
   public repoId
   public publishedWebsiteURL: Promise<string>
 
@@ -14,20 +14,20 @@ export default class ScribouilliGitRepo {
     origin,
     publicRepositoryURL,
     owner,
-    repoName,
+    repoPath,
     gitServiceProvider,
   }: {
     repoId?: string
     origin: string
     publicRepositoryURL: string
     owner: string
-    repoName: string
+    repoPath: string
     gitServiceProvider: OAuthServiceAPI
   }) {
     this.origin = origin
     this.publicRepositoryURL = publicRepositoryURL
     this.owner = owner
-    this.repoName = repoName
+    this.repoPath = repoPath
 
     this.repoId = repoId ? repoId : makeRepoId(owner, repoName)
 
@@ -47,8 +47,8 @@ export default class ScribouilliGitRepo {
 /**
  * @param owner may be an individual Github user or an organisation
  */
-export function makeRepoId(owner: string, repoName: string): string {
-  return `${owner}/${repoName}`
+export function makeRepoId(owner: string, repoPath: string): string {
+  return `${owner}/${repoPath}`
 }
 
 /**
@@ -56,8 +56,9 @@ export function makeRepoId(owner: string, repoName: string): string {
  */
 export function makePublicRepositoryURL(
   owner: string,
-  repoName: string,
+  repoPath: string,
   origin: string,
 ): string {
-  return `${origin}/${owner}/${repoName}`
+  const repoId = makeRepoId(owner, repoPath)
+  return `${origin}/${repoId}`
 }

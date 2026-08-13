@@ -41,16 +41,16 @@ export const setCurrentRepositoryFromQuerystring = async (
   querystring: string,
 ): Promise<void> => {
   const params = new URLSearchParams(querystring)
-  const repoName = params.get('repoName')
+  const repoPath = params.get('repoPath')
   const owner = params.get('account')
 
   const oAuthProvider = store.state.oAuthProvider
 
   let message
 
-  if (!repoName || !owner || !oAuthProvider) {
-    if (!repoName) {
-      message = `Missing parameter 'repoName' in URL`
+  if (!repoPath || !owner || !oAuthProvider) {
+    if (!repoPath) {
+      message = `Missing parameter 'repoPath' in URL`
     } else {
       if (!owner) {
         message = `Missing parameter 'account' in URL`
@@ -65,14 +65,14 @@ export const setCurrentRepositoryFromQuerystring = async (
   }
 
   const origin = oAuthProvider.origin
-  const repoId = makeRepoId(owner, repoName)
+  const repoId = makeRepoId(owner, repoPath)
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,
-    repoName,
+    repoPath,
     repoId,
     origin: origin,
-    publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
+    publicRepositoryURL: makePublicRepositoryURL(owner, repoPath, origin),
     gitServiceProvider: getOAuthServiceAPI(),
   })
 

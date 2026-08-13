@@ -1,7 +1,7 @@
 interface ScribouilliGitRepo {
   repoId: string
   owner: string
-  repoName: string
+  repoPath: string
   origin: string
   publishedWebsiteURL: Promise<string>
   publicRepositoryURL: string
@@ -31,7 +31,7 @@ export interface OAuthServiceAPI {
   isRepositoryReady: (
     scribouilliGitRepo: ScribouilliGitRepo,
   ) => Promise<boolean>
-  getCurrentUserRepositories: () => Promise<GithubRepository[]>
+  getCurrentUserRepositories: () => Promise<GitRepository[]>
   deploy: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>
   getPagesWebsiteDeploymentStatus: (
     scribouilliGitRepo: ScribouilliGitRepo,
@@ -49,8 +49,9 @@ interface AuthenticatedUserEmails {
   primary: boolean
 }
 
-export interface GithubRepository {
+export interface GitRepository {
   name: string
+  path?: string
   owner: {
     login: string
   }

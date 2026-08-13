@@ -3,16 +3,16 @@
 
   import Skeleton from "./../Skeleton.svelte";
   import Loader from "./../loaders/Loader.svelte";
-  import type { GithubRepository } from "../../types/git"
+  import type { GitRepository } from "../../types/git"
 
   interface Props {
     currentAccount: string | Promise<string> | undefined
-    currentAccountRepositories: GithubRepository[]
+    currentAccountRepositories: GitRepository[]
   }
 
   let { currentAccount, currentAccountRepositories }: Props = $props();
 
-  let repo: GithubRepository | undefined = $state()
+  let repo: GitRepository | undefined = $state()
   let loading = $state(false);
 
   // @ts-ignore
@@ -26,13 +26,14 @@
 
   // @ts-ignore
   const onSubmit = (e) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (!repo) return
 
-    loading = true;
+    loading = true
+    const repoPath = repo.path || repo.name // In GitLab, the repository slug may differ from the name attribute (after repository renaming), while in GitHub, the name attribute corresponds to the repository slug
 
-    page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
+    page(`/atelier-list-pages?repoPath=${repoPath}&account=${repo.owner.login}`);
 
     loading = false;
   };

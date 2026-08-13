@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { BuildStatus } from '../types/git.ts'
   import type { ScribouilliState } from '../store.ts'
+  import { makeAtelierListPageURL } from '../routes/urls.ts'
+  import { makeAtelierListArticlesURL } from '../routes/atelier-list-articles.ts'
 
   interface Props {
     buildStatus: BuildStatus
@@ -20,18 +22,18 @@
   let buildStatusClass = $derived(buildStatus ? `build-${buildStatus}` : undefined)
   let publishedWebsiteURL: Promise<string> | undefined = $derived(currentRepository?.publishedWebsiteURL)
   let repositoryURL: string | undefined = $derived(currentRepository?.publicRepositoryURL)
-  let repoName: string | undefined = $derived(currentRepository?.repoName)
-  let account: string | undefined = $derived(currentRepository?.owner)  
+  let repoPath: string | undefined = $derived(currentRepository?.repoPath)
+  let account: string | undefined = $derived(currentRepository?.owner)
   let homeURL: string | undefined =
-    $derived(repoName && account
-      ? `/atelier-list-pages?repoName=${repoName}&account=${account}`
+    $derived(currentRepository
+      ? makeAtelierListPageURL(currentRepository)
       : '/')
 
-      function makeResolutionDesynchronisationURL(account: string, repoName: string): string {
-    return `/resolution-desynchronisation?account=${account}&repoName=${repoName}`
+  function makeResolutionDesynchronisationURL(account: string, repoPath: string): string {
+    return `/resolution-desynchronisation?account=${account}&repoPath=${repoPath}`
   }
 
-  let resolutionURL: string = $derived(makeResolutionDesynchronisationURL(account || '', repoName || ''));
+  let resolutionURL: string = $derived(makeResolutionDesynchronisationURL(account || '', repoPath || ''));
 </script>
 
 <header>
@@ -76,7 +78,7 @@
     <nav>
       <ul>
         <li>
-          <a href="/atelier-list-pages?repoName={repoName}&account={account}">
+          <a href="{makeAtelierListPageURL(currentRepository)}">
             Pages
           </a>
         </li>
@@ -84,7 +86,7 @@
         {#if showArticles}
           <li>
             <a
-              href="/atelier-list-articles?repoName={repoName}&account={account}"
+              href="{makeAtelierListArticlesURL(currentRepository)}"
             >
               Articles
             </a>
@@ -92,7 +94,7 @@
         {/if}
 
         <li>
-          <a href="/settings?repoName={repoName}&account={account}">
+          <a href="/settings?repoPath={repoPath}&account={account}">
             Paramètres
           </a>
         </li>
