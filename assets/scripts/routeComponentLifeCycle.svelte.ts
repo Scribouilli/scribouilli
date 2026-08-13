@@ -7,7 +7,7 @@ import { Component } from 'svelte'
 type MapStateToPropsFunction = (state: ScribouilliState) => Record<string, any>
 
 let currentComponent: Record<string, any>
-let currentProps: Record<string, any>
+let currentProps: Record<string, any> = {}
 let currentMapStateToProps: MapStateToPropsFunction = _ => ({})
 
 export function replaceComponent<P extends Record<string, any>>(
