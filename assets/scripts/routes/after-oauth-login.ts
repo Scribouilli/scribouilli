@@ -69,12 +69,6 @@ export default () => {
       if (repos.length === 0) {
         page.redirect('/creer-un-nouveau-site')
       } else {
-        store.mutations.setReposForAccount({
-          // @ts-ignore
-          login: store.state.login,
-          repos,
-        })
-
         page.redirect('/selectionner-un-site')
       }
     })

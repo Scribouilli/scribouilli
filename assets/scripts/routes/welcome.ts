@@ -21,12 +21,6 @@ export default () => {
 
         page(`/atelier-list-pages?repoPath=${repoPath}&account=${account}`)
       } else {
-        store.mutations.setReposForAccount({
-          // @ts-ignore
-          login: store.state.login,
-          repos,
-        })
-
         page.redirect('/selectionner-un-site')
       }
     })
