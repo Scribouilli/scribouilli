@@ -43,7 +43,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
   }
 
   async createDefaultRepository(
-    { owner, repoName, publishedWebsiteURL }: ScribouilliGitRepo,
+    { owner, repoPath, publishedWebsiteURL }: ScribouilliGitRepo,
     template: GitSiteTemplate,
   ) {
     // Generate a new repository from the theme repository
@@ -57,7 +57,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
         method: 'POST',
         body: JSON.stringify({
           owner,
-          name: repoName,
+          name: repoPath,
           description: 'Mon site Scribouilli',
         }),
       },
@@ -96,7 +96,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
       method: 'PUT',
       body: JSON.stringify({
         owner,
-        repo: repoName,
+        repo: repoPath,
         names: ['site-scribouilli'],
       }),
     })

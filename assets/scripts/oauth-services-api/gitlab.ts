@@ -2,6 +2,7 @@ import GitAgent from '../GitAgent.ts'
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
   BuildStatus,
+  GitRepository,
   GitSiteTemplate,
   OAuthServiceAPI,
 } from '../types/git.ts'
@@ -73,17 +74,17 @@ export default class GitLabAPI implements OAuthServiceAPI {
     const response = await this.callAPI(
       `${this.apiBaseUrl}/users/${login}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public`,
     )
-    const json = await response.json()
+    const json: Array<any> = await response.json()
     // @ts-ignore
-    const repositories = json.map(repo => {
-      return {
-        id: repo.id,
+    const repositories = json.map(
+      (repo: any): GitRepository => ({
         name: repo.name,
+        path: repo.path,
         owner: {
           login: repo.owner.username,
         },
-      }
-    })
+      }),
+    )
     return await Promise.resolve(repositories)
   }
 
@@ -91,7 +92,7 @@ export default class GitLabAPI implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
     { url: gitRepoUrl }: GitSiteTemplate,
   ) {
-    const { repoName } = scribouilliGitRepo
+    const { repoPath } = scribouilliGitRepo
 
     const response = await this.callAPI(`${this.apiBaseUrl}/projects`, {
       method: 'POST',
@@ -101,7 +102,7 @@ export default class GitLabAPI implements OAuthServiceAPI {
       },
       body: JSON.stringify({
         import_url: gitRepoUrl,
-        name: repoName,
+        name: repoPath, // On creation, path and name are identical
         description: 'Mon site Scribouilli',
         topics: ['site-scribouilli'],
         visibility: 'public',
@@ -134,11 +135,8 @@ export default class GitLabAPI implements OAuthServiceAPI {
     console.log('response', response)
   }
 
-  async getPagesWebsiteDeploymentStatus({
-    owner,
-    repoName,
-  }: ScribouilliGitRepo) {
-    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
+  async getPagesWebsiteDeploymentStatus({ repoId }: ScribouilliGitRepo) {
+    const urlEncodedRepoPath = encodeURIComponent(repoId)
 
     const response = await this.callAPI(
       `${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/deployments?per_page=1&order_by=updated_at&sort=desc`,
@@ -167,8 +165,8 @@ export default class GitLabAPI implements OAuthServiceAPI {
     }
   }
 
-  async isRepositoryReady({ owner, repoName }: ScribouilliGitRepo) {
-    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
+  async isRepositoryReady({ repoId }: ScribouilliGitRepo) {
+    const urlEncodedRepoPath = encodeURIComponent(repoId)
 
     // This call is used only at the creation of the repository.
     // We assume that the git ref is `main`.
@@ -182,13 +180,13 @@ export default class GitLabAPI implements OAuthServiceAPI {
     }
   }
 
-  getPublishedWebsiteURL({ repoName, owner, origin }: ScribouilliGitRepo) {
+  getPublishedWebsiteURL({ repoPath, owner, origin }: ScribouilliGitRepo) {
     if (origin === 'https://gitlab.com') {
-      return Promise.resolve(`https://${owner}.gitlab.io/${repoName}/`)
+      return Promise.resolve(`https://${owner}.gitlab.io/${repoPath}/`)
     }
 
     if (origin === 'https://git.scribouilli.org') {
-      return Promise.resolve(`https://${owner}.monpetitsite.org/${repoName}/`)
+      return Promise.resolve(`https://${owner}.monpetitsite.org/${repoPath}/`)
     }
 
     return Promise.reject('Unknown origin')

@@ -2,7 +2,7 @@ import Store, { type BareduxStore } from 'baredux'
 import GitAgent from './GitAgent.ts'
 import ScribouilliGitRepo from './scribouilliGitRepo.ts'
 import type { Page, Article } from './types/atelier.ts'
-import type { BuildStatus } from './types/git.ts'
+import type { BuildStatus, GitRepository } from './types/git.ts'
 /**
  * Un store baredux a pour vocation de refléter notamment le modèle mental de la
  * personne face à Scribouilli. Le store stocke donc principalement des données (et parfois des singletons)
@@ -34,7 +34,7 @@ export interface ScribouilliState {
   currentRepository: ScribouilliGitRepo | undefined
   gitAgent: GitAgent | undefined
   conflict: ResolutionOption[] | undefined
-  reposByAccount: any
+  reposByAccount: { [account: string]: GitRepository[] } | undefined
   pages?: Page[]
   articles?: Article[]
   buildStatus: BuildStatus
@@ -131,8 +131,12 @@ const mutations = {
 
   setReposForAccount(
     state: ScribouilliState,
-    { login, repos }: { login: string; repos: any[] },
+    { login, repos }: { login: string; repos: GitRepository[] },
   ) {
+    if (!state.reposByAccount) {
+      state.reposByAccount = {}
+    }
+
     state.reposByAccount[login] = repos
       // on place ses propres dépôts avant les dépôts des autres
       .sort((a, b) => {

@@ -2,10 +2,7 @@ import page from 'page'
 import yaml from 'js-yaml'
 
 import store, { type PartialStore } from './../store.ts'
-import ScribouilliGitRepo, {
-  makeRepoId,
-  makePublicRepositoryURL,
-} from './../scribouilliGitRepo.ts'
+import ScribouilliGitRepo, { makeRepoId } from './../scribouilliGitRepo.ts'
 import GitAgent from '../GitAgent.ts'
 import { handleErrors, logMessage } from './../utils.ts'
 import { fetchAuthenticatedUserLogin } from './current-user.ts'
@@ -41,16 +38,16 @@ export const setCurrentRepositoryFromQuerystring = async (
   querystring: string,
 ): Promise<void> => {
   const params = new URLSearchParams(querystring)
-  const repoName = params.get('repoName')
+  const repoPath = params.get('repoPath')
   const owner = params.get('account')
 
   const oAuthProvider = store.state.oAuthProvider
 
   let message
 
-  if (!repoName || !owner || !oAuthProvider) {
-    if (!repoName) {
-      message = `Missing parameter 'repoName' in URL`
+  if (!repoPath || !owner || !oAuthProvider) {
+    if (!repoPath) {
+      message = `Missing parameter 'repoPath' in URL`
     } else {
       if (!owner) {
         message = `Missing parameter 'account' in URL`
@@ -65,18 +62,17 @@ export const setCurrentRepositoryFromQuerystring = async (
   }
 
   const origin = oAuthProvider.origin
-  const repoId = makeRepoId(owner, repoName)
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
     owner,
-    repoName,
-    repoId,
+    repoPath,
     origin: origin,
-    publicRepositoryURL: makePublicRepositoryURL(owner, repoName, origin),
     gitServiceProvider: getOAuthServiceAPI(),
   })
 
   store.mutations.setCurrentRepository(scribouilliGitRepo)
+
+  const { repoId } = scribouilliGitRepo
 
   const gitAgent = new GitAgent({
     repoId,
