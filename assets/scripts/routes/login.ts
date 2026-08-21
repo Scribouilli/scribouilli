@@ -37,7 +37,7 @@ function makeLoginHref(
   } else if (providerType == 'gitlab') {
     return `${origin}/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}&response_type=code&scope=api+read_api`
   } else {
-    return `${origin}/login?redirect_to=${encodeURIComponent(redirectUrl)}`
+    return `${origin}/login?callback=${encodeURIComponent(redirectUrl)}`
   }
 }
 
