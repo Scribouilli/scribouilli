@@ -5,23 +5,19 @@
     buildStatus: any
     theme: any
     deleteRepositoryUrl: any
-    blogEnabled: any
     showArticles: boolean | undefined
     currentRepository: any
-    onUpdateTheme: (theme: {css: string}) => void
-    onToggleBlog: (activated: boolean) => Promise<void>
+    onUpdateTheme: (theme: { css: string }) => void
   }
 
   let {
     buildStatus,
     theme = $bindable(),
     deleteRepositoryUrl,
-    blogEnabled = $bindable(),
     showArticles,
     currentRepository,
     onUpdateTheme,
-    onToggleBlog
-  }: Props = $props();
+  }: Props = $props()
 
   let notification = $state('')
 
@@ -54,16 +50,6 @@
   // @ts-ignore
   const setTheme = e => {
     theme.css = e.target.value
-  }
-
-  // @ts-ignore
-  const toggleBlog = e => {
-    onToggleBlog(e.target.checked)
-    if (e.target.checked) {
-      notification = 'Une section « Articles » a été ajoutée dans le menu'
-    } else {
-      notification = 'Les articles ont été masqués sur votre site'
-    }
   }
 
   const mesCouleurs = [
@@ -110,19 +96,6 @@
     <h2>Paramètres</h2>
 
     <div id="notifications">{notification}</div>
-
-    <div class="wrapper white-zone">
-      <h3>Sections supplémentaires</h3>
-
-      <label>
-        <input
-          type="checkbox"
-          bind:checked={blogEnabled}
-          onchange={toggleBlog}
-        />
-        Ajouter une page articles
-      </label>
-    </div>
 
     <div class="wrapper white-zone">
       <div>

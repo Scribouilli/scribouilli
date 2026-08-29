@@ -3,8 +3,8 @@
   import Skeleton from '../../Skeleton.svelte'
   import { makePageFrontMatter } from '../../../utils.ts'
   import ScribouilliGitRepo from '../../../scribouilliGitRepo.ts'
-  import type { FileContenu } from '../../../types/atelier.ts';
-  
+  import type { FileContenu } from '../../../types/atelier.ts'
+
   interface Props {
     buildStatus: any
     listContenu?: FileContenu[]
@@ -14,7 +14,9 @@
     showArticles: boolean | undefined
     currentRepository: ScribouilliGitRepo
     allowModification: boolean
-    conflict: ScribouilliState["conflict"]
+    conflict: ScribouilliState['conflict']
+    blogEnabled?: boolean
+    onBlogToggle?: (activated: boolean) => void
   }
 
   let {
@@ -26,16 +28,18 @@
     showArticles,
     currentRepository,
     allowModification,
-    conflict
-  }: Props = $props();
+    conflict,
+    blogEnabled,
+    onBlogToggle,
+  }: Props = $props()
 
   let repoName = $derived(currentRepository.repoName)
-  let account = $derived(currentRepository.owner) 
+  let account = $derived(currentRepository.owner)
   let modification = $state(false)
 
   const gitAgent = store.state.gitAgent
 
-  if(!gitAgent){
+  if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
   }
 
@@ -60,13 +64,15 @@
         )
       }
 
-      await gitAgent.commit(
-        'Changements menu',
-      )
+      await gitAgent.commit('Changements menu')
 
       await gitAgent.safePush()
     }
     modification = !modification
+  }
+
+  const toggleBlog = (blogEnabled: boolean) => {
+    onBlogToggle!(blogEnabled)
   }
 </script>
 
@@ -113,7 +119,9 @@
                 </div>
               {:else}
                 <a
-                  href="{atelierPrefix}?path={encodeURIComponent(contenu.path)}&repoName={repoName}&account={account}"
+                  href="{atelierPrefix}?path={encodeURIComponent(
+                    contenu.path,
+                  )}&repoName={repoName}&account={account}"
                 >
                   Modifier</a
                 >
@@ -132,6 +140,28 @@
         {/if}
       </div>
     </div>
+
+    {#if onBlogToggle}
+      <div class="wrapper white-zone">
+        <h3>Articles</h3>
+
+        <p>
+          Ajoute un lien "Articles" dans le menu. Celui-ci permet de créer et
+          lister une série de pages.
+        </p>
+
+        <button
+          class="btn btn__medium"
+          onclick={() => toggleBlog(!!blogEnabled)}
+        >
+          {#if blogEnabled}
+            Enlever le lien "Articles" (~ 2min)
+          {:else}
+            Ajouter le lien "Articles" (~ 2min)
+          {/if}
+        </button>
+      </div>
+    {/if}
   </section>
 </Skeleton>
 
@@ -211,5 +241,9 @@
     h2 {
       margin: 0.2em 0;
     }
+  }
+
+  .white-zone {
+    margin-top: 3rem;
   }
 </style>

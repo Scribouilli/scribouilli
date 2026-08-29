@@ -8,7 +8,9 @@
     pages: any[] | undefined
     showArticles: boolean | undefined
     currentRepository: ScribouilliGitRepo
-    conflict: ScribouilliState["conflict"]
+    conflict: ScribouilliState['conflict']
+    blogEnabled: boolean
+    onBlogToggle: (activated: boolean) => void
   }
 
   let {
@@ -16,8 +18,10 @@
     pages,
     showArticles,
     currentRepository,
-    conflict
-  }: Props = $props();
+    conflict,
+    blogEnabled,
+    onBlogToggle,
+  }: Props = $props()
 </script>
 
 <ListContenu
@@ -30,6 +34,8 @@
   newContentButtonText="Nouvelle page"
   allowModification={true}
   {conflict}
+  {blogEnabled}
+  {onBlogToggle}
 />
 
 <style lang="scss">
