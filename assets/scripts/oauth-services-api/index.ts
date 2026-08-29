@@ -55,7 +55,6 @@ export const getOAuthServiceAPI = (): OAuthServiceAPI => {
   return oAuthServiceAPI
 }
 
-
 /**
  * @param owner may be an individual Github user or an organisation
  */

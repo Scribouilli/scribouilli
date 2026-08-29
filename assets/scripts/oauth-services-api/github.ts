@@ -199,7 +199,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
 
   makeRepoId = defaultMakeRepoId
 
-  makePublicRepositoryURL(owner: string, repoName: string ): string {
-      return defaultMakePublicRepositoryURL(owner, repoName, 'https://github.com')
+  makePublicRepositoryURL(owner: string, repoName: string): string {
+    return defaultMakePublicRepositoryURL(owner, repoName, 'https://github.com')
   }
 }

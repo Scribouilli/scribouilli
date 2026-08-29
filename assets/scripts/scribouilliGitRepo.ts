@@ -23,16 +23,21 @@ export default class ScribouilliGitRepo {
     origin: string
     owner: string
     repoName: string
-    repoType: BackendType,
+    repoType: BackendType
     gitServiceProvider: OAuthServiceAPI
   }) {
     this.origin = origin
-    this.publicRepositoryURL = gitServiceProvider.makePublicRepositoryURL(owner, repoName)
+    this.publicRepositoryURL = gitServiceProvider.makePublicRepositoryURL(
+      owner,
+      repoName,
+    )
     this.owner = owner
     this.repoName = repoName
     this.repoType = repoType
 
-    this.repoId = repoId ? repoId : gitServiceProvider.makeRepoId(owner, repoName)
+    this.repoId = repoId
+      ? repoId
+      : gitServiceProvider.makeRepoId(owner, repoName)
 
     this.publishedWebsiteURL = new Promise(resolve => {
       const interval = setInterval(() => {

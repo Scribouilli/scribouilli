@@ -6,15 +6,13 @@ import {
   TOCTOCTOC_ORIGIN,
   TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
   TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
-  PROVIDERS_MAP
+  PROVIDERS_MAP,
 } from '../config'
 import { ScribouilliBackendProvider } from '../types/atelier'
 
-
-
 function redirectURLByProvider(
   { type: providerType, origin }: ScribouilliBackendProvider,
-  destination: string
+  destination: string,
 ) {
   if (providerType === 'github') {
     return `${TOCTOCTOC_ORIGIN}/github-callback?destination=${destination}`
@@ -29,7 +27,7 @@ function redirectURLByProvider(
 }
 
 function makeLoginHref(
-  {clientId, type: providerType, origin}: ScribouilliBackendProvider,
+  { clientId, type: providerType, origin }: ScribouilliBackendProvider,
   redirectUrl: string,
 ) {
   if (providerType === 'github') {
@@ -51,9 +49,8 @@ export default ({ querystring }: Context) => {
     throw new TypeError(`Missing 'provider' parameter`)
   }
 
-
   const destination =
-  location.origin + store.state.basePath + '/after-oauth-login'
+    location.origin + store.state.basePath + '/after-oauth-login'
 
   const provider = PROVIDERS_MAP.get(gitProvider)
 

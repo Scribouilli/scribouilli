@@ -39,8 +39,8 @@ export default class GitAgent {
   }: {
     repoId: string
     remoteURL: string
-    corsProxyURL?: string,
-    gitServiceProvider: OAuthServiceAPI,
+    corsProxyURL?: string
+    gitServiceProvider: OAuthServiceAPI
     onMergeConflict?:
       | ((resolutionOptions: ResolutionOption[]) => void)
       | undefined

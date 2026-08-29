@@ -240,7 +240,7 @@ export default class GitLabAPI implements OAuthServiceAPI {
 
   makeRepoId = defaultMakeRepoId
 
-  makePublicRepositoryURL(owner: string, repoName: string ): string {
-      return defaultMakePublicRepositoryURL(owner, repoName, this.origin)
+  makePublicRepositoryURL(owner: string, repoName: string): string {
+    return defaultMakePublicRepositoryURL(owner, repoName, this.origin)
   }
 }

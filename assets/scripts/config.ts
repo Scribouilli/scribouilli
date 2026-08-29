@@ -40,7 +40,8 @@ export const PROVIDERS: ScribouilliBackendProvider[] = [
     id: 'gitlab.com',
     type: 'gitlab',
     origin: 'https://gitlab.com',
-    clientId: 'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
+    clientId:
+      'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
     name: 'Gitlab',
     description: `
       <strong>Gitlab.com</strong> qui est un hébergeur professionnel.<br>
@@ -54,7 +55,8 @@ export const PROVIDERS: ScribouilliBackendProvider[] = [
     id: 'git.scribouilli.org',
     type: 'gitlab',
     origin: 'https://git.scribouilli.org',
-    clientId: '3e8ac6636615d396a8f73e02fa3880e7e2140981b0ca27b0f240a450f69f1c76',
+    clientId:
+      '3e8ac6636615d396a8f73e02fa3880e7e2140981b0ca27b0f240a450f69f1c76',
     name: 'ScribouGit',
     description: `
       <strong>ScribouGit</strong>, l'hébergement géré par l'équipe de Scribouilli.<br>
@@ -87,7 +89,7 @@ export const PROVIDERS: ScribouilliBackendProvider[] = [
     name: 'GitHub',
     signupEnabled: true,
     signupLink: 'https://github.com/signup',
-    signupInstructions:`
+    signupInstructions: `
       <p>
         Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte
         à un compte <a href="https://github.com" target="_blank">GitHub</a>.
@@ -109,8 +111,10 @@ export const PROVIDERS: ScribouilliBackendProvider[] = [
       </ol>
     `,
     corsProxy: DEFAULT_CORS_PROXY_URL,
-  }
+  },
 ]
-export const PROVIDERS_MAP = new Map(PROVIDERS.map(provider => [provider.id, provider]))
+export const PROVIDERS_MAP = new Map(
+  PROVIDERS.map(provider => [provider.id, provider]),
+)
 
 export const svelteTarget: Element = document.body

@@ -13,7 +13,7 @@ export default ({ querystring }: Context) => {
     throw new TypeError(`Missing 'provider' parameter`)
   }
 
-  const provider = PROVIDERS_MAP.get(providerId);
+  const provider = PROVIDERS_MAP.get(providerId)
 
   if (!provider) {
     throw new TypeError(`Unkown provider ${providerId}`)
