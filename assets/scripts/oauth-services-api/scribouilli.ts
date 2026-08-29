@@ -5,6 +5,15 @@ import type {
   GitSiteTemplate,
   OAuthServiceAPI,
 } from '../types/git.ts'
+import z from 'zod'
+
+const WEBSITE_LIST_SCHEMA = z.array(
+  z.object({
+    name: z.string(),
+    is_ready: z.boolean(),
+    role: z.union([z.literal('editor'), z.literal('owner')]),
+  }),
+)
 
 export default class ScribouilliBackend implements OAuthServiceAPI {
   private accessToken: string | undefined
@@ -107,9 +116,9 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
 
   async getCurrentUserRepositories(): Promise<GithubRepository[]> {
     const response = await this.callAPI(`/websites`)
-    const repos = await response.json()
+    const rawRepos = await response.json()
+    const repos = z.parse(WEBSITE_LIST_SCHEMA, rawRepos)
     const { email } = await this.getAuthenticatedUser()
-    // @ts-ignore
     const githubRepos = repos.map(repo => {
       return {
         id: repo.name,
