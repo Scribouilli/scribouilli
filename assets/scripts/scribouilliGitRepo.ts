@@ -1,4 +1,4 @@
-import { BackendType } from './types/atelier.ts'
+import type { BackendType } from './types/atelier.ts'
 import type { OAuthServiceAPI } from './types/git.ts'
 
 export default class ScribouilliGitRepo {

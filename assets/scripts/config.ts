@@ -1,4 +1,4 @@
-import { ScribouilliBackendProvider } from './types/atelier'
+import type { ScribouilliBackendProvider } from './types/atelier'
 import type { GitSiteTemplate } from './types/git'
 
 export const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'

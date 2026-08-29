@@ -15,7 +15,7 @@ import http from 'isomorphic-git/http/web'
 
 import type { CommitObject } from 'isomorphic-git'
 import type { ResolutionOption } from './store.ts'
-import { OAuthServiceAPI } from './types/git.ts'
+import type { OAuthServiceAPI } from './types/git.ts'
 
 export default class GitAgent {
   #fs

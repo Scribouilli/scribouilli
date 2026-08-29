@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { BuildStatus } from '../types/git.ts'
   import type { ScribouilliState } from '../store.ts'
-  import { BackendType } from '../types/atelier.ts'
+  import type { BackendType } from '../types/atelier.ts'
 
   interface Props {
     buildStatus: BuildStatus

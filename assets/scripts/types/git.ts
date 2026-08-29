@@ -1,4 +1,4 @@
-import { BackendType } from './atelier'
+import type { BackendType } from './atelier'
 
 interface ScribouilliGitRepo {
   repoId: string
