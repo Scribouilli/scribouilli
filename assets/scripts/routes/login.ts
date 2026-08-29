@@ -19,7 +19,6 @@ function redirectURLByProvider(
   } else if (providerType === 'gitlab') {
     return `${TOCTOCTOC_ORIGIN}/gitlab-callback/${origin}/?destination=${destination}`
   } else if (providerType === 'scribouilli') {
-    // TODO: get rid of origin parameter when not used?
     return `${destination}?${TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER}=scribouilli&${TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER}=${origin}`
   } else {
     throw new Error('unreachable')
