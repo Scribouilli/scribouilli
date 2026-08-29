@@ -7,7 +7,7 @@
 
   interface Props {
     showArticles?: boolean
-    buildStatus: BuildStatus
+    buildStatus?: BuildStatus
     currentRepository?: ScribouilliState["currentRepository"] | undefined
     conflict?: ScribouilliState["conflict"]
     children?: Snippet

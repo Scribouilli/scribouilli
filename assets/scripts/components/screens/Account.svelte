@@ -1,60 +1,31 @@
 <script lang="ts">
+  import { ScribouilliBackendProvider } from "../../types/atelier"
   import Skeleton from "../Skeleton.svelte";
-  
+
   interface Props {
-    gitProvider: string
+    provider: ScribouilliBackendProvider
   }
 
-  let { gitProvider }: Props = $props();
+  let { provider }: Props = $props();
 </script>
 
 <Skeleton>
-  {#if gitProvider === 'github.com'}
-    <section class="screen" id="account">
-      <div>
+  <section class="screen" id="account">
+    <div>
+      {#if provider.type === 'github' }
         <h2>Avez-vous un compte GitHub&nbsp;?</h2>
-
-        <div>
-          <a href="./login?provider=github.com" class="btn">Oui, je me connecte</a>
-          <a href="./create-account?provider=github.com" class="btn"
-            >Non, je veux créer un compte</a
-          >
-        </div>
-      </div>
-    </section>
-  {/if}
-
-  {#if gitProvider === 'gitlab.com'}
-  <section class="screen" id="account">
-    <div>
-      <h2>Avez-vous un compte sur gitlab.com&nbsp;?</h2>
+      {:else}
+        <h2>Avez-vous un compte sur { provider.id }&nbsp;?</h2>
+      {/if}
 
       <div>
-        <a href="./login?provider=gitlab.com" class="btn">Oui, je me connecte</a>
-        <a href="./create-account?provider=gitlab.com" class="btn"
+        <a href="./login?provider={ provider.id }" class="btn">Oui, je me connecte</a>
+        <a href="./create-account?provider={ provider.id }" class="btn"
           >Non, je veux créer un compte</a
         >
       </div>
     </div>
   </section>
-  {/if}
-
-  {#if gitProvider === 'git.scribouilli.org'}
-  <section class="screen" id="account">
-    <div>
-      <h2>Avez-vous un compte sur git.scribouilli.org&nbsp;?</h2>
-
-      <div>
-        <a href="./login?provider=git.scribouilli.org" class="btn">Oui, je me connecte</a>
-        <a href="./create-account?provider=git.scribouilli.org" class="btn"
-          >Non, je veux créer un compte</a
-        >
-      </div>
-    </div>
-  </section>
-  {/if}
-
-  
 </Skeleton>
 
 <style lang="scss">

@@ -5,6 +5,7 @@ import type {
   GitSiteTemplate,
   OAuthServiceAPI,
 } from '../types/git.ts'
+import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from './index.ts'
 
 export default class GitLabAPI implements OAuthServiceAPI {
   #gitAgentGetter
@@ -235,5 +236,11 @@ export default class GitLabAPI implements OAuthServiceAPI {
       throw 'INVALIDATE_TOKEN'
     }
     return httpResp
+  }
+
+  makeRepoId = defaultMakeRepoId
+
+  makePublicRepositoryURL(owner: string, repoName: string): string {
+    return defaultMakePublicRepositoryURL(owner, repoName, this.origin)
   }
 }

@@ -1,3 +1,4 @@
+import type { BackendType } from './types/atelier.ts'
 import type { OAuthServiceAPI } from './types/git.ts'
 
 export default class ScribouilliGitRepo {
@@ -6,30 +7,37 @@ export default class ScribouilliGitRepo {
   public publicRepositoryURL
   public owner
   public repoName
+  public repoType: BackendType
   public repoId
   public publishedWebsiteURL: Promise<string>
 
   constructor({
     repoId,
     origin,
-    publicRepositoryURL,
     owner,
     repoName,
+    repoType,
     gitServiceProvider,
   }: {
     repoId?: string
     origin: string
-    publicRepositoryURL: string
     owner: string
     repoName: string
+    repoType: BackendType
     gitServiceProvider: OAuthServiceAPI
   }) {
     this.origin = origin
-    this.publicRepositoryURL = publicRepositoryURL
+    this.publicRepositoryURL = gitServiceProvider.makePublicRepositoryURL(
+      owner,
+      repoName,
+    )
     this.owner = owner
     this.repoName = repoName
+    this.repoType = repoType
 
-    this.repoId = repoId ? repoId : makeRepoId(owner, repoName)
+    this.repoId = repoId
+      ? repoId
+      : gitServiceProvider.makeRepoId(owner, repoName)
 
     this.publishedWebsiteURL = new Promise(resolve => {
       const interval = setInterval(() => {
@@ -42,22 +50,4 @@ export default class ScribouilliGitRepo {
       }, 1000)
     })
   }
-}
-
-/**
- * @param owner may be an individual Github user or an organisation
- */
-export function makeRepoId(owner: string, repoName: string): string {
-  return `${owner}/${repoName}`
-}
-
-/**
- * @param owner may be an individual Github user or an organisation
- */
-export function makePublicRepositoryURL(
-  owner: string,
-  repoName: string,
-  origin: string,
-): string {
-  return `${origin}/${owner}/${repoName}`
 }

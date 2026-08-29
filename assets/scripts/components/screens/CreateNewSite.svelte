@@ -2,7 +2,7 @@
   import Skeleton from './../Skeleton.svelte';
   import SiteCreationLoader from './../loaders/SiteCreationLoader.svelte';
   import { createRepositoryForCurrentAccount } from '../../actions/setup.ts';
-  import { DEFAULT_TEMPLATE, templates } from '../../config.ts';
+  import { DEFAULT_TEMPLATE, TEMPLATES } from '../../config.ts';
   import type { GitSiteTemplate } from '../../types/git'
 
   let name = $state("");
@@ -24,7 +24,8 @@
     // dépôt perso dans une organisation, via l'interface GitHub, pour les
     // utilisateurices avancé.es
     createRepositoryForCurrentAccount(name, selectedTemplate)
-      .catch(() => {
+      .catch((e) => {
+        console.warn(`Failed to create repository: ${e}`);
         loading = false;
         hasError = true;
       });
@@ -53,7 +54,7 @@
           <div>
             <label for="template">Je veux créer :</label>
             <select id="template" bind:value={selectedTemplate}>
-              {#each templates as template}
+              {#each TEMPLATES as template}
                 <option value={template} selected={template === DEFAULT_TEMPLATE}>{template.description}</option>
               {/each}
             </select>

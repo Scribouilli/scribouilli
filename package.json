@@ -74,6 +74,7 @@
     "js-yaml": "^3.14.1",
     "marked": "^11.0.0",
     "page": "^1.11.6",
-    "remember": "github:DavidBruant/remember#v1.0.2"
+    "remember": "github:DavidBruant/remember#v1.0.2",
+    "zod": "^4.5.2"
   }
 }
