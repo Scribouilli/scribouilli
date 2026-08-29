@@ -24,7 +24,10 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     return `${this.origin}/api`
   }
 
-  async callAPI(url: string, requestParams: RequestInit = {}) {
+  async callAPI(
+    url: string,
+    requestParams: RequestInit & { headers?: Record<string, string> } = {},
+  ) {
     requestParams.headers ??= {}
     requestParams.headers['Authorization'] = 'Bearer ' + this.accessToken
 

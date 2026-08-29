@@ -23,7 +23,10 @@ export type BuildStatus =
   | 'needs_account_verification'
 
 export interface OAuthServiceAPI {
-  callAPI: (url: string, requestParams?: RequestInit) => Promise<Response>
+  callAPI: (
+    url: string,
+    requestParams?: RequestInit & { headers?: Record<string, string> },
+  ) => Promise<Response>
   getOauthUsernameAndPassword: () => { username: string; password: string }
   getAuthenticatedUser: () => Promise<any>
   getUserEmails: () => Promise<AuthenticatedUserEmails[]>
