@@ -1,4 +1,4 @@
-# scribouilli
+# Scribouilli
 
 [Scribouilli](https://scribouilli.org) est un outil pour créer un petit site
 facilement. L'intention, c'est de permettre à des non-informaticiennes de créer
@@ -28,7 +28,32 @@ Voilà à quoi ça peut ressembler : [github.com/yaf/scribouilli](https://github
 Une fois les développements réalisés, vous pouvez faire une PR dans Scribouilli, en précisant votre url de développement pour que l'on puisse tester la modification.
 
 
-### Limite connue
+### Pour tester avec gitlab/scribougit
+
+À cause d'une [limitation du oauth gitlab](https://github.com/Scribouilli/scribouilli/issues/149), tester sur gitlab/scribougit nécéssite de déployer [toctoctoc](https://github.com/Scribouilli/toctoctoc) en local
+
+La marche à suivre est la suivante : 
+- Créer une app sur [gitlab](https://gitlab.com/-/user_settings/applications) ou [scribougit](https://git.scribouilli.org/-/user_settings/applications) 
+  - avec les *scopes* `api` et `read_api`
+  - avec la `Redirect URI` à `http://localhost:4000/` (ou le port que vous comptez utiliser pour toctoctoc en local)
+  - noter l'`Application ID` et le `Secret` quelque part
+- Créer un fichier **secret** `toctoctoc-config.json` en copiant et remplissant: 
+```json
+{
+    "gitlab": [
+        {
+            "origin": "<origine de l'instance gitlab où a été créée l'app. https://git.scribouilli.org ou https://gitlab.com>",
+            "client_id": "<mettre l'Application ID>",
+            "client_secret": "<mettre le Secret ID>"
+        }
+    ]
+}
+```
+  - ⚠️ la sécurité de l'app gitlab créée dépend du fait de garder ce fichier secret.\
+  Le nom `toctoctoc-config.json` a été ajouté au .gitginore de ce repo pour aider à stocker les infos en clair dans le repo sans risque de les versionner
+- lancer toctoctoc en local 
+  `npx toctoctoc --config-file ./toctoctoc-config.json --allowlist-file ./toctoctoc-allowlist.csv`
+
 
 Pour le moment, il n'est pas possible de tester en local des sites hébergés sur gitlab ou scribougit (`git.scribouilli.org`)
 On peut le faire, mais ça demande de changer la config de toctoctoc en prod (et donc, ça casse la prod pour les sites ; une histoire de `redirect_uri`)
