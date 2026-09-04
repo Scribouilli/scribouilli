@@ -1,11 +1,13 @@
+import z from 'zod'
+
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
   BuildStatus,
-  GithubRepository,
+  MinimalGitRepository,
   GitSiteTemplate,
   OAuthServiceAPI,
+  UserRole,
 } from '../types/git.ts'
-import z from 'zod'
 
 const WEBSITE_LIST_SCHEMA = z.array(
   z.object({
@@ -101,7 +103,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
       }),
     })
 
-    return { remoteURL: this.makePublicRepositoryURL('', repoName) }
+    return { remoteURL: `${this.origin}/websites/${scribouilliGitRepo.repoName}` }
   }
 
   async isRepositoryReady(
@@ -114,20 +116,17 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     return is_ready
   }
 
-  async getCurrentUserRepositories(): Promise<GithubRepository[]> {
+  async getCurrentUserRepositories(): Promise<MinimalGitRepository[]> {
     const response = await this.callAPI(`/websites`)
     const rawRepos = await response.json()
     const repos = z.parse(WEBSITE_LIST_SCHEMA, rawRepos)
-    const { email } = await this.getAuthenticatedUser()
     const githubRepos = repos.map(repo => {
       return {
-        id: repo.name,
-        name: repo.name,
-        owner: {
-          login: email,
-        },
+        repoName: repo.name,
+        owner: undefined,
       }
     })
+
     return githubRepos
   }
 
@@ -169,11 +168,36 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     return url
   }
 
-  makeRepoId(_owner: string, repoName: string): string {
+  async getUserPermissions(
+    scribouilliGitRepo: ScribouilliGitRepo,
+  ): Promise<UserRole> {
+    const data = await this.callAPI(
+      `/websites/${scribouilliGitRepo.repoName}/permissions`,
+
+    )
+    const { role } = await data.json()
+    return role
+  }
+
+  async deleteRepository(
+    scribouilliGitRepo: ScribouilliGitRepo
+  ): Promise<void> {
+    await this.callAPI(`/websites/${scribouilliGitRepo.repoName}`, {
+      method: 'DELETE',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        "confirm": true
+      })
+    })
+  }
+
+  makeRepoId(_owner: string | undefined, repoName: string): string {
     return `websites/${repoName}`
   }
 
-  makePublicRepositoryURL(_owner: string, repoName: string): string {
+  makePublicRepositoryURL(_owner: string | undefined, repoName: string): string {
     return `${this.origin}/websites/${repoName}`
   }
 }

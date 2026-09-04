@@ -2,6 +2,7 @@
   import type { BuildStatus } from '../types/git.ts'
   import type { ScribouilliState } from '../store.ts'
   import type { BackendType } from '../types/atelier.ts'
+  import { makeUrlParam } from '../routes/urls.ts';
 
   interface Props {
     buildStatus: BuildStatus
@@ -25,9 +26,12 @@
   let repoName: string | undefined = $derived(currentRepository?.repoName)
   let account: string | undefined = $derived(currentRepository?.owner)
   let homeURL: string | undefined =
-    $derived(repoName && account
-      ? `/atelier-list-pages?repoName=${repoName}&account=${account}`
-      : '/')
+    $derived.by(() => {
+      if (repoName) {
+        return makeUrlParam(`/atelier-list-pages`, account, repoName)
+      }
+      return '/'
+    })
 
       function makeResolutionDesynchronisationURL(account: string, repoName: string): string {
     return `/resolution-desynchronisation?account=${account}&repoName=${repoName}`
@@ -78,7 +82,7 @@
     <nav>
       <ul>
         <li>
-          <a href="/atelier-list-pages?repoName={repoName}&account={account}">
+          <a href="{makeUrlParam(`/atelier-list-pages`, currentRepository.owner, currentRepository.repoName)}">
             Pages
           </a>
         </li>
@@ -86,7 +90,7 @@
         {#if showArticles}
           <li>
             <a
-              href="/atelier-list-articles?repoName={repoName}&account={account}"
+              href="{makeUrlParam(`/atelier-list-articles`, currentRepository.owner, currentRepository.repoName)}"
             >
               Articles
             </a>
@@ -94,7 +98,7 @@
         {/if}
 
         <li>
-          <a href="/settings?repoName={repoName}&account={account}">
+          <a href="{makeUrlParam(`/settings`, currentRepository.owner, currentRepository.repoName)}">
             Paramètres
           </a>
         </li>

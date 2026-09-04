@@ -39,21 +39,22 @@ export const setCurrentRepositoryFromQuerystring = async (
 ): Promise<void> => {
   const params = new URLSearchParams(querystring)
   const repoName = params.get('repoName')
-  const owner = params.get('account')
+  const owner = params.get('account') ?? undefined
 
   const oAuthProvider = store.state.oAuthProvider
 
   let message
+  const provider = PROVIDERS_MAP.get(oAuthProvider?.id ?? '')
 
-  if (!repoName || !owner || !oAuthProvider) {
-    if (!repoName) {
-      message = `Missing parameter 'repoName' in URL`
+  if (!repoName || !oAuthProvider || !provider) {
+    if (!oAuthProvider) {
+      message = `Missing store.state.oAuthProvider`
+    } else if (!provider) {
+      message = `Unkown provider ${oAuthProvider.id}`
+    } else if (provider.type !== 'scribouilli' && !owner) {
+      message = `Missing parameter 'account' in URL`
     } else {
-      if (!owner) {
-        message = `Missing parameter 'account' in URL`
-      } else {
-        message = `Missing store.state.oAuthProvider`
-      }
+      message = `Missing parameter 'repoName' in URL`
     }
 
     console.info('[missing URL param or oauthConfig] redirecting to /', message)
@@ -62,10 +63,6 @@ export const setCurrentRepositoryFromQuerystring = async (
   }
 
   const origin = oAuthProvider.origin
-  const provider = PROVIDERS_MAP.get(oAuthProvider.id)
-  if (!provider) {
-    throw new TypeError(`Unkown provider ${oAuthProvider.id}`)
-  }
   const oAuthServiceAPI = getOAuthServiceAPI()
 
   const scribouilliGitRepo = new ScribouilliGitRepo({

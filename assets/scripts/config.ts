@@ -3,7 +3,7 @@ import type { GitSiteTemplate } from './types/git'
 
 export const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 export const OAUTH_PROVIDER_STORAGE_KEY = 'scribouilli_oauth_provider'
-export const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team`
+export const TOCTOCTOC_ORIGIN = `http://localhost:4000`
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token'
 export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'
 export const TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER = 'origin'
@@ -28,20 +28,20 @@ export const TEMPLATES: GitSiteTemplate[] = [
 export const DEFAULT_TEMPLATE = TEMPLATES[0]
 
 export const PROVIDERS: ScribouilliBackendProvider[] = [
-  // {
-  //   id: 'localhost',
-  //   type: 'scribouilli',
-  //   origin: 'http://localhost:3000',
-  //   name: 'Scribouilli',
-  //   description: `<strong>Scribouilli</strong>, vous pouvez utilizer Scribouilli pour héberger directement votre site.`,
-  //   signupEnabled: false,
-  // },
+  {
+    id: 'localhost',
+    type: 'scribouilli',
+    origin: 'http://localhost:3000',
+    name: 'Scribouilli',
+    description: `<strong>Scribouilli</strong>, vous pouvez utilizer Scribouilli pour héberger directement votre site.`,
+    signupEnabled: false,
+  },
   {
     id: 'gitlab.com',
     type: 'gitlab',
     origin: 'https://gitlab.com',
     clientId:
-      'b943c32d1a30f316cf4a72b5e40b05b6e71a1e3df34e2233c51e79838b22f7e8',
+      '60145cc8950ce0e6486ce2590975c5ffa104b955b9f66e0d58dddbd5a0a13965',
     name: 'Gitlab',
     description: `
       <strong>Gitlab.com</strong> qui est un hébergeur professionnel.<br>
