@@ -1,11 +1,13 @@
+import z from 'zod'
+
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
   BuildStatus,
-  GitRepository,
+  MinimalGitRepository,
   GitSiteTemplate,
   OAuthServiceAPI,
+  UserRole,
 } from '../types/git.ts'
-import z from 'zod'
 
 const WEBSITE_LIST_SCHEMA = z.array(
   z.object({
@@ -101,7 +103,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
       }),
     })
 
-    return { remoteURL: this.makePublicRepositoryURL('', repoPath) }
+    return { remoteURL: `${this.origin}/websites/${scribouilliGitRepo.repoPath}` }
   }
 
   async isRepositoryReady(
@@ -114,21 +116,18 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     return is_ready
   }
 
-  async getCurrentUserRepositories(): Promise<GitRepository[]> {
+  async getCurrentUserRepositories(): Promise<MinimalGitRepository[]> {
     const response = await this.callAPI(`/websites`)
     const rawRepos = await response.json()
     const repos = z.parse(WEBSITE_LIST_SCHEMA, rawRepos)
-    const { email } = await this.getAuthenticatedUser()
     const githubRepos = repos.map(repo => {
       return {
-        id: repo.name,
         name: repo.name,
-        path: repo.name,
-        owner: {
-          login: email,
-        },
+        repoPath: repo.name,
+        owner: undefined,
       }
     })
+
     return githubRepos
   }
 
@@ -170,12 +169,37 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     return url
   }
 
-  makeRepoId(_owner: string, repoPath: string): string {
+  async getUserPermissions(
+    scribouilliGitRepo: ScribouilliGitRepo,
+  ): Promise<UserRole> {
+    const data = await this.callAPI(
+      `/websites/${scribouilliGitRepo.repoPath}/permissions`,
+
+    )
+    const { role } = await data.json()
+    return role
+  }
+
+  async deleteRepository(
+    scribouilliGitRepo: ScribouilliGitRepo
+  ): Promise<void> {
+    await this.callAPI(`/websites/${scribouilliGitRepo.repoPath}`, {
+      method: 'DELETE',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        "confirm": true
+      })
+    })
+  }
+
+  makeRepoId(_owner: string | undefined, repoPath: string): string {
     return `websites/${repoPath}`
   }
 
-  makePublicRepositoryURL(_owner: string, repoPath: string): string {
-    const repoId = this.makeRepoId(_owner, repoPath)
+  makePublicRepositoryURL(owner: string | undefined, repoPath: string): string {
+    const repoId = this.makeRepoId(owner, repoPath)
     return `${this.origin}/${repoId}`
   }
 }

@@ -5,6 +5,7 @@ import { fetchCurrentUserRepositories } from '../actions/current-user.ts'
 import { replaceComponent } from '../routeComponentLifeCycle.svelte.ts'
 
 import Welcome from '../components/screens/Welcome.svelte'
+import { makeUrlParam } from './urls.ts'
 
 export default () => {
   let props = {}
@@ -16,10 +17,10 @@ export default () => {
 
     fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 1) {
-        const repoPath = repos[0].path
-        const account = repos[0].owner.login
+        const repoPath = repos[0].repoPath
+        const account = repos[0].owner
 
-        page(`/atelier-list-pages?repoPath=${repoPath}&account=${account}`)
+        page(makeUrlParam('/atelier-list-pages', account, repoPath))
       } else {
         store.mutations.setReposForAccount({
           // @ts-ignore

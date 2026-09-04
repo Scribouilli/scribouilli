@@ -1,18 +1,23 @@
+import z from 'zod'
+
 import { gitHubApiBaseUrl } from './../config.ts'
 import type { GitSiteTemplate, OAuthServiceAPI } from '../types/git.ts'
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from './index.ts'
-import z from 'zod'
 
 const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
-const GITHUB_REPOS_SCHEMA = z.array(
-  z.object({
-    name: z.string(),
-    owner: z.object({
-      login: z.string(),
-    }),
+const GITHUB_REPO_SCHEMA = z.object({
+  id: z.number(),
+  name: z.string(),
+  permissions: z.object({
+    admin: z.boolean(),
+    push: z.boolean(),
   }),
-)
+  owner: z.object({
+    login: z.string(),
+  }),
+})
+const GITHUB_REPO_LIST_SCHEMA = z.array(GITHUB_REPO_SCHEMA)
 
 export default class GitHubAPI implements OAuthServiceAPI {
   private accessToken: string | undefined
@@ -47,17 +52,18 @@ export default class GitHubAPI implements OAuthServiceAPI {
   getCurrentUserRepositories() {
     return this.callAPI(
       `${gitHubApiBaseUrl}/user/repos?sort=updated&visibility=public`,
-    )
-      .then(response => {
-        return response.json()
-      })
-      .then((rawRepos: any) => {
-        // In GitLab, the repository slug may differ from the name attribute (after repository renaming),
-        // while in GitHub, the name attribute corresponds to the repository slug
-        return z.parse(GITHUB_REPOS_SCHEMA, rawRepos).map(repo => ({
-          path: repo.name,
-          ...repo,
-        }))
+    ).then(response => response.json())
+      .then((rawRepos) => {
+        const githubRepos = z.parse(GITHUB_REPO_LIST_SCHEMA, rawRepos)
+        return githubRepos
+          .filter((repo) => repo?.permissions?.push)
+          .map((repo) => {
+            return {
+              name: repo.name,
+              repoPath: repo.name,
+              owner: repo.owner.login,
+            }
+          })
       })
   }
 
@@ -186,6 +192,28 @@ export default class GitHubAPI implements OAuthServiceAPI {
       .then(({ html_url }) => (html_url ? html_url : undefined))
   }
 
+  async getUserPermissions({ repoId }: ScribouilliGitRepo) {
+    const response = await this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
+      headers: {
+        Authorization: 'token ' + this.accessToken,
+        Accept: GITHUB_JSON_ACCEPT_HEADER,
+      },
+    })
+    const rawRepo = await response.json()
+    const repo = z.parse(GITHUB_REPO_SCHEMA, rawRepo)
+    return repo.permissions.admin ? 'owner' as const : 'editor' as const
+  }
+
+  async deleteRepository({ repoId }: ScribouilliGitRepo) {
+    await this.callAPI(`${gitHubApiBaseUrl}/repos/${repoId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'token ' + this.accessToken,
+        Accept: GITHUB_JSON_ACCEPT_HEADER,
+      }
+    })
+  }
+
   callAPI(url: string, requestParams?: RequestInit) {
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {
@@ -217,7 +245,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
 
   makeRepoId = defaultMakeRepoId
 
-  makePublicRepositoryURL(owner: string, repoName: string): string {
-    return defaultMakePublicRepositoryURL(owner, repoName, 'https://github.com')
+  makePublicRepositoryURL(owner: string | undefined, repoPath: string): string {
+    return defaultMakePublicRepositoryURL(owner, repoPath, 'https://github.com')
   }
 }

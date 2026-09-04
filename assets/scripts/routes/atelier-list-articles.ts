@@ -8,6 +8,7 @@ import { showArticles } from '../actions/article'
 import type { ScribouilliState } from '../store.ts'
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import { Context } from 'page'
+import { makeUrlParam } from './urls.ts'
 
 function mapStateToProps(state: ScribouilliState) {
   if (!state.currentRepository) {
@@ -35,5 +36,5 @@ export function makeAtelierListArticlesURL({
   owner,
   repoPath,
 }: ScribouilliGitRepo): string {
-  return `/atelier-list-articles?account=${owner}&repoPath=${repoPath}`
+  return makeUrlParam('/atelier-list-articles', owner, repoPath)
 }

@@ -1,10 +1,10 @@
 <script lang="ts">
   import Skeleton from "./../Skeleton.svelte";
   import SiteCreationLoader from "./../loaders/SiteCreationLoader.svelte";
-  import type { GitRepository } from "../../types/git";
+  import type { MinimalGitRepository } from "../../types/git";
 
   interface Props {
-    currentUserReposP: Promise<GitRepository[] | void>
+    currentUserReposP: Promise<MinimalGitRepository[] | void>
   }
 
   let { currentUserReposP }: Props = $props();

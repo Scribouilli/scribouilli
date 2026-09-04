@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BackendType } from "../../types/atelier"
+  import type { BackendType } from "../../types/atelier"
   import Skeleton from "../Skeleton.svelte"
 
   interface Props {

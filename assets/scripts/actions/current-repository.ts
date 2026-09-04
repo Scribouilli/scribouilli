@@ -39,21 +39,22 @@ export const setCurrentRepositoryFromQuerystring = async (
 ): Promise<void> => {
   const params = new URLSearchParams(querystring)
   const repoPath = params.get('repoPath')
-  const owner = params.get('account')
+  const owner = params.get('account') ?? undefined
 
   const oAuthProvider = store.state.oAuthProvider
 
   let message
+  const provider = PROVIDERS_MAP.get(oAuthProvider?.id ?? '')
 
-  if (!repoPath || !owner || !oAuthProvider) {
-    if (!repoPath) {
-      message = `Missing parameter 'repoPath' in URL`
+  if (!repoPath || !oAuthProvider || !provider) {
+    if (!oAuthProvider) {
+      message = `Missing store.state.oAuthProvider`
+    } else if (!provider) {
+      message = `Unkown provider ${oAuthProvider.id}`
+    } else if (provider.type !== 'scribouilli' && !owner) {
+      message = `Missing parameter 'account' in URL`
     } else {
-      if (!owner) {
-        message = `Missing parameter 'account' in URL`
-      } else {
-        message = `Missing store.state.oAuthProvider`
-      }
+      message = `Missing parameter 'repoPath' in URL`
     }
 
     console.info('[missing URL param or oauthConfig] redirecting to /', message)
@@ -62,10 +63,6 @@ export const setCurrentRepositoryFromQuerystring = async (
   }
 
   const origin = oAuthProvider.origin
-  const provider = PROVIDERS_MAP.get(oAuthProvider.id)
-  if (!provider) {
-    throw new TypeError(`Unkown provider ${oAuthProvider.id}`)
-  }
   const oAuthServiceAPI = getOAuthServiceAPI()
 
   const scribouilliGitRepo = new ScribouilliGitRepo({
@@ -219,7 +216,7 @@ export async function installPluginIfNecessary(
     const message = e instanceof Error ? e.message : 'erreur inconnue'
     logMessage(
       "Erreur lors de la mise à jour du Gemfile, il n'existe probablement pas: " +
-        message,
+      message,
       'installPluginIfNecessary',
       'warn',
     )
