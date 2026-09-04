@@ -1,3 +1,5 @@
+import z from 'zod'
+
 import GitAgent from '../GitAgent.ts'
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
@@ -6,6 +8,25 @@ import type {
   OAuthServiceAPI,
 } from '../types/git.ts'
 import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from './index.ts'
+
+const GITLAB_DEVELOPER_ROLE = 30
+const GITLAB_OWNER_ROLE = 50
+const REPO_SCHEMA = z.object({
+  id: z.number(),
+  name: z.string(),
+  permissions: z.object({
+    project_access: z.object({
+      access_level: z.union([
+        z.literal(GITLAB_OWNER_ROLE),
+        z.literal(GITLAB_DEVELOPER_ROLE),
+      ])
+    }),
+  }),
+  owner: z.object({
+    username: z.string(),
+  }),
+})
+const REPO_LIST_SCHEMA = z.array(REPO_SCHEMA)
 
 export default class GitLabAPI implements OAuthServiceAPI {
   #gitAgentGetter
@@ -72,20 +93,16 @@ export default class GitLabAPI implements OAuthServiceAPI {
   async getCurrentUserRepositories() {
     const { login } = await this.getAuthenticatedUser()
     const response = await this.callAPI(
-      `${this.apiBaseUrl}/users/${login}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public`,
+      `${this.apiBaseUrl}/users/${login}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public&min_access_level=${GITLAB_DEVELOPER_ROLE}&active=true`,
     )
-    const json = await response.json()
-    // @ts-ignore
-    const repositories = json.map(repo => {
+    const rawRepos = await response.json()
+    const gitlabRepos = z.parse(REPO_LIST_SCHEMA, rawRepos)
+    return gitlabRepos.map(repo => {
       return {
-        id: repo.id,
-        name: repo.name,
-        owner: {
-          login: repo.owner.username,
-        },
+        repoName: repo.name,
+        owner: repo.owner.username,
       }
     })
-    return await Promise.resolve(repositories)
   }
 
   async createDefaultRepository(
@@ -211,6 +228,23 @@ export default class GitLabAPI implements OAuthServiceAPI {
     // })
   }
 
+  async getUserPermissions({ owner, repoName }: ScribouilliGitRepo) {
+    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
+    const response = await this.callAPI(`${this.apiBaseUrl}/projects/${urlEncodedRepoPath}`)
+    const rawRepo = await response.json()
+    const repo = z.parse(REPO_SCHEMA, rawRepo)
+    return repo.permissions.project_access.access_level === GITLAB_OWNER_ROLE
+      ? 'owner' as const
+      : 'editor' as const
+  }
+
+  async deleteRepository({ owner, repoName }: ScribouilliGitRepo) {
+    const urlEncodedRepoPath = encodeURIComponent(`${owner}/${repoName}`)
+    await this.callAPI(`${this.apiBaseUrl}/projects/${urlEncodedRepoPath}`, {
+      method: 'DELETE',
+    })
+  }
+
   async callAPI(url: string, requestParams?: RequestInit) {
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {
@@ -240,7 +274,7 @@ export default class GitLabAPI implements OAuthServiceAPI {
 
   makeRepoId = defaultMakeRepoId
 
-  makePublicRepositoryURL(owner: string, repoName: string): string {
+  makePublicRepositoryURL(owner: string | undefined, repoName: string): string {
     return defaultMakePublicRepositoryURL(owner, repoName, this.origin)
   }
 }

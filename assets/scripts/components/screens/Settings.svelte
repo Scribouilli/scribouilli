@@ -1,12 +1,14 @@
 <script lang="ts">
+  import ScribouilliGitRepo from '../../scribouilliGitRepo.ts'
   import Skeleton from '../Skeleton.svelte'
 
   interface Props {
     buildStatus: any
     theme: any
     deleteRepositoryUrl: any
+    onDeleteRepository: () => void
     showArticles: boolean | undefined
-    currentRepository: any
+    currentRepository: ScribouilliGitRepo
     onUpdateTheme: (theme: { css: string }) => void
   }
 
@@ -14,12 +16,14 @@
     buildStatus,
     theme = $bindable(),
     deleteRepositoryUrl,
+    onDeleteRepository,
     showArticles,
     currentRepository,
     onUpdateTheme,
   }: Props = $props()
 
   let notification = $state('')
+  let deleteDisabled = $state(true)
 
   const checkThemeColor = (color: string): boolean => {
     const themeColor = theme.css?.replace(
@@ -155,18 +159,43 @@
       >
     </div>
 
-    <div class="wrapper white-zone">
-      <h3>Supprimer le site</h3>
-      <p>
-        Pour supprimer le site, cliquez sur le bouton "Delete this repository"
-        en bas de la page <a href={deleteRepositoryUrl}>"Settings" de GitHub</a
-        >.
-      </p>
-      <p>
-        Scribouilli saura que le compte est supprimé
-        <strong>~&nbsp;2&nbsp;minutes après.</strong>
-      </p>
-    </div>
+    {#await currentRepository.userPermission then userPermission}
+      {#if userPermission === 'owner'}
+        <div class="wrapper white-zone">
+          <h3>Supprimer le site</h3>
+          <p>Attention la suppression du site est définitive!</p>
+          <p>
+            Scribouilli saura que le compte est supprimé
+            <strong>~&nbsp;2&nbsp;minutes après.</strong>
+          </p>
+          <!--
+          <p>
+            Pour supprimer le site, cliquez sur le bouton "Delete this
+            repository" en bas de la page <a href={deleteRepositoryUrl}
+              >"Settings" de GitHub</a
+            >.
+          </p>
+          -->
+          <label>
+            <input
+              type="checkbox"
+              onchange={() => {
+                deleteDisabled = !deleteDisabled
+              }}
+            />
+            Afficher le bouton de suppression
+          </label>
+          <button
+            type="button"
+            onclick={onDeleteRepository}
+            disabled={deleteDisabled}
+            class=" btn__medium btn btn__danger"
+          >
+            Supprimer le site
+          </button>
+        </div>
+      {/if}
+    {/await}
 
     <hr />
 

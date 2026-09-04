@@ -1,41 +1,40 @@
 <script lang="ts">
-  import page from "page";
+  import page from 'page'
 
-  import Skeleton from "./../Skeleton.svelte";
-  import Loader from "./../loaders/Loader.svelte";
-  import type { GithubRepository } from "../../types/git"
+  import Skeleton from './../Skeleton.svelte'
+  import Loader from './../loaders/Loader.svelte'
+  import type { MinimalGitRepository } from '../../types/git'
+  import { makeUrlParam } from '../../routes/urls.ts'
 
   interface Props {
     currentAccount: string | Promise<string> | undefined
-    currentAccountRepositories: GithubRepository[]
+    currentAccountRepositories: MinimalGitRepository[]
   }
 
-  let { currentAccount, currentAccountRepositories }: Props = $props();
+  let { currentAccount, currentAccountRepositories }: Props = $props()
 
-  let repo: GithubRepository | undefined = $state()
-  let loading = $state(false);
+  let repo: MinimalGitRepository | undefined = $state()
+  let loading = $state(false)
 
   // @ts-ignore
-  const displayRepoName = repo => {
-    if (repo.owner.login === currentAccount) {
-      return repo.name
+  const displayRepoName = (repo: MinimalGitRepository) => {
+    if (repo.owner === undefined || repo.owner === currentAccount) {
+      return repo.repoName
     } else {
-      return `${repo.owner.login} / ${repo.name}`
+      return `${repo.owner} / ${repo.repoName}`
     }
   }
 
   // @ts-ignore
-  const onSubmit = (e) => {
-    e.preventDefault();
-    
+  const onSubmit = e => {
+    e.preventDefault()
+
     if (!repo) return
 
-    loading = true;
-
-    page(`/atelier-list-pages?repoName=${repo.name}&account=${repo.owner.login}`);
-
-    loading = false;
-  };
+    loading = true
+    page(makeUrlParam(`/atelier-list-pages`, repo.owner, repo.repoName))
+    loading = false
+  }
 </script>
 
 <Skeleton>

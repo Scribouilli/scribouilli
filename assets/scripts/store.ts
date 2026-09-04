@@ -2,7 +2,7 @@ import Store, { type BareduxStore } from 'baredux'
 import GitAgent from './GitAgent.ts'
 import ScribouilliGitRepo from './scribouilliGitRepo.ts'
 import type { Page, Article } from './types/atelier.ts'
-import type { BuildStatus } from './types/git.ts'
+import type { BuildStatus, MinimalGitRepository } from './types/git.ts'
 /**
  * Un store baredux a pour vocation de refléter notamment le modèle mental de la
  * personne face à Scribouilli. Le store stocke donc principalement des données (et parfois des singletons)
@@ -132,18 +132,20 @@ const mutations = {
 
   setReposForAccount(
     state: ScribouilliState,
-    { login, repos }: { login: string; repos: any[] },
+    { login, repos }: { login: string; repos: MinimalGitRepository[] },
   ) {
     state.reposByAccount[login] = repos
       // on place ses propres dépôts avant les dépôts des autres
       .sort((a, b) => {
         if (state.login && typeof state.login === 'string') {
-          if (a.owner.login != b.owner.login) {
-            if (a.owner.login === state.login) {
-              return -1
-            } else {
-              return 1
-            }
+          if (a.owner === undefined || b.owner === undefined || a.owner == b.owner) {
+            return a.repoName.localeCompare(b.repoName)
+          } else if (a.owner === state.login) {
+            return -1
+          } else if (b.owner === state.login) {
+            return 1
+          } else {
+            return a.owner.localeCompare(b.owner)
           }
         }
 
