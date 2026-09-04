@@ -58,17 +58,17 @@ export const getOAuthServiceAPI = (): OAuthServiceAPI => {
 /**
  * @param owner may be an individual Github user or an organisation
  */
-export function defaultMakeRepoId(owner: string, repoName: string): string {
-  return `${owner}/${repoName}`
+export function defaultMakeRepoId(owner: string | undefined, repoName: string): string {
+  return owner ? `${owner}/${repoName}` : `${repoName}`
 }
 
 /**
  * @param owner may be an individual Github user or an organisation
  */
 export function defaultMakePublicRepositoryURL(
-  owner: string,
+  owner: string | undefined,
   repoName: string,
   origin: string,
 ): string {
-  return `${origin}/${owner}/${repoName}`
+  return owner ? `${origin}/${owner}/${repoName}` : `${origin}/${repoName}`
 }

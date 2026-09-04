@@ -1,15 +1,15 @@
 import type { BackendType } from './types/atelier.ts'
-import type { OAuthServiceAPI } from './types/git.ts'
+import type { UserRole, OAuthServiceAPI } from './types/git.ts'
 
 export default class ScribouilliGitRepo {
-  // TODO: better typing of these fields
-  public origin
-  public publicRepositoryURL
-  public owner
-  public repoName
+  public origin: string
+  public publicRepositoryURL: string
+  public owner: string | undefined
+  public repoName: string
   public repoType: BackendType
-  public repoId
+  public repoId: string
   public publishedWebsiteURL: Promise<string>
+  public userPermission: Promise<UserRole>
 
   constructor({
     repoId,
@@ -21,7 +21,7 @@ export default class ScribouilliGitRepo {
   }: {
     repoId?: string
     origin: string
-    owner: string
+    owner: string | undefined
     repoName: string
     repoType: BackendType
     gitServiceProvider: OAuthServiceAPI
@@ -49,5 +49,7 @@ export default class ScribouilliGitRepo {
         })
       }, 1000)
     })
+
+    this.userPermission = gitServiceProvider.getUserPermissions(this)
   }
 }

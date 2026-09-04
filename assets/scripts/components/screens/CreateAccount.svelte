@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ScribouilliBackendProvider } from "../../types/atelier"
+  import type { ScribouilliBackendProvider } from "../../types/atelier"
   import Skeleton from "../Skeleton.svelte"
 
   interface Props {

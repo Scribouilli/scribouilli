@@ -4,6 +4,7 @@
   import { makePageFrontMatter } from '../../../utils.ts'
   import ScribouilliGitRepo from '../../../scribouilliGitRepo.ts'
   import type { FileContenu } from '../../../types/atelier.ts'
+  import { makeUrlParam } from '../../../routes/urls.ts'
 
   interface Props {
     buildStatus: any
@@ -84,7 +85,7 @@
           {title}
         </h2>
         <a
-          href="{atelierPrefix}?repoName={repoName}&account={account}"
+          href={makeUrlParam(atelierPrefix, account, repoName)}
           class="btn btn__medium">{newContentButtonText}</a
         >
       </header>
@@ -119,9 +120,11 @@
                 </div>
               {:else}
                 <a
-                  href="{atelierPrefix}?path={encodeURIComponent(
-                    contenu.path,
-                  )}&repoName={repoName}&account={account}"
+                  href={makeUrlParam(
+                    `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
+                    account,
+                    repoName,
+                  )}
                 >
                   Modifier</a
                 >
