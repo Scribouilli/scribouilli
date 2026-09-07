@@ -5,7 +5,6 @@
   interface Props {
     buildStatus: any
     theme: any
-    deleteRepositoryUrl: any
     onDeleteRepository: () => void
     showArticles: boolean | undefined
     currentRepository: ScribouilliGitRepo
@@ -15,7 +14,6 @@
   let {
     buildStatus,
     theme = $bindable(),
-    deleteRepositoryUrl,
     onDeleteRepository,
     showArticles,
     currentRepository,
@@ -168,14 +166,7 @@
             Scribouilli saura que le compte est supprimé
             <strong>~&nbsp;2&nbsp;minutes après.</strong>
           </p>
-          <!--
-          <p>
-            Pour supprimer le site, cliquez sur le bouton "Delete this
-            repository" en bas de la page <a href={deleteRepositoryUrl}
-              >"Settings" de GitHub</a
-            >.
-          </p>
-          -->
+
           <label>
             <input
               type="checkbox"
