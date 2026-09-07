@@ -9,6 +9,8 @@ const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
 const REPO_SCHEMA = z.object({
   id: z.number(),
   name: z.string(),
+  archived: z.boolean(),
+  disabled: z.boolean(),
   permissions: z.object({
     admin: z.boolean(),
     push: z.boolean(),
@@ -56,7 +58,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
       .then((rawRepos) => {
         const githubRepos = z.parse(REPO_LIST_SCHEMA, rawRepos)
         return githubRepos
-          .filter((repo) => repo?.permissions?.push)
+          .filter((repo) => repo?.permissions?.push && !repo?.archived && !repo.disabled)
           .map((repo) => {
             return {
               repoName: repo.name,

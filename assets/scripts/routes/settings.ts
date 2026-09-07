@@ -31,7 +31,6 @@ function mapStateToProps(state: ScribouilliState) {
   return {
     buildStatus: state.buildStatus,
     theme: state.theme,
-    deleteRepositoryUrl: `${currentRepository.publicRepositoryURL}/settings#danger-zone`,
     onDeleteRepository,
     showArticles: showArticles(state),
     currentRepository: state.currentRepository,
