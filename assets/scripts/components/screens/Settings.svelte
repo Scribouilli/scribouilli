@@ -162,10 +162,6 @@
         <div class="wrapper white-zone">
           <h3>Supprimer le site</h3>
           <p>Attention la suppression du site est définitive!</p>
-          <p>
-            Scribouilli saura que le compte est supprimé
-            <strong>~&nbsp;2&nbsp;minutes après.</strong>
-          </p>
 
           <label>
             <input
