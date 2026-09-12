@@ -25,7 +25,6 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     | { id: string; login: string; email: string }
 
   constructor(accessToken: string, origin: string) {
-    7
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
