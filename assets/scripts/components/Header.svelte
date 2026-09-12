@@ -100,9 +100,12 @@
         </li>
         {#if repositoryURL && repositoryType !== 'scribouilli' }
           <li>
-            {#await repositoryURL then urlrepository}
-              <a href={urlrepository} target="_blank">Sur {(new URL(urlrepository)).hostname}</a>
-            {/await}
+              <a href={repositoryURL} target="_blank">Sur {(new URL(repositoryURL)).hostname}</a>
+          </li>
+        {/if}
+        {#if repositoryType === 'scribouilli'}
+          <li>
+            <a href={`${currentRepository.origin}/settings`}>Mon compte</a>
           </li>
         {/if}
       </ul>
