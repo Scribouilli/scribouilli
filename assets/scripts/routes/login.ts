@@ -30,7 +30,7 @@ function makeLoginHref(
   redirectUrl: string,
 ) {
   if (providerType === 'github') {
-    return `${origin}/login/oauth/authorize?client_id=${clientId}&scope=public_repo,user:email&redirect_uri=${redirectUrl}`
+    return `${origin}/login/oauth/authorize?client_id=${clientId}&scope=public_repo,user:email,delete_repo&redirect_uri=${redirectUrl}`
   } else if (providerType == 'gitlab') {
     return `${origin}/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUrl}&response_type=code&scope=api+read_api`
   } else {
