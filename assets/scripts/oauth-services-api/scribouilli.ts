@@ -108,7 +108,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
   ): Promise<boolean> {
     const response = await this.callAPI(
-      `/websites/${scribouilliGitRepo.repoName}/ready`,
+      `/websites/${scribouilliGitRepo.repoPath}/ready`,
     )
     const { is_ready } = await response.json()
     return is_ready
@@ -132,7 +132,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
   }
 
   async deploy(scribouilliGitRepo: ScribouilliGitRepo): Promise<any> {
-    await this.callAPI(`/websites/${scribouilliGitRepo.repoName}/deployment`, {
+    await this.callAPI(`/websites/${scribouilliGitRepo.repoPath}/deployment`, {
       method: 'POST',
     })
   }
@@ -141,7 +141,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
   ): Promise<BuildStatus> {
     const data = await this.callAPI(
-      `/websites/${scribouilliGitRepo.repoName}/deployment`,
+      `/websites/${scribouilliGitRepo.repoPath}/deployment`,
     )
     const { status } = await data.json()
     return status
@@ -163,17 +163,18 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
   ): Promise<string | undefined> {
     const data = await this.callAPI(
-      `/websites/${scribouilliGitRepo.repoName}/url`,
+      `/websites/${scribouilliGitRepo.repoPath}/url`,
     )
     const { url } = await data.json()
     return url
   }
 
-  makeRepoId(_owner: string, repoName: string): string {
-    return `websites/${repoName}`
+  makeRepoId(_owner: string, repoPath: string): string {
+    return `websites/${repoPath}`
   }
 
-  makePublicRepositoryURL(_owner: string, repoName: string): string {
-    return `${this.origin}/websites/${repoName}`
+  makePublicRepositoryURL(_owner: string, repoPath: string): string {
+    const repoId = this.makeRepoId(_owner, repoPath)
+    return `${this.origin}/${repoId}`
   }
 }

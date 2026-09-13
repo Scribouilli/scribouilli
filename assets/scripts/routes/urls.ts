@@ -2,7 +2,7 @@ import ScribouilliGitRepo from '../scribouilliGitRepo'
 
 export function makeAtelierListPageURL({
   owner,
-  repoName,
+  repoPath,
 }: ScribouilliGitRepo): string {
-  return `/atelier-list-pages?account=${owner}&repoName=${repoName}`
+  return `/atelier-list-pages?account=${owner}&repoPath=${repoPath}`
 }

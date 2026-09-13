@@ -10,33 +10,31 @@ avec son contenu.
 - Ouvrir un terminal
 - Récupérer le repo `git clone git@github.com:lechappeebelle/scribouilli.git` dans le dossier qui va bien
 - Rentrer dans le dossier `scribouilli`
-- Faire `npm install`
+- Faire `npm install` (vous pouvez aussi utiliser `pnpm`)
 - Builder le projet avec `npm run dev`
 - Lancer le projet avec `npm start` dans un autre terminal
 - Ouvrir dans votre navigateur préféré `http://localhost:8080/`
 
 ## Développement
 
-- Forker le repo sur votre compte
-- Modifier les settings
-  - Donner les droits en écriture a _github action_
-  - Pour déployer la branche `online`
+- Forker le repo sur votre compte en prenant soin de **ne pas** copier **uniquement** la branche `principale` (pour disposer de la branche `online`)
+- Modifier les paramètres (_Settings_) de votre fork
+  - Donner les droits en écriture à _github action_ dans **Actions > General > Workflow permissions**
+  - Pour déployer la branche `online` dans **Pages > Build and deployment**
 - Ajouter votre origine github pages (ex: `yaf.github.io`) dans [Scribouilli/toctoctoc/allowlist.csv](https://github.com/Scribouilli/toctoctoc/blob/main/allowlist.csv)
 
 Voilà à quoi ça peut ressembler : [github.com/yaf/scribouilli](https://github.com/yaf/scribouilli)
 
 Une fois les développements réalisés, vous pouvez faire une PR dans Scribouilli, en précisant votre url de développement pour que l'on puisse tester la modification.
 
-
 ### Limite connue
 
 Pour le moment, il n'est pas possible de tester en local des sites hébergés sur gitlab ou scribougit (`git.scribouilli.org`)
 On peut le faire, mais ça demande de changer la config de toctoctoc en prod (et donc, ça casse la prod pour les sites ; une histoire de `redirect_uri`)
 
-
 ### Outils de développement
 
-Des pre-commit hooks sont installés automatiquement avec `husky`. Si jamais il sont trop contraignants,
+Des pre-commit hooks peuvent être installés avec `husky` en exécutant `npm run prepare`. Si jamais il sont trop contraignants,
 il est possible de les ignorer avec l'option `--no-verify` de `git commit`.
 
 Vous pouvez également lancer les tests en local avec :

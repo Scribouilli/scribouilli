@@ -346,8 +346,6 @@ export default class GitAgent {
    *
    *
    * https://isomorphic-git.org/docs/en/setConfig
-   *
-   * Alors, on doit passer le repoName
    */
   async setAuthor(
     login: string,
