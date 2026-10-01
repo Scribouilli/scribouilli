@@ -31,9 +31,8 @@
     if (!repo) return
 
     loading = true
-    const repoPath = repo.path || repo.name // In GitLab, the repository slug may differ from the name attribute (after repository renaming), while in GitHub, the name attribute corresponds to the repository slug
 
-    page(`/atelier-list-pages?repoPath=${repoPath}&account=${repo.owner.login}`);
+    page(`/atelier-list-pages?repoPath=${repo.path}&account=${repo.owner.login}`);
 
     loading = false;
   };

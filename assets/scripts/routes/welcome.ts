@@ -16,7 +16,7 @@ export default () => {
 
     fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 1) {
-        const repoPath = repos[0].path || repos[0].name // In GitHub, repository slug is defined in the name attribute. In GitLab, repository slug is defined in the path attribute and may differ from the name attribute (after renaming)
+        const repoPath = repos[0].path
         const account = repos[0].owner.login
 
         page(`/atelier-list-pages?repoPath=${repoPath}&account=${account}`)

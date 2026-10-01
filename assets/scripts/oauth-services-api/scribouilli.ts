@@ -1,7 +1,7 @@
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
   BuildStatus,
-  GithubRepository,
+  GitRepository,
   GitSiteTemplate,
   OAuthServiceAPI,
 } from '../types/git.ts'
@@ -89,19 +89,19 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
     template: GitSiteTemplate,
   ): Promise<{ remoteURL: string }> {
-    const { repoName } = scribouilliGitRepo
+    const { repoPath } = scribouilliGitRepo
     await this.callAPI(`/websites`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        name: repoName,
+        name: repoPath,
         template_url: template.url,
       }),
     })
 
-    return { remoteURL: this.makePublicRepositoryURL('', repoName) }
+    return { remoteURL: this.makePublicRepositoryURL('', repoPath) }
   }
 
   async isRepositoryReady(
@@ -114,7 +114,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     return is_ready
   }
 
-  async getCurrentUserRepositories(): Promise<GithubRepository[]> {
+  async getCurrentUserRepositories(): Promise<GitRepository[]> {
     const response = await this.callAPI(`/websites`)
     const rawRepos = await response.json()
     const repos = z.parse(WEBSITE_LIST_SCHEMA, rawRepos)
@@ -123,6 +123,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
       return {
         id: repo.name,
         name: repo.name,
+        path: repo.name,
         owner: {
           login: email,
         },

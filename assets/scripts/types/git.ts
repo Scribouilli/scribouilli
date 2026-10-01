@@ -59,7 +59,7 @@ interface AuthenticatedUserEmails {
 
 export interface GitRepository {
   name: string
-  path?: string
+  path: string
   owner: {
     login: string
   }
