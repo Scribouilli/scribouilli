@@ -1,7 +1,7 @@
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import type {
   BuildStatus,
-  GithubRepository,
+  GitRepository,
   GitSiteTemplate,
   OAuthServiceAPI,
 } from '../types/git.ts'
@@ -89,32 +89,32 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
     template: GitSiteTemplate,
   ): Promise<{ remoteURL: string }> {
-    const { repoName } = scribouilliGitRepo
+    const { repoPath } = scribouilliGitRepo
     await this.callAPI(`/websites`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        name: repoName,
+        name: repoPath,
         template_url: template.url,
       }),
     })
 
-    return { remoteURL: this.makePublicRepositoryURL('', repoName) }
+    return { remoteURL: this.makePublicRepositoryURL('', repoPath) }
   }
 
   async isRepositoryReady(
     scribouilliGitRepo: ScribouilliGitRepo,
   ): Promise<boolean> {
     const response = await this.callAPI(
-      `/websites/${scribouilliGitRepo.repoName}/ready`,
+      `/websites/${scribouilliGitRepo.repoPath}/ready`,
     )
     const { is_ready } = await response.json()
     return is_ready
   }
 
-  async getCurrentUserRepositories(): Promise<GithubRepository[]> {
+  async getCurrentUserRepositories(): Promise<GitRepository[]> {
     const response = await this.callAPI(`/websites`)
     const rawRepos = await response.json()
     const repos = z.parse(WEBSITE_LIST_SCHEMA, rawRepos)
@@ -123,6 +123,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
       return {
         id: repo.name,
         name: repo.name,
+        path: repo.name,
         owner: {
           login: email,
         },
@@ -132,7 +133,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
   }
 
   async deploy(scribouilliGitRepo: ScribouilliGitRepo): Promise<any> {
-    await this.callAPI(`/websites/${scribouilliGitRepo.repoName}/deployment`, {
+    await this.callAPI(`/websites/${scribouilliGitRepo.repoPath}/deployment`, {
       method: 'POST',
     })
   }
@@ -141,7 +142,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
   ): Promise<BuildStatus> {
     const data = await this.callAPI(
-      `/websites/${scribouilliGitRepo.repoName}/deployment`,
+      `/websites/${scribouilliGitRepo.repoPath}/deployment`,
     )
     const { status } = await data.json()
     return status
@@ -163,17 +164,18 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     scribouilliGitRepo: ScribouilliGitRepo,
   ): Promise<string | undefined> {
     const data = await this.callAPI(
-      `/websites/${scribouilliGitRepo.repoName}/url`,
+      `/websites/${scribouilliGitRepo.repoPath}/url`,
     )
     const { url } = await data.json()
     return url
   }
 
-  makeRepoId(_owner: string, repoName: string): string {
-    return `websites/${repoName}`
+  makeRepoId(_owner: string, repoPath: string): string {
+    return `websites/${repoPath}`
   }
 
-  makePublicRepositoryURL(_owner: string, repoName: string): string {
-    return `${this.origin}/websites/${repoName}`
+  makePublicRepositoryURL(_owner: string, repoPath: string): string {
+    const repoId = this.makeRepoId(_owner, repoPath)
+    return `${this.origin}/${repoId}`
   }
 }

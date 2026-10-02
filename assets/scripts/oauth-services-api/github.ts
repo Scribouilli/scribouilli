@@ -2,8 +2,17 @@ import { gitHubApiBaseUrl } from './../config.ts'
 import type { GitSiteTemplate, OAuthServiceAPI } from '../types/git.ts'
 import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from './index.ts'
+import z from 'zod'
 
 const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
+const GITHUB_REPOS_SCHEMA = z.array(
+  z.object({
+    name: z.string(),
+    owner: z.object({
+      login: z.string(),
+    }),
+  }),
+)
 
 export default class GitHubAPI implements OAuthServiceAPI {
   private accessToken: string | undefined
@@ -38,13 +47,22 @@ export default class GitHubAPI implements OAuthServiceAPI {
   getCurrentUserRepositories() {
     return this.callAPI(
       `${gitHubApiBaseUrl}/user/repos?sort=updated&visibility=public`,
-    ).then(response => {
-      return response.json()
-    })
+    )
+      .then(response => {
+        return response.json()
+      })
+      .then((rawRepos: any) => {
+        // In GitLab, the repository slug may differ from the name attribute (after repository renaming),
+        // while in GitHub, the name attribute corresponds to the repository slug
+        return z.parse(GITHUB_REPOS_SCHEMA, rawRepos).map(repo => ({
+          path: repo.name,
+          ...repo,
+        }))
+      })
   }
 
   async createDefaultRepository(
-    { owner, repoName, publishedWebsiteURL }: ScribouilliGitRepo,
+    { owner, repoPath, publishedWebsiteURL }: ScribouilliGitRepo,
     template: GitSiteTemplate,
   ) {
     // Generate a new repository from the theme repository
@@ -58,7 +76,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
         method: 'POST',
         body: JSON.stringify({
           owner,
-          name: repoName,
+          name: repoPath,
           description: 'Mon site Scribouilli',
         }),
       },
@@ -97,7 +115,7 @@ export default class GitHubAPI implements OAuthServiceAPI {
       method: 'PUT',
       body: JSON.stringify({
         owner,
-        repo: repoName,
+        repo: repoPath,
         names: ['site-scribouilli'],
       }),
     })

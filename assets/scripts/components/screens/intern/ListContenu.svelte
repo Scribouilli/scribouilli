@@ -33,7 +33,7 @@
     onBlogToggle,
   }: Props = $props()
 
-  let repoName = $derived(currentRepository.repoName)
+  let repoPath = $derived(currentRepository.repoPath)
   let account = $derived(currentRepository.owner)
   let modification = $state(false)
 
@@ -84,7 +84,7 @@
           {title}
         </h2>
         <a
-          href="{atelierPrefix}?repoName={repoName}&account={account}"
+          href="{atelierPrefix}?repoPath={repoPath}&account={account}"
           class="btn btn__medium">{newContentButtonText}</a
         >
       </header>
@@ -121,7 +121,7 @@
                 <a
                   href="{atelierPrefix}?path={encodeURIComponent(
                     contenu.path,
-                  )}&repoName={repoName}&account={account}"
+                  )}&repoPath={repoPath}&account={account}"
                 >
                   Modifier</a
                 >

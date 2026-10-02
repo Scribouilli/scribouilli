@@ -16,10 +16,10 @@ export default () => {
 
     fetchCurrentUserRepositories().then(repos => {
       if (repos.length === 1) {
-        const repoName = repos[0].name
+        const repoPath = repos[0].path
         const account = repos[0].owner.login
 
-        page(`/atelier-list-pages?repoName=${repoName}&account=${account}`)
+        page(`/atelier-list-pages?repoPath=${repoPath}&account=${account}`)
       } else {
         store.mutations.setReposForAccount({
           // @ts-ignore
