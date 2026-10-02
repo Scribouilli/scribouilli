@@ -70,6 +70,5 @@ export function defaultMakePublicRepositoryURL(
   repoPath: string,
   origin: string,
 ): string {
-  const repoId = defaultMakeRepoId(owner, repoPath)
-  return `${origin}/${repoId}`
+  return `${origin}/${owner}/${repoPath}.git`
 }
