@@ -28,14 +28,14 @@ export const TEMPLATES: GitSiteTemplate[] = [
 export const DEFAULT_TEMPLATE = TEMPLATES[0]
 
 export const PROVIDERS: ScribouilliBackendProvider[] = [
-  {
-    id: 'localhost',
-    type: 'scribouilli',
-    origin: 'http://localhost:3000',
-    name: 'Scribouilli',
-    description: `<strong>Scribouilli</strong>, vous pouvez utilizer Scribouilli pour héberger directement votre site.`,
-    signupEnabled: false,
-  },
+  // {
+  //   id: 'localhost',
+  //   type: 'scribouilli',
+  //   origin: 'http://localhost:3000',
+  //   name: 'Scribouilli',
+  //   description: `<strong>Scribouilli</strong>, vous pouvez utilizer Scribouilli pour héberger directement votre site.`,
+  //   signupEnabled: false,
+  // },
   {
     id: 'gitlab.com',
     type: 'gitlab',
