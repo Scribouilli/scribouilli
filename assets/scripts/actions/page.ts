@@ -64,6 +64,7 @@ export const createPage = (
   content: string,
   title: string,
   index: number,
+  inMenu: boolean = true
 ): ReturnType<typeof writeFileAndPushChanges> => {
   const { state } = store
   const fileName = makeFileNameFromTitle(title)
@@ -77,7 +78,7 @@ export const createPage = (
   store.mutations.setPages(newPages)
 
   const finalContent = `${
-    title ? makePageFrontMatter(title, index) + '\n' : ''
+    title ? makePageFrontMatter(title, index, inMenu) + '\n' : ''
   }${content} `
 
   return writeFileAndPushChanges(
@@ -92,6 +93,7 @@ export const updatePage = async (
   title: string,
   content: string,
   index: number,
+  inMenu: boolean,
   blogIndex: boolean,
 ): ReturnType<typeof writeFileAndPushChanges> => {
   const { gitAgent } = store.state
@@ -112,7 +114,7 @@ export const updatePage = async (
   }
 
   const finalContent = `${
-    title ? makePageFrontMatter(title, index, undefined, blogIndex) + '\n' : ''
+    title ? makePageFrontMatter(title, index, inMenu, blogIndex) + '\n' : ''
   }${content} `
 
   return writeFileAndPushChanges(

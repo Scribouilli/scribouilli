@@ -51,7 +51,8 @@ const makeMapStateToProps =
       }
 
       try {
-        await updatePage(fileName, title, content, index, blogIndex)
+        throw `On a besoin de savoir quelle était la valeur de inMenu pour la fournir`
+        await updatePage(fileName, title, content, index, inMenu, blogIndex)
         setBuildingAndCheckStatusLater(state.currentRepository, state.gitAgent)
         page(makeAtelierListPageURL(state.currentRepository))
       } catch (msg: any) {
