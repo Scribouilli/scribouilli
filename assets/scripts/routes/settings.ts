@@ -23,7 +23,7 @@ function mapStateToProps(state: ScribouilliState) {
   const onDeleteRepository = () => {
     getOAuthServiceAPI().deleteRepository(currentRepository)
       .then(() => {
-        page('/selectionner-un-site')
+        page('/')
       })
       .catch(msg => handleErrors(msg))
   }

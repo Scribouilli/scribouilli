@@ -1,4 +1,3 @@
-import page from 'page'
 import remember from 'remember'
 
 import {
@@ -10,7 +9,7 @@ import {
 import { replaceComponent } from '../routeComponentLifeCycle.svelte.ts'
 import store from '../store'
 import AfterOauthLogin from '../components/screens/AfterOauthLogin.svelte'
-import { fetchCurrentUserRepositories } from '../actions/current-user.ts'
+import { fetchCurrentUserRepositories, redirectForRepos } from '../actions/current-user.ts'
 
 const storeOAuthProviderAccess = () => {
   const url = new URL(location.href)
@@ -66,19 +65,7 @@ export default () => {
   let currentUserReposP
 
   if (type === 'github' || type === 'gitlab' || type == 'scribouilli') {
-    currentUserReposP = fetchCurrentUserRepositories().then(repos => {
-      if (repos.length === 0) {
-        page.redirect('/creer-un-nouveau-site')
-      } else {
-        store.mutations.setReposForAccount({
-          // @ts-ignore
-          login: store.state.login,
-          repos,
-        })
-
-        page.redirect('/selectionner-un-site')
-      }
-    })
+    currentUserReposP = fetchCurrentUserRepositories().then(redirectForRepos)
   } else {
     throw new Error(`Unknown OAuth provider type: ${type}`)
   }

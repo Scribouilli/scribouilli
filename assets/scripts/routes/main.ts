@@ -61,4 +61,6 @@ page(
 
 page.base(store.state.basePath)
 
-page.start()
+export function start() {
+  page.start()
+}

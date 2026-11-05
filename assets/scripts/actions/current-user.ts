@@ -5,6 +5,8 @@ import { getOAuthServiceAPI } from '../oauth-services-api/index.ts'
 import store, { type ResolutionOption } from '../store.ts'
 import { logMessage } from '../utils.ts'
 import { OAUTH_PROVIDER_STORAGE_KEY } from '../config.ts'
+import { MinimalGitRepository } from '../types/git.ts'
+import { makeUrlParam } from '../routes/urls.ts'
 
 const logout = () => {
   forget(OAUTH_PROVIDER_STORAGE_KEY)
@@ -114,5 +116,24 @@ export function addConflictRemovalAndRedirectToResolution(
     await resolution(...args)
     store.mutations.setConflict(undefined)
     history.back()
+  }
+}
+
+export function redirectForRepos(repos: MinimalGitRepository[]) {
+  if (repos.length === 0) {
+    page.redirect('/creer-un-nouveau-site')
+  } else if (repos.length === 1) {
+    const repoPath = repos[0].repoPath
+    const account = repos[0].owner
+
+    page(makeUrlParam('/atelier-list-pages', account, repoPath))
+  } else {
+    store.mutations.setReposForAccount({
+      // @ts-ignore
+      login: store.state.login,
+      repos,
+    })
+
+    page.redirect('/selectionner-un-site')
   }
 }

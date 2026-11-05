@@ -50,6 +50,10 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
       console.debug('this accessToken : ', this.accessToken)
       throw 'INVALIDATE_TOKEN'
     }
+    if (httpResp.status >= 300) {
+      console.warn('Api error:', httpResp.status, await httpResp.text())
+      throw 'API_ERROR_RESPONSE'
+    }
     return httpResp
   }
 
