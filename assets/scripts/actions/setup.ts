@@ -73,7 +73,7 @@ export function guessBaseURL({
   origin,
 }: ScribouilliGitRepo): string {
   if (origin === 'https://github.com') {
-    const publishedHostname = `${owner.toLowerCase()}.github.io`
+    const publishedHostname = `${owner?.toLowerCase()}.github.io`
     repoPath = repoPath.toLowerCase()
 
     return publishedHostname === repoPath ? '' : `/${repoPath}`

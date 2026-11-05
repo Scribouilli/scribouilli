@@ -1,7 +1,7 @@
 import remember from 'remember'
 
 import { OAUTH_PROVIDER_STORAGE_KEY } from './config.ts'
-import './routes/main.ts'
+import { start } from './routes/main.ts'
 
 import store from './store.ts'
 
@@ -11,3 +11,4 @@ window.Buffer = buffer.Buffer
 remember(OAUTH_PROVIDER_STORAGE_KEY)
   // @ts-ignore
   .then(oAuthProvider => store.mutations.setOAuthProvider(oAuthProvider))
+  .then(() => start())

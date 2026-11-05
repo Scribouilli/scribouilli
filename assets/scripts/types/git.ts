@@ -1,13 +1,9 @@
-import type { BackendType } from './atelier'
+import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 
-interface ScribouilliGitRepo {
-  repoId: string
-  owner: string
+export interface MinimalGitRepository {
+  name: string
   repoPath: string
-  repoType: BackendType
-  origin: string
-  publishedWebsiteURL: Promise<string>
-  publicRepositoryURL: string
+  owner: string | undefined
 }
 
 export interface GitSiteTemplate {
@@ -21,6 +17,8 @@ export type BuildStatus =
   | 'success'
   | 'error'
   | 'needs_account_verification'
+
+export type UserRole = 'owner' | 'editor'
 
 export interface OAuthServiceAPI {
   callAPI: (
@@ -37,7 +35,7 @@ export interface OAuthServiceAPI {
   isRepositoryReady: (
     scribouilliGitRepo: ScribouilliGitRepo,
   ) => Promise<boolean>
-  getCurrentUserRepositories: () => Promise<GitRepository[]>
+  getCurrentUserRepositories: () => Promise<MinimalGitRepository[]>
   deploy: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<any>
   getPagesWebsiteDeploymentStatus: (
     scribouilliGitRepo: ScribouilliGitRepo,
@@ -48,19 +46,13 @@ export interface OAuthServiceAPI {
   getPublishedWebsiteURL: (
     scribouilliGitRepo: ScribouilliGitRepo,
   ) => Promise<string | undefined>
-  makeRepoId: (owner: string, repoPath: string) => string
-  makePublicRepositoryURL: (owner: string, repoPath: string) => string
+  getUserPermissions: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<UserRole>
+  deleteRepository: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<void>
+  makeRepoId: (owner: string | undefined, repoPath: string) => string
+  makePublicRepositoryURL: (owner: string | undefined, repoPath: string) => string
 }
 
 interface AuthenticatedUserEmails {
   email: string
   primary: boolean
-}
-
-export interface GitRepository {
-  name: string
-  path: string
-  owner: {
-    login: string
-  }
 }

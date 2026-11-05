@@ -1,26 +1,27 @@
 <script lang="ts">
-  import page from "page";
+  import page from 'page'
 
-  import Skeleton from "./../Skeleton.svelte";
-  import Loader from "./../loaders/Loader.svelte";
-  import type { GitRepository } from "../../types/git"
+  import Skeleton from './../Skeleton.svelte'
+  import Loader from './../loaders/Loader.svelte'
+  import type { MinimalGitRepository } from '../../types/git'
+  import { makeUrlParam } from '../../routes/urls.ts'
 
   interface Props {
     currentAccount: string | Promise<string> | undefined
-    currentAccountRepositories: GitRepository[]
+    currentAccountRepositories: MinimalGitRepository[]
   }
 
-  let { currentAccount, currentAccountRepositories }: Props = $props();
+  let { currentAccount, currentAccountRepositories }: Props = $props()
 
-  let repo: GitRepository | undefined = $state()
-  let loading = $state(false);
+  let repo: MinimalGitRepository | undefined = $state()
+  let loading = $state(false)
 
   // @ts-ignore
-  const displayRepoName = repo => {
-    if (repo.owner.login === currentAccount) {
+  const displayRepoName = (repo: MinimalGitRepository) => {
+    if (repo.owner === undefined || repo.owner === currentAccount) {
       return repo.name
     } else {
-      return `${repo.owner.login} / ${repo.name}`
+      return `${repo.owner} / ${repo.name}`
     }
   }
 
@@ -31,11 +32,9 @@
     if (!repo) return
 
     loading = true
-
-    page(`/atelier-list-pages?repoPath=${repo.path}&account=${repo.owner.login}`);
-
-    loading = false;
-  };
+    page(makeUrlParam(`/atelier-list-pages`, repo.owner, repo.repoPath))
+    loading = false
+  }
 </script>
 
 <Skeleton>

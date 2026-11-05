@@ -2,7 +2,7 @@
   import type { BuildStatus } from '../types/git.ts'
   import type { ScribouilliState } from '../store.ts'
   import type { BackendType } from '../types/atelier.ts'
-  import { makeAtelierListPageURL } from '../routes/urls.ts'
+  import { makeUrlParam, makeAtelierListPageURL } from '../routes/urls.ts'
   import { makeAtelierListArticlesURL } from '../routes/atelier-list-articles.ts'
 
   interface Props {
@@ -96,7 +96,7 @@
         {/if}
 
         <li>
-          <a href="/settings?repoPath={repoPath}&account={account}">
+          <a href="{makeUrlParam(`/settings`, currentRepository.owner, currentRepository.repoPath)}">
             Paramètres
           </a>
         </li>
