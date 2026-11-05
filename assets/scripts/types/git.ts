@@ -1,4 +1,4 @@
-import ScribouilliGitRepo from '../scribouilliGitRepo'
+import ScribouilliGitRepo from '../scribouilliGitRepo.ts'
 
 export interface MinimalGitRepository {
   name: string

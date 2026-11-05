@@ -5,7 +5,7 @@ import { getOAuthServiceAPI } from '../oauth-services-api/index.ts'
 import store, { type ResolutionOption } from '../store.ts'
 import { logMessage } from '../utils.ts'
 import { OAUTH_PROVIDER_STORAGE_KEY } from '../config.ts'
-import { MinimalGitRepository } from '../types/git.ts'
+import type { MinimalGitRepository } from '../types/git.ts'
 import { makeUrlParam } from '../routes/urls.ts'
 
 const logout = () => {
