@@ -105,7 +105,7 @@
         {/if}
         {#if repositoryType === 'scribouilli'}
           <li>
-            <a href={`${currentRepository.origin}/settings`}>Mon compte</a>
+            <a href={`${currentRepository.origin}/settings`} target="_blank">Mon compte</a>
           </li>
         {/if}
       </ul>
