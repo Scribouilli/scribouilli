@@ -163,6 +163,12 @@ h4 {
   font-size: 1.2rem;
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  width: 1em;
+  height: 1em;
+}
+
 .btn {
   display: inline-block;
   padding: 1.6rem;
@@ -243,7 +249,7 @@ textarea {
 
 .white-zone {
   padding: 2rem 1rem;
-  width: 500px;
+  width: 32rem;
   text-align: center;
   background: white;
   border-radius: 16px;
