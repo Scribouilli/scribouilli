@@ -346,8 +346,6 @@ export default class GitAgent {
    *
    *
    * https://isomorphic-git.org/docs/en/setConfig
-   *
-   * Alors, on doit passer le repoName
    */
   async setAuthor(
     login: string,
@@ -375,9 +373,12 @@ export default class GitAgent {
    * @summary Get file informations
    */
   async getFile(fileName: string): Promise<string> {
-    const content = await this.#fs.promises.readFile(this.#path(fileName), {
-      encoding: 'utf8',
-    })
+    const content: any = await this.#fs.promises.readFile(
+      this.#path(fileName),
+      {
+        encoding: 'utf8',
+      },
+    )
     if (content instanceof Uint8Array) {
       return content.toString()
     }

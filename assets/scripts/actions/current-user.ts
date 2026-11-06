@@ -128,12 +128,6 @@ export function redirectForRepos(repos: MinimalGitRepository[]) {
 
     page(makeUrlParam('/atelier-list-pages', account, repoPath))
   } else {
-    store.mutations.setReposForAccount({
-      // @ts-ignore
-      login: store.state.login,
-      repos,
-    })
-
     page.redirect('/selectionner-un-site')
   }
 }
