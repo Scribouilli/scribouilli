@@ -1,0 +1,381 @@
+/* RESET */
+
+/*
+  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+*/
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  /* if you really care about older browsers, add prefixed versions at your own risks */
+}
+
+/*
+  Repeating the background mostly makes sense in the <body>. Otherwise, people usually want the image and preferably its center (not the top-right corner)
+*/
+*:not(body) {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+/*
+  Makes the hidden attribute works even when an element is styled display: flex
+  http://lists.w3.org/Archives/Public/public-whatwg-archive/2014May/0001.html
+*/
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+/*
+  In applications, there can be lists but HTML lists hav=e bullet points and a bunch of useless styling attributes
+*/
+ul,
+ol,
+menu {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+menu {
+  list-style: none;
+}
+
+li {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* default iframe borders are just ugly */
+iframe {
+  border: 0;
+}
+
+* {
+  border-collapse: collapse;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* DES VRAIS STYLES */
+:root {
+  --underline-max-width: 100%;
+  --underline-hover-width: 0;
+  --underline-idle-width: var(--underline-max-width);
+  --underline-x: calc(var(--underline-max-width) * 0);
+  --underline-img: linear-gradient(0deg, currentColor, currentColor);
+  --external-link-content: '';
+}
+
+@font-face {
+  font-family: 'Luciole';
+  src:
+    url('../fonts/Luciole-Regular.woff') format('woff'),
+    url('../fonts/Luciole-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.2rem;
+  background-color: #ffe7b3;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  padding-bottom: 2rem;
+  flex: 1;
+}
+
+footer {
+  padding: 1rem 2rem;
+  text-align: right;
+}
+
+#pages,
+.wrapper {
+  max-width: 100%;
+  width: 800px;
+  margin: 0 auto;
+}
+
+#pages .btn {
+  margin-top: 0;
+}
+
+.mesPages {
+  margin-top: 3rem;
+}
+
+nav ul {
+  display: flex;
+  gap: 2rem;
+  align-items: baseline;
+  justify-content: flex-end;
+}
+
+.screen {
+  padding-right: 1rem;
+  padding-left: 1rem;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: 1.5625rem;
+}
+
+h1 a {
+  color: #000;
+  text-decoration: none;
+}
+
+h2,
+.h2 {
+  font-size: 2.4rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+h4 {
+  margin-bottom: 0;
+  font-size: 1.2rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 1.6rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-decoration: none;
+  border: 2px solid #000;
+  border-radius: 8px;
+  background-color: #ffe7b3;
+}
+
+.btn__medium {
+  padding: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.btn_small {
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.btn.btn_secondary,
+.btn.btn_secondary:hover {
+  border-color: #912222;
+  color: #912222;
+}
+
+.btn,
+.btn:hover {
+  color: #000;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+a {
+  color: #912222;
+}
+
+a[href]:active,
+a[href]:hover,
+[href]:not(.btn):not(.go-home):hover,
+[href]:not(.btn):not(.go-home):active,
+.btn:hover,
+.btn:active {
+  box-shadow: inset 0px -0.2em 0px currentColor;
+}
+
+[href]:not(.btn):not(.go-home) {
+  display: inline;
+  text-decoration: none;
+  box-shadow: inset 0px -0.1em 0px currentColor;
+  transition: box-shadow 0s;
+}
+
+form {
+  text-align: left;
+}
+
+h4,
+label {
+  display: block;
+  font-weight: bold;
+}
+
+[type='text'],
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  font-family: 'Luciole', Arial, Helvetica, sans-serif;
+  font-size: 1.2rem;
+}
+
+textarea {
+  min-height: 32rem;
+}
+
+.white-zone {
+  padding: 2rem 1rem;
+  width: 500px;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+}
+
+.white-zone+.white-zone {
+  margin-top: 3rem;
+}
+
+.white-zone h3 {
+  margin-top: 0;
+}
+
+.white-zone label {
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.white-zone .btn {
+  margin-top: 2rem;
+  background: none;
+}
+
+.white-zone .btn:disabled {
+  display: none;
+}
+
+.white-zone .btn__danger {
+  color: crimson;
+  border-color: crimson;
+}
+
+.white-zone .btn__danger:hover {
+  box-shadow: 0 0 0 1px crimson inset;
+}
+
+.white-zone .radio {
+  display: flex;
+  align-items: center;
+}
+
+.white-zone .radio+.radio {
+  margin-top: 1.5rem;
+}
+
+.white-zone .radio label {
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.white-zone .radio label span {
+  display: block;
+  width: 4rem;
+  height: 1.8rem;
+  margin-right: 0.6rem;
+}
+
+.white-zone .radio:last-of-type {
+  margin-bottom: 1rem;
+}
+
+em {
+  font-style: italic;
+}
+
+details[open] div {
+  margin-left: 0.8rem;
+  padding-left: 1.2rem;
+  border-left: 4px solid #912222;
+}
+
+details+details {
+  margin-top: 0.8rem;
+}
+
+summary {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::before {
+  content: '?';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-right: 0.5rem;
+  padding: 0.2rem;
+  border: 2px solid #222;
+  border-radius: 50%;
+}
+
+code {
+  padding: 0.4rem;
+  font-family: monospace;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+a[href]:not(:where([href^='#'], [href^='/'], [href^='//localhost:8080'], [href^='./'])):after {
+  content: ' ➚';
+}
+
+ul.list-with-dot {
+  padding-left: 1rem;
+  list-style-type: disc;
+}
+
+.config-content {
+  ol {
+    text-align: left;
+
+    li {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .text-align-start {
+    text-align: start;
+  }
+
+  .simple-list {
+    padding: 1rem 5rem;
+    text-align: left;
+    list-style-type: disc;
+    list-style-position: inside;
+  }
+}
