@@ -1,43 +1,41 @@
 <script lang="ts">
   import lireFrontMatter from 'front-matter'
-  import { makeAtelierListPageURL } from '#lib/urls.ts'
-  import { setCurrentRepositoryFromQuerystring, type EditeurFile } from '#lib/atelier.ts'
+  import { makeAtelierListArticlesURL } from '#lib/urls.ts'
+  import type { EditeurFile } from '#lib/atelier.ts'
   import Editeur from '#lib/components/atelier/Editeur.svelte'
   import * as store from '#lib/store.svelte.ts'
-  import { deletePage, createPage, updatePage } from '#lib/page.ts'
   import { goto } from '$app/navigation'
   import { setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
   import { handleErrors } from '#lib/error.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'
   import { error } from '@sveltejs/kit'
+  import { createArticle, deleteArticle, updateArticle } from '#lib/article.ts'
 
   const onSave: (file: EditeurFile) => Promise<void> = async ({
     fileName,
-    title,
     content,
-    previousTitle,
     previousContent,
-    index,
-    blogIndex,
-  }: EditeurFile) => {
+    title,
+    previousTitle,
+  }): Promise<void> => {
     if (!store.state.currentRepository || !store.state.gitAgent) return
 
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
+    const articlePageUrl = makeAtelierListArticlesURL(store.state.currentRepository)
 
     // If no content changed, just redirect
     if (!hasTitleChanged && !hasContentChanged) {
-      goto(makeAtelierListPageURL(store.state.currentRepository))
-      return
+      return goto(articlePageUrl)
     }
 
-    // If the file name is empty, it means that we are creating a new page.
+    // If the file name is empty, it means that we are creating a new article.
     if (fileName === '') {
       try {
-        await createPage(content, title, index)
+        await createArticle(title, content)
         setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent)
-        goto(makeAtelierListPageURL(store.state.currentRepository))
+        goto(articlePageUrl)
         return
       } catch (msg: any) {
         handleErrors(msg)
@@ -45,9 +43,10 @@
     }
 
     try {
-      await updatePage(fileName, title, content, index, blogIndex)
+      await updateArticle(fileName, title, content)
       setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent)
-      goto(makeAtelierListPageURL(store.state.currentRepository))
+      goto(articlePageUrl)
+      return
     } catch (msg: any) {
       handleErrors(msg)
     }
@@ -56,12 +55,10 @@
   let onDelete = $state(() => {})
   let file: EditeurFile | undefined = $state()
   let listPrefix = $derived(
-    store.state.currentRepository ? makeAtelierListPageURL(store.state.currentRepository) : '',
+    store.state.currentRepository ? makeAtelierListArticlesURL(store.state.currentRepository) : '',
   )
 
   onMount(async () => {
-    await setCurrentRepositoryFromQuerystring(page.url.searchParams)
-
     const fileName = decodeURIComponent(page.url.searchParams.get('path') ?? '')
 
     if (fileName) {
@@ -72,11 +69,11 @@
       }
 
       onDelete = () => {
-        deletePage(fileName)
+        deleteArticle(fileName)
           .then(() => {
             if (!store.state.currentRepository || !store.state.gitAgent) return
             setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent)
-            goto(makeAtelierListPageURL(store.state.currentRepository))
+            goto(makeAtelierListArticlesURL(store.state.currentRepository))
           })
           .catch(msg => handleErrors(msg))
       }
@@ -85,17 +82,17 @@
         const content = await gitAgent.getFile(fileName)
         const { attributes: data, body: markdownContent } = lireFrontMatter<{
           title: string
-          order: number
-          blog_index: boolean
         }>(content)
+
         file = {
           fileName,
           content: markdownContent,
           previousContent: markdownContent,
           title: data?.title,
-          index: data?.order,
           previousTitle: data?.title,
-          blogIndex: data?.blog_index,
+          // TODO: ces deux propriétés font pas beaucoup de sens sur un Article
+          index: -1,
+          blogIndex: false,
         }
       } catch (errorMessage: any) {
         handleErrors(errorMessage)
@@ -103,11 +100,12 @@
     } else {
       file = {
         fileName: '',
-        title: '',
-        index: store.state.pages ? store.state.pages.length + 1 : 1,
         content: '',
-        previousTitle: undefined,
         previousContent: undefined,
+        title: '',
+        previousTitle: undefined,
+        // TODO: voir plus haut
+        index: -1,
         blogIndex: false,
       }
     }
@@ -116,10 +114,10 @@
 
 <Editeur
   {file}
-  contenus={store.state.pages}
-  editionTitle="Édition d'une page"
+  contenus={store.state.articles}
+  editionTitle="Édition d'un article"
   {listPrefix}
-  deleteTitle="Supprimer la page"
+  deleteTitle="Supprimer l'article"
   {onDelete}
   {onSave}
 />

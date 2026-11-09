@@ -1,21 +1,19 @@
 <script lang="ts">
-  import { saveCustomCSS, setCurrentRepositoryFromQuerystring } from '#lib/atelier.ts'
+  import { saveCustomCSS } from '#lib/atelier.ts'
   import { CUSTOM_CSS_PATH } from '#lib/config.ts'
   import { handleErrors } from '#lib/error.ts'
   import { getOAuthServiceAPI } from '#lib/providers/index.ts'
   import * as store from '#lib/store.svelte.ts'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { page } from '$app/state'
   import { error } from '@sveltejs/kit'
   import { onMount } from 'svelte'
 
-  let theme = $state(store.state.theme)
+  let theme = $derived(store.state.theme)
   let notification = $state('')
   let deleteDisabled = $state(true)
 
   onMount(async () => {
-    await setCurrentRepositoryFromQuerystring(page.url.searchParams)
     const { gitAgent } = store.state
 
     if (!gitAgent) {

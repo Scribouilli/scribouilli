@@ -11,9 +11,9 @@ export function makeUrlParam(path: string, owner: string | undefined, repoPath: 
 }
 
 export function makeAtelierListPageURL({ owner, repoPath }: ScribouilliGitRepo): string {
-  return makeUrlParam(resolve('/atelier/pages'), owner, repoPath)
+  return makeUrlParam(resolve('/atelier/(site)/pages'), owner, repoPath)
 }
 
 export function makeAtelierListArticlesURL({ owner, repoPath }: ScribouilliGitRepo): string {
-  return makeUrlParam(resolve('/atelier/articles'), owner, repoPath)
+  return makeUrlParam(resolve('/atelier/(site)/articles'), owner, repoPath)
 }

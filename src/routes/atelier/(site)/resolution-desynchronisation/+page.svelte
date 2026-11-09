@@ -1,9 +1,6 @@
 <script lang="ts">
   import { addConflictRemovalAndRedirectToResolution } from '#lib/user.ts'
   import * as store from '#lib/store.svelte.ts'
-  import { onMount } from 'svelte'
-  import { setCurrentRepositoryFromQuerystring } from '#lib/atelier.ts'
-  import { page } from '$app/state'
   import Loader from '#lib/components/Loader.svelte'
 
   let conflict = $derived(store.state.conflict)
@@ -16,11 +13,6 @@
         }
       }),
   )
-  $inspect(conflict)
-
-  onMount(async () => {
-    await setCurrentRepositoryFromQuerystring(page.url.searchParams)
-  })
 </script>
 
 <article>

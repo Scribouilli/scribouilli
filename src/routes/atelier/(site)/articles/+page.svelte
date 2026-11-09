@@ -19,7 +19,7 @@
 <ListContenu
   listContenu={store.state.articles}
   title="Articles"
-  atelierPrefix={resolve('/atelier/articles/edit')}
+  atelierPrefix={resolve('/atelier/(site)/articles/edit')}
   newContentButtonText="Nouvel article"
   allowModification={false}
 />

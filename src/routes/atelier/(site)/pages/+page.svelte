@@ -4,13 +4,8 @@
   import * as store from '#lib/store.svelte.ts'
   import { blogIndex } from '#lib/article.ts'
   import { deleteFileAndCommit, writeFileAndCommit } from '#lib/git/file.ts'
-  import {
-    getCurrentRepoArticles,
-    getCurrentRepoPages,
-    setCurrentRepositoryFromQuerystring,
-  } from '#lib/atelier.ts'
+  import { getCurrentRepoArticles, getCurrentRepoPages } from '#lib/atelier.ts'
   import { handleErrors } from '#lib/error.ts'
-  import { page } from '$app/state'
   import { error } from '@sveltejs/kit'
   import { resolve } from '$app/paths'
 
@@ -54,9 +49,7 @@ blog_index: true
     }
   }
 
-  onMount(async () => {
-    await setCurrentRepositoryFromQuerystring(page.url.searchParams)
-
+  onMount(() => {
     if (!store.state.gitAgent) {
       error(500, 'gitAgent is undefined')
     }
@@ -69,7 +62,7 @@ blog_index: true
 <ListContenu
   listContenu={store.state.pages}
   title="Pages"
-  atelierPrefix={resolve('/atelier/pages/edit')}
+  atelierPrefix={resolve('/atelier/(site)/pages/edit')}
   newContentButtonText="Nouvelle page"
   allowModification={true}
   {onBlogToggle}

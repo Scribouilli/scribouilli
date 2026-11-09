@@ -27,7 +27,7 @@
     e.preventDefault()
 
     if (!repo) return
-    goto(makeUrlParam(`/atelier/pages`, repo.owner, repo.repoPath))
+    goto(makeUrlParam(`/atelier/(site)/pages`, repo.owner, repo.repoPath))
   }
 
   onMount(async () => {

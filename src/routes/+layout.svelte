@@ -11,7 +11,7 @@
 <Header />
 
 <main>
-  {@render children?.()}
+  {@render children()}
 </main>
 
 <Footer />
