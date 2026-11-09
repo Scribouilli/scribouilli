@@ -1,6 +1,5 @@
 <script lang="ts">
   import {
-    PROVIDERS_MAP,
     TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
     TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
     TOCTOCTOC_ORIGIN,
@@ -8,7 +7,7 @@
   import type { ScribouilliBackendProvider } from '#lib/providers/index.ts'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { error } from '@sveltejs/kit'
+  import type { PageProps } from './$types'
   import { onMount } from 'svelte'
 
   // TODO: Move in auth.ts
@@ -41,23 +40,12 @@
     }
   }
 
+  const { data }: PageProps = $props()
   let href: string | undefined = $state()
-  let provider: ScribouilliBackendProvider | undefined = $state()
+  const provider = $derived(data.provider)
 
   onMount(() => {
-    const providerId = page.url.searchParams.get('provider')
-
-    if (!providerId) {
-      error(400, `Missing 'provider' parameter`)
-    }
-
-    provider = PROVIDERS_MAP.get(providerId)
-
-    if (!provider) {
-      error(404, `Unkown provider ${providerId}`)
-    }
-
-    const destination = page.url.origin + resolve('/after-oauth-login')
+    const destination = page.url.origin + resolve('/apres-connexion')
 
     const redirectUrl = redirectURLByProvider(provider, destination)
     href = makeLoginHref(provider, redirectUrl)

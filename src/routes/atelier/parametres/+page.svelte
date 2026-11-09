@@ -199,7 +199,7 @@
       <strong>déjà créés</strong>.
     </p>
 
-    <a class="btn btn__medium" href={resolve('/selectionner-un-site')}> Changer de site </a>
+    <a class="btn btn__medium" href={resolve('/atelier/selectionner-site')}> Changer de site </a>
   </div>
 </section>
 

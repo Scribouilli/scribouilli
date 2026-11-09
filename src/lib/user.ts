@@ -109,7 +109,7 @@ export const fetchCurrentUserRepositories = async () => {
 export function addConflictRemovalAndRedirectToResolution(
   resolution: ResolutionOption['resolution'],
 ): ResolutionOption['resolution'] {
-  return async function () {
+  return async function() {
     await resolution()
     store.state.conflict = undefined
     // TODO: navigate to previous page
@@ -121,13 +121,13 @@ export function addConflictRemovalAndRedirectToResolution(
 
 export function redirectForRepos(repos: MinimalGitRepository[]) {
   if (repos.length === 0) {
-    goto(resolve('/creer-un-nouveau-site'))
+    goto(resolve('/atelier/creer-nouveau-site'))
   } else if (repos.length === 1) {
     const repoPath = repos[0].repoPath
     const account = repos[0].owner
 
-    goto(makeUrlParam('/atelier-list-pages', account, repoPath))
+    goto(makeUrlParam('/atelier/pages', account, repoPath))
   } else {
-    goto('/selectionner-un-site')
+    goto('/atelier/selectionner-site')
   }
 }

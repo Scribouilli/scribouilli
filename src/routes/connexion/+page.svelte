@@ -16,7 +16,11 @@
 
   <ul class="buttons">
     {#each PROVIDERS as provider}
-      <li><a href={resolve(`/account?provider=${provider.id}`)} class="btn">{provider.name}</a></li>
+      <li>
+        <a href={resolve(`/connexion/[provider]`, { provider: provider.id })} class="btn"
+          >{provider.name}</a
+        >
+      </li>
     {/each}
   </ul>
 </section>

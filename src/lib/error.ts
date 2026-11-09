@@ -17,8 +17,8 @@ export const handleErrors = (errorMessage: string) => {
       break
     }
     case 'REPOSITORY_NOT_FOUND': {
-      console.info('[REPOSITORY_NOT_FOUND] redirecting to /selectionner-un-site')
-      goto(resolve('/selectionner-un-site'))
+      console.info('[REPOSITORY_NOT_FOUND] redirecting to /aterlier')
+      goto(resolve('/atelier'))
 
       break
     }

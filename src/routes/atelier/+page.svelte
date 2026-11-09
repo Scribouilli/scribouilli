@@ -8,8 +8,8 @@
     <p>Vous pouvez créer un nouveau site ou partir d'un site existant.</p>
 
     <div class="btn-list">
-      <a href={resolve(`/creer-un-nouveau-site`)} class="btn">Créer un nouveau site</a>
-      <a href={resolve(`/partir-dun-site-existant`)} class="btn"> Partir d'un site existant </a>
+      <a href={resolve(`/atelier/creer-nouveau-site`)} class="btn">Créer un nouveau site</a>
+      <a href={resolve(`/atelier/selectionner-site`)} class="btn"> Partir d'un site existant </a>
     </div>
   </div>
 </section>

@@ -103,7 +103,7 @@ export const PROVIDERS: ScribouilliBackendProvider[] = [
         </li>
         <li>
           Dès que le code est validé, <strong>revenez sur Scribouilli</strong> et
-          cliquez sur <a href="./login?provider=github.com">"J'ai créé un compte"</a>
+          cliquez sur <a href="./se-connecter">"J'ai créé un compte"</a>
         </li>
       </ol>
     `,

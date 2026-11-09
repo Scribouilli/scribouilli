@@ -69,7 +69,7 @@ blog_index: true
 <ListContenu
   listContenu={store.state.pages}
   title="Pages"
-  atelierPrefix={resolve('/atelier-page')}
+  atelierPrefix={resolve('/atelier/pages/edit')}
   newContentButtonText="Nouvelle page"
   allowModification={true}
   {onBlogToggle}

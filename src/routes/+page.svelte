@@ -22,6 +22,6 @@
   {:else if showWelcome}
     <h2>Créez votre petit site facilement !</h2>
 
-    <a href="/choose-account" class="btn">C'est parti !</a>
+    <a href="/connexion" class="btn">C'est parti !</a>
   {/if}
 </section>

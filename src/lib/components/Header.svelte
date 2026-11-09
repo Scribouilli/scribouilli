@@ -74,7 +74,7 @@
         <li>
           <a
             href={makeUrlParam(
-              resolve(`/settings`),
+              resolve(`/atelier/parametres`),
               state.currentRepository.owner,
               state.currentRepository.repoPath,
             )}

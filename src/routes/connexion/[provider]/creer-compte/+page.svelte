@@ -1,26 +1,9 @@
 <script lang="ts">
-  import { PROVIDERS_MAP } from '#lib/config.ts'
-  import type { ScribouilliBackendProvider } from '#lib/providers/index.ts'
-  import { page } from '$app/state'
   import { resolve } from '$app/paths'
-  import { error } from '@sveltejs/kit'
-  import { onMount } from 'svelte'
 
-  let provider: ScribouilliBackendProvider | undefined = $state()
-
-  onMount(() => {
-    const providerId = page.url.searchParams.get('provider')
-
-    if (!providerId) {
-      error(400, `Missing 'provider' parameter`)
-    }
-
-    provider = PROVIDERS_MAP.get(providerId)
-
-    if (!provider) {
-      error(404, `Unkown provider ${providerId}`)
-    }
-  })
+  import type { PageProps } from './$types'
+  const { data }: PageProps = $props()
+  const provider = $derived(data.provider)
 </script>
 
 {#if provider}
@@ -39,7 +22,10 @@
           <a href={provider.signupLink} target="_blank" class="btn"
             >Créer un compte {provider.name}</a
           >
-          <a href={resolve(`/login?provider=${provider.id}`)} class="btn">J'ai créé un compte</a>
+          <a
+            href={resolve(`/connexion/[provider]/se-connecter`, { provider: provider.id })}
+            class="btn">J'ai créé un compte</a
+          >
         </div>
       {/if}
     </div>
