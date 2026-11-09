@@ -6,6 +6,7 @@
   import { onMount } from 'svelte'
   import { fetchAuthenticatedUserLogin, fetchCurrentUserRepositories } from '#lib/user.ts'
   import Loader from '#lib/components/Loader.svelte'
+  import { resolve } from '$app/paths'
 
   let currentAccount = $derived(store.state.login)
   let currentAccountRepositories = $derived(
@@ -27,7 +28,7 @@
     e.preventDefault()
 
     if (!repo) return
-    goto(makeUrlParam(`/atelier/(site)/pages`, repo.owner, repo.repoPath))
+    goto(makeUrlParam(resolve(`/atelier/(site)/pages`), repo.owner, repo.repoPath))
   }
 
   onMount(async () => {

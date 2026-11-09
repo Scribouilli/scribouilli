@@ -126,7 +126,7 @@ export function redirectForRepos(repos: MinimalGitRepository[]) {
     const repoPath = repos[0].repoPath
     const account = repos[0].owner
 
-    goto(makeUrlParam('/atelier/(site)/pages', account, repoPath))
+    goto(makeUrlParam(resolve('/atelier/(site)/pages'), account, repoPath))
   } else {
     goto('/atelier/selectionner-site')
   }
