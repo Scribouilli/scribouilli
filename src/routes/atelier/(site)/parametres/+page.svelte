@@ -1,48 +1,38 @@
 <script lang="ts">
   import { saveCustomCSS } from '#lib/atelier.ts'
   import { CUSTOM_CSS_PATH } from '#lib/config.ts'
+  import { getCurrentRepo, getProvider } from '#lib/context.ts'
   import { handleErrors } from '#lib/error.ts'
-  import { getOAuthServiceAPI } from '#lib/providers/index.ts'
   import * as store from '#lib/store.svelte.ts'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { error } from '@sveltejs/kit'
   import { onMount } from 'svelte'
 
-  let theme = $derived(store.state.theme)
+  let themeCss = $derived('')
   let notification = $state('')
   let deleteDisabled = $state(true)
+  const repo = getCurrentRepo()
 
   onMount(async () => {
-    const { gitAgent } = store.state
-
-    if (!gitAgent) {
-      error(500, 'gitAgent is undefined')
-    }
+    const gitAgent = repo.gitAgent
 
     try {
-      const content = await gitAgent.getFile(CUSTOM_CSS_PATH)
-      store.state.theme.css = content
+      themeCss = await gitAgent.getFile(CUSTOM_CSS_PATH)
     } catch (msg: any) {
       handleErrors(msg)
     }
   })
 
   const onDeleteRepository = () => {
-    if (!store.state.currentRepository) {
-      error(500, 'currentRepository is undefined')
-    }
+    const provider = getProvider()
 
-    getOAuthServiceAPI()
-      .deleteRepository(store.state.currentRepository)
-      .then(() => {
-        goto(resolve('/'))
-      })
-      .catch(msg => handleErrors(msg))
+    provider.api.deleteRepository(repo).then(() => {
+      goto(resolve('/'))
+    }, handleErrors)
   }
 
   const checkThemeColor = (color: string): boolean => {
-    const themeColor = theme.css?.replace(
+    const themeColor = themeCss.replace(
       /(.*)--couleur-primaire(.*)#(?<color>[a-fA-F0-9]{6});(.*)/gs,
       '#$<color>',
     )
@@ -51,24 +41,25 @@
   }
 
   const saveTheme = (_e: Event) => {
-    if (theme.css === undefined) {
+    if (themeCss === undefined) {
       return
     }
-    saveCustomCSS(theme.css).catch(handleErrors)
+
+    saveCustomCSS(repo, themeCss).catch(handleErrors)
     notification = 'Le thème sera mis à jour après le déploiement des modifications (~ 2min)'
 
     document.body.scrollIntoView()
   }
 
   const setColor = (e: Event) => {
-    theme.css = theme.css?.replace(
+    themeCss = themeCss.replace(
       /(?<before>(.*)--couleur-primaire(.*))(#[a-fA-F0-9]{6})(?<after>;(.*))/gs,
       `$<before>${(<HTMLInputElement>e.target)?.value}$<after>`,
     )
   }
 
   const setTheme = (e: Event) => {
-    theme.css = (<HTMLInputElement>e.target)?.value
+    themeCss = (<HTMLInputElement>e.target)?.value
   }
 
   const mesCouleurs = [
@@ -156,7 +147,7 @@
       > ici&nbsp;!
     </p>
     <textarea aria-labelledby="customCSS" cols="20" rows="8" onchange={setTheme}
-      >{theme.css || 'Chargement du thème personnalisé...'}</textarea
+      >{themeCss || 'Chargement du thème personnalisé...'}</textarea
     >
     <button type="button" class="btn btn__medium" onclick={saveTheme}>Enregistrer le CSS</button>
   </div>

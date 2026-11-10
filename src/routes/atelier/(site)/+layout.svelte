@@ -1,15 +1,19 @@
 <script lang="ts">
-  import { setCurrentRepositoryFromQuerystring } from '#lib/atelier.ts'
-  import { page } from '$app/state'
   import { onMount } from 'svelte'
+  import { page } from '$app/state'
   import type { LayoutProps } from './$types'
+  import { getCurrentRepoFromQueryString } from '#lib/atelier.ts'
   import Loader from '#lib/components/Loader.svelte'
+  import { getProvider, setCurrentRepo } from '#lib/context.ts'
 
   let loading = $state(true)
   let { children }: LayoutProps = $props()
 
   onMount(async () => {
-    await setCurrentRepositoryFromQuerystring(page.url.searchParams)
+    const provider = getProvider()
+
+    const repo = await getCurrentRepoFromQueryString(provider, page.url.searchParams)
+    setCurrentRepo(repo)
     loading = false
   })
 </script>

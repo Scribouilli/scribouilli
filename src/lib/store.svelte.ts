@@ -1,24 +1,20 @@
-import type ScribouilliGitRepo from './git/repo'
+import type ScribouilliGitRepo from './atelier/repo.svelte'
 import type { Article } from './article'
-import type { Page } from './page'
+import type { Page } from './atelier/page.svelte'
 import type { MinimalGitRepository } from './providers'
 import type { BuildStatus } from '#lib/build-status.ts'
-import type { GitAgent } from './git/agent'
 import type { ResolutionOption } from './git/agent'
-import type { OAuthProvider } from './providers'
+import type { ScribouilliBackendProvider } from './providers'
 
-import { browser } from '$app/env'
-import * as auth from './auth'
+import * as storage from './storage'
 
 export interface ScribouilliState {
-  oAuthProvider?: OAuthProvider
+  provider?: ScribouilliBackendProvider
   login?: string
   email?: string
-  currentRepository: ScribouilliGitRepo | undefined
-  gitAgent: GitAgent | undefined
+  currentRepository?: ScribouilliGitRepo
   conflict: ResolutionOption[] | undefined
-  // We use the term "account" to refer to user or organization.
-  reposByAccount: { [account: string]: MinimalGitRepository[] } | undefined
+  repos: MinimalGitRepository[] | undefined
   pages?: Page[]
   articles?: Article[]
   buildStatus: BuildStatus
@@ -27,13 +23,12 @@ export interface ScribouilliState {
 }
 
 const DEFAULT_STATE: ScribouilliState = {
-  oAuthProvider: undefined,
+  provider: undefined,
   login: undefined,
   email: undefined,
   currentRepository: undefined,
-  gitAgent: undefined,
   conflict: undefined,
-  reposByAccount: {},
+  repos: [],
   pages: [],
   articles: undefined,
   buildStatus: 'in_progress' as const,
@@ -45,8 +40,7 @@ const DEFAULT_STATE: ScribouilliState = {
 
 function loadState(): ScribouilliState {
   let state = structuredClone(DEFAULT_STATE)
-  if (browser) {
-    state.oAuthProvider = auth.load()
+  if (localStorage) {
     state.basePath = location.hostname.endsWith('.github.io') ? '/scribouilli' : ''
   }
   return state
@@ -86,51 +80,18 @@ export function setArticles(articles: ScribouilliState['articles']) {
   })
 }
 
-// TODO: sort les repos dans le composant
-// TODO: remplacer l’objet `reposByAccount` par une liste `repos` vu qu’il n’y a toujours qu’une seule clé
-export function setReposForAccount({
-  login,
-  repos,
-}: {
-  login: string
-  repos: MinimalGitRepository[]
-}) {
-  if (!state.reposByAccount) {
-    state.reposByAccount = {}
-  }
-
-  state.reposByAccount[login] = repos
-    // on place ses propres dépôts avant les dépôts des autres
-    .sort((a, b) => {
-      if (state.login && typeof state.login === 'string') {
-        if (a.owner === undefined || b.owner === undefined || a.owner == b.owner) {
-          return a.repoPath.localeCompare(b.repoPath)
-        } else if (a.owner === state.login) {
-          return -1
-        } else if (b.owner === state.login) {
-          return 1
-        } else {
-          return a.owner.localeCompare(b.owner)
-        }
-      }
-
-      return 0
-    })
-}
-
 export function logout() {
-  auth.logout()
+  storage.deleteProvider()
 
   // account-related
-  state.oAuthProvider = undefined
+  state.provider = undefined
   state.login = undefined
   state.email = undefined
-  state.reposByAccount = undefined
+  state.repos = undefined
 
   // repo-related
   state.pages = undefined
   state.articles = undefined
   state.currentRepository = undefined
-  state.gitAgent = undefined
   state.conflict = undefined
 }

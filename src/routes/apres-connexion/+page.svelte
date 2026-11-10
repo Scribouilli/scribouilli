@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import * as auth from '#lib/auth.ts'
-  import { state } from '#lib/store.svelte.ts'
+  import * as storage from '#lib/storage.ts'
   import heartsLoader from '#lib/assets/images/hearts.svg'
   import {
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
@@ -9,7 +8,7 @@
     TOCTOCTOC_OAUTH_PROVIDER_ORIGIN_PARAMETER,
   } from '#lib/config.ts'
 
-  import { fetchCurrentUserRepositories, redirectForRepos } from '#lib/user.ts'
+  import { redirectForRepos } from '#lib/user.ts'
   import { error } from '@sveltejs/kit'
   import { onMount } from 'svelte'
 
@@ -38,24 +37,24 @@
     const providerId = new URL(origin).hostname
 
     if (providerType && accessToken) {
-      const oAuthProvider = {
+      const provider = {
         type: providerType,
         accessToken,
         origin,
         id: providerId,
       }
 
-      console.log(oAuthProvider)
-
-      state.oAuthProvider = oAuthProvider
-      auth.login(oAuthProvider)
-      return oAuthProvider
+      storage.saveProvider(provider)
+      return storage.loadProvider()
     }
   }
 
   onMount(() => {
-    storeOAuthProviderAccess()
-    fetchCurrentUserRepositories().then(redirectForRepos)
+    const provider = storeOAuthProviderAccess()
+    console.log(provider)
+    if (provider) {
+      provider.api.getCurrentUserRepositories().then(redirectForRepos)
+    }
   })
 </script>
 

@@ -1,10 +1,9 @@
 <script lang="ts">
   import SiteCreationLoader from '#lib/components/atelier/SiteCreationLoader.svelte'
-  import { createRepositoryForCurrentAccount } from '#lib/atelier.ts'
   import { DEFAULT_TEMPLATE, TEMPLATES } from '#lib/config.ts'
   import type { GitSiteTemplate } from '#lib/providers/index.ts'
-  import { onMount } from 'svelte'
-  import { fetchAuthenticatedUserLogin } from '#lib/user.ts'
+  import ScribouilliGitRepo from '#lib/git/repo.ts'
+  import { getProvider, getUser } from '#lib/context.ts'
 
   let name = $state('')
   let loading = $state(false)
@@ -12,10 +11,12 @@
 
   let selectedTemplate: GitSiteTemplate = $state(DEFAULT_TEMPLATE)
 
-  const onSubmit = (e: SubmitEvent) => {
+  const onSubmit = async (e: SubmitEvent) => {
     e.preventDefault()
 
     loading = true
+    const { login } = getUser()
+    const provider = getProvider()
 
     // Pour le moment on crée forcément un dépôt sur son propre compte.
     // Peut-être dans le futur on permettra de sélectionner une organisation
@@ -23,17 +24,20 @@
     // Pour le moment on fait comme ça, et on documente comment transférer un
     // dépôt perso dans une organisation, via l'interface GitHub, pour les
     // utilisateurices avancé.es
-    createRepositoryForCurrentAccount(name, selectedTemplate).catch((error: any) => {
+
+    try {
+      await ScribouilliGitRepo.create({
+        owner: login,
+        repoName: name,
+        template: selectedTemplate,
+        provider: provider,
+      })
+    } catch (error: any) {
       console.warn(`Failed to create repository: ${error}`)
       loading = false
       hasError = true
-      error(500, `Failed to create repository: ${error}`)
-    })
+    }
   }
-
-  onMount(async () => {
-    await fetchAuthenticatedUserLogin()
-  })
 </script>
 
 <section class="screen">

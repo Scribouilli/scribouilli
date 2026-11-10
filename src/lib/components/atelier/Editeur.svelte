@@ -1,12 +1,13 @@
 <script lang="ts">
   import { marked } from 'marked'
   import DOMPurify from 'dompurify'
-  import { makeFileNameFromTitle } from '#lib/page.ts'
   import { writeFileAndCommit } from '#lib/git/file.ts'
   // TODO: Fix this
   // import '../../../../styles/editeur-preview/framalibre.css';
   import type { EditeurFile, FileContenu } from '#lib/atelier.ts'
   import Loader from '../Loader.svelte'
+  import { getCurrentRepo } from '#lib/context.ts'
+  import { Pages } from '#lib/page.ts'
 
   interface Props {
     file?: EditeurFile
@@ -16,7 +17,7 @@
     listPrefix: string
     deleteTitle: string
 
-    onDelete: () => void
+    onDelete: (file: EditeurFile) => void
     onSave: (file: EditeurFile) => void
   }
 
@@ -36,6 +37,7 @@
   // single-image selection
   let image = $derived(files && files[0])
   let imageMd = $state('')
+  const repo = getCurrentRepo()
 
   let preview = $derived.by(async () => {
     if (!file) {
@@ -59,7 +61,7 @@
       return
     }
     const titleChanged = file.previousTitle?.trim() !== file.title.trim()
-    if (titleChanged && filesPath && filesPath.includes(makeFileNameFromTitle(file.title))) {
+    if (titleChanged && filesPath && filesPath.includes(Pages.makeFileNameFromTitle(file.title))) {
       e.target.setCustomValidity('Vous avez déjà utilisé ce nom. Veuillez en choisir un autre.')
 
       return
@@ -116,7 +118,7 @@
     const buffer = new Uint8Array(await image.arrayBuffer())
     const imageFilePath = `images/${image.name}`
 
-    await writeFileAndCommit(imageFilePath, buffer, `Ajout de l'image ${image.name}`)
+    await writeFileAndCommit(repo.gitAgent, imageFilePath, buffer, `Ajout de l'image ${image.name}`)
 
     const imageLink = `{% link ${imageFilePath} %}`
     imageMd = `![Texte décrivant l'image](${imageLink})`
@@ -221,7 +223,7 @@
             </label>
             <button
               type="button"
-              onclick={onDelete}
+              onclick={() => onDelete(file)}
               disabled={deleteDisabled}
               class=" btn__medium btn btn__danger"
             >

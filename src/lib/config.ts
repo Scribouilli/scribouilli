@@ -1,4 +1,4 @@
-import type { GitSiteTemplate, ScribouilliBackendProvider } from './providers'
+import type { GitSiteTemplate, ProviderConfig } from './providers'
 
 export const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 export const OAUTH_PROVIDER_STORAGE_KEY = 'scribouilli_oauth_provider'
@@ -26,7 +26,7 @@ export const TEMPLATES: GitSiteTemplate[] = [
 
 export const DEFAULT_TEMPLATE = TEMPLATES[0]
 
-export const PROVIDERS: ScribouilliBackendProvider[] = [
+export const PROVIDERS: ProviderConfig[] = [
   {
     id: 'localhost',
     type: 'scribouilli',

@@ -1,12 +1,9 @@
-import { goto } from '$app/navigation'
-
-import { state } from '../store.svelte'
-import { PROVIDERS_MAP } from '../config'
-import ScribouilliGitRepo from '../git/repo'
+import ScribouilliGitRepo from '../atelier/repo.svelte'
 import GitLabAPI from './gitlab'
 import GitHubAPI from './github'
 import ScribouilliBackend from './scribouilli'
 import type { BuildStatus } from '#lib/build-status.ts'
+import { getCurrentRepo } from '#lib/context.ts'
 
 export interface OAuthProvider {
   type: string
@@ -31,7 +28,7 @@ export type UserRole = 'owner' | 'editor'
 
 export type BackendType = 'github' | 'gitlab' | 'scribouilli'
 
-export interface ScribouilliBackendProvider {
+export interface ProviderConfig {
   id: string
   origin: string
   clientId?: string
@@ -44,7 +41,7 @@ export interface ScribouilliBackendProvider {
   corsProxy?: string
 }
 
-export interface OAuthServiceAPI {
+export interface ProviderApi {
   callAPI: (
     url: string,
     requestParams?: RequestInit & { headers?: Record<string, string> },
@@ -52,8 +49,9 @@ export interface OAuthServiceAPI {
   getOauthUsernameAndPassword: () => { username: string; password: string }
   getAuthenticatedUser: () => Promise<any>
   getUserEmails: () => Promise<AuthenticatedUserEmails[]>
+  isSessionActive: () => Promise<boolean>
   createDefaultRepository: (
-    scribouilliGitRepo: ScribouilliGitRepo,
+    scribouilliGitRepo: { owner?: string, repoPath: string },
     template: GitSiteTemplate,
   ) => Promise<{ remoteURL: string }>
   isRepositoryReady: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>
@@ -68,54 +66,29 @@ export interface OAuthServiceAPI {
   makePublicRepositoryURL: (owner: string | undefined, repoPath: string) => string
 }
 
+export interface ScribouilliBackendProvider {
+  api: ProviderApi,
+  config: ProviderConfig
+}
+
 interface AuthenticatedUserEmails {
   email: string
   primary: boolean
 }
 
-const makeOAuthServiceAPI = ({ accessToken, origin, id }: OAuthProvider): OAuthServiceAPI => {
-  let provider = PROVIDERS_MAP.get(id)
-
-  if (!provider) {
-    throw new TypeError(`Unkown provider ${id}`)
-  }
-
+export const makeOAuthServiceAPI = (provider: OAuthProvider): ProviderApi => {
   if (provider.type === 'github') {
-    return new GitHubAPI(accessToken)
+    return new GitHubAPI(provider)
   } else if (provider.type === 'gitlab') {
-    return new GitLabAPI(accessToken, origin, () => {
-      if (!state.gitAgent) {
-        throw new TypeError('store.state.gitAgent is undefined')
-      }
-      return state.gitAgent
+    return new GitLabAPI(provider, () => {
+      // TODO: fix this, remove access to context in random places
+      return getCurrentRepo().gitAgent
     })
   } else if (provider.type === 'scribouilli') {
-    return new ScribouilliBackend(accessToken, origin)
+    return new ScribouilliBackend(provider)
   } else {
     throw new Error('unreachable')
   }
-}
-
-let oAuthServiceAPI: OAuthServiceAPI
-
-export const getOAuthServiceAPI = (): OAuthServiceAPI => {
-  if (oAuthServiceAPI) {
-    return oAuthServiceAPI
-  }
-
-  const oAuthProvider = state.oAuthProvider
-
-  if (!oAuthProvider) {
-    console.info("L'utilisateur n'est pas connecté. Redirection vers /")
-
-    goto('/')
-
-    throw new TypeError('Missing accessToken or provider name')
-  }
-
-  oAuthServiceAPI = makeOAuthServiceAPI(oAuthProvider)
-
-  return oAuthServiceAPI
 }
 
 /**

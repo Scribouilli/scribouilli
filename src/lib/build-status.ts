@@ -1,6 +1,4 @@
-import { GitAgent } from '#lib/git/agent.ts'
-import { getOAuthServiceAPI } from '#lib/providers/index.ts'
-import ScribouilliGitRepo from '#lib/git/repo.ts'
+import ScribouilliGitRepo from '#lib/atelier/repo.svelte.ts'
 import * as store from '#lib/store.svelte.ts'
 import type { CommitObject } from 'isomorphic-git'
 
@@ -18,13 +16,12 @@ export const isItStillCompiling = (lastCommit: CommitObject): boolean => {
 
 // TODO: Make this return a Promise<BuildStatus> ?
 export function scheduleCheck(
-  scribouilliGitRepo: ScribouilliGitRepo,
-  gitAgent: GitAgent,
+  repo: ScribouilliGitRepo,
   delay = 5000,
 ) {
   if (!timeout) {
     timeout = setTimeout(async () => {
-      const status = await getBuildStatus(scribouilliGitRepo, gitAgent).catch(
+      const status = await getBuildStatus(repo).catch(
         () => 'error' as const,
       )
       store.state.buildStatus = status
@@ -34,15 +31,14 @@ export function scheduleCheck(
 }
 
 export function setBuildingAndCheckStatusLater(
-  scribouilliGitRepo: ScribouilliGitRepo,
-  gitAgent: GitAgent,
+  repo: ScribouilliGitRepo,
   t = 30000,
 ) {
   store.state.buildStatus = 'in_progress'
   // @ts-ignore
   clearTimeout(timeout)
   timeout = undefined
-  scheduleCheck(scribouilliGitRepo, gitAgent, t)
+  scheduleCheck(repo, t)
 }
 
 /**
@@ -51,11 +47,11 @@ export function setBuildingAndCheckStatusLater(
  * whether the last build succeeded or not.
  */
 async function getBuildStatus(
-  currentRepository: ScribouilliGitRepo,
-  gitAgent: GitAgent,
+  repo: ScribouilliGitRepo,
 ): Promise<BuildStatus> {
-  const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
-  const lastCommit = await gitAgent.currentCommit()
+  const publishedWebsiteURL = await repo.publishedWebsiteURL
+
+  const lastCommit = await repo.gitAgent.currentCommit()
 
   let html
 
@@ -102,7 +98,7 @@ async function getBuildStatus(
           // that didn't use a Gemfile).
           //
           // In that case, fallback to the GitHub/GitLab API.
-          return await getViaApi(currentRepository)
+          return await getViaApi(repo)
         }
 
         if (hash === lastCommit.oid.slice(0, 7)) {
@@ -129,6 +125,6 @@ async function getBuildStatus(
   return 'success'
 }
 
-function getViaApi(scribouilliGitRepo: ScribouilliGitRepo) {
-  return getOAuthServiceAPI().getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
+function getViaApi(repo: ScribouilliGitRepo) {
+  return repo.provider.api.getPagesWebsiteDeploymentStatus(repo)
 }

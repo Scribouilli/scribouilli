@@ -1,10 +1,9 @@
 <script lang="ts">
   import * as store from '#lib/store.svelte.ts'
-  import { makePageFrontMatter } from '#lib/page.ts'
+  import { Pages } from '#lib/page.ts'
   import type { FileContenu } from '#lib/atelier.ts'
   import { makeUrlParam } from '#lib/urls.ts'
-  import { error } from '@sveltejs/kit'
-  import { showArticles } from '#lib/article.ts'
+  import { getCurrentRepo } from '#lib/context.ts'
 
   interface Props {
     listContenu?: FileContenu[]
@@ -24,27 +23,20 @@
     onBlogToggle,
   }: Props = $props()
 
-  let currentRepository = $derived(store.state.currentRepository)
+  let repo = getCurrentRepo()
   let modification = $state(false)
-  let blogEnabled = $derived(showArticles(store.state))
+  let blogEnabled = $derived(onBlogToggle ? repo.isBlogEnabled(listContenu) : false)
 
-  // PPP move this to an action
-  // @ts-ignore
-  const editClick = async e => {
-    let gitAgent = store.state.gitAgent
-
-    if (!gitAgent) {
-      error(500, 'gitAgent is undefined')
-    }
-
+  // TODO: move this somewhere else
+  const editClick = async (_e: Event) => {
     if (modification) {
       for (let page of listContenu) {
         // for + await leads to poor pref. PPP: do a Promise.all
-        await gitAgent.writeFile(
+        await repo.gitAgent.writeFile(
           page.path,
           `${
             page.title
-              ? makePageFrontMatter(
+              ? Pages.makeFrontMatter(
                   page.title,
                   page.index,
                   page.inMenu,
@@ -55,9 +47,8 @@
         )
       }
 
-      await gitAgent.commit('Changements menu')
-
-      await gitAgent.safePush()
+      await repo.gitAgent.commit('Changements menu')
+      await repo.gitAgent.safePush()
     }
     modification = !modification
   }
@@ -67,93 +58,90 @@
   }
 </script>
 
-{#if currentRepository}
-  <section class="screen">
+<section class="screen">
+  <div>
+    <header>
+      <h2>
+        {title}
+      </h2>
+      <a href={makeUrlParam(atelierPrefix, repo.owner, repo.repoPath)} class="btn btn__medium"
+        >{newContentButtonText}</a
+      >
+    </header>
+
     <div>
-      <header>
-        <h2>
-          {title}
-        </h2>
-        <a
-          href={makeUrlParam(atelierPrefix, currentRepository.owner, currentRepository.repoPath)}
-          class="btn btn__medium">{newContentButtonText}</a
-        >
-      </header>
-
-      <div>
-        <ul>
-          {#each listContenu as contenu}
-            <li>
-              <span>{contenu.title}</span>
-              {#if modification}
-                <div class="gestionMenu">
-                  <label>
-                    Ordre de la page dans le menu
-                    <input
-                      class="order"
-                      aria-label="Ordre de la page dans le menu"
-                      type="number"
-                      min="1"
-                      max={store.state.pages?.length}
-                      bind:value={contenu.index}
-                    />
-                  </label>
-                  <label>
-                    Afficher dans le menu
-                    <input
-                      class="inMenu"
-                      aria-label="Affichage de la page dans le menu"
-                      type="checkbox"
-                      bind:checked={contenu.inMenu}
-                    />
-                  </label>
-                </div>
-              {:else}
-                <a
-                  href={makeUrlParam(
-                    `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
-                    currentRepository.owner,
-                    currentRepository.repoPath,
-                  )}
-                >
-                  Modifier</a
-                >
-              {/if}
-            </li>
-          {/each}
-        </ul>
-        {#if allowModification}
-          <button class="btn btn_small btn_secondary" onclick={editClick}
-            >{#if modification}
-              Enregistrer
+      <ul>
+        {#each listContenu as contenu}
+          <li>
+            <span>{contenu.title}</span>
+            {#if modification}
+              <div class="gestionMenu">
+                <label>
+                  Ordre de la page dans le menu
+                  <input
+                    class="order"
+                    aria-label="Ordre de la page dans le menu"
+                    type="number"
+                    min="1"
+                    max={store.state.pages?.length}
+                    bind:value={contenu.index}
+                  />
+                </label>
+                <label>
+                  Afficher dans le menu
+                  <input
+                    class="inMenu"
+                    aria-label="Affichage de la page dans le menu"
+                    type="checkbox"
+                    bind:checked={contenu.inMenu}
+                  />
+                </label>
+              </div>
             {:else}
-              Modifier le menu
-            {/if}</button
-          >
-        {/if}
-      </div>
-    </div>
-
-    {#if onBlogToggle}
-      <div class="wrapper white-zone">
-        <h3>Articles</h3>
-
-        <p>
-          Ajoute un lien "Articles" dans le menu. Celui-ci permet de créer et lister une série de
-          pages.
-        </p>
-
-        <button class="btn btn__medium" onclick={() => toggleBlog(blogEnabled)}>
-          {#if blogEnabled}
-            Enlever le lien "Articles" (~ 2min)
+              <a
+                href={makeUrlParam(
+                  `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
+                  repo.owner,
+                  repo.repoPath,
+                )}
+              >
+                Modifier</a
+              >
+            {/if}
+          </li>
+        {/each}
+      </ul>
+      {#if allowModification}
+        <button class="btn btn_small btn_secondary" onclick={editClick}
+          >{#if modification}
+            Enregistrer
           {:else}
-            Ajouter le lien "Articles" (~ 2min)
-          {/if}
-        </button>
-      </div>
-    {/if}
-  </section>
-{/if}
+            Modifier le menu
+          {/if}</button
+        >
+      {/if}
+    </div>
+  </div>
+
+  {#if onBlogToggle}
+    <div class="wrapper white-zone">
+      <h3>Articles</h3>
+
+      <p>
+        Ajoute un lien "Articles" dans le menu. Celui-ci permet de créer et lister une série de
+        pages.
+      </p>
+
+      <button class="btn btn__medium" onclick={() => toggleBlog(blogEnabled)}>
+        {#if blogEnabled}
+          Enlever le lien "Articles" (~ 2min)
+        {:else}
+          Ajouter le lien "Articles" (~ 2min)
+        {/if}
+      </button>
+    </div>
+  {/if}
+</section>
 
 <style lang="css">
   ul {

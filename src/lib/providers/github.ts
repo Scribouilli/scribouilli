@@ -1,8 +1,8 @@
 import z from 'zod'
 
 import { GITHUB_API_BASE_URL } from './../config'
-import ScribouilliGitRepo from '../git/repo'
-import type { GitSiteTemplate, OAuthServiceAPI } from '.'
+import ScribouilliGitRepo from '../atelier/repo.svelte'
+import type { GitSiteTemplate, OAuthProvider, ProviderApi } from '.'
 import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from '.'
 
 const GITHUB_JSON_ACCEPT_HEADER = 'application/vnd.github+json'
@@ -21,10 +21,10 @@ const GITHUB_REPO_SCHEMA = z.object({
 })
 const GITHUB_REPO_LIST_SCHEMA = z.array(GITHUB_REPO_SCHEMA)
 
-export default class GitHubAPI implements OAuthServiceAPI {
+export default class GitHubAPI implements ProviderApi {
   private accessToken: string | undefined
 
-  constructor(accessToken: string) {
+  constructor({ accessToken }: OAuthProvider) {
     this.accessToken = accessToken
   }
 
@@ -51,6 +51,18 @@ export default class GitHubAPI implements OAuthServiceAPI {
     })
   }
 
+  async isSessionActive() {
+    try {
+      await this.getAuthenticatedUser()
+    } catch (e) {
+      if (e === 'INVALIDATE_TOKEN') {
+        return false
+      }
+      throw e
+    }
+    return true
+  }
+
   getCurrentUserRepositories() {
     return this.callAPI(`${GITHUB_API_BASE_URL}/user/repos?sort=updated&visibility=public`)
       .then(response => response.json())
@@ -69,11 +81,12 @@ export default class GitHubAPI implements OAuthServiceAPI {
   }
 
   async createDefaultRepository(
-    { owner, repoPath, publishedWebsiteURL }: ScribouilliGitRepo,
+    { owner, repoPath }: { owner?: string, repoPath: string },
     template: GitSiteTemplate,
   ) {
+    console.info('Create repository from template')
     // Generate a new repository from the theme repository
-    const r = await this.callAPI(`${GITHUB_API_BASE_URL}/repos/${template.githubRepoId}/generate`, {
+    const rawRepoResponse = await this.callAPI(`${GITHUB_API_BASE_URL}/repos/${template.githubRepoId}/generate`, {
       headers: {
         Authorization: 'token ' + this.accessToken,
         Accept: GITHUB_JSON_ACCEPT_HEADER,
@@ -85,8 +98,10 @@ export default class GitHubAPI implements OAuthServiceAPI {
         description: 'Mon site Scribouilli',
       }),
     })
-    const { url: newRepoAPIURL, clone_url } = await r.json()
-    await this.callAPI(`${newRepoAPIURL}/pages`, {
+    const { url: newRepoAPIURL, clone_url } = await rawRepoResponse.json()
+
+    console.info('Configure pages on repository')
+    const rawPagesResponse = await this.callAPI(`${newRepoAPIURL}/pages`, {
       method: 'POST',
       headers: {
         Authorization: 'token ' + this.accessToken,
@@ -96,6 +111,8 @@ export default class GitHubAPI implements OAuthServiceAPI {
         build_type: 'workflow',
       }),
     })
+    const { html_url } = await rawPagesResponse.json();
+
     console.info('Setup repository settings')
     await this.callAPI(newRepoAPIURL, {
       method: 'POST',
@@ -104,12 +121,13 @@ export default class GitHubAPI implements OAuthServiceAPI {
         Accept: GITHUB_JSON_ACCEPT_HEADER,
       },
       body: JSON.stringify({
-        homepage: (await publishedWebsiteURL) || '',
+        homepage: html_url || '',
         has_issues: false,
         has_projects: false,
         has_wiki: false,
       }),
     })
+
     console.info('Apply topic to the new repository')
     await this.callAPI(`${newRepoAPIURL}/topics`, {
       headers: {

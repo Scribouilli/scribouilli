@@ -4,7 +4,7 @@
     TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER,
     TOCTOCTOC_ORIGIN,
   } from '#lib/config.ts'
-  import type { ScribouilliBackendProvider } from '#lib/providers/index.ts'
+  import type { ProviderConfig } from '#lib/providers/index.ts'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import type { PageProps } from './$types'
@@ -12,7 +12,7 @@
 
   // TODO: Move in auth.ts
   function redirectURLByProvider(
-    { type: providerType, origin }: ScribouilliBackendProvider,
+    { type: providerType, origin }: ProviderConfig,
     destination: string,
   ) {
     if (providerType === 'github') {
@@ -28,7 +28,7 @@
 
   // TODO: Move in auth.ts
   function makeLoginHref(
-    { clientId, type: providerType, origin }: ScribouilliBackendProvider,
+    { clientId, type: providerType, origin }: ProviderConfig,
     redirectUrl: string,
   ) {
     if (providerType === 'github') {

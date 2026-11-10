@@ -3,7 +3,7 @@
   import { state } from '#lib/store.svelte.ts'
   import type { BackendType } from '#lib/providers/index.ts'
   import { makeUrlParam, makeAtelierListPageURL, makeAtelierListArticlesURL } from '#lib/urls.ts'
-  import { showArticles } from '#lib/article.ts'
+  //import { showArticles } from '#lib/article.ts'
   import { resolve } from '$app/paths'
 
   let needsAccountVerification: boolean = $derived(
@@ -20,7 +20,8 @@
   let homeURL: string = $derived(
     state.currentRepository ? makeAtelierListPageURL(state.currentRepository) : resolve('/'),
   )
-  let showArticlesLink = $derived(showArticles(state))
+  // TODO: fix this
+  let showArticlesLink = false
 
   function makeResolutionDesynchronisationURL(account: string, repoPath: string): string {
     return `/resolution-desynchronisation?account=${account}&repoPath=${repoPath}`
@@ -33,25 +34,20 @@
 
 <header>
   {#if state.currentRepository}
-    {#await publishedWebsiteURL}
-      <div>
-        <p>(L'adresse du site va apparaître ici…)</p>
-        {#if buildStatusClass}
-          <p class={buildStatusClass}></p>
-        {/if}
-      </div>
-    {:then publishedURL}
-      <div>
-        <p>
+    <div>
+      <p>
+        {#await publishedWebsiteURL}
+          (L'adresse du site va apparaître ici…)
+        {:then publishedURL}
           <a href={publishedURL} class="project-name" target="_blank">
             {publishedURL}
           </a>
-        </p>
-        {#if buildStatusClass}
-          <p class={buildStatusClass}></p>
-        {/if}
-      </div>
-    {/await}
+        {/await}
+      </p>
+      {#if buildStatusClass}
+        <p class={buildStatusClass}></p>
+      {/if}
+    </div>
   {/if}
 
   <h1>

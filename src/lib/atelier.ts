@@ -1,24 +1,15 @@
 import yaml from 'js-yaml'
-import git from 'isomorphic-git'
 
 import * as store from '#lib/store.svelte.ts'
-import ScribouilliGitRepo from '#lib/git/repo.ts'
-import { GitAgent } from '#lib/git/agent.ts'
-import type { ResolutionOption } from '#lib/git/agent.ts'
+import ScribouilliGitRepo from '#lib/atelier/repo.svelte.ts'
 import { logMessage } from '#lib/logger.ts'
 import { handleErrors } from '#lib/error.ts'
-import { fetchAuthenticatedUserLogin } from '#lib/user.ts'
 import { scheduleCheck, setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
 import { file } from '#lib/git/file.ts'
-import { getPagesList } from '#lib/page.ts'
-import { getArticlesList } from '#lib/article.ts'
-import { getOAuthServiceAPI } from '#lib/providers/index.ts'
-import type { GitSiteTemplate } from '#lib/providers/index.ts'
-import { CUSTOM_CSS_PATH, PROVIDERS_MAP } from '#lib/config.ts'
+import type { ScribouilliBackendProvider } from '#lib/providers/index.ts'
+import { CUSTOM_CSS_PATH } from '#lib/config.ts'
 import type { ReadonlyURLSearchParams } from '$app/state'
-import { resolve } from '$app/paths'
-import { goto } from '$app/navigation'
-import { makeAtelierListPageURL } from './urls'
+import ScribouilliBackend from './providers/scribouilli'
 
 export interface EditeurFile {
   fileName: string
@@ -39,93 +30,32 @@ export interface FileContenu {
   blogIndex: boolean
 }
 
-export const getCurrentRepoPages = () => {
-  return getPagesList().then(store.setPages).catch(handleErrors)
-}
-
-export const getCurrentRepoArticles = () => {
-  return getArticlesList().then(store.setArticles).catch(handleErrors)
-}
-
-/**
- * @summary Set the current repository from the owner and the name
- * of the repository in the URL
- *
- * @description This function is called on every page that needs a current
- * repository to be functionnal. It sets the current repository in the store,
- * but also the build status and the site repo config. If the user is not
- * logged in, it redirects to the authentication page.
- */
-export const setCurrentRepositoryFromQuerystring = async (
+export const getCurrentRepoFromQueryString = async (
+  provider: ScribouilliBackendProvider,
   params: ReadonlyURLSearchParams,
-): Promise<void> => {
+): Promise<ScribouilliGitRepo> => {
   const repoPath = params.get('repoPath')
   const owner = params.get('account') ?? undefined
 
-  const oAuthProvider = store.state.oAuthProvider
-
-  let message
-  const provider = PROVIDERS_MAP.get(oAuthProvider?.id ?? '')
-
-  if (!repoPath || !oAuthProvider || !provider) {
-    if (!oAuthProvider) {
-      message = `Missing store.state.oAuthProvider`
-    } else if (!provider) {
-      message = `Unkown provider ${oAuthProvider.id}`
-    } else if (provider.type !== 'scribouilli' && !owner) {
-      message = `Missing parameter 'account' in URL`
-    } else {
-      message = `Missing parameter 'repoPath' in URL`
-    }
-
-    console.info('[missing URL param or oauthConfig] redirecting to /', message)
-    goto(resolve('/'))
-    throw new Error(message)
+  if (!repoPath || (!(provider.api instanceof ScribouilliBackend) && !owner)) {
+    throw new Error('mssing URL param')
   }
 
-  const origin = oAuthProvider.origin
-  const oAuthServiceAPI = getOAuthServiceAPI()
-
-  const scribouilliGitRepo = new ScribouilliGitRepo({
+  const repo = await ScribouilliGitRepo.init({
     owner,
     repoPath,
-    repoType: provider.type,
-    origin: origin,
-    gitServiceProvider: getOAuthServiceAPI(),
+    provider,
   })
 
-  store.state.currentRepository = scribouilliGitRepo
+  setBuildStatus(repo)
 
-  const { repoId } = scribouilliGitRepo
-
-  const gitAgent = new GitAgent({
-    repoId: repoId,
-    remoteURL: oAuthServiceAPI.makePublicRepositoryURL(owner, repoPath),
-    corsProxyURL: provider.corsProxy,
-    gitServiceProvider: oAuthServiceAPI,
-    onMergeConflict: resolutionOptions => {
-      store.state.conflict = resolutionOptions
-    },
-  })
-
-  store.state.gitAgent = gitAgent
-
-  const { login, email } = await fetchAuthenticatedUserLogin()
-
-  await gitAgent.pullOrCloneRepo()
-  await gitAgent.setAuthor(login, email)
-  await setBaseUrlInConfigIfNecessary()
-  await installPluginIfNecessary('jekyll-git-hash', '0.1.1')
-
-  getCurrentRepoArticles()
-  getCurrentRepoPages()
-
-  setBuildStatus(scribouilliGitRepo, gitAgent)
+  return repo
 }
 
-export const setBuildStatus = (scribouilliGitRepo: ScribouilliGitRepo, gitAgent: GitAgent) => {
+export const setBuildStatus = async (repo: ScribouilliGitRepo) => {
   store.state.buildStatus = 'in_progress' as const
-  scheduleCheck(scribouilliGitRepo, gitAgent)
+  // TODO: get status write await before scheduling a check
+  scheduleCheck(repo)
   // TODO: see what’s needed here
   /*
   let lastBuildStatus: BuildStatus | undefined = undefined
@@ -151,20 +81,15 @@ export const setBuildStatus = (scribouilliGitRepo: ScribouilliGitRepo, gitAgent:
  * otherwise, wait for currentRepository.publishedWebsiteURL and
  * compute the new config.baseurl from it
  */
-export const setBaseUrlInConfigIfNecessary = async (baseUrl?: string): Promise<any> => {
-  const currentRepository = store.state.currentRepository
-
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
-  }
-
+export const setBaseUrlInConfigIfNecessary = async (repo: ScribouilliGitRepo, baseUrl?: string): Promise<any> => {
   let newBaseUrl
 
   if (baseUrl) {
+    // Trim trailing slash
     newBaseUrl = baseUrl.replace(/\/$/, '')
   } else {
-    if (currentRepository.origin === 'https://github.com') {
-      const publishedWebsiteURL = await currentRepository.publishedWebsiteURL
+    if (repo.repoType === 'github') {
+      const publishedWebsiteURL = await repo.publishedWebsiteURL
       const url = new URL(publishedWebsiteURL)
 
       newBaseUrl = url.pathname.replace(/\/$/, '')
@@ -174,7 +99,7 @@ export const setBaseUrlInConfigIfNecessary = async (baseUrl?: string): Promise<a
     }
   }
 
-  const config = await getCurrentRepoConfig()
+  const config = await getCurrentRepoConfig(repo)
   const currentBaseURL = config.baseurl || ''
 
   if (currentBaseURL === newBaseUrl) {
@@ -193,6 +118,7 @@ export const setBaseUrlInConfigIfNecessary = async (baseUrl?: string): Promise<a
 
     console.log('configYmlContent', configYmlContent)
     return file.writeFileAndPushChanges(
+      repo.gitAgent,
       '_config.yml',
       configYmlContent,
       'Mise à jour de `baseurl` dans la config',
@@ -202,8 +128,13 @@ export const setBaseUrlInConfigIfNecessary = async (baseUrl?: string): Promise<a
 /**
  * @returns true if the plugin was installed, false if it was already here.
  */
-export async function installPluginIfNecessary(plugin: string, version: string): Promise<boolean> {
-  const config: { plugins: string[] } = await getCurrentRepoConfig()
+export async function installPluginIfNecessary(
+  repo: ScribouilliGitRepo,
+  plugin: string,
+  version: string
+): Promise<boolean> {
+  const config: { plugins: string[] } = await getCurrentRepoConfig(repo)
+
   if (config.plugins.includes(plugin)) {
     return false
   }
@@ -212,12 +143,7 @@ export async function installPluginIfNecessary(plugin: string, version: string):
   const newConfig = yaml.dump(config)
 
   try {
-    const { gitAgent } = store.state
-    if (!gitAgent) {
-      throw new TypeError('gitAgent is undefined')
-    }
-
-    const gemFile = await gitAgent.getFile('Gemfile')
+    const gemFile = await repo.gitAgent.getFile('Gemfile')
     const SECTION_START = 'group :jekyll_plugins do\n'
     const pluginSectionStart = gemFile.indexOf(SECTION_START) + SECTION_START.length
     const newGemfile =
@@ -225,7 +151,7 @@ export async function installPluginIfNecessary(plugin: string, version: string):
       `  gem "${plugin}", "~> ${version}"\n\n` +
       gemFile.slice(pluginSectionStart)
 
-    await file.writeFileAndCommit('Gemfile', newGemfile, 'Ajout de la gem ' + plugin)
+    await file.writeFileAndCommit(repo.gitAgent, 'Gemfile', newGemfile, 'Ajout de la gem ' + plugin)
   } catch (e) {
     const message = e instanceof Error ? e.message : 'erreur inconnue'
     logMessage(
@@ -235,189 +161,26 @@ export async function installPluginIfNecessary(plugin: string, version: string):
     )
   }
 
-  await file.writeFileAndPushChanges('_config.yml', newConfig, 'Ajout du plugin ' + plugin)
+  await file.writeFileAndPushChanges(repo.gitAgent, '_config.yml', newConfig, 'Ajout du plugin ' + plugin)
   return true
 }
 
-const getCurrentRepoConfig = (): Promise<any> => {
-  const { currentRepository, gitAgent } = store.state
-
-  if (!currentRepository) {
-    throw new TypeError('currentRepository is undefined')
-  }
-  if (!gitAgent) {
-    throw new TypeError('gitAgent is undefined')
-  }
-
-  return gitAgent
+const getCurrentRepoConfig = async (repo: ScribouilliGitRepo): Promise<any> => {
+  return repo.gitAgent
     .getFile('_config.yml')
     .then(configStr => yaml.load(configStr))
     .catch(handleErrors)
 }
 
 export function saveCustomCSS(
+  repo: ScribouilliGitRepo,
   css: string,
 ): ReturnType<typeof file.writeFileAndPushChanges> | Promise<void> {
-  if (!store.state.currentRepository || !store.state.gitAgent) {
-    return Promise.resolve()
-  }
-
-  store.state.theme.css = css
-  setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent, 10000)
+  setBuildingAndCheckStatusLater(repo, 10_000)
   return file.writeFileAndPushChanges(
+    repo.gitAgent,
     CUSTOM_CSS_PATH,
     css,
     'mise à jour du fichier de styles custom',
-  )
-}
-
-const waitRepoReady = (scribouilliGitRepo: ScribouilliGitRepo): Promise<void> => {
-  return new Promise(resolve => {
-    const timer = setInterval(() => {
-      getOAuthServiceAPI()
-        .isRepositoryReady(scribouilliGitRepo)
-        // @ts-ignore
-        .then(res => {
-          if (res) {
-            clearInterval(timer)
-            resolve()
-          }
-        })
-    }, 1000)
-  })
-}
-
-export const setupLocalRepository = async (): Promise<ReturnType<typeof git.setConfig>> => {
-  const login = await store.state.login
-  const { gitAgent, email } = store.state
-
-  if (!gitAgent) {
-    throw new TypeError('gitAgent is undefined')
-  }
-  if (!login) {
-    throw new TypeError(`missing login in setupLocalRepository`)
-  }
-  if (!email) {
-    throw new TypeError(`missing email in setupLocalRepository`)
-  }
-
-  await gitAgent.clone()
-
-  return gitAgent.setAuthor(login, email)
-}
-
-/**
- * @summary guess the published URL until a call to OAuthServiceAPI.getPublishedWebsiteURL is made
- */
-export function guessBaseURL({ owner, repoPath, origin }: ScribouilliGitRepo): string {
-  if (origin === 'https://github.com') {
-    const publishedHostname = `${owner?.toLowerCase()}.github.io`
-    repoPath = repoPath.toLowerCase()
-
-    return publishedHostname === repoPath ? '' : `/${repoPath}`
-  } else if (origin === 'https://gitlab.com' || origin === 'https://git.scribouilli.org') {
-    // because of Single Pages Domain enabled by default
-    return `/`
-  }
-
-  return ''
-}
-
-/**
- * @summary Create a repository for the current account
- *
- * @description This function creates a repository for the current account
- * and set a GitHub Pages branch. It redirects to the
- * list of pages for the atelier.
- *
- * @param repoName The name of the repository to create
- * @param template The git site template to use
- *
- * @returns A promise that resolves when the repository
- * is created.
- *
- * @throws An error message if the repository cannot be created.
- *
- */
-export const createRepositoryForCurrentAccount = async (
-  repoName: string,
-  template: GitSiteTemplate,
-): Promise<void> => {
-  const owner = await store.state.login
-
-  if (!owner) {
-    throw new TypeError(`missing login in createRepositoryForCurrentAccount`)
-  }
-
-  // On creation, on both GitHub and GitLab, the name matches the repository path
-  const escapedRepoPath = repoName
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^\w\.-]/g, '-') // see https://stackoverflow.com/a/59082561
-    .toLowerCase()
-
-  const oAuthProvider = store.state.oAuthProvider
-  if (!oAuthProvider) {
-    console.error('Missing oAuthProvider')
-    goto(resolve('/'))
-    return
-  }
-
-  const origin = oAuthProvider.origin
-  const provider = PROVIDERS_MAP.get(oAuthProvider.id)
-  if (!provider) {
-    throw new TypeError(`Unkown provider ${oAuthProvider.id}`)
-  }
-  const oAuthServiceAPI = getOAuthServiceAPI()
-
-  const scribouilliGitRepo = new ScribouilliGitRepo({
-    owner: owner,
-    repoPath: escapedRepoPath,
-    repoType: provider.type,
-    origin: origin,
-    gitServiceProvider: oAuthServiceAPI,
-  })
-
-  const { repoId } = scribouilliGitRepo
-
-  store.state.currentRepository = scribouilliGitRepo
-
-  return (
-    oAuthServiceAPI
-      .createDefaultRepository(scribouilliGitRepo, template)
-      .then(({ remoteURL }) => {
-        const gitAgent = new GitAgent({
-          repoId,
-          remoteURL: remoteURL,
-          corsProxyURL: provider.corsProxy,
-          onMergeConflict: (resolutionOptions: ResolutionOption[] | undefined) => {
-            store.state.conflict = resolutionOptions
-          },
-          gitServiceProvider: oAuthServiceAPI,
-        })
-
-        store.state.gitAgent = gitAgent
-
-        // Il est nécessaire d'attendre que le repo soit prêt sur la remote
-        // avant de pouvoir le cloner localement.
-        return waitRepoReady(scribouilliGitRepo)
-      })
-      .then(() => {
-        return setupLocalRepository()
-      })
-      .then(() => {
-        return getOAuthServiceAPI().deploy(scribouilliGitRepo)
-      })
-      .then(() => {
-        return setBaseUrlInConfigIfNecessary(guessBaseURL(scribouilliGitRepo))
-      })
-      .then(() => {
-        goto(makeAtelierListPageURL(scribouilliGitRepo))
-      })
-      // @ts-ignore
-      .catch(errorMessage => {
-        logMessage(errorMessage, 'createRepositoryForCurrentAccount')
-        handleErrors(errorMessage)
-      })
   )
 }

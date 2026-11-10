@@ -1,7 +1,7 @@
 import z from 'zod'
 
-import ScribouilliGitRepo from '../git/repo'
-import type { MinimalGitRepository, GitSiteTemplate, OAuthServiceAPI, UserRole } from '.'
+import ScribouilliGitRepo from '../atelier/repo.svelte'
+import type { MinimalGitRepository, GitSiteTemplate, ProviderApi, UserRole, OAuthProvider } from '.'
 import type { BuildStatus } from '#lib/build-status.ts'
 
 const WEBSITE_LIST_SCHEMA = z.array(
@@ -12,12 +12,12 @@ const WEBSITE_LIST_SCHEMA = z.array(
   }),
 )
 
-export default class ScribouilliBackend implements OAuthServiceAPI {
+export default class ScribouilliBackend implements ProviderApi {
   private accessToken: string | undefined
   private origin
   private authenticatedUser: undefined | { id: string; login: string; email: string }
 
-  constructor(accessToken: string, origin: string) {
+  constructor({ accessToken, origin }: OAuthProvider) {
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
@@ -83,11 +83,22 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
     ]
   }
 
+  async isSessionActive() {
+    try {
+      await this.callAPI(`/profile`)
+    } catch (e) {
+      if (e === 'INVALIDATE_TOKEN') {
+        return false
+      }
+      throw e
+    }
+    return true
+  }
+
   async createDefaultRepository(
-    scribouilliGitRepo: ScribouilliGitRepo,
+    { repoPath }: { owner?: string, repoPath: string },
     template: GitSiteTemplate,
   ): Promise<{ remoteURL: string }> {
-    const { repoPath } = scribouilliGitRepo
     await this.callAPI(`/websites`, {
       method: 'POST',
       headers: {
@@ -99,7 +110,7 @@ export default class ScribouilliBackend implements OAuthServiceAPI {
       }),
     })
 
-    return { remoteURL: `${this.origin}/websites/${scribouilliGitRepo.repoPath}` }
+    return { remoteURL: `${this.origin}/websites/${repoPath}` }
   }
 
   async isRepositoryReady(scribouilliGitRepo: ScribouilliGitRepo): Promise<boolean> {

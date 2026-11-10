@@ -1,17 +1,20 @@
 import { goto } from '$app/navigation'
 
-import { getOAuthServiceAPI } from './providers'
-import type { MinimalGitRepository } from './providers'
+import type { MinimalGitRepository, ScribouilliBackendProvider } from './providers'
 import * as store from './store.svelte'
-import { logMessage } from './logger'
 import { makeAtelierListPageURL, makeUrlParam } from './urls'
 import type { ResolutionOption } from './git/agent'
 import { resolve } from '$app/paths'
 
-const logout = () => {
+export const logout = () => {
   store.logout()
   console.info('[logout] redirecting to /login')
   goto(resolve('/'))
+}
+
+export interface User {
+  login: string,
+  email: string
 }
 
 /**
@@ -25,85 +28,41 @@ const logout = () => {
  * organization.
  *
  */
-export const fetchAuthenticatedUserLogin = (): Promise<{
-  login: string
-  email: string
-}> => {
-  const loginP = getOAuthServiceAPI()
-    .getAuthenticatedUser()
-    .then(({ login = '' }) => {
-      if (login === '') {
-        throw new Error('NO_LOGIN')
-      }
-
-      store.state.login = login
-
-      return login
-    })
-    // @ts-ignore
-    .catch(errorMessage => {
-      switch (errorMessage) {
-        case 'INVALIDATE_TOKEN':
-        case 'NO_LOGIN': {
-          logout()
-          break
-        }
-
-        default:
-          const message = `The access token is invalid. ${errorMessage}`
-
-          logMessage(message, 'fetchAuthenticatedUserLogin')
-      }
-
-      throw errorMessage
-    })
-
-  const emailP = getOAuthServiceAPI()
-    .getUserEmails()
-    // @ts-ignore
+export const fetchUser = async (provider: ScribouilliBackendProvider): Promise<User> => {
+  const loginP = provider.api.getAuthenticatedUser()
+  const emailP = provider.api.getUserEmails()
     .then(emails => {
-      // @ts-ignore
       const email = (emails.find(e => e.primary) ?? emails[0]).email
-      store.state.email = email
       return email
     })
-    // @ts-ignore
-    .catch(err => {
-      // If we can't get email addresses, we ask the user to login again
-      logout()
-      throw err
-    })
 
-  return Promise.all([loginP, emailP]).then(([login, email]) => ({
-    login,
-    email,
-  }))
+  const user = await Promise.all([loginP, emailP])
+    .then(([login, email]) => ({
+      login,
+      email,
+    }))
+  return user
 }
 
-/**
- * @summary Fetch the list of repositories for the current user and set it in
- * the store.
- *
- * @description This function is called on every page that needs the list of
- * repositories for the current user. It returns a promise that resolves to the
- * list of repositories. If the user is not logged in, it redirects to the
- * authentication page.
- *
- * @returns A promise that resolves to the list of repositories for the current
- * user.
- */
-export const fetchCurrentUserRepositories = async () => {
-  const { login } = await fetchAuthenticatedUserLogin()
-  const currentUserRepositoriesP = getOAuthServiceAPI()
-    .getCurrentUserRepositories()
-    // @ts-ignore
-    .then(repos => {
-      store.setReposForAccount({ login, repos })
 
-      return repos
+export function sortRepositories(repos: MinimalGitRepository[], login: string | undefined) {
+  return repos
+    // on place ses propres dépôts avant les dépôts des autres
+    .sort((a, b) => {
+      if (login && typeof login === 'string') {
+        if (a.owner === undefined || b.owner === undefined || a.owner == b.owner) {
+          return a.repoPath.localeCompare(b.repoPath)
+        } else if (a.owner === login) {
+          return -1
+        } else if (b.owner === login) {
+          return 1
+        } else {
+          return a.owner.localeCompare(b.owner)
+        }
+      }
+
+      return 0
     })
-
-  return currentUserRepositoriesP
 }
 
 export function addConflictRemovalAndRedirectToResolution(
@@ -121,13 +80,15 @@ export function addConflictRemovalAndRedirectToResolution(
 
 export function redirectForRepos(repos: MinimalGitRepository[]) {
   if (repos.length === 0) {
+    console.log('redirecting: creer-nouveau-site')
     goto(resolve('/atelier/creer-nouveau-site'))
   } else if (repos.length === 1) {
     const repoPath = repos[0].repoPath
     const account = repos[0].owner
-
+    console.log('redirecting: pages')
     goto(makeUrlParam(resolve('/atelier/(site)/pages'), account, repoPath))
   } else {
+    console.log('redirecting: selectionner-site')
     goto('/atelier/selectionner-site')
   }
 }

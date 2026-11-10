@@ -1,13 +1,10 @@
 <script lang="ts">
   import ListContenu from '#lib/components/atelier/ListContenu.svelte'
-  import { onMount } from 'svelte'
-  import * as store from '#lib/store.svelte.ts'
-  import { blogIndex } from '#lib/article.ts'
-  import { deleteFileAndCommit, writeFileAndCommit } from '#lib/git/file.ts'
-  import { getCurrentRepoArticles, getCurrentRepoPages } from '#lib/atelier.ts'
-  import { handleErrors } from '#lib/error.ts'
-  import { error } from '@sveltejs/kit'
+  import { deleteFileAndPushChanges, writeFileAndPushChanges } from '#lib/git/file.ts'
   import { resolve } from '$app/paths'
+  import { getCurrentRepo } from '#lib/context.ts'
+  import type { Page } from '#lib/page.ts'
+  import { error } from '@sveltejs/kit'
 
   const blogMdContent = `---
 layout: page
@@ -31,36 +28,31 @@ blog_index: true
 <hr />
 {% endfor %}
 `
+  let repo = getCurrentRepo()
+  let pages: Page[] = $state([])
+
+  repo.pages.listAll().then(newPages => (pages = newPages))
 
   async function onBlogToggle(blogEnabled: boolean): Promise<void> {
+    const repo = getCurrentRepo()
+    // TODO: move this somewhere else
     try {
       if (!blogEnabled) {
-        await writeFileAndCommit('blog.md', blogMdContent, 'Activation du blog')
+        await writeFileAndPushChanges(repo.gitAgent, 'blog.md', blogMdContent, 'Activation du blog')
       } else {
-        const blogPath = blogIndex(store.state) as string
-        await deleteFileAndCommit(blogPath, 'Désactivation du blog')
+        const blogPath = repo.getBlogIndexFilname(pages) as string
+        await deleteFileAndPushChanges(repo.gitAgent, blogPath, 'Désactivation du blog')
       }
-      await getCurrentRepoArticles()
-      await getCurrentRepoPages()
-
-      store.state.gitAgent?.safePush()
+      pages = await repo.pages.listAll()
     } catch (msg: any) {
-      handleErrors(msg)
+      console.error(msg)
+      error(500, String(msg))
     }
   }
-
-  onMount(() => {
-    if (!store.state.gitAgent) {
-      error(500, 'gitAgent is undefined')
-    }
-    if (!store.state.currentRepository) {
-      error(500, 'currentRepository is undefined')
-    }
-  })
 </script>
 
 <ListContenu
-  listContenu={store.state.pages}
+  listContenu={pages}
   title="Pages"
   atelierPrefix={resolve('/atelier/(site)/pages/edit')}
   newContentButtonText="Nouvelle page"

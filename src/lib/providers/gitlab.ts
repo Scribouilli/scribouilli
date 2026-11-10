@@ -1,8 +1,8 @@
 import z from 'zod'
 
 import { GitAgent } from '../git/agent'
-import ScribouilliGitRepo from '../git/repo'
-import type { GitSiteTemplate, OAuthServiceAPI } from '.'
+import ScribouilliGitRepo from '../atelier/repo.svelte'
+import type { GitSiteTemplate, OAuthProvider, ProviderApi } from '.'
 import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from '.'
 import type { BuildStatus } from '#lib/build-status.ts'
 
@@ -23,14 +23,14 @@ const REPO_SCHEMA = z.object({
 })
 const REPO_LIST_SCHEMA = z.array(REPO_SCHEMA)
 
-export default class GitLabAPI implements OAuthServiceAPI {
+export default class GitLabAPI implements ProviderApi {
   #gitAgentGetter
 
   public accessToken: string | undefined
   private origin
   private authenticatedUser: undefined | { id: string; login: string; email: string }
 
-  constructor(accessToken: string, origin: string, gitAgent: () => GitAgent) {
+  constructor({ accessToken, origin }: OAuthProvider, gitAgent: () => GitAgent) {
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
@@ -83,6 +83,18 @@ export default class GitLabAPI implements OAuthServiceAPI {
     ])
   }
 
+  async isSessionActive() {
+    try {
+      await this.callAPI(`${this.apiBaseUrl}/user`)
+    } catch (e) {
+      if (e === 'INVALIDATE_TOKEN') {
+        return false
+      }
+      throw e
+    }
+    return true
+  }
+
   async getCurrentUserRepositories() {
     const { login } = await this.getAuthenticatedUser()
     const response = await this.callAPI(
@@ -100,11 +112,9 @@ export default class GitLabAPI implements OAuthServiceAPI {
   }
 
   async createDefaultRepository(
-    scribouilliGitRepo: ScribouilliGitRepo,
+    { repoPath }: { owner?: string, repoPath: string },
     { url: gitRepoUrl }: GitSiteTemplate,
   ) {
-    const { repoPath } = scribouilliGitRepo
-
     const response = await this.callAPI(`${this.apiBaseUrl}/projects`, {
       method: 'POST',
       headers: {
@@ -126,8 +136,10 @@ export default class GitLabAPI implements OAuthServiceAPI {
 
   async deploy(scribouilliGitRepo: ScribouilliGitRepo) {
     console.log('gitlab.deploy', scribouilliGitRepo)
+
     const branch = await this.gitAgent.currentBranch()
     console.log('branch', branch)
+
     const response = await this.callAPI(
       `${this.apiBaseUrl}/projects/${encodeURIComponent(scribouilliGitRepo.repoId)}/pipeline`,
       {

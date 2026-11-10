@@ -1,5 +1,5 @@
 import { resolve } from '$app/paths'
-import type ScribouilliGitRepo from './git/repo'
+import type ScribouilliGitRepo from './atelier/repo.svelte'
 
 export function makeUrlParam(path: string, owner: string | undefined, repoPath: string): string {
   const url = new URL(path, 'thismessage:/')

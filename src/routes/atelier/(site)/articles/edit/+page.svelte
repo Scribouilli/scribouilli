@@ -9,8 +9,13 @@
   import { handleErrors } from '#lib/error.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'
-  import { error } from '@sveltejs/kit'
-  import { createArticle, deleteArticle, updateArticle } from '#lib/article.ts'
+  import { getCurrentRepo } from '#lib/context.ts'
+  import type { Article } from '#lib/article.ts'
+
+  const repo = getCurrentRepo()
+  let articles: Article[] = $state([])
+
+  repo.pages.listAll().then(newArticles => (articles = newArticles))
 
   const onSave: (file: EditeurFile) => Promise<void> = async ({
     fileName,
@@ -19,11 +24,9 @@
     title,
     previousTitle,
   }): Promise<void> => {
-    if (!store.state.currentRepository || !store.state.gitAgent) return
-
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
-    const articlePageUrl = makeAtelierListArticlesURL(store.state.currentRepository)
+    const articlePageUrl = makeAtelierListArticlesURL(repo)
 
     // If no content changed, just redirect
     if (!hasTitleChanged && !hasContentChanged) {
@@ -33,8 +36,8 @@
     // If the file name is empty, it means that we are creating a new article.
     if (fileName === '') {
       try {
-        await createArticle(title, content)
-        setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent)
+        await repo.articles.create(title, content)
+        setBuildingAndCheckStatusLater(repo)
         goto(articlePageUrl)
         return
       } catch (msg: any) {
@@ -43,8 +46,8 @@
     }
 
     try {
-      await updateArticle(fileName, title, content)
-      setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent)
+      await repo.articles.update(fileName, title, content)
+      setBuildingAndCheckStatusLater(repo)
       goto(articlePageUrl)
       return
     } catch (msg: any) {
@@ -52,7 +55,16 @@
     }
   }
 
-  let onDelete = $state(() => {})
+  const onDelete = ({ fileName }: EditeurFile) => {
+    repo.articles
+      .delete(fileName)
+      .then(() => {
+        setBuildingAndCheckStatusLater(repo)
+        goto(makeAtelierListArticlesURL(repo))
+      })
+      .catch(msg => handleErrors(msg))
+  }
+
   let file: EditeurFile | undefined = $state()
   let listPrefix = $derived(
     store.state.currentRepository ? makeAtelierListArticlesURL(store.state.currentRepository) : '',
@@ -62,24 +74,8 @@
     const fileName = decodeURIComponent(page.url.searchParams.get('path') ?? '')
 
     if (fileName) {
-      const { gitAgent } = store.state
-
-      if (!gitAgent) {
-        error(500, 'gitAgent is undefined')
-      }
-
-      onDelete = () => {
-        deleteArticle(fileName)
-          .then(() => {
-            if (!store.state.currentRepository || !store.state.gitAgent) return
-            setBuildingAndCheckStatusLater(store.state.currentRepository, store.state.gitAgent)
-            goto(makeAtelierListArticlesURL(store.state.currentRepository))
-          })
-          .catch(msg => handleErrors(msg))
-      }
-
       try {
-        const content = await gitAgent.getFile(fileName)
+        const content = await repo.gitAgent.getFile(fileName)
         const { attributes: data, body: markdownContent } = lireFrontMatter<{
           title: string
         }>(content)
@@ -114,7 +110,7 @@
 
 <Editeur
   {file}
-  contenus={store.state.articles}
+  contenus={articles}
   editionTitle="Édition d'un article"
   {listPrefix}
   deleteTitle="Supprimer l'article"

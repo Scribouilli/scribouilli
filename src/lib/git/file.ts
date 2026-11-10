@@ -1,11 +1,10 @@
 import { GitAgent } from './agent'
-import { state } from '../store.svelte'
 
 export const writeFileAndCommit = async (
+  gitAgent: GitAgent,
   fileName: string,
   content: string | Uint8Array,
   commitMessage?: string,
-  gitAgent: GitAgent | undefined = state.gitAgent,
 ): Promise<string> => {
   if (typeof commitMessage !== 'string' || commitMessage === '') {
     commitMessage = `Modification du fichier ${fileName}`
@@ -20,23 +19,23 @@ export const writeFileAndCommit = async (
 }
 
 export const writeFileAndPushChanges = async (
+  gitAgent: GitAgent,
   fileName: string,
   content: string | Uint8Array,
   commitMessage: string = '',
-  gitAgent: GitAgent | undefined = state.gitAgent,
 ): ReturnType<typeof GitAgent.prototype.safePush> => {
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
   }
 
-  await writeFileAndCommit(fileName, content, commitMessage, gitAgent)
+  await writeFileAndCommit(gitAgent, fileName, content, commitMessage)
   return gitAgent.safePush()
 }
 
 export const deleteFileAndCommit = async (
+  gitAgent: GitAgent,
   fileName: string,
   commitMessage: string = '',
-  gitAgent: GitAgent | undefined = state.gitAgent,
 ): ReturnType<typeof GitAgent.prototype.commit> => {
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
@@ -50,16 +49,16 @@ export const deleteFileAndCommit = async (
   return gitAgent.commit(commitMessage)
 }
 
-export const deleteFileAndPushChanges = (
+export const deleteFileAndPushChanges = async (
+  gitAgent: GitAgent,
   fileName: string,
   commitMessage: string,
-  gitAgent: GitAgent | undefined = state.gitAgent,
 ): ReturnType<typeof GitAgent.prototype.safePush> => {
   if (!gitAgent) {
     throw new TypeError('gitAgent is undefined')
   }
 
-  deleteFileAndCommit(fileName, commitMessage, gitAgent)
+  await deleteFileAndCommit(gitAgent, fileName, commitMessage)
   return gitAgent.safePush()
 }
 
