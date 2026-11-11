@@ -207,6 +207,7 @@ input[type="radio"] {
 
 a {
   color: #912222;
+  white-space: nowrap;
 }
 
 a[href]:active,
