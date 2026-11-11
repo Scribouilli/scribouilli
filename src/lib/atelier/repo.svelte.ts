@@ -1,4 +1,4 @@
-import type { UserRole, ScribouilliBackendProvider } from '#lib/providers/index.ts'
+import type { UserRole, ScribouilliBackendProvider, GitSiteTemplate } from '#lib/providers/index.ts'
 import { GitAgent, type ResolutionOption } from '../git/agent'
 import { installPluginIfNecessary, setBaseUrlInConfigIfNecessary } from '#lib/atelier.ts'
 import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
@@ -22,27 +22,15 @@ export default class ScribouilliGitRepo {
   readonly articleList = new Articles(() => this.gitAgent)
 
   #gitAgent: GitAgent | undefined
-  #provider: ScribouilliBackendProvider
-  #account: Account
+  #provider: () => ScribouilliBackendProvider
+  #account: () => Account
 
-  constructor({
-    owner,
-    repoPath,
-    provider,
-    account,
-  }: {
-    owner: string | undefined
-    repoPath: string
-    provider: ScribouilliBackendProvider,
-    account: Account,
-  }) {
+  constructor(
+    provider: () => ScribouilliBackendProvider,
+    account: () => Account,
+  ) {
     this.#provider = provider
     this.#account = account
-    this.repoId = this.#provider.api.makeRepoId(owner, repoPath)
-    this.publicRepositoryURL = this.#provider.api.makePublicRepositoryURL(owner, repoPath)
-
-    this.owner = owner
-    this.repoPath = repoPath
   }
 
   get gitAgent() {
@@ -53,61 +41,93 @@ export default class ScribouilliGitRepo {
   }
 
   get repoType() {
-    return this.#provider.config.type
+    return this.#provider().config.type
   }
 
   get origin() {
-    return this.#provider.config.origin
+    return this.#provider().config.origin
   }
 
-  static async load(repoArgs: {
+  configure({ owner, repoPath }: {
     owner: string | undefined
     repoPath: string
-    provider: ScribouilliBackendProvider,
-    account: Account,
-  }): Promise<ScribouilliGitRepo> {
-    const newRepo = new ScribouilliGitRepo(repoArgs)
-    newRepo.status = 'loading'
+  }) {
+    this.status = 'loading'
+    this.owner = owner
+    this.repoPath = repoPath
 
-    newRepo.#gitAgent = new GitAgent({
-      repoId: newRepo.repoId,
-      remoteURL: newRepo.#provider.api.makePublicRepositoryURL(newRepo.owner, newRepo.repoPath),
-      corsProxyURL: newRepo.#provider.config.corsProxy,
-      auth: () => newRepo.#provider.api.getOauthUsernameAndPassword(),
+    this.repoId = this.#provider().api.makeRepoId(owner, repoPath)
+    this.publicRepositoryURL = this.#provider().api.makePublicRepositoryURL(owner, repoPath)
+
+    this.#gitAgent = new GitAgent({
+      repoId: this.repoId,
+      remoteURL: this.#provider().api.makePublicRepositoryURL(this.owner, this.repoPath),
+      corsProxyURL: this.#provider().config.corsProxy,
+      auth: () => this.#provider().api.getOauthUsernameAndPassword(),
       onMergeConflict: (resolutionOptions) => {
-        newRepo.conflicts = resolutionOptions
+        this.conflicts = resolutionOptions
       },
     })
+  }
 
-    await newRepo.setupLocalRepo()
+  async load({ owner, repoPath }: {
+    owner: string | undefined
+    repoPath: string
+  }): Promise<void> {
+    this.configure({ owner, repoPath })
+    await this.setupLocalRepo()
 
     // Start loading stuff in the background
     const backgroundPromises = Promise.all([
-      newRepo.#loadPermission(),
-      newRepo.pageList.listAll(),
-      newRepo.articleList.listAll(),
+      this.#loadPermission(),
+      this.pageList.listAll(),
+      this.articleList.listAll(),
     ])
 
+    // TODO: should this be done here?
+    await this.#loadPublishedUrl()
+    await setBaseUrlInConfigIfNecessary(this)
+    await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
+
+    backgroundPromises.then(() => this.status = 'ready')
+  }
+
+  async createNewAndLoad({ owner, repoName, template }: {
+    owner: string | undefined
+    repoName: string
+    template: GitSiteTemplate
+  }) {
+    // On creation, on both GitHub and GitLab, the name matches the repository path
+    const repoPath = repoName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\.-]/g, '-') // see https://stackoverflow.com/a/59082561
+      .toLowerCase()
+
+    await this.#provider().api.createDefaultRepository({
+      owner,
+      repoPath,
+    }, template)
+
+    this.configure({ owner, repoPath })
+
+    await this.waitRepoReady()
+    await this.deploy()
+    await this.setupLocalRepo()
 
     // TODO: should this be done here?
-    await newRepo.#loadPublishedUrl()
-    await setBaseUrlInConfigIfNecessary(newRepo)
-    await installPluginIfNecessary(newRepo, 'jekyll-git-hash', '0.1.1')
-
-    backgroundPromises.then(() => newRepo.status = 'ready')
-
-    return newRepo
+    await setBaseUrlInConfigIfNecessary(this, this.guessBaseURL())
   }
 
   public async setupLocalRepo(): Promise<void> {
-    await this.gitAgent.setAuthor(this.#account.login, this.#account.email)
+    await this.gitAgent.setAuthor(this.#account().login, this.#account().email)
     await this.gitAgent.pullOrCloneRepo()
   }
 
   public async waitRepoReady(): Promise<void> {
     return new Promise(resolve => {
       const checkReady = () => {
-        this.#provider.api.isRepositoryReady(this)
+        this.#provider().api.isRepositoryReady(this)
           .then(res => {
             if (res) {
               resolve()
@@ -121,20 +141,20 @@ export default class ScribouilliGitRepo {
   }
 
   public async deploy(): Promise<void> {
-    return this.#provider.api.deploy(this)
+    return this.#provider().api.deploy(this)
   }
 
   public async deploymentStatus(): Promise<BuildStatus> {
-    return this.#provider.api.getPagesWebsiteDeploymentStatus(this)
+    return this.#provider().api.getPagesWebsiteDeploymentStatus(this)
   }
 
   async #loadPermission() {
-    this.userPermission = await this.#provider.api.getUserPermissions(this)
+    this.userPermission = await this.#provider().api.getUserPermissions(this)
   }
 
   async #loadPublishedUrl() {
     const fetchUrl = async () => {
-      const url = await this.#provider.api.getPublishedWebsiteURL(this)
+      const url = await this.#provider().api.getPublishedWebsiteURL(this)
       if (url) {
         this.publishedUrl = url
       } else {
@@ -148,7 +168,7 @@ export default class ScribouilliGitRepo {
    * @summary guess the published URL until a call to OAuthServiceAPI.getPublishedWebsiteURL is made
    */
   guessBaseURL(): string {
-    if (this.#provider.config.type === 'github') {
+    if (this.#provider().config.type === 'github') {
       const publishedHostname = `${this.owner?.toLowerCase()}.github.io`
       const repoPath = this.repoPath.toLowerCase()
 

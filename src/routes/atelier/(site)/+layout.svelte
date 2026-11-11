@@ -13,7 +13,7 @@
     console.log('loading repo')
     const repoPath = page.url.searchParams.get('repoPath')
     const owner = page.url.searchParams.get('account')
-    await atelier.loadCurrentRepository(repoPath, owner)
+    await atelier.loadRepo(repoPath, owner)
     console.log('repo loaded')
     loading = false
   })
