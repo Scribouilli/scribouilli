@@ -2,6 +2,7 @@ import type { GitSiteTemplate, ProviderConfig } from './providers'
 
 export const DEFAULT_CORS_PROXY_URL = 'https://cors.isomorphic-git.org'
 export const OAUTH_PROVIDER_STORAGE_KEY = 'scribouilli_oauth_provider'
+export const SYNCED_REPOS_STORAGE_KEY = 'scribouilli_synced_repos'
 export const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team`
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token'
 export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'

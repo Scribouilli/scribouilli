@@ -20,9 +20,9 @@ export interface FileContenu {
   path: string
   title: string
   content: string
-  index: number
   inMenu: boolean
   blogIndex: boolean
+  index: number
 }
 
 /**

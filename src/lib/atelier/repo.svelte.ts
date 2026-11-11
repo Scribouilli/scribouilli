@@ -1,11 +1,18 @@
-import type { UserRole, ScribouilliBackendProvider, GitSiteTemplate } from '#lib/providers/index.ts'
+import type { UserRole, ScribouilliBackendProvider, GitSiteTemplate, ProviderConfig } from '#lib/providers/index.ts'
 import { GitAgent, type ResolutionOption } from '../git/agent'
 import { installPluginIfNecessary, setBaseUrlInConfigIfNecessary } from '#lib/atelier.ts'
 import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
 import { Articles } from '#lib/atelier/article.svelte.ts'
 import type { Account } from './account.svelte'
 import { getBuildStatus, type BuildStatus } from '#lib/build-status.ts'
+import * as storage from '../storage'
 
+export type RepoCache = Record<
+  ProviderConfig['id'],
+  Record<ScribouilliGitRepo['repoId'], CachedRepo>
+>
+
+export type CachedRepo = Pick<ScribouilliGitRepo, 'publicRepositoryURL' | 'owner' | 'repoPath' | 'repoId' | 'userPermission' | 'publishedUrl'>
 
 export default class ScribouilliGitRepo {
   public publicRepositoryURL: string = $state('')
@@ -25,6 +32,7 @@ export default class ScribouilliGitRepo {
   #gitAgent: GitAgent | undefined
   #provider: () => ScribouilliBackendProvider
   #account: () => Account
+  #repoCache: RepoCache = storage.loadRepoCache()
 
   constructor(
     provider: () => ScribouilliBackendProvider,
@@ -95,21 +103,28 @@ export default class ScribouilliGitRepo {
     repoPath: string
   }): Promise<void> {
     this.configure({ owner, repoPath })
-    await this.setupLocalRepo()
+    const fresh = this.loadFromCache(this.repoId)
 
-
-    await Promise.all([
+    if (!fresh) {
+      await this.setupLocalRepo()
+    }
+    const refreshCach: Promise<any>[] = [
       this.#loadPermission(),
       this.#loadPublishedUrl().then(
         () => this.#loadBuildStatus()
-      ),
+      )
+    ]
+
+    await Promise.all([,
       this.pageList.listAll(),
       this.articleList.listAll(),
-    ])
+    ].concat(fresh ? [] : refreshCach))
 
-    // TODO: should this be done here?
-    await setBaseUrlInConfigIfNecessary(this)
-    await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
+    if (!fresh) {
+      // TODO: should this be done here?
+      await setBaseUrlInConfigIfNecessary(this)
+      await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
+    }
 
     this.status = 'ready'
   }
@@ -150,6 +165,7 @@ export default class ScribouilliGitRepo {
     // TODO: should this be done here?
     await setBaseUrlInConfigIfNecessary(this, this.publishedUrl ? undefined : this.guessBaseURL())
     this.status = 'ready'
+    this.cacheRepo()
   }
 
   public async setupLocalRepo(): Promise<void> {
@@ -183,6 +199,7 @@ export default class ScribouilliGitRepo {
 
   async #loadPermission() {
     this.userPermission = await this.#provider().api.getUserPermissions(this)
+    this.cacheRepo()
   }
 
   async #loadPublishedUrl() {
@@ -190,6 +207,7 @@ export default class ScribouilliGitRepo {
       const url = await this.#provider().api.getPublishedWebsiteURL(this)
       if (url) {
         this.publishedUrl = url
+        this.cacheRepo()
       } else {
         setTimeout(fetchUrl, 1000)
       }
@@ -197,6 +215,7 @@ export default class ScribouilliGitRepo {
     return fetchUrl()
   }
 
+  // NOTE: don’t cache the status
   async #loadBuildStatus() {
     this.buildStatus = await getBuildStatus(this)
     // TODO: reschedule check if build 'in_progress' or 'needs_account_verification'
@@ -247,5 +266,41 @@ export default class ScribouilliGitRepo {
     // In previous versions we assumed that the blog index was always
     // named "blog.md", so keep that as a fallback for older websites.
     return index ?? pages.find(p => p.path === 'blog.md')?.path
+  }
+
+  cacheRepo() {
+    if (!(this.#provider().config.id in this.#repoCache)) {
+      this.#repoCache[this.#provider().config.id] = {}
+    }
+
+    this.#repoCache[this.#provider().config.id][this.repoId] = {
+      owner: this.owner,
+      repoPath: this.repoPath,
+      publicRepositoryURL: this.publicRepositoryURL,
+      repoId: this.repoId,
+      userPermission: this.userPermission,
+      publishedUrl: this.publishedUrl
+    }
+    storage.saveRepoCache(this.#repoCache)
+  }
+
+  loadFromCache(repoId: ScribouilliGitRepo['repoId']) {
+    if (!(this.#provider().config.id in this.#repoCache)) {
+      return false
+    }
+
+    if (!(repoId in this.#repoCache[this.#provider().config.id])) {
+      return false
+    }
+
+    const cachedRepo = this.#repoCache[this.#provider().config.id][repoId]
+    this.owner = cachedRepo.owner
+    this.repoPath = cachedRepo.repoPath
+    this.publicRepositoryURL = cachedRepo.publicRepositoryURL
+    this.repoId = cachedRepo.repoId
+    this.userPermission = cachedRepo.userPermission
+    this.publishedUrl = cachedRepo.publishedUrl
+
+    return true
   }
 }

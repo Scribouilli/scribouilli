@@ -6,9 +6,9 @@ import type { GitAgent } from '../git/agent'
 export interface Page {
   path: string
   title: string
-  content?: string
-  inMenu?: boolean
-  blogIndex?: boolean
+  content: string
+  inMenu: boolean
+  blogIndex: boolean
   index: number
 }
 

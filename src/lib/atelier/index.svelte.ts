@@ -1,4 +1,4 @@
-import type { GitSiteTemplate, ScribouilliBackendProvider } from '../providers'
+import type { GitSiteTemplate, ProviderApi, ScribouilliBackendProvider } from '../providers'
 import { createContext } from 'svelte'
 import { RepoList } from './repo-list.svelte'
 import { Account } from './account.svelte'
@@ -7,7 +7,8 @@ import ScribouilliBackend from '#lib/providers/scribouilli.ts'
 import * as storage from '../storage'
 
 export class Atelier {
-  #provider: ScribouilliBackendProvider | undefined = undefined
+  #provider: ScribouilliBackendProvider | undefined
+  #providerCheckPromise: Promise<ProviderApi> | undefined
 
   readonly account = new Account(this.ensureClient.bind(this))
   readonly repoList = new RepoList(this.ensureClient.bind(this), this.account)
@@ -21,6 +22,7 @@ export class Atelier {
   refresh() {
     console.log('loading atelier')
     const provider = storage.loadProvider()
+
     if (provider) {
       this.#provider = provider
       this.status = 'loaded'
@@ -39,17 +41,31 @@ export class Atelier {
       throw new Error('Provider is not loaded')
     }
 
+
     if (this.status === 'ready') {
       return this.#provider.api
     }
 
-    const isActive = await this.#provider.api.isSessionActive()
-    if (!isActive) {
-      throw new Error('Invalid session')
+    if (this.#providerCheckPromise) {
+      return this.#providerCheckPromise
     }
 
-    this.status = 'ready'
-    return this.#provider.api
+    this.#providerCheckPromise = this.#provider.api.isSessionActive()
+      .then(isActive => {
+        if (!isActive) {
+          throw new Error('Invalid session')
+        }
+
+        if (!this.#provider) {
+          throw new Error('Provider undefined')
+        }
+
+        this.status = 'ready'
+        this.#providerCheckPromise = undefined
+        return this.#provider.api
+      })
+
+    return this.#providerCheckPromise
   }
 
   get provider() {
@@ -87,11 +103,12 @@ export class Atelier {
     if (!repoPath || (!(this.provider.api instanceof ScribouilliBackend) && !owner)) {
       throw new Error('mssing URL param')
     }
-
-    await this.repo.load({
+    const newRepo = {
       owner: owner ?? undefined,
       repoPath,
-    })
+    }
+
+    await this.repo.load(newRepo)
 
     return this.repo
   }
