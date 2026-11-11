@@ -2,18 +2,19 @@
   import { onMount } from 'svelte'
   import { page } from '$app/state'
   import type { LayoutProps } from './$types'
-  import { getCurrentRepoFromQueryString } from '#lib/atelier.ts'
   import Loader from '#lib/components/Loader.svelte'
-  import { getProvider, setCurrentRepo } from '#lib/context.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
   let loading = $state(true)
-  let { children }: LayoutProps = $props()
+  const { children }: LayoutProps = $props()
+  const atelier = getAtelier()
 
   onMount(async () => {
-    const provider = getProvider()
-
-    const repo = await getCurrentRepoFromQueryString(provider, page.url.searchParams)
-    setCurrentRepo(repo)
+    console.log('loading repo')
+    const repoPath = page.url.searchParams.get('repoPath')
+    const owner = page.url.searchParams.get('account')
+    await atelier.loadCurrentRepository(repoPath, owner)
+    console.log('repo loaded')
     loading = false
   })
 </script>

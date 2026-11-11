@@ -1,39 +1,26 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { setProvider, setRepos, setUser } from '#lib/context.ts'
-  import { fetchUser, logout } from '#lib/user.ts'
+  import { logout } from '#lib/user.ts'
   import Loader from '#lib/components/Loader.svelte'
   import type { LayoutProps } from './$types'
-  import * as storage from '#lib/storage.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
-  let loading = $state(true)
   let { children }: LayoutProps = $props()
 
-  const provider = storage.loadProvider()
+  let atelier = getAtelier()
 
   onMount(async () => {
-    if (!provider) {
+    try {
+      console.log(atelier)
+      await Promise.all([atelier.repoList.refresh(), atelier.account.refresh()])
+    } catch (e) {
+      console.error('Failed to load resources: ', e)
       logout()
-    } else {
-      if (await provider.api.isSessionActive()) {
-        let [repos, user] = await Promise.all([
-          provider.api.getCurrentUserRepositories(),
-          fetchUser(provider),
-        ])
-
-        // TODO: Réimplémenter les set / get avec un $state normal
-        setRepos(repos)
-        setUser(user)
-        setProvider(provider)
-        loading = false
-      } else {
-        logout()
-      }
     }
   })
 </script>
 
-{#if loading}
+{#if atelier.status !== 'ready'}
   <Loader />
 {:else}
   {@render children()}

@@ -2,9 +2,11 @@
   import SiteCreationLoader from '#lib/components/atelier/SiteCreationLoader.svelte'
   import { DEFAULT_TEMPLATE, TEMPLATES } from '#lib/config.ts'
   import type { GitSiteTemplate } from '#lib/providers/index.ts'
-  import ScribouilliGitRepo from '#lib/git/repo.ts'
-  import { getProvider, getUser } from '#lib/context.ts'
+  import { makeAtelierListPageURL } from '#lib/urls.ts'
+  import { goto } from '$app/navigation'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
+  let atelier = getAtelier()
   let name = $state('')
   let loading = $state(false)
   let hasError = $state(false)
@@ -15,8 +17,6 @@
     e.preventDefault()
 
     loading = true
-    const { login } = getUser()
-    const provider = getProvider()
 
     // Pour le moment on crée forcément un dépôt sur son propre compte.
     // Peut-être dans le futur on permettra de sélectionner une organisation
@@ -26,12 +26,13 @@
     // utilisateurices avancé.es
 
     try {
-      await ScribouilliGitRepo.create({
-        owner: login,
+      const repo = await atelier.createRepo({
+        owner: atelier.account.login,
         repoName: name,
         template: selectedTemplate,
-        provider: provider,
       })
+
+      await goto(makeAtelierListPageURL(repo))
     } catch (error: any) {
       console.warn(`Failed to create repository: ${error}`)
       loading = false

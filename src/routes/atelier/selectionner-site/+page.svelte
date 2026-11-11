@@ -2,14 +2,16 @@
   import type { MinimalGitRepository } from '#lib/providers/index.ts'
   import { makeUrlParam } from '#lib/urls.ts'
   import { goto } from '$app/navigation'
-  import * as store from '#lib/store.svelte.ts'
-  import { getRepos } from '#lib/context.ts'
   import Loader from '#lib/components/Loader.svelte'
   import { resolve } from '$app/paths'
-  import { sortRepositories } from '#lib/user.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import { RepoList } from '#lib/atelier/repo-list.svelte.ts'
 
-  let currentAccount = $derived(store.state.login)
-  let currentAccountRepositories = sortRepositories(getRepos(), store.state.login)
+  const atelier = getAtelier()
+  let currentAccount = $derived(atelier.account.login)
+  let currentAccountRepositories = $derived(
+    RepoList.sortRepositories(atelier.repos, currentAccount),
+  )
 
   let repo: MinimalGitRepository | undefined = $state()
   let loading = $state(false)

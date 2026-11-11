@@ -6,8 +6,8 @@
   // import '../../../../styles/editeur-preview/framalibre.css';
   import type { EditeurFile, FileContenu } from '#lib/atelier.ts'
   import Loader from '../Loader.svelte'
-  import { getCurrentRepo } from '#lib/context.ts'
-  import { Pages } from '#lib/page.ts'
+  import { Pages } from '#lib/atelier/page.svelte.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
   interface Props {
     file?: EditeurFile
@@ -37,7 +37,7 @@
   // single-image selection
   let image = $derived(files && files[0])
   let imageMd = $state('')
-  const repo = getCurrentRepo()
+  const atelier = getAtelier()
 
   let preview = $derived.by(async () => {
     if (!file) {
@@ -118,7 +118,12 @@
     const buffer = new Uint8Array(await image.arrayBuffer())
     const imageFilePath = `images/${image.name}`
 
-    await writeFileAndCommit(repo.gitAgent, imageFilePath, buffer, `Ajout de l'image ${image.name}`)
+    await writeFileAndCommit(
+      atelier.repo.gitAgent,
+      imageFilePath,
+      buffer,
+      `Ajout de l'image ${image.name}`,
+    )
 
     const imageLink = `{% link ${imageFilePath} %}`
     imageMd = `![Texte décrivant l'image](${imageLink})`

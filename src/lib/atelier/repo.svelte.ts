@@ -1,145 +1,154 @@
-import type { UserRole, BackendType, ScribouilliBackendProvider, GitSiteTemplate } from '#lib/providers/index.ts'
-import { GitAgent } from '../git/agent'
-import * as store from '#lib/store.svelte.ts'
-import { fetchUser } from '#lib/user.ts'
+import type { UserRole, ScribouilliBackendProvider } from '#lib/providers/index.ts'
+import { GitAgent, type ResolutionOption } from '../git/agent'
 import { installPluginIfNecessary, setBaseUrlInConfigIfNecessary } from '#lib/atelier.ts'
 import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
-import { Articles } from '#lib/article.ts'
+import { Articles } from '#lib/atelier/article.svelte.ts'
+import type { Account } from './account.svelte'
+import type { BuildStatus } from '#lib/build-status.ts'
+
 
 export default class ScribouilliGitRepo {
-  public origin: string
-  public publicRepositoryURL: string
-  public owner: string | undefined
-  public repoPath: string
-  public repoType: BackendType
-  public repoId: string
-  public publishedWebsiteURL: Promise<string>
-  public userPermission: Promise<UserRole>
-  public gitAgent: GitAgent
+  public publicRepositoryURL: string = $state('')
+  public owner: string | undefined = $state(undefined)
+  public repoPath: string = $state('')
 
-  public loading: boolean = $state(true)
+  public repoId: string = $state('')
+  public userPermission: UserRole = $state('editor')
+  public conflicts: ResolutionOption[] = $state([])
+  public publishedUrl: string | undefined = $state(undefined)
+  public status: 'created' | 'loading' | 'ready' = $state('created')
 
-  public pages: Pages
-  public articles: Articles
-  public provider: ScribouilliBackendProvider
+  readonly pageList = new Pages(() => this.gitAgent)
+  readonly articleList = new Articles(() => this.gitAgent)
+
+  #gitAgent: GitAgent | undefined
+  #provider: ScribouilliBackendProvider
+  #account: Account
 
   constructor({
     owner,
     repoPath,
     provider,
+    account,
   }: {
     owner: string | undefined
     repoPath: string
-    provider: ScribouilliBackendProvider
+    provider: ScribouilliBackendProvider,
+    account: Account,
   }) {
-    this.provider = provider
-    this.origin = provider.config.origin
-    this.publicRepositoryURL = provider.api.makePublicRepositoryURL(owner, repoPath)
+    this.#provider = provider
+    this.#account = account
+
     this.owner = owner
     this.repoPath = repoPath
-    this.repoType = provider.config.type
+  }
 
-    this.repoId = provider.api.makeRepoId(owner, repoPath)
+  get gitAgent() {
+    if (!this.#gitAgent) {
+      throw Error('Tried accessing gitAgent on uninitialised ScribouilliGitRepo')
+    }
+    return this.#gitAgent
+  }
 
-    this.publishedWebsiteURL = new Promise(resolve => {
-      const fetchUrl = (interval: ReturnType<typeof setInterval>) => {
-        provider.api.getPublishedWebsiteURL(this).then(url => {
-          if (url) {
-            clearInterval(interval)
-            resolve(url)
-          }
-        })
-      }
-      const interval = setInterval(() => fetchUrl(interval), 1000)
-      fetchUrl(interval)
-    })
+  get repoType() {
+    return this.#provider.config.type
+  }
 
-    this.userPermission = provider.api.getUserPermissions(this)
-    this.gitAgent = new GitAgent({
-      repoId: provider.api.makeRepoId(owner, repoPath),
-      remoteURL: provider.api.makePublicRepositoryURL(owner, repoPath),
-      corsProxyURL: provider.config.corsProxy,
-      gitServiceProvider: provider.api,
-      onMergeConflict: resolutionOptions => {
-        store.state.conflict = resolutionOptions
+  get origin() {
+    return this.#provider.config.origin
+  }
+
+
+  static async load(repoArgs: {
+    owner: string | undefined
+    repoPath: string
+    provider: ScribouilliBackendProvider,
+    account: Account,
+  }): Promise<ScribouilliGitRepo> {
+    const newRepo = new ScribouilliGitRepo(repoArgs)
+    newRepo.status = 'loading'
+
+    newRepo.#gitAgent = new GitAgent({
+      repoId: newRepo.#provider.api.makeRepoId(newRepo.owner, newRepo.repoPath),
+      remoteURL: newRepo.#provider.api.makePublicRepositoryURL(newRepo.owner, newRepo.repoPath),
+      corsProxyURL: newRepo.#provider.config.corsProxy,
+      auth: () => newRepo.#provider.api.getOauthUsernameAndPassword(),
+      onMergeConflict: (resolutionOptions) => {
+        newRepo.conflicts = resolutionOptions
       },
     })
 
-    this.pages = new Pages(this.gitAgent)
-    this.articles = new Articles(this.gitAgent)
+    await newRepo.setupLocalRepo()
 
-    this.init()
-  }
+    // Start loading stuff in the background
+    const backgroundPromises = Promise.all([
+      newRepo.#loadPermission(),
+      newRepo.pageList.listAll(),
+      newRepo.articleList.listAll(),
+    ])
 
-  async init(): Promise<void> {
-    await this.setupLocalRepo()
-
-    // TODO: should this be done here?
-    await setBaseUrlInConfigIfNecessary(this)
-    await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
-
-    this.loading = false
-  }
-
-  static async create({ owner, repoName, template, provider }: {
-    owner: string | undefined
-    repoName: string
-    template: GitSiteTemplate
-    provider: ScribouilliBackendProvider
-  }): Promise<ScribouilliGitRepo> {
-    // On creation, on both GitHub and GitLab, the name matches the repository path
-    const repoPath = repoName
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^\w\.-]/g, '-') // see https://stackoverflow.com/a/59082561
-      .toLowerCase()
-
-    await provider.api.createDefaultRepository({
-      owner,
-      repoPath,
-    }, template)
-
-    const repo = new ScribouilliGitRepo({ owner, repoPath, provider })
-    await repo.waitRepoReady()
-    await repo.deploy()
-    await repo.setupLocalRepo()
 
     // TODO: should this be done here?
-    await setBaseUrlInConfigIfNecessary(repo, repo.guessBaseURL())
+    await newRepo.#loadPublishedUrl()
+    await setBaseUrlInConfigIfNecessary(newRepo)
+    await installPluginIfNecessary(newRepo, 'jekyll-git-hash', '0.1.1')
 
-    return repo
+    backgroundPromises.then(() => newRepo.status = 'ready')
+
+    return newRepo
   }
 
   public async setupLocalRepo(): Promise<void> {
-    const { login, email } = await fetchUser(this.provider)
-    await this.gitAgent.setAuthor(login, email)
+    await this.gitAgent.setAuthor(this.#account.login, this.#account.email)
     await this.gitAgent.pullOrCloneRepo()
   }
 
   public async waitRepoReady(): Promise<void> {
     return new Promise(resolve => {
-      const timer = setInterval(() => {
-        this.provider.api
-          .isRepositoryReady(this)
+      const checkReady = () => {
+        this.#provider.api.isRepositoryReady(this)
           .then(res => {
             if (res) {
-              clearInterval(timer)
               resolve()
+            } else {
+              setTimeout(checkReady, 1000)
             }
           })
-      }, 1000)
+      }
+      checkReady()
     })
   }
 
   public async deploy(): Promise<void> {
-    return this.provider.api.deploy(this)
+    return this.#provider.api.deploy(this)
+  }
+
+  public async deploymentStatus(): Promise<BuildStatus> {
+    return this.#provider.api.getPagesWebsiteDeploymentStatus(this)
+  }
+
+  async #loadPermission() {
+    this.userPermission = await this.#provider.api.getUserPermissions(this)
+  }
+
+  async #loadPublishedUrl() {
+    // TODO: check if this works at all
+    const fetchUrl = async () => {
+      const url = await this.#provider.api.getPublishedWebsiteURL(this)
+      if (url) {
+        this.publicRepositoryURL = url
+      } else {
+        setTimeout(fetchUrl, 1000)
+      }
+    }
+    fetchUrl()
   }
 
   /**
    * @summary guess the published URL until a call to OAuthServiceAPI.getPublishedWebsiteURL is made
    */
-  private guessBaseURL(): string {
-    if (this.provider.config.type === 'github') {
+  guessBaseURL(): string {
+    if (this.#provider.config.type === 'github') {
       const publishedHostname = `${this.owner?.toLowerCase()}.github.io`
       const repoPath = this.repoPath.toLowerCase()
 
@@ -166,8 +175,6 @@ export default class ScribouilliGitRepo {
    */
   getBlogIndexFilname(pages: Page[]): string | undefined {
     // TODO: fix this stuff
-
-
     const index = pages.find(p => p.blogIndex ?? false)?.path
 
     // In previous versions we assumed that the blog index was always

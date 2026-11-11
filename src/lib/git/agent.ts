@@ -14,7 +14,6 @@ import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/web'
 
 import type { CommitObject } from 'isomorphic-git'
-import type { ProviderApi } from '../providers'
 
 export interface ResolutionOption {
   message: string
@@ -26,7 +25,7 @@ export class GitAgent {
   #remoteURL
   #repoId
   #corsProxyURL: string | undefined = undefined
-  #onAuth
+  #onAuth: () => { username: string; password: string }
   #onMergeConflict
 
   // computed
@@ -38,22 +37,21 @@ export class GitAgent {
     repoId,
     remoteURL,
     corsProxyURL,
-    gitServiceProvider,
+    auth,
     onMergeConflict,
   }: {
     repoId: string
     remoteURL: string
     corsProxyURL?: string
-    gitServiceProvider: ProviderApi
+    auth: () => { username: string; password: string }
     onMergeConflict?: ((resolutionOptions: ResolutionOption[]) => void) | undefined
   }) {
     this.#fs = new FS('scribouilli')
 
     this.#repoId = repoId
     this.#remoteURL = remoteURL
-    const auth = gitServiceProvider.getOauthUsernameAndPassword()
 
-    this.#onAuth = () => auth
+    this.#onAuth = auth
     this.#onMergeConflict = onMergeConflict
     this.#corsProxyURL = corsProxyURL
 

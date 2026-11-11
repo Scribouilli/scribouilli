@@ -1,25 +1,26 @@
 <script lang="ts">
-  import * as storage from '#lib/storage.ts'
   import { redirectForRepos } from '#lib/user.ts'
   import { onMount } from 'svelte'
   import heartsLoader from '#lib/assets/images/hearts.svg'
-  import { type ScribouilliBackendProvider } from '#lib/providers/index.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
   let showWelcome = $state(false)
-  let provider: ScribouilliBackendProvider | undefined = $state()
+  const atelier = getAtelier()
 
-  onMount(() => {
-    provider = storage.loadProvider()
-    if (provider) {
-      provider.api.getCurrentUserRepositories().then(redirectForRepos)
-    } else {
+  onMount(async () => {
+    try {
+      await atelier
+        .ensureClient()
+        .then(client => client.getCurrentUserRepositories())
+        .then(redirectForRepos)
+    } catch {
       showWelcome = true
     }
   })
 </script>
 
 <section class="screen" id="welcome">
-  {#if provider}
+  {#if atelier.status !== 'signed-out'}
     <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
     <img src={heartsLoader} alt="cœur sur toi le temps que ça charge" />
   {:else if showWelcome}

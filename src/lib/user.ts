@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation'
 
-import type { MinimalGitRepository, ScribouilliBackendProvider } from './providers'
+import type { MinimalGitRepository, ProviderApi } from './providers'
 import * as store from './store.svelte'
 import { makeAtelierListPageURL, makeUrlParam } from './urls'
 import type { ResolutionOption } from './git/agent'
@@ -28,9 +28,9 @@ export interface User {
  * organization.
  *
  */
-export const fetchUser = async (provider: ScribouilliBackendProvider): Promise<User> => {
-  const loginP = provider.api.getAuthenticatedUser()
-  const emailP = provider.api.getUserEmails()
+export const fetchUser = async (client: ProviderApi): Promise<User> => {
+  const loginP = client.getAuthenticatedUser()
+  const emailP = client.getUserEmails()
     .then(emails => {
       const email = (emails.find(e => e.primary) ?? emails[0]).email
       return email
@@ -45,25 +45,7 @@ export const fetchUser = async (provider: ScribouilliBackendProvider): Promise<U
 }
 
 
-export function sortRepositories(repos: MinimalGitRepository[], login: string | undefined) {
-  return repos
-    // on place ses propres dépôts avant les dépôts des autres
-    .sort((a, b) => {
-      if (login && typeof login === 'string') {
-        if (a.owner === undefined || b.owner === undefined || a.owner == b.owner) {
-          return a.repoPath.localeCompare(b.repoPath)
-        } else if (a.owner === login) {
-          return -1
-        } else if (b.owner === login) {
-          return 1
-        } else {
-          return a.owner.localeCompare(b.owner)
-        }
-      }
 
-      return 0
-    })
-}
 
 export function addConflictRemovalAndRedirectToResolution(
   resolution: ResolutionOption['resolution'],

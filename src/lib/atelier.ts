@@ -6,10 +6,7 @@ import { logMessage } from '#lib/logger.ts'
 import { handleErrors } from '#lib/error.ts'
 import { scheduleCheck, setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
 import { file } from '#lib/git/file.ts'
-import type { ScribouilliBackendProvider } from '#lib/providers/index.ts'
 import { CUSTOM_CSS_PATH } from '#lib/config.ts'
-import type { ReadonlyURLSearchParams } from '$app/state'
-import ScribouilliBackend from './providers/scribouilli'
 
 export interface EditeurFile {
   fileName: string
@@ -28,28 +25,6 @@ export interface FileContenu {
   index: number
   inMenu: boolean
   blogIndex: boolean
-}
-
-export const getCurrentRepoFromQueryString = async (
-  provider: ScribouilliBackendProvider,
-  params: ReadonlyURLSearchParams,
-): Promise<ScribouilliGitRepo> => {
-  const repoPath = params.get('repoPath')
-  const owner = params.get('account') ?? undefined
-
-  if (!repoPath || (!(provider.api instanceof ScribouilliBackend) && !owner)) {
-    throw new Error('mssing URL param')
-  }
-
-  const repo = await ScribouilliGitRepo.init({
-    owner,
-    repoPath,
-    provider,
-  })
-
-  setBuildStatus(repo)
-
-  return repo
 }
 
 export const setBuildStatus = async (repo: ScribouilliGitRepo) => {
@@ -89,7 +64,9 @@ export const setBaseUrlInConfigIfNecessary = async (repo: ScribouilliGitRepo, ba
     newBaseUrl = baseUrl.replace(/\/$/, '')
   } else {
     if (repo.repoType === 'github') {
-      const publishedWebsiteURL = await repo.publishedWebsiteURL
+      // Here the repo has finished loading and is ready, so publishedUrl is string
+      // TODO: I don’t like the cast
+      const publishedWebsiteURL = repo.publishedUrl as string
       const url = new URL(publishedWebsiteURL)
 
       newBaseUrl = url.pathname.replace(/\/$/, '')

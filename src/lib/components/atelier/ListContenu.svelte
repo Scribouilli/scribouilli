@@ -1,9 +1,9 @@
 <script lang="ts">
   import * as store from '#lib/store.svelte.ts'
-  import { Pages } from '#lib/page.ts'
+  import { Pages } from '#lib/atelier/page.svelte.ts'
   import type { FileContenu } from '#lib/atelier.ts'
   import { makeUrlParam } from '#lib/urls.ts'
-  import { getCurrentRepo } from '#lib/context.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
   interface Props {
     listContenu?: FileContenu[]
@@ -23,16 +23,16 @@
     onBlogToggle,
   }: Props = $props()
 
-  let repo = getCurrentRepo()
+  let atelier = getAtelier()
   let modification = $state(false)
-  let blogEnabled = $derived(onBlogToggle ? repo.isBlogEnabled(listContenu) : false)
+  let blogEnabled = $derived(onBlogToggle ? atelier.isBlogEnabled : false)
 
   // TODO: move this somewhere else
   const editClick = async (_e: Event) => {
     if (modification) {
       for (let page of listContenu) {
         // for + await leads to poor pref. PPP: do a Promise.all
-        await repo.gitAgent.writeFile(
+        await atelier.repo.gitAgent.writeFile(
           page.path,
           `${
             page.title
@@ -47,8 +47,8 @@
         )
       }
 
-      await repo.gitAgent.commit('Changements menu')
-      await repo.gitAgent.safePush()
+      await atelier.repo.gitAgent.commit('Changements menu')
+      await atelier.repo.gitAgent.safePush()
     }
     modification = !modification
   }
@@ -64,8 +64,9 @@
       <h2>
         {title}
       </h2>
-      <a href={makeUrlParam(atelierPrefix, repo.owner, repo.repoPath)} class="btn btn__medium"
-        >{newContentButtonText}</a
+      <a
+        href={makeUrlParam(atelierPrefix, atelier.repo.owner, atelier.repo.repoPath)}
+        class="btn btn__medium">{newContentButtonText}</a
       >
     </header>
 
@@ -101,8 +102,8 @@
               <a
                 href={makeUrlParam(
                   `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
-                  repo.owner,
-                  repo.repoPath,
+                  atelier.repo.owner,
+                  atelier.repo.repoPath,
                 )}
               >
                 Modifier</a

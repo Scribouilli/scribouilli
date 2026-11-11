@@ -11,7 +11,9 @@
   import { redirectForRepos } from '#lib/user.ts'
   import { error } from '@sveltejs/kit'
   import { onMount } from 'svelte'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
+  const atelier = getAtelier()
   // TODO: Move in auth.ts
   const storeOAuthProviderAccess = () => {
     const searchParams = page.url.searchParams
@@ -45,16 +47,16 @@
       }
 
       storage.saveProvider(provider)
-      return storage.loadProvider()
+      atelier.refresh()
     }
   }
 
-  onMount(() => {
-    const provider = storeOAuthProviderAccess()
-    console.log(provider)
-    if (provider) {
-      provider.api.getCurrentUserRepositories().then(redirectForRepos)
-    }
+  onMount(async () => {
+    storeOAuthProviderAccess()
+    await atelier
+      .ensureClient()
+      .then(client => client.getCurrentUserRepositories())
+      .then(redirectForRepos)
   })
 </script>
 

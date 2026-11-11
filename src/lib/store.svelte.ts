@@ -1,5 +1,5 @@
 import type ScribouilliGitRepo from './atelier/repo.svelte'
-import type { Article } from './article'
+import type { Article } from './atelier/article.svelte'
 import type { Page } from './atelier/page.svelte'
 import type { MinimalGitRepository } from './providers'
 import type { BuildStatus } from '#lib/build-status.ts'

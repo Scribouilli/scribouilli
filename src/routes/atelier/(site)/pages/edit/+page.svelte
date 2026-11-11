@@ -4,18 +4,16 @@
   import type { EditeurFile } from '#lib/atelier.ts'
   import Editeur from '#lib/components/atelier/Editeur.svelte'
   import * as store from '#lib/store.svelte.ts'
-  import type { Page } from '#lib/page.ts'
+  import type { Page } from '#lib/atelier/page.svelte.ts'
   import { goto } from '$app/navigation'
   import { setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
   import { handleErrors } from '#lib/error.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'
-  import { getCurrentRepo } from '#lib/context.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
-  const repo = getCurrentRepo()
-  let pages: Page[] = $state([])
-
-  repo.pages.listAll().then(newPages => (pages = newPages))
+  const atelier = getAtelier()
+  const pages: Page[] = $derived(atelier.pages)
 
   const onSave: (file: EditeurFile) => Promise<void> = async ({
     fileName,
@@ -26,7 +24,7 @@
     index,
     blogIndex,
   }: EditeurFile) => {
-    const repo = getCurrentRepo()
+    const repo = atelier.repo
 
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
@@ -40,7 +38,7 @@
     // If the file name is empty, it means that we are creating a new page.
     if (fileName === '') {
       try {
-        await repo.pages.create(content, title, index)
+        await repo.pageList.create(content, title, index)
         setBuildingAndCheckStatusLater(repo)
         goto(makeAtelierListPageURL(repo))
         return
@@ -50,7 +48,7 @@
     }
 
     try {
-      await repo.pages.update(fileName, title, content, index, blogIndex)
+      await repo.pageList.update(fileName, title, content, index, blogIndex)
       setBuildingAndCheckStatusLater(repo)
       goto(makeAtelierListPageURL(repo))
       return
@@ -60,11 +58,11 @@
   }
 
   const onDelete = ({ fileName }: EditeurFile) => {
-    repo.pages
+    atelier.repo.pageList
       .delete(fileName)
       .then(() => {
-        setBuildingAndCheckStatusLater(repo)
-        goto(makeAtelierListPageURL(repo))
+        setBuildingAndCheckStatusLater(atelier.repo)
+        goto(makeAtelierListPageURL(atelier.repo))
       })
       .catch(msg => handleErrors(msg))
   }
@@ -79,7 +77,7 @@
 
     if (fileName) {
       try {
-        const content = await repo.gitAgent.getFile(fileName)
+        const content = await atelier.repo.gitAgent.getFile(fileName)
         const { attributes: data, body: markdownContent } = lireFrontMatter<{
           title: string
           order: number

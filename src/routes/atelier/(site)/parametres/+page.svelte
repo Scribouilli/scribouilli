@@ -1,7 +1,7 @@
 <script lang="ts">
   import { saveCustomCSS } from '#lib/atelier.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { CUSTOM_CSS_PATH } from '#lib/config.ts'
-  import { getCurrentRepo, getProvider } from '#lib/context.ts'
   import { handleErrors } from '#lib/error.ts'
   import * as store from '#lib/store.svelte.ts'
   import { goto } from '$app/navigation'
@@ -11,24 +11,24 @@
   let themeCss = $derived('')
   let notification = $state('')
   let deleteDisabled = $state(true)
-  const repo = getCurrentRepo()
+  const atelier = getAtelier()
+  const repo = atelier.repo
 
   onMount(async () => {
-    const gitAgent = repo.gitAgent
-
     try {
-      themeCss = await gitAgent.getFile(CUSTOM_CSS_PATH)
+      themeCss = await atelier.repo.gitAgent.getFile(CUSTOM_CSS_PATH)
     } catch (msg: any) {
       handleErrors(msg)
     }
   })
 
   const onDeleteRepository = () => {
-    const provider = getProvider()
-
-    provider.api.deleteRepository(repo).then(() => {
-      goto(resolve('/'))
-    }, handleErrors)
+    atelier
+      .deleteRepository(repo)
+      .then(() => {
+        goto(resolve('/'))
+      })
+      .catch(handleErrors)
   }
 
   const checkThemeColor = (color: string): boolean => {

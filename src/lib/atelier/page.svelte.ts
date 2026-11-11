@@ -29,10 +29,11 @@ export function isMarkdownOrHTMLFile(filename: string): boolean {
 
 
 export class Pages {
-  private gitAgent
+  #gitAgent
+  pages: Page[] = $state([])
 
-  constructor(gitAgent: GitAgent) {
-    this.gitAgent = gitAgent
+  constructor(gitAgent: () => GitAgent) {
+    this.#gitAgent = gitAgent
   }
 
   static makeFrontMatter(
@@ -57,11 +58,11 @@ export class Pages {
   }
 
   async listAll(): Promise<Page[]> {
-    const allFiles = await this.gitAgent.listFiles('')
+    const allFiles = await this.#gitAgent().listFiles('')
 
     return Promise.all(
       allFiles.filter(isMarkdownOrHTMLFile).map(async filename => {
-        const content = await this.gitAgent.getFile(filename)
+        const content = await this.#gitAgent().getFile(filename)
         // TODO: validate data with zod or equivalent
         const { attributes: data, body: markdownContent } = lireFrontMatter<{
           title: string
@@ -80,12 +81,15 @@ export class Pages {
           content: markdownContent,
         }
       }),
-    )
+    ).then((pages) => {
+      this.pages = pages
+      return pages
+    })
   }
 
   async delete(fileName: string): ReturnType<typeof deleteFileAndPushChanges> {
     return deleteFileAndPushChanges(
-      this.gitAgent,
+      this.#gitAgent(),
       fileName,
       `Suppression de la page ${fileName}`
     )
@@ -97,7 +101,7 @@ export class Pages {
     const finalContent = `${title ? Pages.makeFrontMatter(title, index) + '\n' : ''}${content} `
 
     return writeFileAndPushChanges(
-      this.gitAgent,
+      this.#gitAgent(),
       fileName,
       finalContent,
       `Création de la page : ${title}`
@@ -120,14 +124,14 @@ export class Pages {
     // If the title has changed, we need to delete the old page and
     // create a new one because the file name has changed.
     if (fileName && fileName !== targetFileName) {
-      await this.gitAgent.removeFile(fileName)
+      await this.#gitAgent().removeFile(fileName)
     }
 
     const frontMatter = title ? Pages.makeFrontMatter(title, index, undefined, blogIndex) + '\n' : ''
     const finalContent = `${frontMatter}${content} `
 
     return writeFileAndPushChanges(
-      this.gitAgent,
+      this.#gitAgent(),
       targetFileName,
       finalContent,
       `Modification de la page : ${title}`

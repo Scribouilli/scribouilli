@@ -2,9 +2,9 @@
   import ListContenu from '#lib/components/atelier/ListContenu.svelte'
   import { deleteFileAndPushChanges, writeFileAndPushChanges } from '#lib/git/file.ts'
   import { resolve } from '$app/paths'
-  import { getCurrentRepo } from '#lib/context.ts'
-  import type { Page } from '#lib/page.ts'
+  import type { Page } from '#lib/atelier/page.svelte.ts'
   import { error } from '@sveltejs/kit'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
   const blogMdContent = `---
 layout: page
@@ -28,13 +28,11 @@ blog_index: true
 <hr />
 {% endfor %}
 `
-  let repo = getCurrentRepo()
-  let pages: Page[] = $state([])
-
-  repo.pages.listAll().then(newPages => (pages = newPages))
+  let atelier = getAtelier()
+  let pages: Page[] = $derived(atelier.pages)
 
   async function onBlogToggle(blogEnabled: boolean): Promise<void> {
-    const repo = getCurrentRepo()
+    const repo = atelier.repo
     // TODO: move this somewhere else
     try {
       if (!blogEnabled) {
@@ -43,7 +41,7 @@ blog_index: true
         const blogPath = repo.getBlogIndexFilname(pages) as string
         await deleteFileAndPushChanges(repo.gitAgent, blogPath, 'Désactivation du blog')
       }
-      pages = await repo.pages.listAll()
+      await repo.pageList.listAll()
     } catch (msg: any) {
       console.error(msg)
       error(500, String(msg))

@@ -1,9 +1,9 @@
 import lireFrontMatter from 'front-matter'
 import { format } from 'date-fns'
 
-import { deleteFileAndPushChanges, writeFileAndPushChanges } from './git/file'
-import { isMarkdownOrHTMLFile, makeFilenameCompatibleString } from './atelier/page.svelte'
-import type { GitAgent } from './git/agent'
+import { deleteFileAndPushChanges, writeFileAndPushChanges } from '../git/file'
+import { isMarkdownOrHTMLFile, makeFilenameCompatibleString } from './page.svelte'
+import type { GitAgent } from '../git/agent'
 
 export interface Article {
   path: string
@@ -12,10 +12,11 @@ export interface Article {
 }
 
 export class Articles {
-  private gitAgent: GitAgent
+  #gitAgent: () => GitAgent
+  articles: Article[] = $state([])
 
-  constructor(gitAgent: GitAgent) {
-    this.gitAgent = gitAgent
+  constructor(gitAgent: () => GitAgent) {
+    this.#gitAgent = gitAgent
 
   }
 
@@ -34,12 +35,12 @@ export class Articles {
   async listAll(): Promise<Article[]> {
     const ARTICLES_DIRECTORY = '_posts'
 
-    const allFiles = await this.gitAgent.listFiles(ARTICLES_DIRECTORY)
+    const allFiles = await this.#gitAgent().listFiles(ARTICLES_DIRECTORY)
 
     return Promise.all(
       allFiles.filter(isMarkdownOrHTMLFile).map(async filename => {
         const fullName = `${ARTICLES_DIRECTORY}/${filename}`
-        const content = await this.gitAgent.getFile(fullName)
+        const content = await this.#gitAgent().getFile(fullName)
         const { attributes: data, body: markdownContent } = lireFrontMatter(content.toString())
         return {
           title:
@@ -53,12 +54,15 @@ export class Articles {
           content: markdownContent,
         }
       }),
-    )
+    ).then((articles) => {
+      this.articles = articles
+      return articles
+    })
   }
 
   async delete(fileName: string): ReturnType<typeof deleteFileAndPushChanges> {
     return deleteFileAndPushChanges(
-      this.gitAgent,
+      this.#gitAgent(),
       fileName,
       `Suppression de l'article ${fileName}`
     )
@@ -71,7 +75,7 @@ export class Articles {
     const finalContent = `${title ? Articles.makeFrontMatter(title) + '\n' : ''}${content}`
 
     return writeFileAndPushChanges(
-      this.gitAgent,
+      this.#gitAgent(),
       targetFileName,
       finalContent,
       `Création de l'article : ${title}`
@@ -87,13 +91,13 @@ export class Articles {
     // If the title has changed, we need to delete the old article and
     // create a new one because the file name has changed.
     if (fileName && fileName !== targetFileName) {
-      await this.gitAgent.removeFile(fileName)
+      await this.#gitAgent().removeFile(fileName)
     }
 
     const finalContent = `${title ? Articles.makeFrontMatter(title) + '\n' : ''}${content}`
 
     return writeFileAndPushChanges(
-      this.gitAgent,
+      this.#gitAgent(),
       targetFileName,
       finalContent,
       `Modification de l'article : ${title}`,

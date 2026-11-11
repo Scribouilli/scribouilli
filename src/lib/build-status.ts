@@ -49,7 +49,11 @@ export function setBuildingAndCheckStatusLater(
 async function getBuildStatus(
   repo: ScribouilliGitRepo,
 ): Promise<BuildStatus> {
-  const publishedWebsiteURL = await repo.publishedWebsiteURL
+  if (!repo.publishedUrl) {
+    return 'in_progress'
+  }
+
+  const publishedWebsiteURL = repo.publishedUrl
 
   const lastCommit = await repo.gitAgent.currentCommit()
 
@@ -98,7 +102,7 @@ async function getBuildStatus(
           // that didn't use a Gemfile).
           //
           // In that case, fallback to the GitHub/GitLab API.
-          return await getViaApi(repo)
+          return await repo.deploymentStatus()
         }
 
         if (hash === lastCommit.oid.slice(0, 7)) {
@@ -123,8 +127,4 @@ async function getBuildStatus(
 
   console.log('[getBuildStatus] success 2')
   return 'success'
-}
-
-function getViaApi(repo: ScribouilliGitRepo) {
-  return repo.provider.api.getPagesWebsiteDeploymentStatus(repo)
 }

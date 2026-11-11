@@ -3,16 +3,17 @@
   import { state } from '#lib/store.svelte.ts'
   import type { BackendType } from '#lib/providers/index.ts'
   import { makeUrlParam, makeAtelierListPageURL, makeAtelierListArticlesURL } from '#lib/urls.ts'
-  //import { showArticles } from '#lib/article.ts'
   import { resolve } from '$app/paths'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
+  const atelier = getAtelier()
+
+  // TODO: fix all dependencies to old state
   let needsAccountVerification: boolean = $derived(
     state.buildStatus === 'needs_account_verification',
   )
   let buildStatusClass = $derived(state.buildStatus ? `build-${state.buildStatus}` : undefined)
-  let publishedWebsiteURL: Promise<string> | undefined = $derived(
-    state.currentRepository?.publishedWebsiteURL,
-  )
+  let publishedWebsiteURL: string | undefined = $derived(state.currentRepository?.publishedUrl)
   let repositoryURL: string | undefined = $derived(state.currentRepository?.publicRepositoryURL)
   let repositoryType: BackendType | undefined = $derived(state.currentRepository?.repoType)
   let repoPath: string | undefined = $derived(state.currentRepository?.repoPath)
@@ -20,8 +21,9 @@
   let homeURL: string = $derived(
     state.currentRepository ? makeAtelierListPageURL(state.currentRepository) : resolve('/'),
   )
-  // TODO: fix this
-  let showArticlesLink = false
+
+  // TODO: test
+  let showArticlesLink = atelier.isBlogEnabled
 
   function makeResolutionDesynchronisationURL(account: string, repoPath: string): string {
     return `/resolution-desynchronisation?account=${account}&repoPath=${repoPath}`
@@ -36,13 +38,13 @@
   {#if state.currentRepository}
     <div>
       <p>
-        {#await publishedWebsiteURL}
+        {#if !publishedWebsiteURL}
           (L'adresse du site va apparaître ici…)
-        {:then publishedURL}
-          <a href={publishedURL} class="project-name" target="_blank">
-            {publishedURL}
+        {:else}
+          <a href={publishedWebsiteURL} class="project-name" target="_blank">
+            {publishedWebsiteURL}
           </a>
-        {/await}
+        {/if}
       </p>
       {#if buildStatusClass}
         <p class={buildStatusClass}></p>

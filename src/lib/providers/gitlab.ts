@@ -201,6 +201,7 @@ export default class GitLabAPI implements ProviderApi {
   }
 
   getPublishedWebsiteURL({ repoPath, owner, origin }: ScribouilliGitRepo) {
+    // TODO: make this provider agnostic
     if (origin === 'https://gitlab.com') {
       return Promise.resolve(`https://${owner}.gitlab.io/${repoPath}/`)
     }
