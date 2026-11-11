@@ -3,7 +3,6 @@
   import { makeAtelierListArticlesURL } from '#lib/urls.ts'
   import type { EditeurFile } from '#lib/atelier.ts'
   import Editeur from '#lib/components/atelier/Editeur.svelte'
-  import * as store from '#lib/store.svelte.ts'
   import { goto } from '$app/navigation'
   import { handleErrors } from '#lib/error.ts'
   import { onMount } from 'svelte'
@@ -64,7 +63,7 @@
 
   let file: EditeurFile | undefined = $state()
   let listPrefix = $derived(
-    store.state.currentRepository ? makeAtelierListArticlesURL(store.state.currentRepository) : '',
+    makeAtelierListArticlesURL({ owner: atelier.repo.owner, repoPath: atelier.repo.repoPath }),
   )
 
   onMount(async () => {

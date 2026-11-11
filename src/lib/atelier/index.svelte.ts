@@ -1,11 +1,10 @@
-import { makeOAuthServiceAPI } from '../providers'
-import type { GitSiteTemplate, OAuthProvider, ScribouilliBackendProvider } from '../providers'
-import { OAUTH_PROVIDER_STORAGE_KEY, PROVIDERS_MAP } from '../config'
+import type { GitSiteTemplate, ScribouilliBackendProvider } from '../providers'
 import { createContext } from 'svelte'
 import { RepoList } from './repo-list.svelte'
 import { Account } from './account.svelte'
 import ScribouilliGitRepo from './repo.svelte'
 import ScribouilliBackend from '#lib/providers/scribouilli.ts'
+import * as storage from '../storage'
 
 export class Atelier {
   #provider: ScribouilliBackendProvider | undefined = undefined
@@ -21,23 +20,17 @@ export class Atelier {
 
   refresh() {
     console.log('loading atelier')
-    if (localStorage) {
-      const providerRaw = localStorage.getItem(OAUTH_PROVIDER_STORAGE_KEY)
-      console.log('providerRaw', providerRaw)
-      const provider = providerRaw ? (JSON.parse(providerRaw) as OAuthProvider) : undefined
-      const providerConfig = PROVIDERS_MAP.get(provider?.id ?? '')
-      console.log('provider', provider, providerConfig)
-
-      if (provider && providerConfig) {
-        this.#provider = {
-          api: makeOAuthServiceAPI(provider),
-          config: providerConfig
-        }
-        this.status = 'loaded'
-      } else if (provider) {
-        console.warn(`Unkown provider ${provider.id}`)
-      }
+    const provider = storage.loadProvider()
+    if (provider) {
+      this.#provider = provider
+      this.status = 'loaded'
     }
+  }
+
+  logout() {
+    storage.deleteProvider()
+    this.repo.reset()
+    this.repoList.reset()
   }
 
   async ensureClient() {

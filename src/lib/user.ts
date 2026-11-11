@@ -1,14 +1,15 @@
 import { goto } from '$app/navigation'
 
-import type { MinimalGitRepository, ProviderApi } from './providers'
-import * as store from './store.svelte'
+import type { MinimalGitRepository } from './providers'
 import { makeAtelierListPageURL, makeUrlParam } from './urls'
 import type { ResolutionOption } from './git/agent'
 import { resolve } from '$app/paths'
+import { getAtelier } from './atelier/index.svelte'
 
 export const logout = () => {
-  store.logout()
+  const atelier = getAtelier()
   console.info('[logout] redirecting to /login')
+  atelier.logout()
   goto(resolve('/'))
 }
 
@@ -17,45 +18,16 @@ export interface User {
   email: string
 }
 
-/**
- * @summary Fetch the current authenticated user login and set it in the store.
- *
- * @description This function is called on every page that needs authentication.
- * It returns the login of the user or the organization. If the user is not
- * logged in, it redirects to the authentication page.
- *
- * @returns A promise that resolves to the login of the authenticated user or
- * organization.
- *
- */
-export const fetchUser = async (client: ProviderApi): Promise<User> => {
-  const loginP = client.getAuthenticatedUser()
-  const emailP = client.getUserEmails()
-    .then(emails => {
-      const email = (emails.find(e => e.primary) ?? emails[0]).email
-      return email
-    })
-
-  const user = await Promise.all([loginP, emailP])
-    .then(([login, email]) => ({
-      login,
-      email,
-    }))
-  return user
-}
-
-
-
-
 export function addConflictRemovalAndRedirectToResolution(
   resolution: ResolutionOption['resolution'],
 ): ResolutionOption['resolution'] {
   return async function() {
     await resolution()
-    store.state.conflict = undefined
+    const atelier = getAtelier()
+    atelier.repo.conflicts = undefined
     // TODO: navigate to previous page
-    if (store.state.currentRepository) {
-      goto(makeAtelierListPageURL(store.state.currentRepository))
+    if (atelier.repo.status !== 'not-intitialized') {
+      goto(makeAtelierListPageURL(atelier.repo))
     }
   }
 }

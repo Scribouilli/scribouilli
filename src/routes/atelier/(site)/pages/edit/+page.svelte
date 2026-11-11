@@ -1,9 +1,8 @@
 <script lang="ts">
   import lireFrontMatter from 'front-matter'
-  import { makeAtelierListPageURL } from '#lib/urls.ts'
+  import { makeAtelierListArticlesURL, makeAtelierListPageURL } from '#lib/urls.ts'
   import type { EditeurFile } from '#lib/atelier.ts'
   import Editeur from '#lib/components/atelier/Editeur.svelte'
-  import * as store from '#lib/store.svelte.ts'
   import type { Page } from '#lib/atelier/page.svelte.ts'
   import { goto } from '$app/navigation'
   import { handleErrors } from '#lib/error.ts'
@@ -68,7 +67,7 @@
 
   let file: EditeurFile | undefined = $state()
   let listPrefix = $derived(
-    store.state.currentRepository ? makeAtelierListPageURL(store.state.currentRepository) : '',
+    makeAtelierListArticlesURL({ owner: atelier.repo.owner, repoPath: atelier.repo.repoPath }),
   )
 
   onMount(async () => {

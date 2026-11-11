@@ -1,8 +1,8 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { logMessage } from '#lib/logger.ts'
-import * as store from '#lib/store.svelte.ts'
 import { error } from '@sveltejs/kit'
+import { logout } from './user'
 
 /**
  * @summary Handle errors catched by Promises
@@ -10,9 +10,8 @@ import { error } from '@sveltejs/kit'
 export const handleErrors = (errorMessage: string) => {
   switch (errorMessage) {
     case 'INVALIDATE_TOKEN': {
-      store.logout()
-      console.info('[invalid token] redirecting to /')
-      goto(resolve('/'))
+      console.info('[invalid token] loging out')
+      logout()
 
       break
     }

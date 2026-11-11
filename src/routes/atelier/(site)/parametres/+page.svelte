@@ -3,7 +3,6 @@
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { CUSTOM_CSS_PATH } from '#lib/config.ts'
   import { handleErrors } from '#lib/error.ts'
-  import * as store from '#lib/store.svelte.ts'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { onMount } from 'svelte'
@@ -26,7 +25,7 @@
     atelier
       .deleteRepository(repo)
       .then(() => {
-        goto(resolve('/'))
+        goto(resolve('/atelier'))
       })
       .catch(handleErrors)
   }
@@ -152,32 +151,30 @@
     <button type="button" class="btn btn__medium" onclick={saveTheme}>Enregistrer le CSS</button>
   </div>
 
-  {#await store.state.currentRepository?.userPermission then userPermission}
-    {#if userPermission === 'owner'}
-      <div class="wrapper white-zone">
-        <h3>Supprimer le site</h3>
-        <p>Attention la suppression du site est définitive!</p>
+  {#if atelier.repo.userPermission === 'owner'}
+    <div class="wrapper white-zone">
+      <h3>Supprimer le site</h3>
+      <p>Attention la suppression du site est définitive!</p>
 
-        <label>
-          <input
-            type="checkbox"
-            onchange={() => {
-              deleteDisabled = !deleteDisabled
-            }}
-          />
-          Afficher le bouton de suppression
-        </label>
-        <button
-          type="button"
-          onclick={onDeleteRepository}
-          disabled={deleteDisabled}
-          class=" btn__medium btn btn__danger"
-        >
-          Supprimer le site
-        </button>
-      </div>
-    {/if}
-  {/await}
+      <label>
+        <input
+          type="checkbox"
+          onchange={() => {
+            deleteDisabled = !deleteDisabled
+          }}
+        />
+        Afficher le bouton de suppression
+      </label>
+      <button
+        type="button"
+        onclick={onDeleteRepository}
+        disabled={deleteDisabled}
+        class=" btn__medium btn btn__danger"
+      >
+        Supprimer le site
+      </button>
+    </div>
+  {/if}
 
   <hr />
 

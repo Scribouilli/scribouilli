@@ -16,23 +16,16 @@ export class RepoList {
     this.#account = account
   }
 
-  async refresh() {
-    if (this.loading) {
-      return this.loading
-    }
+  reset() {
+    this.#repos = []
+  }
 
-    try {
-      this.loading = this.#api()
-        .then(api => api.getCurrentUserRepositories())
-        .then(repos => {
-          this.#repos = repos
-        })
-      await this.loading
-      this.loading = null
-    } catch (e) {
-      this.loading = null
-      throw e
-    }
+  async refresh() {
+    return this.#api()
+      .then(api => api.getCurrentUserRepositories())
+      .then(repos => {
+        this.#repos = repos
+      })
   }
 
   async delete(repo: ScribouilliGitRepo) {

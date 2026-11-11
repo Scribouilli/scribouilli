@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as store from '#lib/store.svelte.ts'
   import { Pages } from '#lib/atelier/page.svelte.ts'
   import type { FileContenu } from '#lib/atelier.ts'
   import { makeUrlParam } from '#lib/urls.ts'
@@ -84,7 +83,7 @@
                     aria-label="Ordre de la page dans le menu"
                     type="number"
                     min="1"
-                    max={atelier.pages.length + 1}
+                    max={atelier.pages.length}
                     bind:value={contenu.index}
                   />
                 </label>

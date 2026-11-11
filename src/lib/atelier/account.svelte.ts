@@ -13,11 +13,12 @@ export class Account {
     this.#api = api
   }
 
-  async refresh() {
-    if (this.loading) {
-      return this.loading
-    }
+  reset() {
+    this.login = ''
+    this.email = ''
+  }
 
+  async refresh() {
     const loginP = this.#api()
       .then(api => api.getAuthenticatedUser())
       .then(({ login }) => this.login = login)
@@ -28,13 +29,6 @@ export class Account {
         this.email = email
       })
 
-    try {
-      this.loading = Promise.all([loginP, emailP])
-      await this.loading
-      this.loading = null
-    } catch (e) {
-      this.loading = null
-      throw e
-    }
+    return Promise.all([loginP, emailP])
   }
 }

@@ -1,12 +1,13 @@
 <script lang="ts">
   import { addConflictRemovalAndRedirectToResolution } from '#lib/user.ts'
-  import * as store from '#lib/store.svelte.ts'
   import Loader from '#lib/components/Loader.svelte'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
 
-  let conflict = $derived(store.state.conflict)
+  const atelier = getAtelier()
+  let conflicts = $derived(atelier.repo.conflicts)
   let newConflictOptions = $derived(
-    conflict &&
-      conflict.map(({ message, resolution }) => {
+    conflicts &&
+      conflicts.map(({ message, resolution }) => {
         return {
           message,
           resolution: addConflictRemovalAndRedirectToResolution(resolution),
@@ -45,7 +46,7 @@
 
   <h2>Que préférez-vous ?</h2>
 
-  {#if store.state.currentRepository}
+  {#if atelier.repo.status === 'ready'}
     {#if newConflictOptions}
       <ul class="options">
         {#each newConflictOptions as { message, resolution }}
