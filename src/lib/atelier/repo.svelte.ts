@@ -11,8 +11,8 @@ export default class ScribouilliGitRepo {
   public publicRepositoryURL: string = $state('')
   public owner: string | undefined = $state(undefined)
   public repoPath: string = $state('')
-
   public repoId: string = $state('')
+
   public userPermission: UserRole = $state('editor')
   public conflicts: ResolutionOption[] = $state([])
   public publishedUrl: string | undefined = $state(undefined)
@@ -38,6 +38,8 @@ export default class ScribouilliGitRepo {
   }) {
     this.#provider = provider
     this.#account = account
+    this.repoId = this.#provider.api.makeRepoId(owner, repoPath)
+    this.publicRepositoryURL = this.#provider.api.makePublicRepositoryURL(owner, repoPath)
 
     this.owner = owner
     this.repoPath = repoPath
@@ -58,7 +60,6 @@ export default class ScribouilliGitRepo {
     return this.#provider.config.origin
   }
 
-
   static async load(repoArgs: {
     owner: string | undefined
     repoPath: string
@@ -69,7 +70,7 @@ export default class ScribouilliGitRepo {
     newRepo.status = 'loading'
 
     newRepo.#gitAgent = new GitAgent({
-      repoId: newRepo.#provider.api.makeRepoId(newRepo.owner, newRepo.repoPath),
+      repoId: newRepo.repoId,
       remoteURL: newRepo.#provider.api.makePublicRepositoryURL(newRepo.owner, newRepo.repoPath),
       corsProxyURL: newRepo.#provider.config.corsProxy,
       auth: () => newRepo.#provider.api.getOauthUsernameAndPassword(),
@@ -132,16 +133,15 @@ export default class ScribouilliGitRepo {
   }
 
   async #loadPublishedUrl() {
-    // TODO: check if this works at all
     const fetchUrl = async () => {
       const url = await this.#provider.api.getPublishedWebsiteURL(this)
       if (url) {
-        this.publicRepositoryURL = url
+        this.publishedUrl = url
       } else {
         setTimeout(fetchUrl, 1000)
       }
     }
-    fetchUrl()
+    return fetchUrl()
   }
 
   /**

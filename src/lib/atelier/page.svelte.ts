@@ -30,7 +30,8 @@ export function isMarkdownOrHTMLFile(filename: string): boolean {
 
 export class Pages {
   #gitAgent
-  pages: Page[] = $state([])
+  #pages: Page[] = $state([])
+  readonly pages = $derived(Pages.sort(this.#pages))
 
   constructor(gitAgent: () => GitAgent) {
     this.#gitAgent = gitAgent
@@ -55,6 +56,24 @@ export class Pages {
 
   static makeFileNameFromTitle(title: string): string {
     return makeFilenameCompatibleString(title) + '.md'
+  }
+
+  static sort(pages: Page[]) {
+    return pages.toSorted((pageA, pageB) => {
+      const diffIndex = pageA.index - pageB.index
+      if (diffIndex === 0) {
+        if (pageA.path < pageB.path) {
+          return -1
+        }
+        if (pageA.path > pageB.path) {
+          return 1
+        }
+        if (pageA.path === pageB.path) {
+          return 0
+        }
+      }
+      return diffIndex
+    })
   }
 
   async listAll(): Promise<Page[]> {
@@ -82,7 +101,7 @@ export class Pages {
         }
       }),
     ).then((pages) => {
-      this.pages = pages
+      this.#pages = pages
       return pages
     })
   }

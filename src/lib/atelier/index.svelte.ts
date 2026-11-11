@@ -12,9 +12,13 @@ export class Atelier {
   #provider: ScribouilliBackendProvider | undefined = undefined
   #repo: ScribouilliGitRepo | undefined = undefined
 
-  readonly repoList = new RepoList(this.ensureClient.bind(this))
   readonly account = new Account(this.ensureClient.bind(this))
-  readonly isBlogEnabled = $derived(this.#repo ? this.#repo.isBlogEnabled(this.#repo.pageList.pages) : false)
+  readonly repoList = new RepoList(this.ensureClient.bind(this), this.account)
+  readonly isBlogEnabled = $derived(
+    this.#repo
+      ? this.#repo.isBlogEnabled(this.#repo.pageList.pages)
+      : false
+  )
 
   status: 'signed-out' | 'loaded' | 'ready' = $state('signed-out')
 

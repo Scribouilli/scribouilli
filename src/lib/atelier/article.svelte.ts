@@ -13,7 +13,8 @@ export interface Article {
 
 export class Articles {
   #gitAgent: () => GitAgent
-  articles: Article[] = $state([])
+  #articles: Article[] = $state([])
+  readonly articles = $derived(Articles.sort(this.#articles))
 
   constructor(gitAgent: () => GitAgent) {
     this.#gitAgent = gitAgent
@@ -30,6 +31,20 @@ export class Articles {
       'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
       '---'
     ].join('\n')
+  }
+
+  static sort(articles: Article[]) {
+    return articles.toSorted((pageA, pageB) => {
+      if (pageA.path < pageB.path) {
+        return 1
+      }
+      if (pageA.path > pageB.path) {
+        return -1
+      }
+
+      // pageA.path === pageB.path
+      return 0
+    })
   }
 
   async listAll(): Promise<Article[]> {
@@ -55,7 +70,7 @@ export class Articles {
         }
       }),
     ).then((articles) => {
-      this.articles = articles
+      this.#articles = articles
       return articles
     })
   }

@@ -23,10 +23,6 @@ export interface ScribouilliState {
 }
 
 const DEFAULT_STATE: ScribouilliState = {
-  provider: undefined,
-  login: undefined,
-  email: undefined,
-  currentRepository: undefined,
   conflict: undefined,
   repos: [],
   pages: [],
@@ -48,37 +44,6 @@ function loadState(): ScribouilliState {
 
 export const state = $state(loadState())
 
-export function setPages(pages: ScribouilliState['pages']) {
-  state.pages = pages?.sort((pageA, pageB) => {
-    const diffIndex = pageA.index - pageB.index
-    if (diffIndex === 0) {
-      if (pageA.path < pageB.path) {
-        return -1
-      }
-      if (pageA.path > pageB.path) {
-        return 1
-      }
-      if (pageA.path === pageB.path) {
-        return 0
-      }
-    }
-    return diffIndex
-  })
-}
-
-export function setArticles(articles: ScribouilliState['articles']) {
-  state.articles = articles?.sort((pageA, pageB) => {
-    if (pageA.path < pageB.path) {
-      return 1
-    }
-    if (pageA.path > pageB.path) {
-      return -1
-    }
-
-    // pageA.path === pageB.path
-    return 0
-  })
-}
 
 export function logout() {
   storage.deleteProvider()
