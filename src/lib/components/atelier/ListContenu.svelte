@@ -84,7 +84,7 @@
                     aria-label="Ordre de la page dans le menu"
                     type="number"
                     min="1"
-                    max={store.state.pages?.length}
+                    max={atelier.pages.length + 1}
                     bind:value={contenu.index}
                   />
                 </label>
