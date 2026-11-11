@@ -76,6 +76,10 @@ export class Pages {
     })
   }
 
+  reset() {
+    this.#pages = []
+  }
+
   async listAll(): Promise<Page[]> {
     const allFiles = await this.#gitAgent().listFiles('')
 

@@ -47,6 +47,10 @@ export class Articles {
     })
   }
 
+  reset() {
+    this.#articles = []
+  }
+
   async listAll(): Promise<Article[]> {
     const ARTICLES_DIRECTORY = '_posts'
 

@@ -8,34 +8,36 @@
 
   const atelier = getAtelier()
 
-  // TODO: fix all dependencies to old state
   let needsAccountVerification: boolean = $derived(
-    state.buildStatus === 'needs_account_verification',
+    atelier.repo.buildStatus === 'needs_account_verification',
   )
-  let buildStatusClass = $derived(state.buildStatus ? `build-${state.buildStatus}` : undefined)
-  let publishedWebsiteURL: string | undefined = $derived(state.currentRepository?.publishedUrl)
-  let repositoryURL: string | undefined = $derived(state.currentRepository?.publicRepositoryURL)
-  let repositoryType: BackendType | undefined = $derived(state.currentRepository?.repoType)
-  let repoPath: string | undefined = $derived(state.currentRepository?.repoPath)
-  let account: string | undefined = $derived(state.currentRepository?.owner)
+  let buildStatusClass = $derived(
+    atelier.repo.buildStatus ? `build-${state.buildStatus}` : undefined,
+  )
+  let publishedWebsiteURL: string | undefined = $derived(atelier.repo.publishedUrl)
+  let repositoryURL: string = $derived(atelier.repo.publicRepositoryURL)
+  let repositoryType: BackendType | undefined = $derived(atelier.repo.repoType)
   let homeURL: string = $derived(
-    state.currentRepository ? makeAtelierListPageURL(state.currentRepository) : resolve('/'),
+    atelier.repo.status !== 'not-intitialized'
+      ? makeAtelierListPageURL(atelier.repo)
+      : resolve('/'),
   )
 
-  // TODO: test
-  let showArticlesLink = atelier.isBlogEnabled
+  let showArticlesLink = $derived(atelier.isBlogEnabled)
 
   function makeResolutionDesynchronisationURL(account: string, repoPath: string): string {
-    return `/resolution-desynchronisation?account=${account}&repoPath=${repoPath}`
+    return resolve(
+      `/atelier/(site)/resolution-desynchronisation?account=${account}&repoPath=${repoPath}`,
+    )
   }
 
   let resolutionURL: string = $derived(
-    makeResolutionDesynchronisationURL(account || '', repoPath || ''),
+    makeResolutionDesynchronisationURL(atelier.repo.owner ?? '', atelier.repo.repoPath || ''),
   )
 </script>
 
 <header>
-  {#if state.currentRepository}
+  {#if atelier.repo.status !== 'not-intitialized'}
     <div>
       <p>
         {#if !publishedWebsiteURL}
@@ -56,16 +58,16 @@
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
   </h1>
 
-  {#if state.currentRepository}
+  {#if atelier.repo.status !== 'not-intitialized'}
     <nav>
       <ul>
         <li>
-          <a href={makeAtelierListPageURL(state.currentRepository)}> Pages </a>
+          <a href={makeAtelierListPageURL(atelier.repo)}> Pages </a>
         </li>
 
         {#if showArticlesLink}
           <li>
-            <a href={makeAtelierListArticlesURL(state.currentRepository)}> Articles </a>
+            <a href={makeAtelierListArticlesURL(atelier.repo)}> Articles </a>
           </li>
         {/if}
 
@@ -73,8 +75,8 @@
           <a
             href={makeUrlParam(
               resolve(`/atelier/(site)/parametres`),
-              state.currentRepository.owner,
-              state.currentRepository.repoPath,
+              atelier.repo.owner,
+              atelier.repo.repoPath,
             )}
           >
             Paramètres
@@ -87,7 +89,7 @@
         {/if}
         {#if repositoryType === 'scribouilli'}
           <li>
-            <a href={`${state.currentRepository.origin}/settings`} target="_blank">Mon compte</a>
+            <a href={`${atelier.repo.origin}/settings`} target="_blank">Mon compte</a>
           </li>
         {/if}
       </ul>
@@ -95,7 +97,7 @@
   {/if}
 </header>
 
-{#if state.conflict}
+{#if atelier.repo.conflicts}
   <section class="warning warning-center">
     <p>
       <span aria-hidden="true">⚠️</span> <strong>Attention !</strong> Votre site ne peut plus se mettre

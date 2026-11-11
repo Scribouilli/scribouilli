@@ -7,10 +7,11 @@ let timeout: ReturnType<typeof setTimeout> | undefined
 export type BuildStatus = 'in_progress' | 'success' | 'error' | 'needs_account_verification'
 
 export const isItStillCompiling = (lastCommit: CommitObject): boolean => {
-  // Delay (in seconds) after which a non-updated website is assumed to have failed to build.
-  const ERROR_DELAY = 60 * 1000
+  // NOTE: set delay to 1h
+  const ERROR_DELAY = 3600
   const currentTime = new Date().getTime() / 1000
   const deltaTime = currentTime - lastCommit.committer.timestamp
+  console.log(deltaTime)
   return deltaTime <= ERROR_DELAY
 }
 
@@ -46,7 +47,7 @@ export function setBuildingAndCheckStatusLater(
  * of each page. We use that to know which version is currently online, and
  * whether the last build succeeded or not.
  */
-async function getBuildStatus(
+export async function getBuildStatus(
   repo: ScribouilliGitRepo,
 ): Promise<BuildStatus> {
   if (!repo.publishedUrl) {
@@ -54,7 +55,6 @@ async function getBuildStatus(
   }
 
   const publishedWebsiteURL = repo.publishedUrl
-
   const lastCommit = await repo.gitAgent.currentCommit()
 
   let html
@@ -77,12 +77,12 @@ async function getBuildStatus(
   }
 
   if (!response.ok && !isItStillCompiling(lastCommit)) {
-    console.log('[getBuildStatus] error')
+    console.log('[getBuildStatus] error: fetch HTML failed')
     return 'error'
   }
 
   if (!response.ok && isItStillCompiling(lastCommit)) {
-    console.log('[getBuildStatus] in_progress')
+    console.log('[getBuildStatus] in_progress: fetch HTML failed, grace period')
     return 'in_progress'
   }
 
@@ -110,10 +110,10 @@ async function getBuildStatus(
           return 'success'
         } else {
           if (isItStillCompiling(lastCommit)) {
-            console.log('[getBuildStatus] in_progress 2')
+            console.log('[getBuildStatus] in_progress: fetch successfull, website still updating')
             return 'in_progress'
           } else {
-            console.log('[getBuildStatus] error 2')
+            console.log('[getBuildStatus] error: fetch successfull, website not updated')
             return 'error'
           }
         }
@@ -125,6 +125,6 @@ async function getBuildStatus(
   // old Scribouilli version: no changes were made since then, so we can assume
   // that the last build was successfull.
 
-  console.log('[getBuildStatus] success 2')
+  console.log('[getBuildStatus] success: fetch successfull, no last commit comment found')
   return 'success'
 }

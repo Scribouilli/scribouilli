@@ -4,7 +4,7 @@ import { installPluginIfNecessary, setBaseUrlInConfigIfNecessary } from '#lib/at
 import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
 import { Articles } from '#lib/atelier/article.svelte.ts'
 import type { Account } from './account.svelte'
-import type { BuildStatus } from '#lib/build-status.ts'
+import { getBuildStatus, type BuildStatus } from '#lib/build-status.ts'
 
 
 export default class ScribouilliGitRepo {
@@ -12,11 +12,12 @@ export default class ScribouilliGitRepo {
   public owner: string | undefined = $state(undefined)
   public repoPath: string = $state('')
   public repoId: string = $state('')
+  public buildStatus: BuildStatus = $state('in_progress')
 
   public userPermission: UserRole = $state('editor')
-  public conflicts: ResolutionOption[] = $state([])
+  public conflicts: ResolutionOption[] | undefined = $state(undefined)
   public publishedUrl: string | undefined = $state(undefined)
-  public status: 'created' | 'loading' | 'ready' = $state('created')
+  public status: 'not-intitialized' | 'loading' | 'ready' = $state('not-intitialized')
 
   readonly pageList = new Pages(() => this.gitAgent)
   readonly articleList = new Articles(() => this.gitAgent)
@@ -52,6 +53,9 @@ export default class ScribouilliGitRepo {
     owner: string | undefined
     repoPath: string
   }) {
+    if (owner !== this.owner && repoPath !== repoPath) {
+      this.reset()
+    }
     this.status = 'loading'
     this.owner = owner
     this.repoPath = repoPath
@@ -70,6 +74,22 @@ export default class ScribouilliGitRepo {
     })
   }
 
+  reset() {
+    this.publicRepositoryURL = ''
+    this.owner = undefined
+    this.repoPath = ''
+    this.repoId = ''
+    this.buildStatus = 'in_progress'
+
+    this.userPermission = 'editor'
+    this.conflicts = undefined
+    this.publishedUrl = undefined
+    this.status = 'not-intitialized'
+
+    this.articleList.reset()
+    this.pageList.reset()
+  }
+
   async load({ owner, repoPath }: {
     owner: string | undefined
     repoPath: string
@@ -80,6 +100,7 @@ export default class ScribouilliGitRepo {
     // Start loading stuff in the background
     const backgroundPromises = Promise.all([
       this.#loadPermission(),
+      this.#loadBuildStatus(),
       this.pageList.listAll(),
       this.articleList.listAll(),
     ])
@@ -114,9 +135,17 @@ export default class ScribouilliGitRepo {
     await this.waitRepoReady()
     await this.deploy()
     await this.setupLocalRepo()
+    // Start loading stuff in the background
+    const backgroundPromises = Promise.all([
+      this.#loadPermission(),
+      this.#loadBuildStatus(),
+      this.pageList.listAll(),
+      this.articleList.listAll(),
+    ])
 
     // TODO: should this be done here?
     await setBaseUrlInConfigIfNecessary(this, this.guessBaseURL())
+    backgroundPromises.then(() => this.status = 'ready')
   }
 
   public async setupLocalRepo(): Promise<void> {
@@ -162,6 +191,11 @@ export default class ScribouilliGitRepo {
       }
     }
     return fetchUrl()
+  }
+
+  async #loadBuildStatus() {
+    this.buildStatus = await getBuildStatus(this)
+    // TODO: reschedule check if build 'in_progress' or 'needs_account_verification'
   }
 
   /**

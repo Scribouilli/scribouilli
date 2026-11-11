@@ -5,7 +5,6 @@ import { createContext } from 'svelte'
 import { RepoList } from './repo-list.svelte'
 import { Account } from './account.svelte'
 import ScribouilliGitRepo from './repo.svelte'
-import { setBuildStatus } from '#lib/atelier.ts'
 import ScribouilliBackend from '#lib/providers/scribouilli.ts'
 
 export class Atelier {
@@ -100,8 +99,6 @@ export class Atelier {
       owner: owner ?? undefined,
       repoPath,
     })
-
-    setBuildStatus(this.repo)
 
     return this.repo
   }

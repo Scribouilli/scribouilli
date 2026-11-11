@@ -1,10 +1,9 @@
 import yaml from 'js-yaml'
 
-import * as store from '#lib/store.svelte.ts'
 import ScribouilliGitRepo from '#lib/atelier/repo.svelte.ts'
 import { logMessage } from '#lib/logger.ts'
 import { handleErrors } from '#lib/error.ts'
-import { scheduleCheck, setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
+import { setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
 import { file } from '#lib/git/file.ts'
 import { CUSTOM_CSS_PATH } from '#lib/config.ts'
 
@@ -25,30 +24,6 @@ export interface FileContenu {
   index: number
   inMenu: boolean
   blogIndex: boolean
-}
-
-export const setBuildStatus = async (repo: ScribouilliGitRepo) => {
-  store.state.buildStatus = 'in_progress' as const
-  // TODO: get status write await before scheduling a check
-  scheduleCheck(repo)
-  // TODO: see what’s needed here
-  /*
-  let lastBuildStatus: BuildStatus | undefined = undefined
-  store.subscribe(state => {
-    if (state.buildStatus !== lastBuildStatus) {
-      lastBuildStatus = state.buildStatus
-
-      if (
-        state.buildStatus === 'in_progress' ||
-        state.buildStatus === 'needs_account_verification'
-      ) {
-        scheduleCheck(scribouilliGitRepo, gitAgent)
-      }
-    }
-  })
-
-  scheduleCheck(scribouilliGitRepo, gitAgent)
-   */
 }
 
 /**
