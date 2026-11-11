@@ -7,7 +7,7 @@ import { logout } from './user'
 /**
  * @summary Handle errors catched by Promises
  */
-export const handleErrors = (errorMessage: string) => {
+export const handleErrors = (errorMessage: any) => {
   switch (errorMessage) {
     case 'INVALIDATE_TOKEN': {
       console.info('[invalid token] loging out')
@@ -18,17 +18,16 @@ export const handleErrors = (errorMessage: string) => {
     case 'REPOSITORY_NOT_FOUND': {
       console.info('[REPOSITORY_NOT_FOUND] redirecting to /aterlier')
       goto(resolve('/atelier'))
-
       break
     }
     case 'NOT_FOUND':
       const message = `gitAgent call failed: ${errorMessage}`
       logMessage(message, 'handleErrors')
-
+      error(404, message)
       break
 
     default:
       logMessage(errorMessage, 'handleErrors')
-      error(500, errorMessage)
+      error(500, String(errorMessage))
   }
 }
