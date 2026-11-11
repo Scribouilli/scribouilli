@@ -97,20 +97,21 @@ export default class ScribouilliGitRepo {
     this.configure({ owner, repoPath })
     await this.setupLocalRepo()
 
-    // Start loading stuff in the background
-    const backgroundPromises = Promise.all([
+
+    await Promise.all([
       this.#loadPermission(),
-      this.#loadBuildStatus(),
+      this.#loadPublishedUrl().then(
+        () => this.#loadBuildStatus()
+      ),
       this.pageList.listAll(),
       this.articleList.listAll(),
     ])
 
     // TODO: should this be done here?
-    await this.#loadPublishedUrl()
     await setBaseUrlInConfigIfNecessary(this)
     await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
 
-    backgroundPromises.then(() => this.status = 'ready')
+    this.status = 'ready'
   }
 
   async createNewAndLoad({ owner, repoName, template }: {
@@ -135,17 +136,20 @@ export default class ScribouilliGitRepo {
     await this.waitRepoReady()
     await this.deploy()
     await this.setupLocalRepo()
+
     // Start loading stuff in the background
-    const backgroundPromises = Promise.all([
+    await Promise.all([
       this.#loadPermission(),
-      this.#loadBuildStatus(),
+      this.#loadPublishedUrl().then(
+        () => this.#loadBuildStatus()
+      ),
       this.pageList.listAll(),
       this.articleList.listAll(),
     ])
 
     // TODO: should this be done here?
-    await setBaseUrlInConfigIfNecessary(this, this.guessBaseURL())
-    backgroundPromises.then(() => this.status = 'ready')
+    await setBaseUrlInConfigIfNecessary(this, this.publishedUrl ? undefined : this.guessBaseURL())
+    this.status = 'ready'
   }
 
   public async setupLocalRepo(): Promise<void> {
@@ -196,6 +200,15 @@ export default class ScribouilliGitRepo {
   async #loadBuildStatus() {
     this.buildStatus = await getBuildStatus(this)
     // TODO: reschedule check if build 'in_progress' or 'needs_account_verification'
+  }
+
+  setBuilding() {
+    if (this.status === 'ready') {
+      this.buildStatus = 'in_progress'
+    }
+
+    // TODO: check if check if already scheduled
+    setTimeout(() => this.#loadBuildStatus(), 30_000)
   }
 
   /**

@@ -3,7 +3,6 @@ import yaml from 'js-yaml'
 import ScribouilliGitRepo from '#lib/atelier/repo.svelte.ts'
 import { logMessage } from '#lib/logger.ts'
 import { handleErrors } from '#lib/error.ts'
-import { setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
 import { file } from '#lib/git/file.ts'
 import { CUSTOM_CSS_PATH } from '#lib/config.ts'
 
@@ -128,7 +127,7 @@ export function saveCustomCSS(
   repo: ScribouilliGitRepo,
   css: string,
 ): ReturnType<typeof file.writeFileAndPushChanges> | Promise<void> {
-  setBuildingAndCheckStatusLater(repo, 10_000)
+  repo.setBuilding()
   return file.writeFileAndPushChanges(
     repo.gitAgent,
     CUSTOM_CSS_PATH,

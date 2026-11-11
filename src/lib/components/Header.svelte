@@ -1,6 +1,5 @@
 <script lang="ts">
   import logoAtelier from '#lib/assets/images/logo_atelier.png'
-  import { state } from '#lib/store.svelte.ts'
   import type { BackendType } from '#lib/providers/index.ts'
   import { makeUrlParam, makeAtelierListPageURL, makeAtelierListArticlesURL } from '#lib/urls.ts'
   import { resolve } from '$app/paths'
@@ -12,7 +11,7 @@
     atelier.repo.buildStatus === 'needs_account_verification',
   )
   let buildStatusClass = $derived(
-    atelier.repo.buildStatus ? `build-${state.buildStatus}` : undefined,
+    atelier.repo.buildStatus ? `build-${atelier.repo.buildStatus}` : undefined,
   )
   let publishedWebsiteURL: string | undefined = $derived(atelier.repo.publishedUrl)
   let repositoryURL: string = $derived(atelier.repo.publicRepositoryURL)
@@ -37,7 +36,7 @@
 </script>
 
 <header>
-  {#if atelier.repo.status !== 'not-intitialized'}
+  {#if atelier.repo.status === 'ready'}
     <div>
       <p>
         {#if !publishedWebsiteURL}
@@ -58,7 +57,7 @@
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
   </h1>
 
-  {#if atelier.repo.status !== 'not-intitialized'}
+  {#if atelier.repo.status === 'ready'}
     <nav>
       <ul>
         <li>

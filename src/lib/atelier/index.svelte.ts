@@ -95,7 +95,7 @@ export class Atelier {
       throw new Error('mssing URL param')
     }
 
-    this.repo.load({
+    await this.repo.load({
       owner: owner ?? undefined,
       repoPath,
     })

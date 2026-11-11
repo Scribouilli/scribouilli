@@ -40,6 +40,7 @@ blog_index: true
       } else {
         const blogPath = repo.getBlogIndexFilname(pages) as string
         await deleteFileAndPushChanges(repo.gitAgent, blogPath, 'Désactivation du blog')
+        repo.setBuilding()
       }
       await repo.pageList.listAll()
     } catch (msg: any) {

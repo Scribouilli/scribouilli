@@ -6,7 +6,6 @@
   import * as store from '#lib/store.svelte.ts'
   import type { Page } from '#lib/atelier/page.svelte.ts'
   import { goto } from '$app/navigation'
-  import { setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
   import { handleErrors } from '#lib/error.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'
@@ -39,7 +38,7 @@
     if (fileName === '') {
       try {
         await repo.pageList.create(content, title, index)
-        setBuildingAndCheckStatusLater(repo)
+        atelier.repo.setBuilding()
         goto(makeAtelierListPageURL(repo))
         return
       } catch (msg: any) {
@@ -49,7 +48,7 @@
 
     try {
       await repo.pageList.update(fileName, title, content, index, blogIndex)
-      setBuildingAndCheckStatusLater(repo)
+      atelier.repo.setBuilding()
       goto(makeAtelierListPageURL(repo))
       return
     } catch (msg: any) {
@@ -61,7 +60,7 @@
     atelier.repo.pageList
       .delete(fileName)
       .then(() => {
-        setBuildingAndCheckStatusLater(atelier.repo)
+        atelier.repo.setBuilding()
         goto(makeAtelierListPageURL(atelier.repo))
       })
       .catch(msg => handleErrors(msg))

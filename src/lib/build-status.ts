@@ -1,45 +1,14 @@
 import ScribouilliGitRepo from '#lib/atelier/repo.svelte.ts'
-import * as store from '#lib/store.svelte.ts'
 import type { CommitObject } from 'isomorphic-git'
-
-let timeout: ReturnType<typeof setTimeout> | undefined
 
 export type BuildStatus = 'in_progress' | 'success' | 'error' | 'needs_account_verification'
 
 export const isItStillCompiling = (lastCommit: CommitObject): boolean => {
-  // NOTE: set delay to 1h
-  const ERROR_DELAY = 3600
+  // NOTE: delay is 2 minutes
+  const ERROR_DELAY = 2 * 60
   const currentTime = new Date().getTime() / 1000
   const deltaTime = currentTime - lastCommit.committer.timestamp
-  console.log(deltaTime)
   return deltaTime <= ERROR_DELAY
-}
-
-// TODO: Make this return a Promise<BuildStatus> ?
-export function scheduleCheck(
-  repo: ScribouilliGitRepo,
-  delay = 5000,
-) {
-  if (!timeout) {
-    timeout = setTimeout(async () => {
-      const status = await getBuildStatus(repo).catch(
-        () => 'error' as const,
-      )
-      store.state.buildStatus = status
-      timeout = undefined
-    }, delay)
-  }
-}
-
-export function setBuildingAndCheckStatusLater(
-  repo: ScribouilliGitRepo,
-  t = 30000,
-) {
-  store.state.buildStatus = 'in_progress'
-  // @ts-ignore
-  clearTimeout(timeout)
-  timeout = undefined
-  scheduleCheck(repo, t)
 }
 
 /**
@@ -51,6 +20,7 @@ export async function getBuildStatus(
   repo: ScribouilliGitRepo,
 ): Promise<BuildStatus> {
   if (!repo.publishedUrl) {
+    console.log('[getBuildStatus]: no published url')
     return 'in_progress'
   }
 

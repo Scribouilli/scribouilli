@@ -5,7 +5,6 @@
   import Editeur from '#lib/components/atelier/Editeur.svelte'
   import * as store from '#lib/store.svelte.ts'
   import { goto } from '$app/navigation'
-  import { setBuildingAndCheckStatusLater } from '#lib/build-status.ts'
   import { handleErrors } from '#lib/error.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'
@@ -35,7 +34,7 @@
     if (fileName === '') {
       try {
         await atelier.repo.articleList.create(title, content)
-        setBuildingAndCheckStatusLater(atelier.repo)
+        atelier.repo.setBuilding()
         goto(articlePageUrl)
         return
       } catch (msg: any) {
@@ -45,7 +44,7 @@
 
     try {
       await atelier.repo.articleList.update(fileName, title, content)
-      setBuildingAndCheckStatusLater(atelier.repo)
+      atelier.repo.setBuilding()
       goto(articlePageUrl)
       return
     } catch (msg: any) {
@@ -57,7 +56,7 @@
     atelier.repo.articleList
       .delete(fileName)
       .then(() => {
-        setBuildingAndCheckStatusLater(atelier.repo)
+        atelier.repo.setBuilding()
         goto(makeAtelierListArticlesURL(atelier.repo))
       })
       .catch(msg => handleErrors(msg))
