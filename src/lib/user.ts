@@ -6,6 +6,7 @@ import type { ResolutionOption } from './git/agent'
 import { resolve } from '$app/paths'
 import { getAtelier } from './atelier/index.svelte'
 import * as storage from './storage'
+import type ScribouilliGitRepo from './atelier/repo.svelte'
 
 export const logout = () => {
   console.info('[logout] redirecting to /login')
@@ -28,15 +29,15 @@ export interface User {
 
 export function addConflictRemovalAndRedirectToResolution(
   resolution: ResolutionOption['resolution'],
+  repo: ScribouilliGitRepo,
 ): ResolutionOption['resolution'] {
   return async function() {
-    const atelier = getAtelier()
-    await atelier.repo.sync(
+    await repo.sync(
       resolution()
         .then(() => {
-          atelier.repo.conflicts = undefined
+          repo.conflicts = undefined
           // TODO: navigate to previous page
-          return goto(makeAtelierListPageURL(atelier.repo))
+          return goto(makeAtelierListPageURL(repo))
         })
     )
   }

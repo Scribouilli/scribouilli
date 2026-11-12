@@ -11,7 +11,7 @@
       conflicts.map(({ message, resolution }) => {
         return {
           message,
-          resolution: addConflictRemovalAndRedirectToResolution(resolution),
+          resolution: addConflictRemovalAndRedirectToResolution(resolution, atelier.repo),
         }
       }),
   )
