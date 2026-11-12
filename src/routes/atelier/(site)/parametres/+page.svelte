@@ -39,13 +39,14 @@
     return themeColor === color
   }
 
-  const saveTheme = (_e: Event) => {
+  const saveTheme = (e: Event) => {
+    e.preventDefault()
     if (themeCss === undefined) {
       return
     }
-
-    saveCustomCSS(repo, themeCss).catch(handleErrors)
     notification = 'Le thème sera mis à jour après le déploiement des modifications (~ 2min)'
+
+    repo.sync(saveCustomCSS(repo, themeCss))
 
     document.body.scrollIntoView()
   }
@@ -127,7 +128,7 @@
     </div>
 
     <div>
-      <button class="btn btn__medium" onclick={saveTheme}
+      <button class="btn btn__medium" type="button" onclick={saveTheme}
         >Changer la couleur (~&nbsp;2&nbsp;min.)</button
       >
     </div>

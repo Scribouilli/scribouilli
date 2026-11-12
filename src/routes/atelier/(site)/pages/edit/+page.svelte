@@ -23,51 +23,37 @@
     blogIndex,
   }: EditeurFile) => {
     const repo = atelier.repo
+    const pagesUrl = makeAtelierListPageURL(repo)
 
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
 
     // If no content changed, just redirect
     if (!hasTitleChanged && !hasContentChanged) {
-      goto(makeAtelierListPageURL(repo))
+      await goto(pagesUrl)
       return
     }
 
+    let promise
     // If the file name is empty, it means that we are creating a new page.
     if (fileName === '') {
-      try {
-        await repo.pageList.create(content, title, index)
-        atelier.repo.setBuilding()
-        goto(makeAtelierListPageURL(repo))
-        return
-      } catch (msg: any) {
-        handleErrors(msg)
-      }
+      promise = repo.pageList.create(content, title, index)
+    } else {
+      promise = repo.pageList.update(fileName, title, content, index, blogIndex)
     }
 
-    try {
-      await repo.pageList.update(fileName, title, content, index, blogIndex)
-      atelier.repo.setBuilding()
-      goto(makeAtelierListPageURL(repo))
-      return
-    } catch (msg: any) {
-      handleErrors(msg)
-    }
+    await repo.sync(promise.then(() => goto(pagesUrl)))
   }
 
   const onDelete = ({ fileName }: EditeurFile) => {
-    atelier.repo.pageList
-      .delete(fileName)
-      .then(() => {
-        atelier.repo.setBuilding()
-        goto(makeAtelierListPageURL(atelier.repo))
-      })
-      .catch(msg => handleErrors(msg))
+    atelier.repo.sync(
+      atelier.repo.pageList.delete(fileName).then(() => goto(makeAtelierListPageURL(atelier.repo))),
+    )
   }
 
   let file: EditeurFile | undefined = $state()
   let listPrefix = $derived(
-    makeAtelierListArticlesURL({ owner: atelier.repo.owner, repoPath: atelier.repo.repoPath }),
+    makeAtelierListPageURL({ owner: atelier.repo.owner, repoPath: atelier.repo.repoPath }),
   )
 
   onMount(async () => {

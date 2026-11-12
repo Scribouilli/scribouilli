@@ -2,6 +2,7 @@
   import { addConflictRemovalAndRedirectToResolution } from '#lib/user.ts'
   import Loader from '#lib/components/Loader.svelte'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import SavingLoader from '#lib/components/SavingLoader.svelte'
 
   const atelier = getAtelier()
   let conflicts = $derived(atelier.repo.conflicts)
@@ -62,6 +63,8 @@
         Vous pouvez prévenir l'équipe ou alors revenir dans quelques heures ou jours.
       </p>
     {/if}
+  {:else if atelier.repo.status === 'sync'}
+    <SavingLoader />
   {:else}
     <Loader />
   {/if}

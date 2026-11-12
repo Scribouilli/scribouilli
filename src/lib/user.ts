@@ -22,13 +22,15 @@ export function addConflictRemovalAndRedirectToResolution(
   resolution: ResolutionOption['resolution'],
 ): ResolutionOption['resolution'] {
   return async function() {
-    await resolution()
     const atelier = getAtelier()
-    atelier.repo.conflicts = undefined
-    // TODO: navigate to previous page
-    if (atelier.repo.status !== 'not-intitialized') {
-      goto(makeAtelierListPageURL(atelier.repo))
-    }
+    await atelier.repo.sync(
+      resolution()
+        .then(() => {
+          atelier.repo.conflicts = undefined
+          // TODO: navigate to previous page
+          return goto(makeAtelierListPageURL(atelier.repo))
+        })
+    )
   }
 }
 

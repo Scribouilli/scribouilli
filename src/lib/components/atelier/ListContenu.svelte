@@ -27,27 +27,31 @@
   let blogEnabled = $derived(onBlogToggle ? atelier.isBlogEnabled : false)
 
   // TODO: move this somewhere else
+  async function saveContent() {
+    for (let page of listContenu) {
+      // for + await leads to poor pref. PPP: do a Promise.all
+      await atelier.repo.gitAgent.writeFile(
+        page.path,
+        `${
+          page.title
+            ? Pages.makeFrontMatter(
+                page.title,
+                page.index,
+                page.inMenu,
+                page.blogIndex ? true : undefined,
+              ) + '\n'
+            : ''
+        }${page.content}`,
+      )
+    }
+
+    await atelier.repo.gitAgent.commit('Changements menu')
+    await atelier.repo.gitAgent.safePush()
+  }
+
   const editClick = async (_e: Event) => {
     if (modification) {
-      for (let page of listContenu) {
-        // for + await leads to poor pref. PPP: do a Promise.all
-        await atelier.repo.gitAgent.writeFile(
-          page.path,
-          `${
-            page.title
-              ? Pages.makeFrontMatter(
-                  page.title,
-                  page.index,
-                  page.inMenu,
-                  page.blogIndex ? true : undefined,
-                ) + '\n'
-              : ''
-          }${page.content}`,
-        )
-      }
-
-      await atelier.repo.gitAgent.commit('Changements menu')
-      await atelier.repo.gitAgent.safePush()
+      await atelier.repo.sync(saveContent())
     }
     modification = !modification
   }

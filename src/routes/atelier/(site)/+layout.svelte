@@ -4,6 +4,7 @@
   import type { LayoutProps } from './$types'
   import Loader from '#lib/components/Loader.svelte'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import SavingLoader from '#lib/components/SavingLoader.svelte'
 
   let loading = $state(true)
   const { children }: LayoutProps = $props()
@@ -22,5 +23,11 @@
 {#if loading}
   <Loader />
 {:else}
-  {@render children()}
+  <!-- only hide the children instead of re-rendering them to keep state when repo is syncing -->
+  {#if atelier.repo.status === 'sync'}
+    <SavingLoader />
+  {/if}
+  <div hidden={atelier.repo.status === 'sync'}>
+    {@render children()}
+  </div>
 {/if}

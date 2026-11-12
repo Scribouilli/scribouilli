@@ -20,45 +20,35 @@
     title,
     previousTitle,
   }): Promise<void> => {
+    const repo = atelier.repo
+    const articlePageUrl = makeAtelierListArticlesURL(repo)
+
     const hasContentChanged = content !== previousContent
     const hasTitleChanged = title !== previousTitle
-    const articlePageUrl = makeAtelierListArticlesURL(atelier.repo)
 
     // If no content changed, just redirect
     if (!hasTitleChanged && !hasContentChanged) {
-      return goto(articlePageUrl)
+      await goto(articlePageUrl)
+      return
     }
 
+    let promise
     // If the file name is empty, it means that we are creating a new article.
     if (fileName === '') {
-      try {
-        await atelier.repo.articleList.create(title, content)
-        atelier.repo.setBuilding()
-        goto(articlePageUrl)
-        return
-      } catch (msg: any) {
-        handleErrors(msg)
-      }
+      promise = repo.articleList.create(title, content)
+    } else {
+      promise = repo.articleList.update(fileName, title, content)
     }
 
-    try {
-      await atelier.repo.articleList.update(fileName, title, content)
-      atelier.repo.setBuilding()
-      goto(articlePageUrl)
-      return
-    } catch (msg: any) {
-      handleErrors(msg)
-    }
+    await repo.sync(promise.then(() => goto(articlePageUrl)))
   }
 
   const onDelete = ({ fileName }: EditeurFile) => {
-    atelier.repo.articleList
-      .delete(fileName)
-      .then(() => {
-        atelier.repo.setBuilding()
-        goto(makeAtelierListArticlesURL(atelier.repo))
-      })
-      .catch(msg => handleErrors(msg))
+    atelier.repo.sync(
+      atelier.repo.articleList
+        .delete(fileName)
+        .then(() => goto(makeAtelierListArticlesURL(atelier.repo))),
+    )
   }
 
   let file: EditeurFile | undefined = $state()

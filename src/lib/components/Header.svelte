@@ -36,7 +36,7 @@
 </script>
 
 <header>
-  {#if atelier.repo.status === 'ready'}
+  {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
     <div>
       <p>
         {#if !publishedWebsiteURL}
@@ -57,7 +57,7 @@
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
   </h1>
 
-  {#if atelier.repo.status === 'ready'}
+  {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
     <nav>
       <ul>
         <li>

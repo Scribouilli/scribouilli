@@ -127,7 +127,6 @@ export function saveCustomCSS(
   repo: ScribouilliGitRepo,
   css: string,
 ): ReturnType<typeof file.writeFileAndPushChanges> | Promise<void> {
-  repo.setBuilding()
   return file.writeFileAndPushChanges(
     repo.gitAgent,
     CUSTOM_CSS_PATH,

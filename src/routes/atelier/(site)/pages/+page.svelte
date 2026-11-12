@@ -5,6 +5,7 @@
   import type { Page } from '#lib/atelier/page.svelte.ts'
   import { error } from '@sveltejs/kit'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import { handleErrors } from '#lib/error.ts'
 
   const blogMdContent = `---
 layout: page
@@ -35,17 +36,22 @@ blog_index: true
     const repo = atelier.repo
     // TODO: move this somewhere else
     try {
+      let promise
       if (!blogEnabled) {
-        await writeFileAndPushChanges(repo.gitAgent, 'blog.md', blogMdContent, 'Activation du blog')
+        promise = writeFileAndPushChanges(
+          repo.gitAgent,
+          'blog.md',
+          blogMdContent,
+          'Activation du blog',
+        )
       } else {
         const blogPath = repo.getBlogIndexFilname(pages) as string
-        await deleteFileAndPushChanges(repo.gitAgent, blogPath, 'Désactivation du blog')
-        repo.setBuilding()
+        promise = deleteFileAndPushChanges(repo.gitAgent, blogPath, 'Désactivation du blog')
       }
-      await repo.pageList.listAll()
+
+      await repo.sync(promise.then(() => repo.pageList.listAll()))
     } catch (msg: any) {
-      console.error(msg)
-      error(500, String(msg))
+      handleErrors(msg)
     }
   }
 </script>

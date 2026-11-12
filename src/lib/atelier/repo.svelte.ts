@@ -33,7 +33,7 @@ export default class ScribouilliGitRepo {
   public userPermission: UserRole = $state('editor')
   public conflicts: ResolutionOption[] | undefined = $state(undefined)
   public publishedUrl: string | undefined = $state(undefined)
-  public status: 'not-intitialized' | 'loading' | 'ready' = $state('not-intitialized')
+  public status: 'not-intitialized' | 'configured' | 'ready' | 'sync' = $state('not-intitialized')
 
   readonly pageList = new Pages(() => this.gitAgent)
   readonly articleList = new Articles(() => this.gitAgent)
@@ -73,7 +73,7 @@ export default class ScribouilliGitRepo {
     if (owner !== this.owner && repoPath !== repoPath) {
       this.reset()
     }
-    this.status = 'loading'
+
     this.owner = owner
     this.repoPath = repoPath
 
@@ -89,6 +89,8 @@ export default class ScribouilliGitRepo {
         this.conflicts = resolutionOptions
       },
     })
+
+    this.status = 'configured'
   }
 
   reset() {
@@ -314,5 +316,19 @@ export default class ScribouilliGitRepo {
     this.buildStatus = cachedRepo.buildStatus
 
     return true
+  }
+
+  async sync<T>(work: Promise<T>) {
+
+    if (this.status !== 'ready') {
+      throw new Error('repository is not ready to work with')
+    }
+    this.status = 'sync'
+    return work
+      .then((ret) => {
+        this.setBuilding()
+        return ret
+      })
+      .finally(() => this.status = 'ready')
   }
 }
