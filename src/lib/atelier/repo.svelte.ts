@@ -6,6 +6,7 @@ import { Articles } from '#lib/atelier/article.svelte.ts'
 import type { Account } from './account.svelte'
 import { getBuildStatus, type BuildStatus } from '#lib/build-status.ts'
 import { cache } from '../storage'
+import { handleErrors } from '#lib/error.ts'
 
 export type RepoCache = Record<
   ProviderConfig['id'],
@@ -119,17 +120,22 @@ export default class ScribouilliGitRepo {
     if (!fresh) {
       await this.setupLocalRepo()
     }
-    const refreshCach: Promise<any>[] = [
+    const refreshCache: Promise<any> = Promise.all([
       this.#loadPermission(),
       this.#loadPublishedUrl().then(
         () => this.#loadBuildStatus()
       )
-    ]
+    ])
 
     await Promise.all([,
       this.pageList.listAll(),
       this.articleList.listAll(),
-    ].concat(fresh ? [] : refreshCach))
+    ].concat(fresh ? [] : [refreshCache]))
+
+    if (fresh) {
+      // Handle error even if we don’t wait for it
+      refreshCache.catch(handleErrors)
+    }
 
     if (!fresh) {
       // TODO: should this be done here?
@@ -166,9 +172,10 @@ export default class ScribouilliGitRepo {
     // Start loading stuff in the background
     await Promise.all([
       this.#loadPermission(),
-      this.#loadPublishedUrl().then(
-        () => this.#loadBuildStatus()
-      ),
+      this.#loadPublishedUrl()
+        .then(
+          () => this.#loadBuildStatus()
+        ),
       this.pageList.listAll(),
       this.articleList.listAll(),
     ])
@@ -180,8 +187,14 @@ export default class ScribouilliGitRepo {
   }
 
   public async setupLocalRepo(): Promise<void> {
-    await this.gitAgent.setAuthor(this.#account().login, this.#account().email)
+    console.log('seting up local repo')
     await this.gitAgent.pullOrCloneRepo()
+    await this.gitAgent.setAuthor(this.#account().login, this.#account().email)
+  }
+
+  public async deleteLocalRepo(): Promise<void> {
+    console.log('deleting up local repo')
+    await this.gitAgent.deleteRepo()
   }
 
   public async waitRepoReady(): Promise<void> {

@@ -5,12 +5,20 @@ import { makeAtelierListPageURL, makeUrlParam } from './urls'
 import type { ResolutionOption } from './git/agent'
 import { resolve } from '$app/paths'
 import { getAtelier } from './atelier/index.svelte'
+import * as storage from './storage'
 
 export const logout = () => {
-  const atelier = getAtelier()
   console.info('[logout] redirecting to /login')
-  atelier.logout()
-  goto(resolve('/'))
+  storage.clear()
+
+  goto(resolve('/')).then(() => {
+    if (window) {
+      // NOTE: Force refresh all states
+      // Atelier.logout can’t be called from here as getAtelier needs to be called from a component initialization
+      // TODO: make use of Atelier.logout to reset state (beware of lingering promises)
+      window.location.reload()
+    }
+  })
 }
 
 export interface User {

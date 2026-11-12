@@ -327,6 +327,47 @@ export class GitAgent {
     }
   }
 
+  async deleteDirectory(dirName: string): Promise<void> {
+    const dirs = [dirName];
+
+    while (dirs.length > 0) {
+      const dir = dirs.pop()
+      if (!dir) {
+        throw Error('unreachable')
+      }
+
+      const children = await this.#fs.promises.readdir(dir)
+
+      if (children.length) {
+        dirs.push(dir)
+        for (const child of children) {
+          const childPath = `${dir}/${child}`
+          const stat = await this.#fs.promises.stat(childPath)
+          if (stat.isDirectory()) {
+            dirs.push(childPath)
+          } else {
+            await this.#fs.promises.unlink(childPath)
+          }
+        }
+      } else {
+        await this.#fs.promises.rmdir(dir)
+      }
+    }
+  }
+
+  async deleteRepo(): Promise<void> {
+    try {
+      this.deleteDirectory(this.#repoDirectory)
+    } catch (e: unknown) {
+      const isFsError = !!e && typeof e === 'object' && 'code' in e;
+      // Ignore file not found error
+      if (!isFsError || e.code !== 'ENOENT') {
+        throw e
+      }
+      console.warn('Error deleting repository', e)
+    }
+  }
+
   /**
    * Assigne l'auteur et l'email pour les commits git
    *

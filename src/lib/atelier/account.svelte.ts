@@ -2,7 +2,7 @@ import { cache } from "#lib/storage.ts"
 import type { ProviderConfig, ScribouilliBackendProvider } from "../providers"
 
 
-export type AccountCache = Record<ProviderConfig['id'], Account>
+export type AccountCache = Record<ProviderConfig['id'], Pick<Account, 'login' | 'email'>>
 
 export class Account {
   login: string = $state('')
@@ -45,7 +45,10 @@ export class Account {
 
   async saveCache() {
     const { config } = await this.#provider()
-    this.#accountCache[config.id] = this
+    this.#accountCache[config.id] = {
+      login: this.login,
+      email: this.email,
+    }
 
     cache.saveAccount(this.#accountCache)
   }

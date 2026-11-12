@@ -28,10 +28,19 @@ export async function getBuildStatus(
   const lastCommit = await repo.gitAgent.currentCommit()
 
   let html
-
-  const response = await fetch(publishedWebsiteURL, {
-    cache: 'no-store',
-  })
+  let response
+  try {
+    response = await fetch(publishedWebsiteURL, {
+      cache: 'no-store',
+    })
+  } catch (e) {
+    console.warn('[getBuildStatus]: failed to fetch website url, assume not deployed yet')
+    if (isItStillCompiling(lastCommit)) {
+      return 'in_progress'
+    } else {
+      return 'error'
+    }
+  }
 
   const url = new URL(response.url)
 

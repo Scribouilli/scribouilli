@@ -15,16 +15,11 @@ export const handleErrors = (errorMessage: any) => {
 
       break
     }
-    case 'REPOSITORY_NOT_FOUND': {
-      console.info('[REPOSITORY_NOT_FOUND] redirecting to /aterlier')
+    case 'NOT_FOUND': {
+      console.info('[NOT_FOUND] redirecting to /aterlier')
       goto(resolve('/atelier'))
       break
     }
-    case 'NOT_FOUND':
-      const message = `gitAgent call failed: ${errorMessage}`
-      logMessage(message, 'handleErrors')
-      error(404, message)
-      break
 
     default:
       logMessage(errorMessage, 'handleErrors')

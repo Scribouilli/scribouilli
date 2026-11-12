@@ -30,7 +30,7 @@ export class Atelier {
   }
 
   logout() {
-    storage.deleteProvider()
+    storage.clear()
     this.reset()
     this.repo.reset()
     this.repoList.reset()
@@ -59,7 +59,7 @@ export class Atelier {
     this.#providerCheckPromise = this.#provider.api.isSessionActive()
       .then(isActive => {
         if (!isActive) {
-          throw new Error('Invalid session')
+          throw 'INVALIDATE_TOKEN'
         }
 
         if (!this.#provider || this.status === 'signed-out') {
@@ -137,7 +137,10 @@ export class Atelier {
   }
 
   async deleteRepository(repo: ScribouilliGitRepo) {
+
     return this.repoList.delete(repo)
+      .then(() => this.repo.deleteLocalRepo())
+      .then(() => this.repo.reset())
   }
 
   get repos() {

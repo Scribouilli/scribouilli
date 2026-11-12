@@ -8,11 +8,13 @@
   let { children }: LayoutProps = $props()
 
   let atelier = getAtelier()
+  let loading = $state(true)
 
   onMount(async () => {
     try {
       console.log(atelier)
       await Promise.all([atelier.repoList.refresh(), atelier.account.refresh()])
+      loading = false
     } catch (e) {
       console.error('Failed to load resources: ', e)
       handleErrors(e)
@@ -20,7 +22,7 @@
   })
 </script>
 
-{#if atelier.status !== 'ready'}
+{#if loading}
   <Loader />
 {:else}
   {@render children()}

@@ -45,7 +45,8 @@ export class RepoList {
     })
     const { api } = await this.#provider()
     await api.deleteRepository(repo)
-    await this.refresh()
+    // NOTE: don’t wait for actual refresh to finish; assume delete was successful
+    this.refresh()
   }
 
   async saveCache() {

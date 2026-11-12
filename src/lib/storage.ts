@@ -33,10 +33,12 @@ export function saveProvider(oAuthProvider: OAuthProvider) {
   }
 }
 
-
-export function deleteProvider() {
+export function clear() {
   if (localStorage) {
-    localStorage.removeItem(OAUTH_PROVIDER_STORAGE_KEY)
+    localStorage.clear()
+  }
+  if (sessionStorage) {
+    sessionStorage.clear()
   }
 }
 
