@@ -1,4 +1,4 @@
-import type { GitSiteTemplate, ProviderApi, ScribouilliBackendProvider } from '../providers'
+import type { GitSiteTemplate, ScribouilliBackendProvider } from '../providers'
 import { createContext } from 'svelte'
 import { RepoList } from './repo-list.svelte'
 import { Account } from './account.svelte'
@@ -8,10 +8,10 @@ import * as storage from '../storage'
 
 export class Atelier {
   #provider: ScribouilliBackendProvider | undefined
-  #providerCheckPromise: Promise<ProviderApi> | undefined
+  #providerCheckPromise: Promise<ScribouilliBackendProvider> | undefined
 
-  readonly account = new Account(this.ensureClient.bind(this))
-  readonly repoList = new RepoList(this.ensureClient.bind(this), this.account)
+  readonly account = new Account(this.ensureProvider.bind(this))
+  readonly repoList = new RepoList(this.ensureProvider.bind(this), () => this.account)
   readonly repo = new ScribouilliGitRepo(() => this.provider, () => this.account)
   readonly isBlogEnabled = $derived(
     this.repo.isBlogEnabled(this.repo.pageList.pages)
@@ -31,19 +31,25 @@ export class Atelier {
 
   logout() {
     storage.deleteProvider()
+    this.reset()
     this.repo.reset()
     this.repoList.reset()
   }
 
-  async ensureClient() {
+  reset() {
+    this.status = 'signed-out'
+    this.#provider = undefined
+    this.#providerCheckPromise = undefined
+  }
+
+  async ensureProvider() {
     if (!this.#provider) {
       this.status = 'signed-out'
       throw new Error('Provider is not loaded')
     }
 
-
     if (this.status === 'ready') {
-      return this.#provider.api
+      return this.#provider
     }
 
     if (this.#providerCheckPromise) {
@@ -56,13 +62,15 @@ export class Atelier {
           throw new Error('Invalid session')
         }
 
-        if (!this.#provider) {
-          throw new Error('Provider undefined')
+        if (!this.#provider || this.status === 'signed-out') {
+          throw new Error('Atelier not loaded')
         }
 
         this.status = 'ready'
+        return this.#provider
+      })
+      .finally(() => {
         this.#providerCheckPromise = undefined
-        return this.#provider.api
       })
 
     return this.#providerCheckPromise
@@ -98,7 +106,7 @@ export class Atelier {
     repoPath: string | null, owner: string | null
   ): Promise<ScribouilliGitRepo> {
     // Ensure API client is ready
-    await this.ensureClient()
+    await this.ensureProvider()
 
     if (!repoPath || (!(this.provider.api instanceof ScribouilliBackend) && !owner)) {
       throw new Error('mssing URL param')
@@ -119,7 +127,7 @@ export class Atelier {
     template: GitSiteTemplate
   }): Promise<ScribouilliGitRepo> {
     // Ensure API client is ready
-    await this.ensureClient()
+    await this.ensureProvider()
     // Create new repo on load it to be ready
     await this.repo.createNewAndLoad({ owner, repoName, template })
     // Refresh repo list in the background

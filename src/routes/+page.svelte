@@ -10,8 +10,8 @@
   onMount(async () => {
     try {
       await atelier
-        .ensureClient()
-        .then(client => client.getCurrentUserRepositories())
+        .ensureProvider()
+        .then(({ api }) => api.getCurrentUserRepositories())
         .then(redirectForRepos)
     } catch {
       showWelcome = true

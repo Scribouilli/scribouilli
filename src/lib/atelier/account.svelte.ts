@@ -1,5 +1,8 @@
-import type { ProviderApi } from "../providers"
+import { cache } from "#lib/storage.ts"
+import type { ProviderConfig, ScribouilliBackendProvider } from "../providers"
 
+
+export type AccountCache = Record<ProviderConfig['id'], Account>
 
 export class Account {
   login: string = $state('')
@@ -7,10 +10,11 @@ export class Account {
 
   loading: Promise<any> | null = null
 
-  #api: () => Promise<ProviderApi>
+  #provider: () => Promise<ScribouilliBackendProvider>
+  #accountCache: AccountCache = cache.loadAccount()
 
-  constructor(api: () => Promise<ProviderApi>) {
-    this.#api = api
+  constructor(provider: () => Promise<ScribouilliBackendProvider>) {
+    this.#provider = provider
   }
 
   reset() {
@@ -19,16 +23,41 @@ export class Account {
   }
 
   async refresh() {
-    const loginP = this.#api()
-      .then(api => api.getAuthenticatedUser())
+    const fresh = await this.loadFromCache()
+
+    const loginP = this.#provider()
+      .then(({ api }) => api.getAuthenticatedUser())
       .then(({ login }) => this.login = login)
 
-    const emailP = this.#api().then(api => api.getUserEmails())
+    const emailP = this.#provider()
+      .then(({ api }) => api.getUserEmails())
       .then(emails => {
         const email = (emails.find(e => e.primary) ?? emails[0]).email
         this.email = email
       })
 
-    return Promise.all([loginP, emailP])
+    const accountPromise = Promise.all([loginP, emailP]).then(() => this.saveCache())
+
+    if (!fresh) {
+      await accountPromise
+    }
+  }
+
+  async saveCache() {
+    const { config } = await this.#provider()
+    this.#accountCache[config.id] = this
+
+    cache.saveAccount(this.#accountCache)
+  }
+
+  async loadFromCache() {
+    const { config } = await this.#provider()
+    if (!(config.id in this.#accountCache)) {
+      return false
+    }
+    const cachedAccount = this.#accountCache[config.id]
+    this.email = cachedAccount.email
+    this.login = cachedAccount.login
+    return true
   }
 }

@@ -5,14 +5,23 @@ import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
 import { Articles } from '#lib/atelier/article.svelte.ts'
 import type { Account } from './account.svelte'
 import { getBuildStatus, type BuildStatus } from '#lib/build-status.ts'
-import * as storage from '../storage'
+import { cache } from '../storage'
 
 export type RepoCache = Record<
   ProviderConfig['id'],
   Record<ScribouilliGitRepo['repoId'], CachedRepo>
 >
 
-export type CachedRepo = Pick<ScribouilliGitRepo, 'publicRepositoryURL' | 'owner' | 'repoPath' | 'repoId' | 'userPermission' | 'publishedUrl'>
+export type CachedRepo = Pick<
+  ScribouilliGitRepo,
+  'publicRepositoryURL'
+  | 'owner'
+  | 'repoPath'
+  | 'repoId'
+  | 'userPermission'
+  | 'publishedUrl'
+  | 'buildStatus'
+>
 
 export default class ScribouilliGitRepo {
   public publicRepositoryURL: string = $state('')
@@ -32,7 +41,7 @@ export default class ScribouilliGitRepo {
   #gitAgent: GitAgent | undefined
   #provider: () => ScribouilliBackendProvider
   #account: () => Account
-  #repoCache: RepoCache = storage.loadRepoCache()
+  #repoCache: RepoCache = cache.loadRepo()
 
   constructor(
     provider: () => ScribouilliBackendProvider,
@@ -218,6 +227,7 @@ export default class ScribouilliGitRepo {
   // NOTE: don’t cache the status
   async #loadBuildStatus() {
     this.buildStatus = await getBuildStatus(this)
+    this.cacheRepo()
     // TODO: reschedule check if build 'in_progress' or 'needs_account_verification'
   }
 
@@ -279,9 +289,10 @@ export default class ScribouilliGitRepo {
       publicRepositoryURL: this.publicRepositoryURL,
       repoId: this.repoId,
       userPermission: this.userPermission,
-      publishedUrl: this.publishedUrl
+      publishedUrl: this.publishedUrl,
+      buildStatus: this.buildStatus,
     }
-    storage.saveRepoCache(this.#repoCache)
+    cache.saveRepo(this.#repoCache)
   }
 
   loadFromCache(repoId: ScribouilliGitRepo['repoId']) {
@@ -300,6 +311,7 @@ export default class ScribouilliGitRepo {
     this.repoId = cachedRepo.repoId
     this.userPermission = cachedRepo.userPermission
     this.publishedUrl = cachedRepo.publishedUrl
+    this.buildStatus = cachedRepo.buildStatus
 
     return true
   }

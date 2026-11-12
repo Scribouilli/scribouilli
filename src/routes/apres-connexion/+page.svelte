@@ -54,8 +54,8 @@
   onMount(async () => {
     storeOAuthProviderAccess()
     await atelier
-      .ensureClient()
-      .then(client => client.getCurrentUserRepositories())
+      .ensureProvider()
+      .then(({ api }) => api.getCurrentUserRepositories())
       .then(redirectForRepos)
   })
 </script>
