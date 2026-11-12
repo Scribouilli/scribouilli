@@ -434,7 +434,11 @@ export class GitAgent {
   }
 
   async checkFileExistence(filename: string) {
-    const stat = await this.#fs.promises.stat(this.#path(filename))
-    return stat.isFile()
+    try {
+      const stat = await this.#fs.promises.stat(this.#path(filename))
+      return stat.isFile()
+    } catch {
+      return false
+    }
   }
 }

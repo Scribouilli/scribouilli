@@ -117,9 +117,8 @@ export default class ScribouilliGitRepo {
     this.configure({ owner, repoPath })
     const fresh = this.loadFromCache(this.repoId)
 
-    if (!fresh) {
-      await this.setupLocalRepo()
-    }
+    await this.setupLocalRepo()
+
     const refreshCache: Promise<any> = Promise.all([
       this.#loadPermission(),
       this.#loadPublishedUrl().then(
@@ -187,13 +186,27 @@ export default class ScribouilliGitRepo {
   }
 
   public async setupLocalRepo(): Promise<void> {
-    console.log('seting up local repo')
-    await this.gitAgent.pullOrCloneRepo()
-    await this.gitAgent.setAuthor(this.#account().login, this.#account().email)
+    console.log('setting up local repo')
+    const setup = async () => {
+      await this.gitAgent.pullOrCloneRepo()
+      await this.gitAgent.setAuthor(this.#account().login, this.#account().email)
+    }
+
+    try {
+      await setup()
+    } catch (e) {
+      console.warn('failed to setup local repo, will try deleting worktree and retrying: ', e)
+      await this.deleteLocalRepo()
+      // NOTE: force reconfigure after repo deletion to force the recreation of the GitAgent
+      // because otherwise isomorphic-git still have some bad cache around.
+      // This is cursed and I have spent too much time debugging that.
+      this.configure({ repoPath: this.repoPath, owner: this.owner })
+      await setup()
+    }
   }
 
   public async deleteLocalRepo(): Promise<void> {
-    console.log('deleting up local repo')
+    console.log('deleting local repo')
     await this.gitAgent.deleteRepo()
   }
 
