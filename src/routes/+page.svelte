@@ -13,7 +13,8 @@
         .ensureProvider()
         .then(({ api }) => api.getCurrentUserRepositories())
         .then(redirectForRepos)
-    } catch {
+    } catch (e) {
+      console.log('failed to load acount from storage, showing welcome screen', e)
       showWelcome = true
     }
   })

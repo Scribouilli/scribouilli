@@ -352,8 +352,10 @@ export default class ScribouilliGitRepo {
     }
     this.status = 'sync'
     return work
-      .then((ret) => {
+      .then(async (ret) => {
         this.setBuilding()
+        await this.pageList.listAll()
+        await this.articleList.listAll()
         return ret
       })
       .finally(() => this.status = 'ready')

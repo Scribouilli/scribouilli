@@ -30,6 +30,7 @@ export class Atelier {
   }
 
   logout() {
+    this.status = 'signed-out'
     storage.clear()
     this.reset()
     this.repo.reset()
@@ -44,7 +45,7 @@ export class Atelier {
 
   async ensureProvider() {
     if (!this.#provider) {
-      this.status = 'signed-out'
+      this.logout()
       throw 'PROVIDER_NOT_LOADED'
     }
 
@@ -59,6 +60,7 @@ export class Atelier {
     this.#providerCheckPromise = this.#provider.api.isSessionActive()
       .then(isActive => {
         if (!isActive) {
+          this.logout()
           throw 'INVALIDATE_TOKEN'
         }
 
