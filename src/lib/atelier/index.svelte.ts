@@ -45,7 +45,7 @@ export class Atelier {
   async ensureProvider() {
     if (!this.#provider) {
       this.status = 'signed-out'
-      throw new Error('Provider is not loaded')
+      throw 'PROVIDER_NOT_LOADED'
     }
 
     if (this.status === 'ready') {

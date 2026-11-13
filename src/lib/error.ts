@@ -9,6 +9,7 @@ import { logout } from './user'
  */
 export const handleErrors = (errorMessage: any) => {
   switch (errorMessage) {
+    case 'PROVIDER_NOT_LOADED':
     case 'INVALIDATE_TOKEN': {
       console.info('[invalid token] loging out')
       logout()
