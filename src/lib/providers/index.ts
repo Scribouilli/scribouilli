@@ -3,7 +3,7 @@ import GitLabAPI from './gitlab'
 import GitHubAPI from './github'
 import ScribouilliBackend from './scribouilli'
 import type { BuildStatus } from '#lib/build-status.ts'
-import { getAtelier } from '#lib/atelier/index.svelte.ts'
+
 
 export interface OAuthProvider {
   type: string
@@ -80,10 +80,7 @@ export const makeOAuthServiceAPI = (provider: OAuthProvider): ProviderApi => {
   if (provider.type === 'github') {
     return new GitHubAPI(provider)
   } else if (provider.type === 'gitlab') {
-    return new GitLabAPI(provider, () => {
-      // TODO: fix this, remove access to context in random places
-      return getAtelier().repo.gitAgent
-    })
+    return new GitLabAPI(provider)
   } else if (provider.type === 'scribouilli') {
     return new ScribouilliBackend(provider)
   } else {

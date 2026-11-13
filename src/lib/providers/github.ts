@@ -39,13 +39,13 @@ export default class GitHubAPI implements ProviderApi {
     }
   }
 
-  getAuthenticatedUser() {
+  async getAuthenticatedUser() {
     return this.callAPI(`${GITHUB_API_BASE_URL}/user`).then(response => {
       return response.json()
     })
   }
 
-  getUserEmails() {
+  async getUserEmails() {
     return this.callAPI(`${GITHUB_API_BASE_URL}/user/emails`).then(response => {
       return response.json()
     })
@@ -63,13 +63,13 @@ export default class GitHubAPI implements ProviderApi {
     return true
   }
 
-  getCurrentUserRepositories() {
+  async getCurrentUserRepositories() {
     return this.callAPI(`${GITHUB_API_BASE_URL}/user/repos?sort=updated&visibility=public`)
       .then(response => response.json())
       .then(rawRepos => {
         const githubRepos = z.parse(GITHUB_REPO_LIST_SCHEMA, rawRepos)
         return githubRepos
-          .filter(repo => repo?.permissions?.push && !repo?.archived && !repo.disabled)
+          .filter(repo => repo.permissions?.push && !repo.archived && !repo.disabled)
           .map(repo => {
             return {
               name: repo.name,
@@ -144,7 +144,7 @@ export default class GitHubAPI implements ProviderApi {
     return { remoteURL: clone_url }
   }
 
-  deploy({ repoId }: ScribouilliGitRepo) {
+  async deploy({ repoId }: ScribouilliGitRepo) {
     return this.callAPI(`${GITHUB_API_BASE_URL}/repos/${repoId}/dispatches`, {
       method: 'POST',
       headers: {
@@ -157,7 +157,7 @@ export default class GitHubAPI implements ProviderApi {
     })
   }
 
-  getPagesWebsiteDeploymentStatus({ repoId }: ScribouilliGitRepo) {
+  async getPagesWebsiteDeploymentStatus({ repoId }: ScribouilliGitRepo) {
     // TODO: We need to add the `sha` parameter to avoid the GitHub API to return
     // cached data.
     return this.callAPI(
@@ -175,7 +175,7 @@ export default class GitHubAPI implements ProviderApi {
       })
   }
 
-  isPagesWebsiteBuilt(scribouilliGitRepo: ScribouilliGitRepo) {
+  async isPagesWebsiteBuilt(scribouilliGitRepo: ScribouilliGitRepo) {
     return this.getPagesWebsiteDeploymentStatus(scribouilliGitRepo)
       .then(response => {
         return response === 'success'
@@ -185,7 +185,7 @@ export default class GitHubAPI implements ProviderApi {
       })
   }
 
-  isRepositoryReady({ repoId }: ScribouilliGitRepo) {
+  async isRepositoryReady({ repoId }: ScribouilliGitRepo) {
     return this.callAPI(`${GITHUB_API_BASE_URL}/repos/${repoId}/contents/_config.yml`)
       .then(response => {
         return response.ok
@@ -195,7 +195,7 @@ export default class GitHubAPI implements ProviderApi {
       })
   }
 
-  getPublishedWebsiteURL({ repoId }: ScribouilliGitRepo) {
+  async getPublishedWebsiteURL({ repoId }: ScribouilliGitRepo) {
     return this.callAPI(`${GITHUB_API_BASE_URL}/repos/${repoId}/pages`, {
       headers: {
         Authorization: 'token ' + this.accessToken,
@@ -228,7 +228,7 @@ export default class GitHubAPI implements ProviderApi {
     })
   }
 
-  callAPI(url: string, requestParams?: RequestInit) {
+  async callAPI(url: string, requestParams?: RequestInit) {
     if (requestParams && requestParams.headers === undefined) {
       requestParams.headers = {
         Authorization: 'token ' + this.accessToken,

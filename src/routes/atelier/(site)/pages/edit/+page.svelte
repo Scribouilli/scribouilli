@@ -1,6 +1,6 @@
 <script lang="ts">
   import lireFrontMatter from 'front-matter'
-  import { makeAtelierListArticlesURL, makeAtelierListPageURL } from '#lib/urls.ts'
+  import { makeAtelierListPageURL } from '#lib/urls.ts'
   import type { EditeurFile } from '#lib/atelier.ts'
   import Editeur from '#lib/components/atelier/Editeur.svelte'
   import type { Page } from '#lib/atelier/page.svelte.ts'

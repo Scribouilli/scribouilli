@@ -3,7 +3,6 @@
   import { deleteFileAndPushChanges, writeFileAndPushChanges } from '#lib/git/file.ts'
   import { resolve } from '$app/paths'
   import type { Page } from '#lib/atelier/page.svelte.ts'
-  import { error } from '@sveltejs/kit'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { handleErrors } from '#lib/error.ts'
 

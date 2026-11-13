@@ -117,6 +117,8 @@ export default class ScribouilliGitRepo {
     this.configure({ owner, repoPath })
     const fresh = this.loadFromCache(this.repoId)
 
+    // TODO: would be nice to skip that if repo fresh
+    // but if something’s happened we might want to setup the repo again
     await this.setupLocalRepo()
 
     const refreshCache: Promise<any> = Promise.all([
@@ -136,11 +138,10 @@ export default class ScribouilliGitRepo {
       refreshCache.catch(handleErrors)
     }
 
-    if (!fresh) {
-      // TODO: should this be done here?
-      await setBaseUrlInConfigIfNecessary(this)
-      await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
-    }
+    // TODO: should this be done here?
+    // NOTE: don’t skip if fresh, won’t be long if not needed
+    await setBaseUrlInConfigIfNecessary(this)
+    await installPluginIfNecessary(this, 'jekyll-git-hash', '0.1.1')
 
     this.status = 'ready'
   }

@@ -4,7 +4,6 @@ import type { MinimalGitRepository } from './providers'
 import { makeAtelierListPageURL, makeUrlParam } from './urls'
 import type { ResolutionOption } from './git/agent'
 import { resolve } from '$app/paths'
-import { getAtelier } from './atelier/index.svelte'
 import * as storage from './storage'
 import type ScribouilliGitRepo from './atelier/repo.svelte'
 

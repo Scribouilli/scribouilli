@@ -1,6 +1,5 @@
 import z from 'zod'
 
-import { GitAgent } from '../git/agent'
 import ScribouilliGitRepo from '../atelier/repo.svelte'
 import type { GitSiteTemplate, OAuthProvider, ProviderApi } from '.'
 import { defaultMakePublicRepositoryURL, defaultMakeRepoId } from '.'
@@ -17,28 +16,25 @@ const REPO_SCHEMA = z.object({
       access_level: z.union([z.literal(GITLAB_OWNER_ROLE), z.literal(GITLAB_DEVELOPER_ROLE)]),
     }),
   }),
-  owner: z.object({
-    username: z.string(),
+  namespace: z.object({
+    full_path: z.string(),
   }),
+  default_branch: z.string()
 })
 const REPO_LIST_SCHEMA = z.array(REPO_SCHEMA)
+const REPO_PAGE_SETTING = z.object({
+  url: z.string()
+})
 
 export default class GitLabAPI implements ProviderApi {
-  #gitAgentGetter
-
   public accessToken: string | undefined
   private origin
   private authenticatedUser: undefined | { id: string; login: string; email: string }
 
-  constructor({ accessToken, origin }: OAuthProvider, gitAgent: () => GitAgent) {
+  constructor({ accessToken, origin }: OAuthProvider) {
     this.accessToken = accessToken
     this.origin = origin
     this.authenticatedUser = undefined
-    this.#gitAgentGetter = gitAgent
-  }
-
-  get gitAgent() {
-    return this.#gitAgentGetter()
   }
 
   get apiBaseUrl() {
@@ -96,19 +92,21 @@ export default class GitLabAPI implements ProviderApi {
   }
 
   async getCurrentUserRepositories() {
-    const { login } = await this.getAuthenticatedUser()
     const response = await this.callAPI(
-      `${this.apiBaseUrl}/users/${login}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public&min_access_level=${GITLAB_DEVELOPER_ROLE}&active=true`,
+      `${this.apiBaseUrl}/projects?order_by=updated_at&sort=desc&per_page=30&visibility=public&min_access_level=${GITLAB_DEVELOPER_ROLE}&active=true`,
     )
     const rawRepos = await response.json()
     const gitlabRepos = z.parse(REPO_LIST_SCHEMA, rawRepos)
-    return gitlabRepos.map(repo => {
+    const a = gitlabRepos.map(repo => {
       return {
         name: repo.name,
         repoPath: repo.path,
-        owner: repo.owner.username,
+        owner: repo.namespace.full_path,
       }
     })
+
+    console.log(a)
+    return a
   }
 
   async createDefaultRepository(
@@ -137,11 +135,16 @@ export default class GitLabAPI implements ProviderApi {
   async deploy(scribouilliGitRepo: ScribouilliGitRepo) {
     console.log('gitlab.deploy', scribouilliGitRepo)
 
-    const branch = await this.gitAgent.currentBranch()
+    const urlEncodedRepoPath = encodeURIComponent(scribouilliGitRepo.repoId)
+    const projectResponse = await this.callAPI(`${this.apiBaseUrl}/projects/${urlEncodedRepoPath}`)
+    const rawProject = await projectResponse.json()
+    const project = z.parse(REPO_SCHEMA, rawProject)
+    const branch = project.default_branch
+
     console.log('branch', branch)
 
     const response = await this.callAPI(
-      `${this.apiBaseUrl}/projects/${encodeURIComponent(scribouilliGitRepo.repoId)}/pipeline`,
+      `${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/pipeline`,
       {
         method: 'POST',
         headers: {
@@ -200,33 +203,13 @@ export default class GitLabAPI implements ProviderApi {
     }
   }
 
-  getPublishedWebsiteURL({ repoPath, owner, origin }: ScribouilliGitRepo) {
-    // TODO: make this provider agnostic
-    if (origin === 'https://gitlab.com') {
-      return Promise.resolve(`https://${owner}.gitlab.io/${repoPath}/`)
-    }
-
-    if (origin === 'https://git.scribouilli.org') {
-      return Promise.resolve(`https://${owner}.monpetitsite.org/${repoPath}/`)
-    }
-
-    return Promise.reject('Unknown origin')
-
-    // console.log('gitlab.getPublishedWebsiteURL', repoId)
-    // return this.callAPI(
-    // `${this.apiBaseUrl}/projects/${encodeURIComponent(
-    // repoId,
-    // )}/environments?per_page=1&order_by=updated_at&sort=desc`,
-    // )
-    // .then(response => response.json())
-    // .then(environments => {
-    // console.log('environments', environments)
-    // return environments[0].external_url
-    // })
-    // .catch(error => {
-    // console.log('error', error)
-    // return undefined
-    // })
+  async getPublishedWebsiteURL({ repoId }: ScribouilliGitRepo) {
+    // TODO: check if possible to disable single unique domain?
+    const urlEncodedRepoPath = encodeURIComponent(repoId)
+    const response = await this.callAPI(`${this.apiBaseUrl}/projects/${urlEncodedRepoPath}/pages`)
+    const rawPage = await response.json()
+    const page = z.parse(REPO_PAGE_SETTING, rawPage)
+    return page.url
   }
 
   async getUserPermissions({ owner, repoPath }: ScribouilliGitRepo) {
