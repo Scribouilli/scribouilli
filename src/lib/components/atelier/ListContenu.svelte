@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { Pages } from '#lib/atelier/page.svelte.ts'
+  import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
   import type { FileContenu } from '#lib/atelier.ts'
   import { makeUrlParam } from '#lib/urls.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import type { Article } from '#lib/atelier/article.svelte.ts'
 
   interface Props {
     listContenu?: FileContenu[]
@@ -26,24 +27,33 @@
   let modification = $state(false)
   let blogEnabled = $derived(onBlogToggle ? atelier.isBlogEnabled : false)
 
+  function pageGuard(maybePage: Page | Article): maybePage is Page {
+    return 'index' in maybePage && 'inMenu' in maybePage && 'blogIndex' in maybePage
+  }
+
   // TODO: move this somewhere else
   async function saveContent() {
-    for (let page of listContenu) {
-      // for + await leads to poor pref. PPP: do a Promise.all
-      await atelier.repo.gitAgent.writeFile(
-        page.path,
-        `${
-          page.title
-            ? Pages.makeFrontMatter(
-                page.title,
-                page.index,
-                page.inMenu,
-                page.blogIndex ? true : undefined,
-              ) + '\n'
-            : ''
-        }${page.content}`,
-      )
+    if (!listContenu.every(page => pageGuard(page))) {
+      throw new TypeError('content must be page list')
     }
+
+    await Promise.all(
+      listContenu.map(page =>
+        atelier.repo.gitAgent.writeFile(
+          page.path,
+          `${
+            page.title
+              ? Pages.makeFrontMatter(
+                  page.title,
+                  page.index,
+                  page.inMenu,
+                  page.blogIndex ? true : undefined,
+                ) + '\n'
+              : ''
+          }${page.content}`,
+        ),
+      ),
+    )
 
     await atelier.repo.gitAgent.commit('Changements menu')
     await atelier.repo.gitAgent.safePush()
@@ -78,7 +88,7 @@
         {#each listContenu as contenu}
           <li>
             <span>{contenu.title}</span>
-            {#if modification}
+            {#if modification && pageGuard(contenu)}
               <div class="gestionMenu">
                 <label>
                   Ordre de la page dans le menu

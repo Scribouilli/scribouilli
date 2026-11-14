@@ -5,6 +5,8 @@ import { logMessage } from '#lib/logger.ts'
 import { handleErrors } from '#lib/error.ts'
 import { file } from '#lib/git/file.ts'
 import { CUSTOM_CSS_PATH } from '#lib/config.ts'
+import type { Article } from './atelier/article.svelte'
+import type { Page } from './atelier/page.svelte'
 
 export interface EditeurFile {
   fileName: string
@@ -16,14 +18,7 @@ export interface EditeurFile {
   blogIndex: boolean
 }
 
-export interface FileContenu {
-  path: string
-  title: string
-  content: string
-  inMenu: boolean
-  blogIndex: boolean
-  index: number
-}
+export type FileContenu = Article | Page
 
 /**
  * @description if baseurl param is set, always update the config with it
