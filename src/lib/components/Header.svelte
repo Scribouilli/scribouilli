@@ -4,6 +4,7 @@
   import { makeUrlParam, makeAtelierListPageURL, makeAtelierListArticlesURL } from '#lib/urls.ts'
   import { resolve } from '$app/paths'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import { page } from '$app/state'
 
   const atelier = getAtelier()
 
@@ -96,7 +97,7 @@
   {/if}
 </header>
 
-{#if atelier.repo.conflicts}
+{#if atelier.repo.conflicts && page.route.id !== '/atelier/(site)/resolution-desynchronisation'}
   <section class="warning warning-center">
     <p>
       <span aria-hidden="true">⚠️</span> <strong>Attention !</strong> Votre site ne peut plus se mettre
