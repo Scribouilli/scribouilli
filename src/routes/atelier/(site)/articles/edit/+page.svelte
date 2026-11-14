@@ -95,7 +95,7 @@
 </script>
 
 <Editeur
-  {file}
+  bind:file
   contenus={articles}
   editionTitle="Édition d'un article"
   {listPrefix}

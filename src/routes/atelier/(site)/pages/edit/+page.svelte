@@ -94,7 +94,7 @@
 </script>
 
 <Editeur
-  {file}
+  bind:file
   contenus={pages}
   editionTitle="Édition d'une page"
   {listPrefix}
