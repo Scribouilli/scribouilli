@@ -11,14 +11,12 @@ export const logout = () => {
   console.info('[logout] redirecting to /login')
   storage.clear()
 
-  goto(resolve('/')).then(() => {
-    if (window) {
-      // NOTE: Force refresh all states
-      // Atelier.logout can’t be called from here as getAtelier needs to be called from a component initialization
-      // TODO: make use of Atelier.logout to reset state (beware of lingering promises)
-      window.location.reload()
-    }
-  })
+  if (window) {
+    // NOTE: Force refresh all states
+    // Atelier.logout can’t be called from here as getAtelier needs to be called from a component initialization
+    // TODO: make use of Atelier.logout to reset state (beware of lingering promises)
+    window.location.href = resolve('/')
+  }
 }
 
 export interface User {
