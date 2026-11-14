@@ -115,7 +115,8 @@ export default class ScribouilliGitRepo {
     repoPath: string
   }): Promise<void> {
     this.configure({ owner, repoPath })
-    const fresh = this.loadFromCache(this.repoId)
+    const repoId = this.repoId
+    const fresh = this.loadFromCache(repoId)
 
     // TODO: would be nice to skip that if repo fresh
     // but if something’s happened we might want to setup the repo again
@@ -172,10 +173,7 @@ export default class ScribouilliGitRepo {
     // Start loading stuff in the background
     await Promise.all([
       this.#loadPermission(),
-      this.#loadPublishedUrl()
-        .then(
-          () => this.#loadBuildStatus()
-        ),
+      this.#loadPublishedUrl(),
       this.pageList.listAll(),
       this.articleList.listAll(),
     ])
@@ -183,6 +181,7 @@ export default class ScribouilliGitRepo {
     // TODO: should this be done here?
     await setBaseUrlInConfigIfNecessary(this, this.publishedUrl ? undefined : this.guessBaseURL())
     this.status = 'ready'
+    this.buildStatus = 'in_progress'
     this.cacheRepo()
   }
 
@@ -236,37 +235,60 @@ export default class ScribouilliGitRepo {
   }
 
   async #loadPermission() {
-    this.userPermission = await this.#provider().api.getUserPermissions(this)
-    this.cacheRepo()
+    const repoId = this.repoId
+    const userPermission = await this.#provider().api.getUserPermissions(this)
+    if (repoId === this.repoId) {
+      this.userPermission = userPermission
+      this.cacheRepo()
+    }
   }
 
-  async #loadPublishedUrl() {
-    const fetchUrl = async () => {
-      const url = await this.#provider().api.getPublishedWebsiteURL(this)
-      if (url) {
-        this.publishedUrl = url
-        this.cacheRepo()
-      } else {
-        setTimeout(fetchUrl, 1000)
+  async #loadPublishedUrl(): Promise<void> {
+    const repoId = this.repoId
+    return new Promise((resolve) => {
+      const fetchUrl = () => {
+        this.#provider().api.getPublishedWebsiteURL(this)
+          .then(url => {
+            if (this.repoId !== repoId) {
+              resolve()
+              return
+            }
+
+            if (url) {
+              this.publishedUrl = url
+              this.cacheRepo()
+              resolve()
+            } else {
+              setTimeout(fetchUrl, 1000)
+            }
+          })
       }
-    }
-    return fetchUrl()
+      fetchUrl()
+    })
   }
 
-  // NOTE: don’t cache the status
-  async #loadBuildStatus() {
-    this.buildStatus = await getBuildStatus(this)
-    this.cacheRepo()
-    // TODO: reschedule check if build 'in_progress' or 'needs_account_verification'
-  }
+  async #loadBuildStatus(): Promise<void> {
+    const repoId = this.repoId
+    return new Promise((resolve) => {
+      const fetchBuildStatus = () => {
+        getBuildStatus(this)
+          .then(buildStatus => {
+            if (this.repoId !== repoId) {
+              resolve()
+              return
+            }
 
-  setBuilding() {
-    if (this.status === 'ready') {
-      this.buildStatus = 'in_progress'
-    }
-
-    // TODO: check if check if already scheduled
-    setTimeout(() => this.#loadBuildStatus(), 30_000)
+            this.buildStatus = buildStatus
+            this.cacheRepo()
+            if (buildStatus === 'in_progress' || buildStatus === 'needs_account_verification') {
+              setTimeout(fetchBuildStatus, 10_000)
+            } else {
+              resolve()
+            }
+          })
+      }
+      fetchBuildStatus()
+    })
   }
 
   /**
@@ -351,9 +373,10 @@ export default class ScribouilliGitRepo {
       throw new Error('repository is not ready to work with')
     }
     this.status = 'sync'
+    this.buildStatus = 'in_progress'
     return work
       .then(async (ret) => {
-        this.setBuilding()
+        this.#loadBuildStatus()
         await this.pageList.listAll()
         await this.articleList.listAll()
         return ret
