@@ -1,0 +1,362 @@
+<script lang="ts">
+  import { marked } from 'marked'
+  import DOMPurify from 'dompurify'
+  import { writeFileAndCommit } from '#lib/git/file.ts'
+  // TODO: Fix this
+  // import '../../../../styles/editeur-preview/framalibre.css';
+  import type { EditeurFile, FileContenu } from '#lib/atelier.ts'
+  import Loader from '../Loader.svelte'
+  import { Pages } from '#lib/atelier/page.svelte.ts'
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
+
+  interface Props {
+    file?: EditeurFile
+
+    contenus?: FileContenu[]
+    editionTitle: string
+    listPrefix: string
+    deleteTitle: string
+
+    onDelete: (file: EditeurFile) => void
+    onSave: (file: EditeurFile) => void
+  }
+
+  let {
+    file = $bindable(),
+
+    contenus = [],
+    editionTitle,
+    listPrefix,
+    deleteTitle,
+
+    onDelete,
+    onSave,
+  }: Props = $props()
+
+  let files: FileList | undefined = $state()
+  // single-image selection
+  let image = $derived(files && files[0])
+  let imageMd = $state('')
+  const atelier = getAtelier()
+
+  let preview = $derived.by(async () => {
+    if (!file) {
+      return ''
+    }
+    try {
+      const html = await marked.parse(file.content)
+      return DOMPurify.sanitize(html)
+    } catch {
+      return 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
+    }
+  })
+
+  let deleteDisabled = $state(true)
+
+  let filesPath = $derived(contenus.map(contenu => contenu.path))
+
+  // @ts-ignore
+  const validateTitle = e => {
+    if (!file) {
+      return
+    }
+    const titleChanged = file.previousTitle?.trim() !== file.title.trim()
+    if (titleChanged && filesPath && filesPath.includes(Pages.makeFileNameFromTitle(file.title))) {
+      e.target.setCustomValidity('Vous avez déjà utilisé ce nom. Veuillez en choisir un autre.')
+
+      return
+    }
+
+    e.target.setCustomValidity('')
+  }
+
+  // @ts-ignore
+  const onSubmit = e => {
+    e.preventDefault()
+    if (!file) {
+      return
+    }
+
+    if (e.target.checkValidity()) {
+      onSave({
+        fileName: file.fileName,
+        content: file.content.trim(),
+        previousContent: file.previousContent,
+        title: file.title.trim(),
+        index: file.index,
+        previousTitle: file.previousTitle,
+        blogIndex: file.blogIndex,
+      })
+    }
+  }
+
+  // @ts-ignore
+  const onBackClick = e => {
+    if (!file) {
+      return
+    }
+
+    if (
+      file.previousContent?.trim() !== file.content.trim() ||
+      file.title?.trim() !== file.previousTitle?.trim()
+    ) {
+      if (
+        !confirm(
+          'Êtes-vous sûr·e de vouloir revenir en arrière ? Toutes vos modifications seront perdues.',
+        )
+      ) {
+        e.preventDefault()
+      }
+    }
+  }
+
+  // @ts-ignore
+  const imageSelect = async () => {
+    if (!image) return
+
+    imageMd = 'Mise en ligne en cours…'
+    const buffer = new Uint8Array(await image.arrayBuffer())
+    const imageFilePath = `images/${image.name}`
+
+    await writeFileAndCommit(
+      atelier.repo.gitAgent,
+      imageFilePath,
+      buffer,
+      `Ajout de l'image ${image.name}`,
+    )
+
+    const imageLink = `{% link ${imageFilePath} %}`
+    imageMd = `![Texte décrivant l'image](${imageLink})`
+  }
+</script>
+
+<section class="screen">
+  <h3>{editionTitle}</h3>
+
+  {#if file}
+    <div class="wrapper">
+      <form onsubmit={onSubmit}>
+        <div>
+          <label for="title">Titre</label>
+          <input bind:value={file.title} onchange={validateTitle} type="text" id="title" required />
+        </div>
+
+        <div class="accordion aide-editeur">
+          <h4 class="label">Aide</h4>
+          <details>
+            <summary>Mettre en forme le contenu</summary>
+            <div>
+              <p>
+                Pour mettre en forme votre contenu, vous pouvez bidouiller
+                <a href="https://flus.fr/carnet/markdown.html" target="_blank">
+                  avec du Markdown
+                </a>
+                … ou avec du HTML grâce
+                <a href="https://scribouilli.org/aide.html" target="_blank"> à nos exemples </a>
+                d'encart ou de bouton, ou
+                <a
+                  href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
+                  target="_blank"
+                >
+                  avec ce guide.
+                </a>
+              </p>
+            </div>
+          </details>
+
+          <details>
+            <summary>Ajouter une image</summary>
+            <div>
+              <ol>
+                <li>
+                  <label for="image">Sélectionnez votre image :</label>
+                  <input
+                    accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
+                    bind:files
+                    id="image"
+                    name="image"
+                    type="file"
+                    onchange={imageSelect}
+                  />
+                </li>
+                <li>Insérez la ligne suivante là où vous souhaitez que votre image apparaisse :</li>
+                <figure>
+                  {imageMd}
+                </figure>
+
+                <li>
+                  Remplacez le texte entre crochets par une description pour les personnes
+                  malvoyantes (il s'affichera si l'image ne charge pas)
+                </li>
+              </ol>
+            </div>
+          </details>
+        </div>
+
+        <div class="content-preview">
+          <div class="content">
+            <label for="content">Contenu</label>
+            <textarea bind:value={file.content} id="content" cols="30" rows="10"></textarea>
+          </div>
+
+          <div class="preview">
+            <h4>Aperçu</h4>
+            <div class="markdown-preview">
+              <!-- svelte-ignore block_empty -->
+              {#await preview then preview}
+                {@html preview}
+              {/await}
+            </div>
+          </div>
+        </div>
+        <div class="actions-zone">
+          <a href={listPrefix} class="btn__retour" onclick={onBackClick}>Retour</a>
+          <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
+        </div>
+
+        {#if file.fileName && file.fileName !== 'index.md'}
+          <div class="wrapper white-zone">
+            <h3>{deleteTitle}</h3>
+            <label>
+              <input
+                type="checkbox"
+                onchange={() => {
+                  deleteDisabled = !deleteDisabled
+                }}
+              />
+              Afficher le bouton de suppression
+            </label>
+            <button
+              type="button"
+              onclick={() => onDelete(file)}
+              disabled={deleteDisabled}
+              class=" btn__medium btn btn__danger"
+            >
+              {deleteTitle}
+            </button>
+          </div>
+        {/if}
+      </form>
+    </div>
+  {:else}
+    <Loader />
+  {/if}
+</section>
+
+<style lang="css">
+  .accordion {
+    margin-top: 3rem;
+  }
+
+  .aide-editeur {
+    summary {
+      margin-bottom: 1.2rem;
+    }
+
+    ol {
+      list-style: revert;
+      padding-left: 2rem;
+    }
+
+    li {
+      margin-bottom: 1rem;
+      label {
+        font-weight: normal;
+        display: inline;
+      }
+      input {
+        display: inline;
+      }
+    }
+  }
+
+  .content-preview {
+    display: flex;
+    gap: 1rem;
+    width: 90vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -45vw;
+    margin-right: -45vw;
+
+    & > div {
+      flex-basis: 50%;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 960px) {
+      flex-direction: column;
+      right: auto;
+      left: auto;
+      width: 100%;
+      margin-inline: auto;
+    }
+  }
+
+  .content {
+    margin-top: 2rem;
+
+    textarea {
+      height: calc(100% - 25px);
+    }
+  }
+
+  .preview {
+    & > div {
+      height: calc(100% - 60px);
+      margin: 0.5em 0;
+      padding: 0.5em;
+      background-color: white;
+    }
+
+    .markdown-preview :global {
+      ul,
+      ol {
+        margin-left: 1.5rem;
+      }
+
+      ul {
+        list-style-type: disc;
+      }
+    }
+  }
+
+  .actions-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 6rem;
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+
+  .btn__retour {
+    &::before {
+      content: '‹';
+      margin-right: 0.5rem;
+    }
+  }
+
+  details {
+    figure {
+      padding: 0.4rem;
+      font-family: monospace;
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+  :global(.markdown-preview ul) {
+    list-style-type: disc !important;
+    padding-left: 1rem !important;
+  }
+
+  :global(.markdown-preview ol) {
+    list-style-type: decimal !important;
+    padding-left: 1rem !important;
+  }
+
+  :global(.markdown-preview li) {
+    margin-bottom: 0.5rem !important;
+  }
+</style>
