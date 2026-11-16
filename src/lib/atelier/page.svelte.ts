@@ -22,11 +22,9 @@ export function makeFilenameCompatibleString(string: string): string {
     .toLowerCase()
 }
 
-
 export function isMarkdownOrHTMLFile(filename: string): boolean {
   return filename.endsWith('.md') || filename.endsWith('.html')
 }
-
 
 export class Pages {
   #gitAgent
@@ -104,7 +102,7 @@ export class Pages {
           content: markdownContent,
         }
       }),
-    ).then((pages) => {
+    ).then(pages => {
       this.#pages = pages
       return pages
     })
@@ -114,11 +112,15 @@ export class Pages {
     return deleteFileAndPushChanges(
       this.#gitAgent(),
       fileName,
-      `Suppression de la page ${fileName}`
+      `Suppression de la page ${fileName}`,
     )
   }
 
-  async create(content: string, title: string, index: number): ReturnType<typeof writeFileAndPushChanges> {
+  async create(
+    content: string,
+    title: string,
+    index: number,
+  ): ReturnType<typeof writeFileAndPushChanges> {
     const fileName = Pages.makeFileNameFromTitle(title)
 
     const finalContent = `${title ? Pages.makeFrontMatter(title, index) + '\n' : ''}${content} `
@@ -127,7 +129,7 @@ export class Pages {
       this.#gitAgent(),
       fileName,
       finalContent,
-      `Création de la page : ${title}`
+      `Création de la page : ${title}`,
     )
   }
 
@@ -150,14 +152,16 @@ export class Pages {
       await this.#gitAgent().removeFile(fileName)
     }
 
-    const frontMatter = title ? Pages.makeFrontMatter(title, index, undefined, blogIndex) + '\n' : ''
+    const frontMatter = title
+      ? Pages.makeFrontMatter(title, index, undefined, blogIndex) + '\n'
+      : ''
     const finalContent = `${frontMatter}${content} `
 
     return writeFileAndPushChanges(
       this.#gitAgent(),
       targetFileName,
       finalContent,
-      `Modification de la page : ${title}`
+      `Modification de la page : ${title}`,
     )
   }
 }

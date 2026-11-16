@@ -1,4 +1,9 @@
-import type { UserRole, ScribouilliBackendProvider, GitSiteTemplate, ProviderConfig } from '#lib/providers/index.ts'
+import type {
+  UserRole,
+  ScribouilliBackendProvider,
+  GitSiteTemplate,
+  ProviderConfig,
+} from '#lib/providers/index.ts'
 import { GitAgent, type ResolutionOption } from '../git/agent'
 import { installPluginIfNecessary, setBaseUrlInConfigIfNecessary } from '#lib/atelier.ts'
 import { Pages, type Page } from '#lib/atelier/page.svelte.ts'
@@ -15,7 +20,7 @@ export type RepoCache = Record<
 
 export type CachedRepo = Pick<
   ScribouilliGitRepo,
-  'publicRepositoryURL'
+  | 'publicRepositoryURL'
   | 'owner'
   | 'repoPath'
   | 'repoId'
@@ -44,10 +49,7 @@ export default class ScribouilliGitRepo {
   #account: () => Account
   #repoCache: RepoCache = cache.loadRepo()
 
-  constructor(
-    provider: () => ScribouilliBackendProvider,
-    account: () => Account,
-  ) {
+  constructor(provider: () => ScribouilliBackendProvider, account: () => Account) {
     this.#provider = provider
     this.#account = account
   }
@@ -67,10 +69,7 @@ export default class ScribouilliGitRepo {
     return this.#provider().config.origin
   }
 
-  configure({ owner, repoPath }: {
-    owner: string | undefined
-    repoPath: string
-  }) {
+  configure({ owner, repoPath }: { owner: string | undefined; repoPath: string }) {
     if (owner !== this.owner && repoPath !== repoPath) {
       this.reset()
     }
@@ -86,7 +85,7 @@ export default class ScribouilliGitRepo {
       remoteURL: this.#provider().api.makePublicRepositoryURL(this.owner, this.repoPath),
       corsProxyURL: this.#provider().config.corsProxy,
       auth: () => this.#provider().api.getOauthUsernameAndPassword(),
-      onMergeConflict: (resolutionOptions) => {
+      onMergeConflict: resolutionOptions => {
         this.conflicts = resolutionOptions
       },
     })
@@ -110,10 +109,7 @@ export default class ScribouilliGitRepo {
     this.pageList.reset()
   }
 
-  async load({ owner, repoPath }: {
-    owner: string | undefined
-    repoPath: string
-  }): Promise<void> {
+  async load({ owner, repoPath }: { owner: string | undefined; repoPath: string }): Promise<void> {
     this.configure({ owner, repoPath })
     const repoId = this.repoId
     const fresh = this.loadFromCache(repoId)
@@ -124,15 +120,12 @@ export default class ScribouilliGitRepo {
 
     const refreshCache: Promise<any> = Promise.all([
       this.#loadPermission(),
-      this.#loadPublishedUrl().then(
-        () => this.#loadBuildStatus()
-      )
+      this.#loadPublishedUrl().then(() => this.#loadBuildStatus()),
     ])
 
-    await Promise.all([,
-      this.pageList.listAll(),
-      this.articleList.listAll(),
-    ].concat(fresh ? [] : [refreshCache]))
+    await Promise.all(
+      [, this.pageList.listAll(), this.articleList.listAll()].concat(fresh ? [] : [refreshCache]),
+    )
 
     if (fresh) {
       // Handle error even if we don’t wait for it
@@ -147,7 +140,11 @@ export default class ScribouilliGitRepo {
     this.status = 'ready'
   }
 
-  async createNewAndLoad({ owner, repoName, template }: {
+  async createNewAndLoad({
+    owner,
+    repoName,
+    template,
+  }: {
     owner: string | undefined
     repoName: string
     template: GitSiteTemplate
@@ -159,10 +156,13 @@ export default class ScribouilliGitRepo {
       .replace(/[^\w\.-]/g, '-') // see https://stackoverflow.com/a/59082561
       .toLowerCase()
 
-    await this.#provider().api.createDefaultRepository({
-      owner,
-      repoPath,
-    }, template)
+    await this.#provider().api.createDefaultRepository(
+      {
+        owner,
+        repoPath,
+      },
+      template,
+    )
 
     this.configure({ owner, repoPath })
 
@@ -213,7 +213,8 @@ export default class ScribouilliGitRepo {
   public async waitRepoReady(): Promise<void> {
     return new Promise(resolve => {
       const checkReady = () => {
-        this.#provider().api.isRepositoryReady(this)
+        this.#provider()
+          .api.isRepositoryReady(this)
           .then(res => {
             if (res) {
               resolve()
@@ -245,9 +246,10 @@ export default class ScribouilliGitRepo {
 
   async #loadPublishedUrl(): Promise<void> {
     const repoId = this.repoId
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const fetchUrl = () => {
-        this.#provider().api.getPublishedWebsiteURL(this)
+        this.#provider()
+          .api.getPublishedWebsiteURL(this)
           .then(url => {
             if (this.repoId !== repoId) {
               resolve()
@@ -269,23 +271,22 @@ export default class ScribouilliGitRepo {
 
   async #loadBuildStatus(): Promise<void> {
     const repoId = this.repoId
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const fetchBuildStatus = () => {
-        getBuildStatus(this)
-          .then(buildStatus => {
-            if (this.repoId !== repoId) {
-              resolve()
-              return
-            }
+        getBuildStatus(this).then(buildStatus => {
+          if (this.repoId !== repoId) {
+            resolve()
+            return
+          }
 
-            this.buildStatus = buildStatus
-            this.cacheRepo()
-            if (buildStatus === 'in_progress' || buildStatus === 'needs_account_verification') {
-              setTimeout(fetchBuildStatus, 10_000)
-            } else {
-              resolve()
-            }
-          })
+          this.buildStatus = buildStatus
+          this.cacheRepo()
+          if (buildStatus === 'in_progress' || buildStatus === 'needs_account_verification') {
+            setTimeout(fetchBuildStatus, 10_000)
+          } else {
+            resolve()
+          }
+        })
       }
       fetchBuildStatus()
     })
@@ -368,19 +369,18 @@ export default class ScribouilliGitRepo {
   }
 
   async sync<T>(work: Promise<T>) {
-
     if (this.status !== 'ready') {
       throw new Error('repository is not ready to work with')
     }
     this.status = 'sync'
     this.buildStatus = 'in_progress'
     return work
-      .then(async (ret) => {
+      .then(async ret => {
         this.#loadBuildStatus()
         await this.pageList.listAll()
         await this.articleList.listAll()
         return ret
       })
-      .finally(() => this.status = 'ready')
+      .finally(() => (this.status = 'ready'))
   }
 }

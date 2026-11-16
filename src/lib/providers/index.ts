@@ -4,7 +4,6 @@ import GitHubAPI from './github'
 import ScribouilliBackend from './scribouilli'
 import type { BuildStatus } from '#lib/build-status.ts'
 
-
 export interface OAuthProvider {
   type: string
   accessToken: string
@@ -51,7 +50,7 @@ export interface ProviderApi {
   getUserEmails: () => Promise<AuthenticatedUserEmails[]>
   isSessionActive: () => Promise<boolean>
   createDefaultRepository: (
-    scribouilliGitRepo: { owner?: string, repoPath: string },
+    scribouilliGitRepo: { owner?: string; repoPath: string },
     template: GitSiteTemplate,
   ) => Promise<{ remoteURL: string }>
   isRepositoryReady: (scribouilliGitRepo: ScribouilliGitRepo) => Promise<boolean>
@@ -67,7 +66,7 @@ export interface ProviderApi {
 }
 
 export interface ScribouilliBackendProvider {
-  api: ProviderApi,
+  api: ProviderApi
   config: ProviderConfig
 }
 

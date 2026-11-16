@@ -1,4 +1,8 @@
-import { makeOAuthServiceAPI, type OAuthProvider, type ScribouilliBackendProvider } from './providers'
+import {
+  makeOAuthServiceAPI,
+  type OAuthProvider,
+  type ScribouilliBackendProvider,
+} from './providers'
 import type { RepoCache } from './atelier/repo.svelte'
 import type { AccountCache } from './atelier/account.svelte'
 import {
@@ -6,7 +10,7 @@ import {
   REPOS_CACHE_KEY,
   PROVIDERS_MAP,
   ACCOUNT_CACHE_KEY,
-  REPO_LIST_CACHE_KEY
+  REPO_LIST_CACHE_KEY,
 } from './config'
 import type { RepoListCache } from './atelier/repo-list.svelte'
 
@@ -19,7 +23,7 @@ export function loadProvider(): ScribouilliBackendProvider | undefined {
     if (provider && providerConfig) {
       return {
         api: makeOAuthServiceAPI(provider),
-        config: providerConfig
+        config: providerConfig,
       }
     } else if (provider) {
       console.warn(`Unkown provider ${provider.id}`)
@@ -92,5 +96,5 @@ export const cache = {
     if (sessionStorage) {
       sessionStorage.setItem(ACCOUNT_CACHE_KEY, JSON.stringify(repos))
     }
-  }
+  },
 }

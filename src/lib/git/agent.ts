@@ -328,7 +328,7 @@ export class GitAgent {
   }
 
   async deleteDirectory(dirName: string): Promise<void> {
-    const dirs = [dirName];
+    const dirs = [dirName]
 
     while (dirs.length > 0) {
       const dir = dirs.pop()
@@ -359,7 +359,7 @@ export class GitAgent {
     try {
       this.deleteDirectory(this.#repoDirectory)
     } catch (e: unknown) {
-      const isFsError = !!e && typeof e === 'object' && 'code' in e;
+      const isFsError = !!e && typeof e === 'object' && 'code' in e
       // Ignore file not found error
       if (!isFsError || e.code !== 'ENOENT') {
         throw e

@@ -18,7 +18,6 @@ export class Articles {
 
   constructor(gitAgent: () => GitAgent) {
     this.#gitAgent = gitAgent
-
   }
 
   static makeFileName(title: string, date: Date): string {
@@ -26,11 +25,7 @@ export class Articles {
   }
 
   static makeFrontMatter(title: string): string {
-    return [
-      '---',
-      'title: ' + '"' + title.replace(/"/g, '\\"') + '"',
-      '---'
-    ].join('\n')
+    return ['---', 'title: ' + '"' + title.replace(/"/g, '\\"') + '"', '---'].join('\n')
   }
 
   static sort(articles: Article[]) {
@@ -64,16 +59,16 @@ export class Articles {
         return {
           title:
             typeof data === 'object' &&
-              data !== null &&
-              'title' in data &&
-              typeof data.title === 'string'
+            data !== null &&
+            'title' in data &&
+            typeof data.title === 'string'
               ? data.title
               : '',
           path: fullName,
           content: markdownContent,
         }
       }),
-    ).then((articles) => {
+    ).then(articles => {
       this.#articles = articles
       return articles
     })
@@ -83,7 +78,7 @@ export class Articles {
     return deleteFileAndPushChanges(
       this.#gitAgent(),
       fileName,
-      `Suppression de l'article ${fileName}`
+      `Suppression de l'article ${fileName}`,
     )
   }
 
@@ -97,11 +92,15 @@ export class Articles {
       this.#gitAgent(),
       targetFileName,
       finalContent,
-      `Création de l'article : ${title}`
+      `Création de l'article : ${title}`,
     )
   }
 
-  async update(fileName: string, title: string, content: string): ReturnType<typeof writeFileAndPushChanges> {
+  async update(
+    fileName: string,
+    title: string,
+    content: string,
+  ): ReturnType<typeof writeFileAndPushChanges> {
     const articleDateString = fileName.slice('_posts/'.length, '_posts/YYYY-MM-DD'.length)
     const date = new Date(articleDateString)
 

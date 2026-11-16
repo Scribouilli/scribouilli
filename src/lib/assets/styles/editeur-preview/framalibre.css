@@ -9,11 +9,11 @@
   margin-bottom: 3rem;
 }
 
-.framalibre-notice>div {
+.framalibre-notice > div {
   padding: 1.25rem;
 }
 
-.framalibre-notice>div:first-of-type {
+.framalibre-notice > div:first-of-type {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +24,7 @@
   max-width: 70%;
 }
 
-.framalibre-notice>div:last-of-type>div {
+.framalibre-notice > div:last-of-type > div {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -43,8 +43,11 @@
   border: 1px solid #cc4e13;
   background-color: transparent;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .framalibre-notice a:hover {

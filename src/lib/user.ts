@@ -20,7 +20,7 @@ export const logout = () => {
 }
 
 export interface User {
-  login: string,
+  login: string
   email: string
 }
 
@@ -28,14 +28,13 @@ export function addConflictRemovalAndRedirectToResolution(
   resolution: ResolutionOption['resolution'],
   repo: ScribouilliGitRepo,
 ): ResolutionOption['resolution'] {
-  return async function() {
+  return async function () {
     await repo.sync(
-      resolution()
-        .then(() => {
-          repo.conflicts = undefined
-          // TODO: navigate to previous page
-          return goto(makeAtelierListPageURL(repo))
-        })
+      resolution().then(() => {
+        repo.conflicts = undefined
+        // TODO: navigate to previous page
+        return goto(makeAtelierListPageURL(repo))
+      }),
     )
   }
 }

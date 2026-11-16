@@ -96,7 +96,7 @@ export default class ScribouilliBackend implements ProviderApi {
   }
 
   async createDefaultRepository(
-    { repoPath }: { owner?: string, repoPath: string },
+    { repoPath }: { owner?: string; repoPath: string },
     template: GitSiteTemplate,
   ): Promise<{ remoteURL: string }> {
     await this.callAPI(`/websites`, {

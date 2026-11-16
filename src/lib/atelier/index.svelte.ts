@@ -11,10 +11,11 @@ export class Atelier {
 
   readonly account = new Account(this.ensureProvider.bind(this))
   readonly repoList = new RepoList(this.ensureProvider.bind(this), () => this.account)
-  readonly repo = new ScribouilliGitRepo(() => this.provider, () => this.account)
-  readonly isBlogEnabled = $derived(
-    this.repo.isBlogEnabled(this.repo.pageList.pages)
+  readonly repo = new ScribouilliGitRepo(
+    () => this.provider,
+    () => this.account,
   )
+  readonly isBlogEnabled = $derived(this.repo.isBlogEnabled(this.repo.pageList.pages))
 
   status: 'signed-out' | 'loaded' | 'ready' = $state('signed-out')
 
@@ -56,7 +57,8 @@ export class Atelier {
       return this.#providerCheckPromise
     }
 
-    this.#providerCheckPromise = this.#provider.api.isSessionActive()
+    this.#providerCheckPromise = this.#provider.api
+      .isSessionActive()
       .then(isActive => {
         if (!isActive) {
           this.logout()
@@ -104,9 +106,7 @@ export class Atelier {
     return this.repo.articleList.articles
   }
 
-  async loadRepo(
-    repoPath: string | null, owner: string | null
-  ): Promise<ScribouilliGitRepo> {
+  async loadRepo(repoPath: string | null, owner: string | null): Promise<ScribouilliGitRepo> {
     // Ensure API client is ready
     await this.ensureProvider()
 
@@ -123,7 +123,11 @@ export class Atelier {
     return this.repo
   }
 
-  async createRepo({ owner, repoName, template }: {
+  async createRepo({
+    owner,
+    repoName,
+    template,
+  }: {
     owner: string | undefined
     repoName: string
     template: GitSiteTemplate
@@ -139,8 +143,8 @@ export class Atelier {
   }
 
   async deleteRepository(repo: ScribouilliGitRepo) {
-
-    return this.repoList.delete(repo)
+    return this.repoList
+      .delete(repo)
       .then(() => this.repo.deleteLocalRepo())
       .then(() => this.repo.reset())
   }
@@ -150,4 +154,4 @@ export class Atelier {
   }
 }
 
-export const [getAtelier, setAtelier] = createContext<Atelier>();
+export const [getAtelier, setAtelier] = createContext<Atelier>()

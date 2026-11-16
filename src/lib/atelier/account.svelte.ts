@@ -1,6 +1,5 @@
-import { cache } from "#lib/storage.ts"
-import type { ProviderConfig, ScribouilliBackendProvider } from "../providers"
-
+import { cache } from '#lib/storage.ts'
+import type { ProviderConfig, ScribouilliBackendProvider } from '../providers'
 
 export type AccountCache = Record<ProviderConfig['id'], Pick<Account, 'login' | 'email'>>
 
@@ -27,7 +26,7 @@ export class Account {
 
     const loginP = this.#provider()
       .then(({ api }) => api.getAuthenticatedUser())
-      .then(({ login }) => this.login = login)
+      .then(({ login }) => (this.login = login))
 
     const emailP = this.#provider()
       .then(({ api }) => api.getUserEmails())

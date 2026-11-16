@@ -19,11 +19,11 @@ const REPO_SCHEMA = z.object({
   namespace: z.object({
     full_path: z.string(),
   }),
-  default_branch: z.string()
+  default_branch: z.string(),
 })
 const REPO_LIST_SCHEMA = z.array(REPO_SCHEMA)
 const REPO_PAGE_SETTING = z.object({
-  url: z.string()
+  url: z.string(),
 })
 
 export default class GitLabAPI implements ProviderApi {
@@ -110,7 +110,7 @@ export default class GitLabAPI implements ProviderApi {
   }
 
   async createDefaultRepository(
-    { repoPath }: { owner?: string, repoPath: string },
+    { repoPath }: { owner?: string; repoPath: string },
     { url: gitRepoUrl }: GitSiteTemplate,
   ) {
     const response = await this.callAPI(`${this.apiBaseUrl}/projects`, {

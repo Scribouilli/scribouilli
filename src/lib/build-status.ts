@@ -16,9 +16,7 @@ export const isItStillCompiling = (lastCommit: CommitObject): boolean => {
  * of each page. We use that to know which version is currently online, and
  * whether the last build succeeded or not.
  */
-export async function getBuildStatus(
-  repo: ScribouilliGitRepo,
-): Promise<BuildStatus> {
+export async function getBuildStatus(repo: ScribouilliGitRepo): Promise<BuildStatus> {
   if (!repo.publishedUrl) {
     console.log('[getBuildStatus]: no published url')
     return 'in_progress'

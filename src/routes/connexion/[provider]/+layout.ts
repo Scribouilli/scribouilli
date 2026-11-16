@@ -1,6 +1,6 @@
-import type { LayoutLoad } from './$types';
-import { PROVIDERS_MAP } from "#lib/config.ts"
-import { error } from '@sveltejs/kit';
+import type { LayoutLoad } from './$types'
+import { PROVIDERS_MAP } from '#lib/config.ts'
+import { error } from '@sveltejs/kit'
 
 export const load: LayoutLoad = ({ params }) => {
   const provider = PROVIDERS_MAP.get(params.provider)
@@ -10,6 +10,6 @@ export const load: LayoutLoad = ({ params }) => {
   }
 
   return {
-    provider
+    provider,
   }
 }

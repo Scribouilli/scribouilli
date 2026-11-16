@@ -81,23 +81,26 @@ export default class GitHubAPI implements ProviderApi {
   }
 
   async createDefaultRepository(
-    { owner, repoPath }: { owner?: string, repoPath: string },
+    { owner, repoPath }: { owner?: string; repoPath: string },
     template: GitSiteTemplate,
   ) {
     console.info('Create repository from template')
     // Generate a new repository from the theme repository
-    const rawRepoResponse = await this.callAPI(`${GITHUB_API_BASE_URL}/repos/${template.githubRepoId}/generate`, {
-      headers: {
-        Authorization: 'token ' + this.accessToken,
-        Accept: GITHUB_JSON_ACCEPT_HEADER,
+    const rawRepoResponse = await this.callAPI(
+      `${GITHUB_API_BASE_URL}/repos/${template.githubRepoId}/generate`,
+      {
+        headers: {
+          Authorization: 'token ' + this.accessToken,
+          Accept: GITHUB_JSON_ACCEPT_HEADER,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          owner,
+          name: repoPath,
+          description: 'Mon site Scribouilli',
+        }),
       },
-      method: 'POST',
-      body: JSON.stringify({
-        owner,
-        name: repoPath,
-        description: 'Mon site Scribouilli',
-      }),
-    })
+    )
     const { url: newRepoAPIURL, clone_url } = await rawRepoResponse.json()
 
     console.info('Configure pages on repository')
@@ -111,7 +114,7 @@ export default class GitHubAPI implements ProviderApi {
         build_type: 'workflow',
       }),
     })
-    const { html_url } = await rawPagesResponse.json();
+    const { html_url } = await rawPagesResponse.json()
 
     console.info('Setup repository settings')
     await this.callAPI(newRepoAPIURL, {

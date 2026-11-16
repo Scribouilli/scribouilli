@@ -25,7 +25,10 @@ export type FileContenu = Article | Page
  * otherwise, wait for currentRepository.publishedWebsiteURL and
  * compute the new config.baseurl from it
  */
-export const setBaseUrlInConfigIfNecessary = async (repo: ScribouilliGitRepo, baseUrl?: string): Promise<any> => {
+export const setBaseUrlInConfigIfNecessary = async (
+  repo: ScribouilliGitRepo,
+  baseUrl?: string,
+): Promise<any> => {
   let newBaseUrl
 
   if (baseUrl) {
@@ -77,7 +80,7 @@ export const setBaseUrlInConfigIfNecessary = async (repo: ScribouilliGitRepo, ba
 export async function installPluginIfNecessary(
   repo: ScribouilliGitRepo,
   plugin: string,
-  version: string
+  version: string,
 ): Promise<boolean> {
   const config: { plugins: string[] } = await getCurrentRepoConfig(repo)
 
@@ -107,7 +110,12 @@ export async function installPluginIfNecessary(
     )
   }
 
-  await file.writeFileAndPushChanges(repo.gitAgent, '_config.yml', newConfig, 'Ajout du plugin ' + plugin)
+  await file.writeFileAndPushChanges(
+    repo.gitAgent,
+    '_config.yml',
+    newConfig,
+    'Ajout du plugin ' + plugin,
+  )
   return true
 }
 

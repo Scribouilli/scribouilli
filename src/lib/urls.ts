@@ -10,10 +10,16 @@ export function makeUrlParam(path: string, owner: string | undefined, repoPath: 
   return url.href.substring('thismessage:'.length)
 }
 
-export function makeAtelierListPageURL({ owner, repoPath }: Pick<ScribouilliGitRepo, 'owner' | 'repoPath'>): string {
+export function makeAtelierListPageURL({
+  owner,
+  repoPath,
+}: Pick<ScribouilliGitRepo, 'owner' | 'repoPath'>): string {
   return makeUrlParam(resolve('/atelier/(site)/pages'), owner, repoPath)
 }
 
-export function makeAtelierListArticlesURL({ owner, repoPath }: Pick<ScribouilliGitRepo, 'owner' | 'repoPath'>): string {
+export function makeAtelierListArticlesURL({
+  owner,
+  repoPath,
+}: Pick<ScribouilliGitRepo, 'owner' | 'repoPath'>): string {
   return makeUrlParam(resolve('/atelier/(site)/articles'), owner, repoPath)
 }
