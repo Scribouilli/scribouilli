@@ -2,8 +2,7 @@
   import { marked } from 'marked'
   import DOMPurify from 'dompurify'
   import { writeFileAndCommit } from '#lib/git/file.ts'
-  // TODO: Fix this
-  // import '../../../../styles/editeur-preview/framalibre.css';
+  import '#lib/assets/styles/editeur-preview/framalibre.css'
   import type { EditeurFile, FileContenu } from '#lib/atelier.ts'
   import Loader from '../Loader.svelte'
   import { Pages } from '#lib/atelier/page.svelte.ts'
