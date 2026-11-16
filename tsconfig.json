@@ -1,20 +1,12 @@
 {
-  "include": ["declarations.d.ts", "assets/scripts/**/*.ts"],
-  "exclude": ["node_modules", "tests/**/*.js"],
+  "extends": "$app/tsconfig",
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "noEmit": true,
-    "module": "esnext",
     "strict": true,
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "target": "esnext",
-    "lib": ["ES2022", "dom", "dom.iterable"],
-    "types": ["node", "mocha"],
+    "types": ["$app/types", "node"],
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "build",
-  }
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src", "vite.config.ts", "prettier.config.js", "eslint.config.js"]
 }
