@@ -18,6 +18,7 @@ export const handleErrors = (errorMessage: any) => {
     }
     case 'NOT_FOUND': {
       console.info('[NOT_FOUND] redirecting to /aterlier')
+      // TODO: maybe a good idea to clear the cache (session storage) here
       goto(resolve('/atelier'))
       break
     }

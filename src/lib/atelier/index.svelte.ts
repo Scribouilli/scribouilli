@@ -3,7 +3,6 @@ import { createContext } from 'svelte'
 import { RepoList } from './repo-list.svelte'
 import { Account } from './account.svelte'
 import ScribouilliGitRepo from './repo.svelte'
-import ScribouilliBackend from '#lib/providers/scribouilli.ts'
 import * as storage from '../storage'
 
 export class Atelier {
@@ -65,6 +64,7 @@ export class Atelier {
         }
 
         if (!this.#provider || this.status === 'signed-out') {
+          // TODO: on veut throw pour que le reste soit shortcircuit mais techniquement c’est pas vraiment une erreur
           throw new Error('Atelier not loaded')
         }
 
@@ -110,8 +110,8 @@ export class Atelier {
     // Ensure API client is ready
     await this.ensureProvider()
 
-    if (!repoPath || (!(this.provider.api instanceof ScribouilliBackend) && !owner)) {
-      throw new Error('mssing URL param')
+    if (!repoPath || (this.provider.config.type !== 'scribouilli' && !owner)) {
+      throw 'NOT_FOUND'
     }
     const newRepo = {
       owner: owner ?? undefined,

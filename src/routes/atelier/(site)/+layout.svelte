@@ -5,6 +5,7 @@
   import Loader from '#lib/components/Loader.svelte'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import SavingLoader from '#lib/components/SavingLoader.svelte'
+  import { handleErrors } from '#lib/error.ts'
 
   let loading = $state(true)
   const { children }: LayoutProps = $props()
@@ -14,7 +15,7 @@
     console.log('loading repo')
     const repoPath = page.url.searchParams.get('repoPath')
     const owner = page.url.searchParams.get('account')
-    await atelier.loadRepo(repoPath, owner)
+    await atelier.loadRepo(repoPath, owner).catch(handleErrors)
     console.log('repo loaded')
     loading = false
   })
