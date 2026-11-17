@@ -114,9 +114,12 @@ export default class ScribouilliGitRepo {
     const repoId = this.repoId
     const fresh = this.loadFromCache(repoId)
 
-    // TODO: would be nice to skip that if repo fresh
-    // but if something’s happened we might want to setup the repo again
-    await this.setupLocalRepo()
+    // NOTE: If an error happens because of weird state, the error
+    // page is displayed, cache cleared, and all subsequent link navigations
+    // will cause a reload, so we can skip the pull to speed things up here
+    if (!fresh) {
+      await this.setupLocalRepo()
+    }
 
     const refreshCache: Promise<any> = Promise.all([
       this.#loadPermission(),

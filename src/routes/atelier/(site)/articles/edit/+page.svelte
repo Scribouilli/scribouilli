@@ -3,7 +3,7 @@
   import { makeAtelierListArticlesURL } from '#lib/urls.ts'
   import type { EditeurFile } from '#lib/atelier.ts'
   import Editeur from '#lib/components/atelier/Editeur.svelte'
-  import { goto } from '$app/navigation'
+  import { goto } from '#lib/urls.ts'
   import { handleErrors } from '#lib/error.svelte.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'

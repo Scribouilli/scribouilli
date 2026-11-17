@@ -1,4 +1,4 @@
-import { goto } from '$app/navigation'
+import { goto } from './urls'
 
 import type { MinimalGitRepository } from './providers'
 import { makeAtelierListPageURL, makeUrlParam } from './urls'

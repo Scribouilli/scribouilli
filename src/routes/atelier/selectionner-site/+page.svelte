@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MinimalGitRepository } from '#lib/providers/index.ts'
   import { makeUrlParam } from '#lib/urls.ts'
-  import { goto } from '$app/navigation'
+  import { goto } from '#lib/urls.ts'
   import Loader from '#lib/components/Loader.svelte'
   import { resolve } from '$app/paths'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'

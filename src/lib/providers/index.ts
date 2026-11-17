@@ -68,6 +68,8 @@ export interface ProviderApi {
 export interface ScribouilliBackendProvider {
   api: ProviderApi
   config: ProviderConfig
+  oauthConfig: OAuthProvider
+  fresh: boolean
 }
 
 interface AuthenticatedUserEmails {

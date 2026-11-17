@@ -25,7 +25,11 @@ export class Atelier {
 
     if (provider) {
       this.#provider = provider
-      this.status = 'loaded'
+      if (provider.fresh) {
+        this.status = 'ready'
+      } else {
+        this.status = 'loaded'
+      }
     }
   }
 
@@ -71,6 +75,7 @@ export class Atelier {
         }
 
         this.status = 'ready'
+        storage.cache.markProviderFresh(this.#provider)
         return this.#provider
       })
       .finally(() => {
