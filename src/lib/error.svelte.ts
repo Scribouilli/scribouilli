@@ -2,6 +2,7 @@ import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { logMessage } from '#lib/logger.ts'
 import { logout } from './user'
+import { clearCache } from './storage'
 
 export const error: ScribouilliError = $state({
   error: null
@@ -16,12 +17,12 @@ export interface ScribouilliError {
  * @summary Handle errors catched by Promises
  */
 export const handleErrors = (errorMessage: any) => {
+  clearCache()
   switch (errorMessage) {
     case 'PROVIDER_NOT_LOADED':
     case 'INVALIDATE_TOKEN': {
       console.info('[invalid token] loging out')
       logout()
-
       break
     }
     case 'NOT_FOUND': {
