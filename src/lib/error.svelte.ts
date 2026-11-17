@@ -5,13 +5,12 @@ import { logout } from './user'
 import { clearCache } from './storage'
 
 export const error: ScribouilliError = $state({
-  error: null
+  error: null,
 })
 
 export interface ScribouilliError {
   error: Error | null
 }
-
 
 /**
  * @summary Handle errors catched by Promises
