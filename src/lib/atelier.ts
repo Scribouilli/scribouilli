@@ -2,7 +2,7 @@ import yaml from 'js-yaml'
 
 import ScribouilliGitRepo from '#lib/atelier/repo.svelte.ts'
 import { logMessage } from '#lib/logger.ts'
-import { handleErrors } from '#lib/error.ts'
+import { handleErrors } from '#lib/error.svelte.ts'
 import { file } from '#lib/git/file.ts'
 import { CUSTOM_CSS_PATH } from '#lib/config.ts'
 import type { Article } from './atelier/article.svelte'

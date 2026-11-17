@@ -3,7 +3,7 @@
   import Loader from '#lib/components/Loader.svelte'
   import type { LayoutProps } from './$types'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
-  import { handleErrors } from '#lib/error.ts'
+  import { handleErrors } from '#lib/error.svelte.ts'
 
   let { children }: LayoutProps = $props()
 

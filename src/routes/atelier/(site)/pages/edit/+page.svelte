@@ -5,7 +5,7 @@
   import Editeur from '#lib/components/atelier/Editeur.svelte'
   import type { Page } from '#lib/atelier/page.svelte.ts'
   import { goto } from '$app/navigation'
-  import { handleErrors } from '#lib/error.ts'
+  import { handleErrors } from '#lib/error.svelte.ts'
   import { onMount } from 'svelte'
   import { page } from '$app/state'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'

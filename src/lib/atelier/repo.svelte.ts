@@ -11,7 +11,7 @@ import { Articles } from '#lib/atelier/article.svelte.ts'
 import type { Account } from './account.svelte'
 import { getBuildStatus, type BuildStatus } from '#lib/build-status.ts'
 import { cache } from '../storage'
-import { handleErrors } from '#lib/error.ts'
+import { handleErrors } from '#lib/error.svelte.ts'
 
 export type RepoCache = Record<
   ProviderConfig['id'],
@@ -381,6 +381,7 @@ export default class ScribouilliGitRepo {
         await this.articleList.listAll()
         return ret
       })
+      .catch(handleErrors)
       .finally(() => (this.status = 'ready'))
   }
 }
