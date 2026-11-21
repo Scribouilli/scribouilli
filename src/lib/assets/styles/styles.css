@@ -214,17 +214,14 @@ a {
   white-space: nowrap;
 }
 
-a[href]:active,
-a[href]:hover,
-[href]:not(.btn):not(.go-home):hover,
-[href]:not(.btn):not(.go-home):active,
+a:active,
+a:hover,
 .btn:hover,
 .btn:active {
   box-shadow: inset 0px -0.2em 0px currentColor;
 }
 
-[href]:not(.btn):not(.go-home) {
-  display: inline;
+a {
   text-decoration: none;
   box-shadow: inset 0px -0.1em 0px currentColor;
   transition: box-shadow 0s;
@@ -233,6 +230,21 @@ a[href]:hover,
 svg.icon {
   width: 1em;
   height: 1em;
+}
+
+a:has(svg.icon) {
+  display: inline-flex;
+  gap: .25em;
+  align-items: baseline;
+
+  svg.icon {
+    height: .8em;
+  }
+}
+
+a:has(img), a:has(img):hover {
+  box-shadow: none;
+  display: block;
 }
 
 form {

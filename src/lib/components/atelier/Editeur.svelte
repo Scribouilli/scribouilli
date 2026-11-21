@@ -8,6 +8,7 @@
   import { Pages } from '#lib/atelier/page.svelte.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import NewTabLink from '../NewTabLink.svelte'
+  import IconBack from '../icons/IconBack.svelte'
 
   interface Props {
     file?: EditeurFile
@@ -207,7 +208,7 @@
           </div>
         </div>
         <div class="actions-zone">
-          <a href={listPrefix} class="btn__retour" onclick={onBackClick}>Retour</a>
+          <a href={listPrefix} onclick={onBackClick}><IconBack/> Retour</a>
           <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
         </div>
 
@@ -327,13 +328,6 @@
     margin-bottom: 6rem;
     padding-right: 2rem;
     padding-left: 2rem;
-  }
-
-  .btn__retour {
-    &::before {
-      content: '‹';
-      margin-right: 0.5rem;
-    }
   }
 
   details {
