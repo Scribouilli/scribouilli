@@ -242,7 +242,7 @@ a:has(svg.icon) {
   }
 }
 
-a:has(img), a:has(img):hover {
+a:has(img), a:has(img):hover, a:has(img):active {
   box-shadow: none;
   display: block;
 }
