@@ -2,13 +2,13 @@
   import { marked } from 'marked'
   import DOMPurify from 'dompurify'
   import { writeFileAndCommit } from '#lib/git/file.ts'
-  import '#lib/assets/styles/editeur-preview/framalibre.css'
   import type { EditeurFile, FileContenu } from '#lib/atelier.ts'
   import Loader from '../Loader.svelte'
   import { Pages } from '#lib/atelier/page.svelte.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import NewTabLink from '../NewTabLink.svelte'
   import IconBack from '../icons/IconBack.svelte'
+  import { asset } from '$app/paths'
 
   interface Props {
     file?: EditeurFile
@@ -34,51 +34,53 @@
     onSave,
   }: Props = $props()
 
+  const atelier = getAtelier()
   let files: FileList | undefined = $state()
   // single-image selection
   let image = $derived(files && files[0])
   let imageMd = $state('')
-  const atelier = getAtelier()
-
-  let preview = $derived.by(async () => {
-    if (!file) {
-      return ''
-    }
-    try {
-      const html = await marked.parse(file.content)
-      return DOMPurify.sanitize(html)
-    } catch {
-      return 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
-    }
-  })
-
   let deleteDisabled = $state(true)
+
+  let iframe: HTMLIFrameElement | undefined = $state()
+  let iframeHeight = $state(150)
+  let iframeSrc = `<!doctype html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <link rel="stylesheet" href="${asset('editeur-preview/framalibre.css')}">
+      <link rel="stylesheet" href="${asset('editeur-preview/preview.css')}">
+    </head>
+    <body>
+    </body>
+  </html>
+`
 
   let filesPath = $derived(contenus.map(contenu => contenu.path))
 
-  // @ts-ignore
-  const validateTitle = e => {
+  const validateTitle = (e: Event) => {
     if (!file) {
       return
     }
+    const input = e.target as HTMLInputElement
     const titleChanged = file.previousTitle?.trim() !== file.title.trim()
     if (titleChanged && filesPath && filesPath.includes(Pages.makeFileNameFromTitle(file.title))) {
-      e.target.setCustomValidity('Vous avez déjà utilisé ce nom. Veuillez en choisir un autre.')
+      input.setCustomValidity('Vous avez déjà utilisé ce nom. Veuillez en choisir un autre.')
 
       return
     }
 
-    e.target.setCustomValidity('')
+    input.setCustomValidity('')
   }
 
-  // @ts-ignore
-  const onSubmit = e => {
+  const onSubmit = (e: Event) => {
     e.preventDefault()
     if (!file) {
       return
     }
 
-    if (e.target.checkValidity()) {
+    const form = e.target as HTMLFormElement
+
+    if (form.checkValidity()) {
       onSave({
         fileName: file.fileName,
         content: file.content.trim(),
@@ -91,8 +93,7 @@
     }
   }
 
-  // @ts-ignore
-  const onBackClick = e => {
+  const onBackClick = (e: Event) => {
     if (!file) {
       return
     }
@@ -111,7 +112,6 @@
     }
   }
 
-  // @ts-ignore
   const imageSelect = async () => {
     if (!image) return
 
@@ -129,6 +129,45 @@
     const imageLink = `{% link ${imageFilePath} %}`
     imageMd = `![Texte décrivant l'image](${imageLink})`
   }
+
+  const onContentChange = async () => {
+    if (!file || !iframe || !iframe.contentDocument) {
+      return
+    }
+
+    let preview = ''
+
+    try {
+      const rawHtml = await marked.parse(file.content)
+      preview = DOMPurify.sanitize(rawHtml)
+    } catch {
+      preview = 'Il y a une erreur dans le Markdown. Veuillez vérifier votre syntaxe.'
+    }
+
+    iframe.contentDocument.body.innerHTML = preview
+    updateIframeHeight()
+  }
+
+  const updateIframeHeight = () => {
+    if (!iframe || !iframe.contentDocument) {
+      return
+    }
+
+    iframeHeight = iframe.contentDocument.documentElement.getBoundingClientRect().height
+  }
+
+  const iframeResizeObserver = new ResizeObserver(updateIframeHeight)
+
+  $effect(() => {
+    if (iframe) {
+      iframeResizeObserver.observe(iframe)
+      return () => {
+        iframeResizeObserver.disconnect()
+      }
+    }
+  })
+
+
 </script>
 
 <h3>{editionTitle}</h3>
@@ -194,15 +233,13 @@
     <div class="content-preview">
       <div class="content">
         <label for="content">Contenu</label>
-        <textarea bind:value={file.content} id="content" cols="30" rows="10"></textarea>
+        <textarea bind:value={file.content} oninput={onContentChange} id="content" cols="30" rows="10"></textarea>
       </div>
 
       <div class="preview">
         <h4>Aperçu</h4>
         <div class="markdown-preview">
-          {#await preview then preview}
-            {@html preview}
-          {/await}
+          <iframe width="100%" height={iframeHeight} bind:this={iframe} srcdoc={iframeSrc} onload={onContentChange} title="Aperçu"></iframe>
         </div>
       </div>
     </div>
