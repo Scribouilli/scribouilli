@@ -60,7 +60,7 @@
   })
 </script>
 
-<section class="screen" id="loader">
+<section id="loader">
   <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
   <img src={heartsLoader} alt="cœur sur toi le temps que ça charge" />
 </section>

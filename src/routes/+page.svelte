@@ -20,13 +20,16 @@
   })
 </script>
 
-<section class="screen" id="welcome">
+<div class="container">
   {#if atelier.status !== 'signed-out'}
     <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
-    <img src={heartsLoader} alt="cœur sur toi le temps que ça charge" />
+    <div class="loader">
+      <img src={heartsLoader} alt="cœur sur toi le temps que ça charge" />
+    </div>
   {:else if showWelcome}
     <h2>Créez votre petit site facilement !</h2>
-
-    <a href="/connexion" class="btn">C'est parti !</a>
+    <div class="action-list">
+      <a href="/connexion" class="btn">C'est parti !</a>
+    </div>
   {/if}
-</section>
+</div>

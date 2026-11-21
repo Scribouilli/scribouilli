@@ -111,8 +111,14 @@ body {
 }
 
 main {
+  padding-right: 1rem;
+  padding-left: 1rem;
   padding-bottom: 2rem;
   flex: 1;
+}
+
+header a {
+  white-space: nowrap;
 }
 
 footer {
@@ -120,19 +126,16 @@ footer {
   text-align: right;
 }
 
-#pages,
-.wrapper {
+.container {
   max-width: 100%;
-  width: 50em;
+  width: 50rem;
   margin: 0 auto;
 }
 
-#pages .btn {
-  margin-top: 0;
-}
-
-.mesPages {
-  margin-top: 3rem;
+.narrow-container {
+  max-width: 100%;
+  width: 32rem;
+  margin: 0 auto;
 }
 
 nav ul {
@@ -140,12 +143,6 @@ nav ul {
   gap: 2rem;
   align-items: baseline;
   justify-content: flex-end;
-}
-
-.screen {
-  padding-right: 1rem;
-  padding-left: 1rem;
-  text-align: center;
 }
 
 h1 {
@@ -162,10 +159,12 @@ h1 a {
 h2,
 .h2 {
   font-size: 2.4rem;
+  text-align: center;
 }
 
 h3 {
   font-size: 2rem;
+  text-align: center;
 }
 
 h4 {
@@ -209,9 +208,20 @@ h4 {
   opacity: 0.5;
 }
 
+.action-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
+.loader {
+  text-align: center;
+}
+
 a {
   color: #912222;
-  white-space: nowrap;
 }
 
 a:active,
@@ -232,14 +242,8 @@ svg.icon {
   height: 1em;
 }
 
-a:has(svg.icon) {
-  display: inline-flex;
-  gap: .25em;
-  align-items: baseline;
-
-  svg.icon {
-    height: .8em;
-  }
+a:has(svg.icon)  svg.icon {
+  height: .8em;
 }
 
 a:has(img), a:has(img):hover, a:has(img):active {
@@ -275,9 +279,22 @@ input[type="radio"] {
   height: 1em;
 }
 
+select {
+  font-size: 1.2rem;
+  padding: 0.5em;
+  width: 100%;
+}
+
+form .actions-zone {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 6rem;
+}
+
 .white-zone {
   padding: 2rem 1rem;
-  width: 32rem;
   text-align: center;
   background: white;
   border-radius: 16px;

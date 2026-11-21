@@ -131,11 +131,11 @@
   }
 </script>
 
-<section class="screen">
+<div class="container">
   <h3>{editionTitle}</h3>
 
   {#if file}
-    <div class="wrapper">
+    <div>
       <form onsubmit={onSubmit}>
         <div>
           <label for="title">Titre</label>
@@ -239,7 +239,7 @@
   {:else}
     <Loader />
   {/if}
-</section>
+</div>
 
 <style lang="css">
   .accordion {

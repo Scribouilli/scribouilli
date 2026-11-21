@@ -32,14 +32,13 @@
   }
 </script>
 
-<section class="screen">
+<div class="container">
   <h3>Choisir le site sur lequel vous souhaitez travailler</h3>
 
   {#if !currentAccountRepositories}
     <Loader />
   {:else}
-    <div class="wrapper">
-      <form onsubmit={onSubmit}>
+      <form onsubmit={onSubmit} class="narrow-container">
         <div>
           <label for="name">Nom de votre site</label>
           <select id="name" bind:value={repo}>
@@ -55,16 +54,10 @@
           </button>
         </div>
       </form>
-    </div>
   {/if}
-</section>
+</div>
 
 <style lang="css">
-  select {
-    font-size: 1.2rem;
-    padding: 0.5em;
-  }
-
   .actions-zone {
     display: flex;
     justify-content: space-between;

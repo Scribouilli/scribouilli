@@ -41,13 +41,12 @@
   }
 </script>
 
-<section class="screen">
+<div class="narrow-container">
   {#if loading}
     <SiteCreationLoader />
   {:else}
     <h3>Créer un nouveau site</h3>
 
-    <div class="wrapper">
       <form onsubmit={onSubmit}>
         <div>
           <label for="name">Nom de votre site</label>
@@ -78,25 +77,11 @@
           {/if}
         </div>
       </form>
-    </div>
   {/if}
-</section>
+</div>
 
 <style lang="css">
-  select {
-    font-size: 1.2rem;
-    padding: 0.5em;
-  }
-
   label[for='template'] {
     margin-top: 1rem;
-  }
-
-  .actions-zone {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    margin-bottom: 6rem;
   }
 </style>

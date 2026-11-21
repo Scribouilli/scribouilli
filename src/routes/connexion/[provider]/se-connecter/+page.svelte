@@ -54,31 +54,29 @@
 
 {#if provider}
   {#if provider.type === 'github'}
-    <section class="screen" id="login">
+    <section class="container">
       <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
-
-      <a {href} class="btn">Je me connecte via GitHub</a>
+      <div class="action-list">
+        <a {href} class="btn">Je me connecte via GitHub</a>
+      </div>
     </section>
   {/if}
   {#if provider.type === 'gitlab'}
-    <section class="screen" id="login">
+    <section class="container">
       <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
 
-      <a {href} class="btn">Je me connecte via {provider.id}</a>
+      <div class="action-list">
+        <a {href} class="btn">Je me connecte via {provider.id}</a>
+      </div>
     </section>
   {/if}
   {#if provider.type === 'scribouilli'}
-    <section class="screen" id="login">
+    <section class="container">
       <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
 
-      <a {href} class="btn">Je me connecte</a>
+      <div class="action-list">
+        <a {href} class="btn">Je me connecte</a>
+      </div>
     </section>
   {/if}
 {/if}
-
-<style>
-  #login {
-    width: 70%;
-    margin: 0 auto;
-  }
-</style>

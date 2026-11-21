@@ -101,12 +101,12 @@
   ]
 </script>
 
-<section class="screen" id="settings">
+<div class="narrow-container">
   <h2>Paramètres</h2>
 
   <div id="notifications">{notification}</div>
 
-  <div class="wrapper white-zone">
+  <div class="white-zone">
     <div>
       <h3>Couleur principale</h3>
 
@@ -138,7 +138,7 @@
     </p>
   </div>
 
-  <div class="wrapper white-zone">
+  <div class="white-zone">
     <h3>Personnalisation du site</h3>
     <p id="customCSS">
       Pour personnaliser le look de votre site, vous pouvez <a
@@ -153,7 +153,7 @@
   </div>
 
   {#if atelier.repo.userPermission === 'owner'}
-    <div class="wrapper white-zone">
+    <div class="white-zone">
       <h3>Supprimer le site</h3>
       <p>Attention la suppression du site est définitive!</p>
 
@@ -176,10 +176,10 @@
       </button>
     </div>
   {/if}
-
-  <hr />
-
-  <div class="wrapper white-zone">
+</div>
+<hr />
+<div class="narrow-container">
+  <div class="white-zone">
     <h3>Autres sites</h3>
     <p>
       Vous pouvez <strong>créer un nouveau site</strong> Scribouilli ou retrouver ceux que vous avez
@@ -188,7 +188,7 @@
 
     <a class="btn btn__medium" href={resolve('/atelier/selectionner-site')}> Changer de site </a>
   </div>
-</section>
+</div>
 
 <style lang="css">
   .radios-wrapper {

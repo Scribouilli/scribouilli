@@ -2,7 +2,7 @@
   let { error } = $props()
 </script>
 
-<section class="screen">
+<section>
   <header>
     <h2>Une erreur est survenue</h2>
   </header>
