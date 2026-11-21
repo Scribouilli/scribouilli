@@ -131,12 +131,11 @@
   }
 </script>
 
-<div class="container">
   <h3>{editionTitle}</h3>
 
   {#if file}
-    <div>
       <form onsubmit={onSubmit}>
+        <div class="container">
         <div>
           <label for="title">Titre</label>
           <input bind:value={file.title} onchange={validateTitle} type="text" id="title" required />
@@ -191,6 +190,7 @@
             </div>
           </details>
         </div>
+        </div>
 
         <div class="content-preview">
           <div class="content">
@@ -201,13 +201,14 @@
           <div class="preview">
             <h4>Aperçu</h4>
             <div class="markdown-preview">
-              <!-- svelte-ignore block_empty -->
               {#await preview then preview}
                 {@html preview}
               {/await}
             </div>
           </div>
         </div>
+
+        <div class="container">
         <div class="actions-zone">
           <a href={listPrefix} onclick={onBackClick}><IconBack /> Retour</a>
           <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
@@ -235,12 +236,12 @@
             </button>
           </div>
         {/if}
+        </div>
       </form>
-    </div>
   {:else}
     <Loader />
   {/if}
-</div>
+
 
 <style lang="css">
   .accordion {
@@ -272,39 +273,29 @@
   .content-preview {
     display: flex;
     gap: 1rem;
-    width: 90vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -45vw;
-    margin-right: -45vw;
 
     & > div {
-      flex-basis: 50%;
-      flex-shrink: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
-    @media (max-width: 960px) {
+    h4 {
+      margin-top: 0;
+    }
+
+    @media (max-width: 60rem) {
       flex-direction: column;
-      right: auto;
-      left: auto;
       width: 100%;
-      margin-inline: auto;
     }
   }
 
-  .content {
-    margin-top: 2rem;
-
-    textarea {
-      height: calc(100% - 25px);
-    }
+  textarea {
+    height: 100%;
   }
 
   .preview {
     & > div {
-      height: calc(100% - 60px);
-      margin: 0.5em 0;
       padding: 0.5em;
       background-color: white;
     }
