@@ -5,6 +5,7 @@ export const OAUTH_PROVIDER_STORAGE_KEY = 'scribouilli_oauth_provider'
 export const REPOS_CACHE_KEY = 'scribouilli_repos'
 export const REPO_LIST_CACHE_KEY = 'scribouilli_repo_list'
 export const ACCOUNT_CACHE_KEY = 'scribouilli_account'
+export const PROVIDER_FRESH_CACHE_KEY = 'scribouilli_provider'
 export const TOCTOCTOC_ORIGIN = `https://toctoctoc.lechappeebelle.team`
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token'
 export const TOCTOCTOC_OAUTH_PROVIDER_URL_PARAMETER = 'type'

@@ -42,7 +42,7 @@
 
       <div data-sveltekit-reload>
         <a class="btn btn_secondary btn__medium" href={resolve('/')}>Retourner à l’atelier</a>
-        <a class="btn btn_secondary btn__medium" href={page.url.pathname}>Rafraîchir la page</a>
+        <a class="btn btn_secondary btn__medium" href={page.url.toString()}>Rafraîchir la page</a>
       </div>
 
       <div class="wrapper white-zone error-info">

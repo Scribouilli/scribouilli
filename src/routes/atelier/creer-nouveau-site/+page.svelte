@@ -3,7 +3,7 @@
   import { DEFAULT_TEMPLATE, TEMPLATES } from '#lib/config.ts'
   import type { GitSiteTemplate } from '#lib/providers/index.ts'
   import { makeAtelierListPageURL } from '#lib/urls.ts'
-  import { goto } from '$app/navigation'
+  import { goto } from '#lib/urls.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { handleErrors } from '#lib/error.svelte.ts'
 

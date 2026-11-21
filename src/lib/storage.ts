@@ -11,6 +11,7 @@ import {
   PROVIDERS_MAP,
   ACCOUNT_CACHE_KEY,
   REPO_LIST_CACHE_KEY,
+  PROVIDER_FRESH_CACHE_KEY,
 } from './config'
 import type { RepoListCache } from './atelier/repo-list.svelte'
 
@@ -21,10 +22,14 @@ export function loadProvider(): ScribouilliBackendProvider | undefined {
     const providerConfig = PROVIDERS_MAP.get(provider?.id ?? '')
 
     if (provider && providerConfig) {
-      return {
+      const backendProvider = {
         api: makeOAuthServiceAPI(provider),
+        oauthConfig: provider,
         config: providerConfig,
+        fresh: false
       }
+      backendProvider.fresh = cache.isProviderFresh(backendProvider)
+      return backendProvider
     } else if (provider) {
       console.warn(`Unkown provider ${provider.id}`)
     }
@@ -46,13 +51,13 @@ export function clear() {
   }
 }
 
-export function clearCache() {
-  if (sessionStorage) {
-    sessionStorage.clear()
-  }
-}
-
 export const cache = {
+  clear: () => {
+    if (sessionStorage) {
+      sessionStorage.clear()
+    }
+  },
+
   loadRepo: () => {
     if (sessionStorage) {
       const rawSyncedRepos = sessionStorage.getItem(REPOS_CACHE_KEY)
@@ -103,4 +108,17 @@ export const cache = {
       sessionStorage.setItem(ACCOUNT_CACHE_KEY, JSON.stringify(repos))
     }
   },
+
+  isProviderFresh: (provider: ScribouilliBackendProvider) => {
+    if (sessionStorage) {
+      return sessionStorage.getItem(PROVIDER_FRESH_CACHE_KEY) === provider.oauthConfig.accessToken
+    }
+    return false
+  },
+
+  markProviderFresh: (provider: ScribouilliBackendProvider) => {
+    if (sessionStorage) {
+      sessionStorage.setItem(PROVIDER_FRESH_CACHE_KEY, provider.oauthConfig.accessToken)
+    }
+  }
 }
