@@ -113,7 +113,7 @@ footer {
 #pages,
 .wrapper {
   max-width: 100%;
-  width: 800px;
+  width: 50em;
   margin: 0 auto;
 }
 
@@ -201,6 +201,7 @@ h4 {
 
 a {
   color: #912222;
+  white-space: nowrap;
 }
 
 a[href]:active,
@@ -241,9 +242,15 @@ textarea {
   min-height: 32rem;
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  width: 1em;
+  height: 1em;
+}
+
 .white-zone {
   padding: 2rem 1rem;
-  width: 500px;
+  width: 32rem;
   text-align: center;
   background: white;
   border-radius: 16px;
