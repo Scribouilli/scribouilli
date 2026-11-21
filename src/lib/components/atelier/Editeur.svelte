@@ -131,117 +131,115 @@
   }
 </script>
 
-  <h3>{editionTitle}</h3>
+<h3>{editionTitle}</h3>
 
-  {#if file}
-      <form onsubmit={onSubmit}>
-        <div class="container">
-        <div>
-          <label for="title">Titre</label>
-          <input bind:value={file.title} onchange={validateTitle} type="text" id="title" required />
-        </div>
+{#if file}
+  <form onsubmit={onSubmit}>
+    <div class="container">
+      <div>
+        <label for="title">Titre</label>
+        <input bind:value={file.title} onchange={validateTitle} type="text" id="title" required />
+      </div>
 
-        <div class="accordion aide-editeur">
-          <h4 class="label">Aide</h4>
-          <details>
-            <summary>Mettre en forme le contenu</summary>
-            <div>
-              <p>
-                Pour mettre en forme votre contenu, vous pouvez bidouiller
-                <NewTabLink href="https://flus.fr/carnet/markdown.html">avec du Markdown</NewTabLink
-                >
-                … ou avec du HTML grâce
-                <NewTabLink href="https://scribouilli.org/aide.html">à nos exemples</NewTabLink>
-                d'encart ou de bouton, ou
-                <NewTabLink
-                  href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
-                >
-                  avec ce guide.
-                </NewTabLink>
-              </p>
-            </div>
-          </details>
-
-          <details>
-            <summary>Ajouter une image</summary>
-            <div>
-              <ol>
-                <li>
-                  <label for="image">Sélectionnez votre image :</label>
-                  <input
-                    accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
-                    bind:files
-                    id="image"
-                    name="image"
-                    type="file"
-                    onchange={imageSelect}
-                  />
-                </li>
-                <li>Insérez la ligne suivante là où vous souhaitez que votre image apparaisse :</li>
-                <figure>
-                  {imageMd}
-                </figure>
-
-                <li>
-                  Remplacez le texte entre crochets par une description pour les personnes
-                  malvoyantes (il s'affichera si l'image ne charge pas)
-                </li>
-              </ol>
-            </div>
-          </details>
-        </div>
-        </div>
-
-        <div class="content-preview">
-          <div class="content">
-            <label for="content">Contenu</label>
-            <textarea bind:value={file.content} id="content" cols="30" rows="10"></textarea>
+      <div class="accordion aide-editeur">
+        <h4 class="label">Aide</h4>
+        <details>
+          <summary>Mettre en forme le contenu</summary>
+          <div>
+            <p>
+              Pour mettre en forme votre contenu, vous pouvez bidouiller
+              <NewTabLink href="https://flus.fr/carnet/markdown.html">avec du Markdown</NewTabLink>
+              … ou avec du HTML grâce
+              <NewTabLink href="https://scribouilli.org/aide.html">à nos exemples</NewTabLink>
+              d'encart ou de bouton, ou
+              <NewTabLink
+                href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
+              >
+                avec ce guide.
+              </NewTabLink>
+            </p>
           </div>
+        </details>
 
-          <div class="preview">
-            <h4>Aperçu</h4>
-            <div class="markdown-preview">
-              {#await preview then preview}
-                {@html preview}
-              {/await}
-            </div>
+        <details>
+          <summary>Ajouter une image</summary>
+          <div>
+            <ol>
+              <li>
+                <label for="image">Sélectionnez votre image :</label>
+                <input
+                  accept="image/png, image/jpeg, image/webp, image/gif, image/svg"
+                  bind:files
+                  id="image"
+                  name="image"
+                  type="file"
+                  onchange={imageSelect}
+                />
+              </li>
+              <li>Insérez la ligne suivante là où vous souhaitez que votre image apparaisse :</li>
+              <figure>
+                {imageMd}
+              </figure>
+
+              <li>
+                Remplacez le texte entre crochets par une description pour les personnes malvoyantes
+                (il s'affichera si l'image ne charge pas)
+              </li>
+            </ol>
           </div>
-        </div>
+        </details>
+      </div>
+    </div>
 
-        <div class="container">
-        <div class="actions-zone">
-          <a href={listPrefix} onclick={onBackClick}><IconBack /> Retour</a>
-          <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
-        </div>
+    <div class="content-preview">
+      <div class="content">
+        <label for="content">Contenu</label>
+        <textarea bind:value={file.content} id="content" cols="30" rows="10"></textarea>
+      </div>
 
-        {#if file.fileName && file.fileName !== 'index.md'}
-          <div class="wrapper white-zone">
-            <h3>{deleteTitle}</h3>
-            <label>
-              <input
-                type="checkbox"
-                onchange={() => {
-                  deleteDisabled = !deleteDisabled
-                }}
-              />
-              Afficher le bouton de suppression
-            </label>
-            <button
-              type="button"
-              onclick={() => onDelete(file)}
-              disabled={deleteDisabled}
-              class=" btn__medium btn btn__danger"
-            >
-              {deleteTitle}
-            </button>
-          </div>
-        {/if}
+      <div class="preview">
+        <h4>Aperçu</h4>
+        <div class="markdown-preview">
+          {#await preview then preview}
+            {@html preview}
+          {/await}
         </div>
-      </form>
-  {:else}
-    <Loader />
-  {/if}
+      </div>
+    </div>
 
+    <div class="container">
+      <div class="actions-zone">
+        <a href={listPrefix} onclick={onBackClick}><IconBack /> Retour</a>
+        <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
+      </div>
+
+      {#if file.fileName && file.fileName !== 'index.md'}
+        <div class="wrapper white-zone">
+          <h3>{deleteTitle}</h3>
+          <label>
+            <input
+              type="checkbox"
+              onchange={() => {
+                deleteDisabled = !deleteDisabled
+              }}
+            />
+            Afficher le bouton de suppression
+          </label>
+          <button
+            type="button"
+            onclick={() => onDelete(file)}
+            disabled={deleteDisabled}
+            class=" btn__medium btn btn__danger"
+          >
+            {deleteTitle}
+          </button>
+        </div>
+      {/if}
+    </div>
+  </form>
+{:else}
+  <Loader />
+{/if}
 
 <style lang="css">
   .accordion {
