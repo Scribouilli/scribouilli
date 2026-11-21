@@ -242,11 +242,13 @@ svg.icon {
   height: 1em;
 }
 
-a:has(svg.icon)  svg.icon {
-  height: .8em;
+a:has(svg.icon) svg.icon {
+  height: 0.8em;
 }
 
-a:has(img), a:has(img):hover, a:has(img):active {
+a:has(img),
+a:has(img):hover,
+a:has(img):active {
   box-shadow: none;
   display: block;
 }
@@ -273,8 +275,8 @@ textarea {
   min-height: 32rem;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
   width: 1em;
   height: 1em;
 }

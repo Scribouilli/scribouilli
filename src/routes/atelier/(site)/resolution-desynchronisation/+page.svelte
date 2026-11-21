@@ -51,7 +51,7 @@
     {#if newConflictOptions}
       <div class="action-list">
         {#each newConflictOptions as { message, resolution }}
-            <button class="btn" onclick={resolution}>{message}</button>
+          <button class="btn" onclick={resolution}>{message}</button>
         {/each}
       </div>
     {:else}

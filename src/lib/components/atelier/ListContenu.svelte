@@ -72,69 +72,69 @@
 </script>
 
 <div class="narrow-container">
-    <header>
-      <h2>
-        {title}
-      </h2>
-      <a
-        href={makeUrlParam(atelierPrefix, atelier.repo.owner, atelier.repo.repoPath)}
-        class="btn btn__medium">{newContentButtonText}</a
+  <header>
+    <h2>
+      {title}
+    </h2>
+    <a
+      href={makeUrlParam(atelierPrefix, atelier.repo.owner, atelier.repo.repoPath)}
+      class="btn btn__medium">{newContentButtonText}</a
+    >
+  </header>
+
+  <ul>
+    {#each listContenu as contenu}
+      <li>
+        <span>{contenu.title}</span>
+        {#if modification && pageGuard(contenu)}
+          <div class="gestionMenu">
+            <label>
+              Ordre de la page dans le menu
+              <input
+                class="order"
+                aria-label="Ordre de la page dans le menu"
+                type="number"
+                min="1"
+                max={atelier.pages.length}
+                bind:value={contenu.index}
+              />
+            </label>
+            <label>
+              Afficher dans le menu
+              <input
+                class="inMenu"
+                aria-label="Affichage de la page dans le menu"
+                type="checkbox"
+                bind:checked={contenu.inMenu}
+              />
+            </label>
+          </div>
+        {:else}
+          <a
+            href={makeUrlParam(
+              `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
+              atelier.repo.owner,
+              atelier.repo.repoPath,
+            )}
+          >
+            Modifier</a
+          >
+        {/if}
+      </li>
+    {/each}
+  </ul>
+
+  <div class="action-list">
+    {#if allowModification}
+      <button class="btn btn_small btn_secondary" onclick={editClick}
+        >{#if modification}
+          Enregistrer
+        {:else}
+          Modifier le menu
+        {/if}</button
       >
-    </header>
-
-      <ul>
-        {#each listContenu as contenu}
-          <li>
-            <span>{contenu.title}</span>
-            {#if modification && pageGuard(contenu)}
-              <div class="gestionMenu">
-                <label>
-                  Ordre de la page dans le menu
-                  <input
-                    class="order"
-                    aria-label="Ordre de la page dans le menu"
-                    type="number"
-                    min="1"
-                    max={atelier.pages.length}
-                    bind:value={contenu.index}
-                  />
-                </label>
-                <label>
-                  Afficher dans le menu
-                  <input
-                    class="inMenu"
-                    aria-label="Affichage de la page dans le menu"
-                    type="checkbox"
-                    bind:checked={contenu.inMenu}
-                  />
-                </label>
-              </div>
-            {:else}
-              <a
-                href={makeUrlParam(
-                  `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
-                  atelier.repo.owner,
-                  atelier.repo.repoPath,
-                )}
-              >
-                Modifier</a
-              >
-            {/if}
-          </li>
-        {/each}
-      </ul>
-
-    <div class="action-list">
-      {#if allowModification}
-        <button class="btn btn_small btn_secondary" onclick={editClick}
-          >{#if modification}
-            Enregistrer
-          {:else}
-            Modifier le menu
-          {/if}</button
-        >
-      {/if}
-    </div>
+    {/if}
+  </div>
 
   {#if onBlogToggle}
     <div class="wrapper white-zone">

@@ -149,14 +149,15 @@
             <div>
               <p>
                 Pour mettre en forme votre contenu, vous pouvez bidouiller
-                <NewTabLink href="https://flus.fr/carnet/markdown.html">avec du Markdown</NewTabLink>
+                <NewTabLink href="https://flus.fr/carnet/markdown.html">avec du Markdown</NewTabLink
+                >
                 … ou avec du HTML grâce
                 <NewTabLink href="https://scribouilli.org/aide.html">à nos exemples</NewTabLink>
                 d'encart ou de bouton, ou
                 <NewTabLink
                   href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
                 >
-                    avec ce guide.
+                  avec ce guide.
                 </NewTabLink>
               </p>
             </div>
@@ -208,7 +209,7 @@
           </div>
         </div>
         <div class="actions-zone">
-          <a href={listPrefix} onclick={onBackClick}><IconBack/> Retour</a>
+          <a href={listPrefix} onclick={onBackClick}><IconBack /> Retour</a>
           <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
         </div>
 

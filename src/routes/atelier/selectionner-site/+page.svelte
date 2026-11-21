@@ -38,22 +38,20 @@
   {#if !currentAccountRepositories}
     <Loader />
   {:else}
-      <form onsubmit={onSubmit} class="narrow-container">
-        <div>
-          <label for="name">Nom de votre site</label>
-          <select id="name" bind:value={repo}>
-            {#each currentAccountRepositories as repo}
-              <option value={repo}>{displayRepoName(repo)}</option>
-            {/each}
-          </select>
-        </div>
+    <form onsubmit={onSubmit} class="narrow-container">
+      <div>
+        <label for="name">Nom de votre site</label>
+        <select id="name" bind:value={repo}>
+          {#each currentAccountRepositories as repo}
+            <option value={repo}>{displayRepoName(repo)}</option>
+          {/each}
+        </select>
+      </div>
 
-        <div class="actions-zone">
-          <button type="submit" class="btn__medium btn" disabled={loading}>
-            Choisir ce site
-          </button>
-        </div>
-      </form>
+      <div class="actions-zone">
+        <button type="submit" class="btn__medium btn" disabled={loading}> Choisir ce site </button>
+      </div>
+    </form>
   {/if}
 </div>
 
