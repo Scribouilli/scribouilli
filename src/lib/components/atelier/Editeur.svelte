@@ -166,8 +166,6 @@
       }
     }
   })
-
-
 </script>
 
 <h3>{editionTitle}</h3>
@@ -233,13 +231,25 @@
     <div class="content-preview">
       <div class="content">
         <label for="content">Contenu</label>
-        <textarea bind:value={file.content} oninput={onContentChange} id="content" cols="30" rows="10"></textarea>
+        <textarea
+          bind:value={file.content}
+          oninput={onContentChange}
+          id="content"
+          cols="30"
+          rows="10"></textarea>
       </div>
 
       <div class="preview">
         <h4>Aperçu</h4>
         <div class="markdown-preview">
-          <iframe width="100%" height={iframeHeight} bind:this={iframe} srcdoc={iframeSrc} onload={onContentChange} title="Aperçu"></iframe>
+          <iframe
+            width="100%"
+            height={iframeHeight}
+            bind:this={iframe}
+            srcdoc={iframeSrc}
+            onload={onContentChange}
+            title="Aperçu"
+          ></iframe>
         </div>
       </div>
     </div>
