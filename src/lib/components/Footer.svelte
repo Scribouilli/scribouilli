@@ -1,5 +1,9 @@
+<script>
+  import NewTabLink from "./NewTabLink.svelte"
+
+</script>
 <footer>
   <div>
-    <a href="https://scribouilli.org/" target="_blank">Site explicatif Scribouilli</a>
+    <NewTabLink href="https://scribouilli.org/">Site explicatif Scribouilli</NewTabLink>
   </div>
 </footer>

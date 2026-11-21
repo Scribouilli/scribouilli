@@ -5,6 +5,7 @@
   import { resolve } from '$app/paths'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { page } from '$app/state'
+  import NewTabLink from './NewTabLink.svelte'
 
   const atelier = getAtelier()
 
@@ -43,9 +44,9 @@
         {#if !publishedWebsiteURL}
           (L'adresse du site va apparaître ici…)
         {:else}
-          <a href={publishedWebsiteURL} class="project-name" target="_blank">
+          <NewTabLink href={publishedWebsiteURL} class="project-name">
             {publishedWebsiteURL}
-          </a>
+          </NewTabLink>
         {/if}
       </p>
       {#if buildStatusClass}
@@ -84,12 +85,12 @@
         </li>
         {#if repositoryURL && repositoryType !== 'scribouilli'}
           <li>
-            <a href={repositoryURL} target="_blank">Sur {new URL(repositoryURL).hostname}</a>
+            <NewTabLink href={repositoryURL}>Sur {new URL(repositoryURL).hostname}</NewTabLink>
           </li>
         {/if}
         {#if repositoryType === 'scribouilli'}
           <li>
-            <a href={`${atelier.repo.origin}/settings`} target="_blank">Mon compte</a>
+            <NewTabLink href={`${atelier.repo.origin}/settings`}>Mon compte</NewTabLink>
           </li>
         {/if}
       </ul>

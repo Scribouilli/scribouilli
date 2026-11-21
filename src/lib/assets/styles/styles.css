@@ -34,7 +34,7 @@ body {
 }
 
 /*
-  In applications, there can be lists but HTML lists hav=e bullet points and a bunch of useless styling attributes
+  In applications, there can be lists but HTML lists have bullet points and a bunch of useless styling attributes
 */
 ul,
 ol,
@@ -89,6 +89,16 @@ img {
   font-style: normal;
   font-weight: normal;
   text-rendering: optimizeLegibility;
+}
+
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 body {
@@ -218,6 +228,11 @@ a[href]:hover,
   text-decoration: none;
   box-shadow: inset 0px -0.1em 0px currentColor;
   transition: box-shadow 0s;
+}
+
+svg.icon {
+  width: 1em;
+  height: 1em;
 }
 
 form {
@@ -355,12 +370,6 @@ code {
   padding: 0.4rem;
   font-family: monospace;
   background-color: rgba(255, 255, 255, 0.4);
-}
-
-a[href]:not(
-    :where([href^='#'], [href^='/'], [href^='//localhost:8080'], [href^='./'], [href^='../'])
-  ):after {
-  content: ' ➚';
 }
 
 ul.list-with-dot {

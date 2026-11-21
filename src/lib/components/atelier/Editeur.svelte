@@ -7,6 +7,7 @@
   import Loader from '../Loader.svelte'
   import { Pages } from '#lib/atelier/page.svelte.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import NewTabLink from '../NewTabLink.svelte'
 
   interface Props {
     file?: EditeurFile
@@ -147,18 +148,15 @@
             <div>
               <p>
                 Pour mettre en forme votre contenu, vous pouvez bidouiller
-                <a href="https://flus.fr/carnet/markdown.html" target="_blank">
-                  avec du Markdown
-                </a>
+                <NewTabLink href="https://flus.fr/carnet/markdown.html">avec du Markdown</NewTabLink>
                 … ou avec du HTML grâce
-                <a href="https://scribouilli.org/aide.html" target="_blank"> à nos exemples </a>
+                <NewTabLink href="https://scribouilli.org/aide.html">à nos exemples</NewTabLink>
                 d'encart ou de bouton, ou
-                <a
+                <NewTabLink
                   href="https://developer.mozilla.org/fr/docs/Learn_web_development/Core/Structuring_content"
-                  target="_blank"
                 >
-                  avec ce guide.
-                </a>
+                    avec ce guide.
+                </NewTabLink>
               </p>
             </div>
           </details>
