@@ -39,7 +39,7 @@
 
 <header>
   {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
-    <div>
+    <div class="status">
       <p>
         {#if !publishedWebsiteURL}
           (L'adresse du site va apparaître ici…)
@@ -55,9 +55,9 @@
     </div>
   {/if}
 
-  <h1>
+  <div class="brand">
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
-  </h1>
+  </div>
 
   {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
     <nav>
@@ -126,7 +126,7 @@
   </section>
 {/if}
 
-<style lang="scss">
+<style lang="css">
   header {
     margin-bottom: 2rem;
     padding-right: 2rem;
@@ -141,24 +141,24 @@
     flex: 1;
   }
 
-  header > div {
+  header .status {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     flex-wrap: wrap;
+
+    p {
+      margin: 0em;
+    }
   }
 
-  header > div > p {
-    margin: 0em;
-  }
-
-  header h1 {
+  header .brand {
     text-align: center;
-  }
 
-  header img {
-    max-height: 3em;
+    img {
+      max-height: 4.5em;
+    }
   }
 
   .warning {
