@@ -341,15 +341,8 @@
       background-color: white;
     }
 
-    .markdown-preview :global {
-      ul,
-      ol {
-        margin-left: 1.5rem;
-      }
-
-      ul {
-        list-style-type: disc;
-      }
+    .markdown-preview {
+      flex: 1;
     }
   }
 
