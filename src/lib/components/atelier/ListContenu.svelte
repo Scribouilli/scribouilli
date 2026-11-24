@@ -138,7 +138,7 @@
 
   {#if onBlogToggle}
     <div class="wrapper white-zone">
-      <h3>Articles</h3>
+      <h2>Articles</h2>
 
       <p>
         Ajoute un lien "Articles" dans le menu. Celui-ci permet de créer et lister une série de

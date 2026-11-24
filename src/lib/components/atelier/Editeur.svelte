@@ -179,7 +179,7 @@
       </div>
 
       <div class="accordion aide-editeur">
-        <h4 class="label">Aide</h4>
+        <h2 class="label">Aide</h2>
         <details>
           <summary>Mettre en forme le contenu</summary>
           <div>
@@ -230,7 +230,7 @@
 
     <div class="content-preview">
       <div class="content">
-        <label for="content">Contenu</label>
+        <h2 class="label"><label for="content">Contenu</label></h2>
         <textarea
           bind:value={file.content}
           oninput={onContentChange}
@@ -240,7 +240,7 @@
       </div>
 
       <div class="preview">
-        <h4>Aperçu</h4>
+        <h2 class="label">Aperçu</h2>
         <div class="markdown-preview">
           <iframe
             width="100%"
@@ -262,7 +262,7 @@
 
       {#if file.fileName && file.fileName !== 'index.md'}
         <div class="wrapper white-zone">
-          <h3>{deleteTitle}</h3>
+          <h2>{deleteTitle}</h2>
           <label>
             <input
               type="checkbox"
@@ -323,10 +323,6 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-    }
-
-    h4 {
-      margin-top: 0;
     }
 
     @media (max-width: 60rem) {
