@@ -11,9 +11,9 @@
   <section class="container">
     <div>
       {#if provider.type === 'github'}
-        <h2>Créer un compte GitHub</h2>
+        <h1>Créer un compte GitHub</h1>
       {:else}
-        <h2>Créer un compte sur {provider.id}</h2>
+        <h1>Créer un compte sur {provider.id}</h1>
       {/if}
 
       <div class="config-content">{@html provider.signupInstructions}</div>
@@ -32,9 +32,3 @@
     </div>
   </section>
 {/if}
-
-<style lang="css">
-  h2 {
-    margin-bottom: 2rem;
-  }
-</style>

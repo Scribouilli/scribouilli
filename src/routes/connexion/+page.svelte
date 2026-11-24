@@ -4,7 +4,7 @@
 </script>
 
 <section id="choose-account">
-  <h2>Se connecter</h2>
+  <h1>Se connecter</h1>
   <p>Scribouilli a besoin de se connecter à l'application qui hébergera votre petit&nbsp;site</p>
   <p>Vous pouvez utiliser :</p>
 

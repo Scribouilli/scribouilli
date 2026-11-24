@@ -22,12 +22,12 @@
 
 <div class="container">
   {#if atelier.status !== 'signed-out'}
-    <h2>Nous regardons si vous avez plusieurs sites Scribouilli…</h2>
+    <h1>Nous regardons si vous avez plusieurs sites Scribouilli…</h1>
     <div class="loader">
       <img src={heartsLoader} alt="cœur sur toi le temps que ça charge" />
     </div>
   {:else if showWelcome}
-    <h2>Créez votre petit site facilement !</h2>
+    <h1>Créez votre petit site facilement !</h1>
     <div class="action-list">
       <a href="/connexion" class="btn">C'est parti !</a>
     </div>

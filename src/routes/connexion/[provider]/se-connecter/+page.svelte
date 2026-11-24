@@ -55,7 +55,7 @@
 {#if provider}
   {#if provider.type === 'github'}
     <section class="container">
-      <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
+      <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
       <div class="action-list">
         <a {href} class="btn">Je me connecte via GitHub</a>
       </div>
@@ -63,7 +63,7 @@
   {/if}
   {#if provider.type === 'gitlab'}
     <section class="container">
-      <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
+      <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
 
       <div class="action-list">
         <a {href} class="btn">Je me connecte via {provider.id}</a>
@@ -72,7 +72,7 @@
   {/if}
   {#if provider.type === 'scribouilli'}
     <section class="container">
-      <h2>Super, nous allons vous demander les clefs sur la page suivante.</h2>
+      <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
 
       <div class="action-list">
         <a {href} class="btn">Je me connecte</a>

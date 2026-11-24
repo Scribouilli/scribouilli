@@ -102,13 +102,13 @@
 </script>
 
 <div class="narrow-container">
-  <h2>Paramètres</h2>
+  <h1>Paramètres</h1>
 
   <div id="notifications">{notification}</div>
 
   <div class="white-zone">
     <div>
-      <h3>Couleur principale</h3>
+      <h2>Couleur principale</h2>
 
       <div class="radios-wrapper">
         {#each mesCouleurs as { id, color, name }}
@@ -139,7 +139,7 @@
   </div>
 
   <div class="white-zone">
-    <h3>Personnalisation du site</h3>
+    <h2>Personnalisation du site</h2>
     <p id="customCSS">
       Pour personnaliser le look de votre site, vous pouvez <a
         href="https://developer.mozilla.org/fr/docs/conflicting/Learn_web_development/Core/Styling_basics"
@@ -154,7 +154,7 @@
 
   {#if atelier.repo.userPermission === 'owner'}
     <div class="white-zone">
-      <h3>Supprimer le site</h3>
+      <h2>Supprimer le site</h2>
       <p>Attention la suppression du site est définitive!</p>
 
       <label>
@@ -180,7 +180,7 @@
 <hr />
 <div class="narrow-container">
   <div class="white-zone">
-    <h3>Autres sites</h3>
+    <h2>Autres sites</h2>
     <p>
       Vous pouvez <strong>créer un nouveau site</strong> Scribouilli ou retrouver ceux que vous avez
       <strong>déjà créés</strong>.

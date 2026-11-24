@@ -10,9 +10,9 @@
   <section class="container">
     <div>
       {#if provider.type === 'github'}
-        <h2>Avez-vous un compte GitHub&nbsp;?</h2>
+        <h1>Avez-vous un compte GitHub&nbsp;?</h1>
       {:else}
-        <h2>Avez-vous un compte sur {provider.id}&nbsp;?</h2>
+        <h1>Avez-vous un compte sur {provider.id}&nbsp;?</h1>
       {/if}
 
       <div class="action-list">
@@ -28,9 +28,3 @@
     </div>
   </section>
 {/if}
-
-<style lang="css">
-  h2 {
-    margin-bottom: 2rem;
-  }
-</style>

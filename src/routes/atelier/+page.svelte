@@ -3,7 +3,7 @@
 </script>
 
 <div class="container">
-  <h2>Travailler sur votre site</h2>
+  <h1>Travailler sur votre site</h1>
   <p>Vous pouvez créer un nouveau site ou partir d'un site existant.</p>
 
   <div class="action-list">

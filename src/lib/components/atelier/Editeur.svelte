@@ -168,7 +168,7 @@
   })
 </script>
 
-<h3>{editionTitle}</h3>
+<h1>{editionTitle}</h1>
 
 {#if file}
   <form onsubmit={onSubmit}>

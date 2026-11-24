@@ -18,7 +18,7 @@
 </script>
 
 <div class="container">
-  <h1 class="h2">Votre site ne peut plus se mettre à jour</h1>
+  <h1>Votre site ne peut plus se mettre à jour</h1>
 
   <p>Le contenu de votre site a été modifié à 2 endroits différents :</p>
 

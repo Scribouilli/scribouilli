@@ -73,9 +73,9 @@
 
 <div class="narrow-container">
   <header>
-    <h2>
+    <h1>
       {title}
-    </h2>
+    </h1>
     <a
       href={makeUrlParam(atelierPrefix, atelier.repo.owner, atelier.repo.repoPath)}
       class="btn btn__medium">{newContentButtonText}</a
@@ -215,14 +215,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 5em;
-    margin: 3rem auto;
 
     & > * {
       flex: 0 1 auto;
-    }
-
-    h2 {
-      margin: 0.2em 0;
     }
   }
 </style>

@@ -33,7 +33,7 @@
 </script>
 
 <div class="container">
-  <h3>Choisir le site sur lequel vous souhaitez travailler</h3>
+  <h1>Choisir le site sur lequel vous souhaitez travailler</h1>
 
   {#if !currentAccountRepositories}
     <Loader />

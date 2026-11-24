@@ -45,7 +45,7 @@
   {#if loading}
     <SiteCreationLoader />
   {:else}
-    <h3>Créer un nouveau site</h3>
+    <h1>Créer un nouveau site</h1>
 
     <form onsubmit={onSubmit}>
       <div>

@@ -3,7 +3,7 @@
   import NewTabLink from '../NewTabLink.svelte'
 </script>
 
-<h2>Nous sommes en train de créer le site&nbsp;!</h2>
+<h1>Nous sommes en train de créer le site&nbsp;!</h1>
 <div class="loader">
   <p>Cela peut prendre 2-3 minutes…</p>
   <img src={heartsLoader} alt="cœur sur toi le temps que ça charge" />

@@ -146,19 +146,13 @@ nav ul {
 }
 
 h1 {
-  margin-top: 0.5rem;
-  margin-bottom: 0;
-  font-size: 1.5625rem;
-}
-
-h1 a {
-  color: #000;
-  text-decoration: none;
-}
-
-h2,
-.h2 {
+  margin: 2.5rem 0;
   font-size: 2.4rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
   text-align: center;
 }
 
