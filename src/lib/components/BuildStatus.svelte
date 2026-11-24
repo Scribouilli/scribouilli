@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { getAtelier } from "#lib/atelier/index.svelte.ts"
-  import IconInProgress from "./icons/IconInProgress.svelte"
-  import IconSuccess from "./icons/IconSuccess.svelte"
-  import NewTabLink from "./NewTabLink.svelte"
+  import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import IconInProgress from './icons/IconInProgress.svelte'
+  import IconSuccess from './icons/IconSuccess.svelte'
+  import NewTabLink from './NewTabLink.svelte'
 
   const atelier = getAtelier()
   let buildStatus = $derived(atelier.repo.buildStatus)
   let publishedWebsiteURL: string | undefined = $derived(atelier.repo.publishedUrl)
 </script>
-
 
 {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
   <div class="status">
@@ -23,11 +22,11 @@
     </p>
     <p class="build">
       {#if buildStatus === 'in_progress'}
-        <IconInProgress/> En cours de publication (2-3 min)
+        <IconInProgress /> En cours de publication (2-3 min)
       {:else if buildStatus === 'error'}
-        <IconInProgress/> En cours de publication (15 min max)
+        <IconInProgress /> En cours de publication (15 min max)
       {:else if buildStatus === 'success'}
-        <IconSuccess/> Site à jour
+        <IconSuccess /> Site à jour
       {/if}
     </p>
   </div>

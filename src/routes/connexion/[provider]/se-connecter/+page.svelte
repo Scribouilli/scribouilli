@@ -56,29 +56,29 @@
   <title>Se connecter sur {provider.name} — Scribouilli</title>
 </svelte:head>
 
-  {#if provider.type === 'github'}
-    <section class="container">
-      <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
-      <div class="action-list">
-        <a {href} class="btn">Je me connecte via GitHub</a>
-      </div>
-    </section>
-  {/if}
-  {#if provider.type === 'gitlab'}
-    <section class="container">
-      <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
+{#if provider.type === 'github'}
+  <section class="container">
+    <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
+    <div class="action-list">
+      <a {href} class="btn">Je me connecte via GitHub</a>
+    </div>
+  </section>
+{/if}
+{#if provider.type === 'gitlab'}
+  <section class="container">
+    <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
 
-      <div class="action-list">
-        <a {href} class="btn">Je me connecte via {provider.id}</a>
-      </div>
-    </section>
-  {/if}
-  {#if provider.type === 'scribouilli'}
-    <section class="container">
-      <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
+    <div class="action-list">
+      <a {href} class="btn">Je me connecte via {provider.id}</a>
+    </div>
+  </section>
+{/if}
+{#if provider.type === 'scribouilli'}
+  <section class="container">
+    <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
 
-      <div class="action-list">
-        <a {href} class="btn">Je me connecte</a>
-      </div>
-    </section>
-  {/if}
+    <div class="action-list">
+      <a {href} class="btn">Je me connecte</a>
+    </div>
+  </section>
+{/if}
