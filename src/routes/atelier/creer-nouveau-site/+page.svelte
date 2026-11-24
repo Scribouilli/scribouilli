@@ -41,6 +41,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Créer un nouveau site — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <div class="narrow-container">
   {#if loading}
     <SiteCreationLoader />

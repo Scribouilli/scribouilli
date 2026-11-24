@@ -17,6 +17,10 @@
   )
 </script>
 
+<svelte:head>
+  <title>Désynchronisation — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <div class="container">
   <h1>Votre site ne peut plus se mettre à jour</h1>
 

@@ -3,6 +3,10 @@
   import { resolve } from '$app/paths'
 </script>
 
+<svelte:head>
+  <title>Connexion — Scribouilli</title>
+</svelte:head>
+
 <section id="choose-account">
   <h1>Se connecter</h1>
   <p>Scribouilli a besoin de se connecter à l'application qui hébergera votre petit&nbsp;site</p>

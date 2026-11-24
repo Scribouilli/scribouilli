@@ -7,7 +7,10 @@
   const provider = $derived(data.provider)
 </script>
 
-{#if provider}
+<svelte:head>
+  <title>Créer un compte sur {provider.name} — Scribouilli</title>
+</svelte:head>
+
   <section class="container">
     <div>
       {#if provider.type === 'github'}
@@ -31,4 +34,3 @@
       {/if}
     </div>
   </section>
-{/if}

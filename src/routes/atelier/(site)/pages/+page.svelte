@@ -55,6 +55,10 @@ blog_index: true
   }
 </script>
 
+<svelte:head>
+  <title>Liste des pages — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <ListContenu
   listContenu={pages}
   title="Pages"

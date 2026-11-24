@@ -101,6 +101,10 @@
   ]
 </script>
 
+<svelte:head>
+  <title>Paramètres — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <div class="narrow-container">
   <h1>Paramètres</h1>
 

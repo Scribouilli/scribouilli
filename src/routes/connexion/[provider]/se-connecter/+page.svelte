@@ -52,7 +52,10 @@
   })
 </script>
 
-{#if provider}
+<svelte:head>
+  <title>Se connecter sur {provider.name} — Scribouilli</title>
+</svelte:head>
+
   {#if provider.type === 'github'}
     <section class="container">
       <h1>Super, nous allons vous demander les clefs sur la page suivante.</h1>
@@ -79,4 +82,3 @@
       </div>
     </section>
   {/if}
-{/if}

@@ -2,6 +2,10 @@
   import { resolve } from '$app/paths'
 </script>
 
+<svelte:head>
+  <title>L’atelier de Scribouilli</title>
+</svelte:head>
+
 <div class="container">
   <h1>Travailler sur votre site</h1>
   <p>Vous pouvez créer un nouveau site ou partir d'un site existant.</p>

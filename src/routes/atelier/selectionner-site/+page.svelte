@@ -32,6 +32,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Selectionner un site — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <div class="container">
   <h1>Choisir le site sur lequel vous souhaitez travailler</h1>
 
