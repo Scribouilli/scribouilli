@@ -20,7 +20,7 @@
         </NewTabLink>
       {/if}
     </p>
-    <p class="build">
+    <p class="build" aria-live="polite" aria-atomic="true">
       {#if buildStatus === 'in_progress'}
         <IconInProgress /> En cours de publication (2-3 min)
       {:else if buildStatus === 'error'}
