@@ -6,16 +6,14 @@
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { page } from '$app/state'
   import NewTabLink from './NewTabLink.svelte'
+  import BuildStatus from './BuildStatus.svelte'
 
   const atelier = getAtelier()
 
   let needsAccountVerification: boolean = $derived(
     atelier.repo.buildStatus === 'needs_account_verification',
   )
-  let buildStatusClass = $derived(
-    atelier.repo.buildStatus ? `build-${atelier.repo.buildStatus}` : undefined,
-  )
-  let publishedWebsiteURL: string | undefined = $derived(atelier.repo.publishedUrl)
+
   let repositoryURL: string = $derived(atelier.repo.publicRepositoryURL)
   let repositoryType: BackendType | undefined = $derived(atelier.repo.repoType)
   let homeURL: string = $derived(
@@ -38,22 +36,7 @@
 </script>
 
 <header>
-  {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
-    <div class="status">
-      <p>
-        {#if !publishedWebsiteURL}
-          (L'adresse du site va apparaître ici…)
-        {:else}
-          <NewTabLink href={publishedWebsiteURL} class="project-name">
-            {publishedWebsiteURL}
-          </NewTabLink>
-        {/if}
-      </p>
-      {#if buildStatusClass}
-        <p class={buildStatusClass}></p>
-      {/if}
-    </div>
-  {/if}
+  <BuildStatus />
 
   <div class="brand">
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
@@ -141,18 +124,6 @@
     flex: 1;
   }
 
-  header .status {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    flex-wrap: wrap;
-
-    p {
-      margin: 0em;
-    }
-  }
-
   header .brand {
     text-align: center;
 
@@ -190,21 +161,5 @@
     .centered {
       text-align: center;
     }
-  }
-
-  [class^='build-'] {
-    margin-top: 0.3rem;
-  }
-
-  .build-in_progress::after {
-    content: '🕰 En cours de publication (2-3 min)';
-  }
-
-  .build-success::after {
-    content: '✅ Site à jour';
-  }
-
-  .build-error::after {
-    content: '🕰 En cours de publication (15 min max)';
   }
 </style>

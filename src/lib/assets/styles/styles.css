@@ -223,11 +223,7 @@ a {
 
 svg.icon {
   width: 1em;
-  height: 1em;
-}
-
-a:has(svg.icon) svg.icon {
-  height: 0.8em;
+  height: .8em;
 }
 
 a:has(img),
