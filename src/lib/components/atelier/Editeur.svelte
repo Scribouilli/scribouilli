@@ -255,7 +255,7 @@
     </div>
 
     <div class="container">
-      <div class="actions-zone">
+      <div class="action-list">
         <a href={listPrefix} onclick={onBackClick}><IconBack /> Retour</a>
         <button type="submit" class="btn__medium btn">Lancer la publication (~ 2 min)</button>
       </div>
@@ -346,34 +346,11 @@
     }
   }
 
-  .actions-zone {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    margin-bottom: 6rem;
-    padding-right: 2rem;
-    padding-left: 2rem;
-  }
-
   details {
     figure {
       padding: 0.4rem;
       font-family: monospace;
       background-color: rgba(255, 255, 255, 0.4);
     }
-  }
-  :global(.markdown-preview ul) {
-    list-style-type: disc !important;
-    padding-left: 1rem !important;
-  }
-
-  :global(.markdown-preview ol) {
-    list-style-type: decimal !important;
-    padding-left: 1rem !important;
-  }
-
-  :global(.markdown-preview li) {
-    margin-bottom: 0.5rem !important;
   }
 </style>
