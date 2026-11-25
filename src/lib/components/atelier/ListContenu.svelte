@@ -137,7 +137,7 @@
   </div>
 
   {#if onBlogToggle}
-    <div class="wrapper white-zone">
+    <div class="white-zone">
       <h2>Articles</h2>
 
       <p>

@@ -261,7 +261,7 @@
       </div>
 
       {#if file.fileName && file.fileName !== 'index.md'}
-        <div class="wrapper white-zone">
+        <div class="white-zone">
           <h2>{deleteTitle}</h2>
           <label>
             <input
