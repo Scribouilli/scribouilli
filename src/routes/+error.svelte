@@ -2,11 +2,10 @@
   let { error } = $props()
 </script>
 
-<section>
-  <header>
-    <h2>Une erreur est survenue</h2>
-  </header>
-  <div class="wrapper white-zone">
+<div class="container">
+  <h1>Une erreur est survenue</h1>
+
+  <div class="white-zone">
     <code>{error.message}</code>
   </div>
-</section>
+</div>
