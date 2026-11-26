@@ -36,9 +36,11 @@ export const setBaseUrlInConfigIfNecessary = async (
     newBaseUrl = baseUrl.replace(/\/$/, '')
   } else {
     if (repo.repoType === 'github') {
-      // Here the repo has finished loading and is ready, so publishedUrl is string
-      // TODO: I don’t like the cast
-      const publishedWebsiteURL = repo.publishedUrl as string
+      const publishedWebsiteURL = repo.publishedUrl
+      if (!publishedWebsiteURL) {
+        // There has been an error while loading the repo, do nothing
+        return
+      }
       const url = new URL(publishedWebsiteURL)
 
       newBaseUrl = url.pathname.replace(/\/$/, '')

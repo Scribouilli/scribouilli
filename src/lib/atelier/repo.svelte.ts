@@ -113,6 +113,7 @@ export default class ScribouilliGitRepo {
     this.configure({ owner, repoPath })
     const repoId = this.repoId
     const fresh = this.loadFromCache(repoId)
+    console.log('repo fresh', fresh)
 
     // TODO: would be nice to skip that if repo fresh
     // but if something’s happened we might want to setup the repo again
@@ -124,7 +125,7 @@ export default class ScribouilliGitRepo {
     ])
 
     await Promise.all(
-      [, this.pageList.listAll(), this.articleList.listAll()].concat(fresh ? [] : [refreshCache]),
+      [this.pageList.listAll(), this.articleList.listAll()].concat(fresh ? [] : [refreshCache])
     )
 
     if (fresh) {
@@ -246,7 +247,7 @@ export default class ScribouilliGitRepo {
 
   async #loadPublishedUrl(): Promise<void> {
     const repoId = this.repoId
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const fetchUrl = () => {
         this.#provider()
           .api.getPublishedWebsiteURL(this)
@@ -264,6 +265,7 @@ export default class ScribouilliGitRepo {
               setTimeout(fetchUrl, 1000)
             }
           })
+          .catch(reject)
       }
       fetchUrl()
     })
@@ -271,7 +273,7 @@ export default class ScribouilliGitRepo {
 
   async #loadBuildStatus(): Promise<void> {
     const repoId = this.repoId
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const fetchBuildStatus = () => {
         getBuildStatus(this).then(buildStatus => {
           if (this.repoId !== repoId) {
@@ -287,6 +289,7 @@ export default class ScribouilliGitRepo {
             resolve()
           }
         })
+        .catch(reject)
       }
       fetchBuildStatus()
     })

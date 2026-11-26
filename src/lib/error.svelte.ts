@@ -33,6 +33,10 @@ export const handleErrors = (errorMessage: any) => {
 
     default:
       logMessage(errorMessage, 'handleErrors')
-      error.error = new Error(errorMessage)
+      if (errorMessage instanceof Error) {
+        error.error = errorMessage
+      } else {
+        error.error = new Error(errorMessage)
+      }
   }
 }
