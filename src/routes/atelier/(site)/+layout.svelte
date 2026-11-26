@@ -5,7 +5,7 @@
   import Loader from '#lib/components/Loader.svelte'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import SavingLoader from '#lib/components/SavingLoader.svelte'
-  import { handleErrors } from '#lib/error.ts'
+  import { handleErrors } from '#lib/error.svelte.ts'
 
   let loading = $state(true)
   const { children }: LayoutProps = $props()

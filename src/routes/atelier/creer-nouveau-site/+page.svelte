@@ -5,6 +5,7 @@
   import { makeAtelierListPageURL } from '#lib/urls.ts'
   import { goto } from '$app/navigation'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
+  import { handleErrors } from '#lib/error.svelte.ts'
 
   let atelier = getAtelier()
   let name = $state('')
@@ -35,6 +36,7 @@
       await goto(makeAtelierListPageURL(repo))
     } catch (error: any) {
       console.warn(`Failed to create repository: ${error}`)
+      handleErrors(error)
       loading = false
       hasError = true
     }

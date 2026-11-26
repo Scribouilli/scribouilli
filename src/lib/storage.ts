@@ -46,6 +46,12 @@ export function clear() {
   }
 }
 
+export function clearCache() {
+  if (sessionStorage) {
+    sessionStorage.clear()
+  }
+}
+
 export const cache = {
   loadRepo: () => {
     if (sessionStorage) {

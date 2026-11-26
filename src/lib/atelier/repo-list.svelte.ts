@@ -1,3 +1,4 @@
+import { handleErrors } from '#lib/error.svelte.ts'
 import { cache } from '#lib/storage.ts'
 import type { MinimalGitRepository, ProviderConfig, ScribouilliBackendProvider } from '../providers'
 import type { Account } from './account.svelte'
@@ -36,6 +37,8 @@ export class RepoList {
 
     if (!fresh) {
       await promise
+    } else {
+      promise.catch(handleErrors)
     }
   }
 

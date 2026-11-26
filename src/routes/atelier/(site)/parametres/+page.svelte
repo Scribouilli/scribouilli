@@ -2,7 +2,7 @@
   import { saveCustomCSS } from '#lib/atelier.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { CUSTOM_CSS_PATH } from '#lib/config.ts'
-  import { handleErrors } from '#lib/error.ts'
+  import { handleErrors } from '#lib/error.svelte.ts'
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { onMount } from 'svelte'

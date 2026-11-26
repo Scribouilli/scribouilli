@@ -1,19 +1,27 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { logMessage } from '#lib/logger.ts'
-import { error } from '@sveltejs/kit'
 import { logout } from './user'
+import { clearCache } from './storage'
+
+export const error: ScribouilliError = $state({
+  error: null,
+})
+
+export interface ScribouilliError {
+  error: Error | null
+}
 
 /**
  * @summary Handle errors catched by Promises
  */
 export const handleErrors = (errorMessage: any) => {
+  clearCache()
   switch (errorMessage) {
     case 'PROVIDER_NOT_LOADED':
     case 'INVALIDATE_TOKEN': {
       console.info('[invalid token] loging out')
       logout()
-
       break
     }
     case 'NOT_FOUND': {
@@ -25,6 +33,10 @@ export const handleErrors = (errorMessage: any) => {
 
     default:
       logMessage(errorMessage, 'handleErrors')
-      error(500, String(errorMessage))
+      if (errorMessage instanceof Error) {
+        error.error = errorMessage
+      } else {
+        error.error = new Error(errorMessage)
+      }
   }
 }

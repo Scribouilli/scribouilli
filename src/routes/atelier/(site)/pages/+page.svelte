@@ -4,7 +4,7 @@
   import { resolve } from '$app/paths'
   import type { Page } from '#lib/atelier/page.svelte.ts'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
-  import { handleErrors } from '#lib/error.ts'
+  import { handleErrors } from '#lib/error.svelte.ts'
 
   const blogMdContent = `---
 layout: page
