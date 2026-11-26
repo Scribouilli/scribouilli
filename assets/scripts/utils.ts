@@ -59,7 +59,7 @@ export function makeArticleFileName(title: string, date: Date): string {
 export function makePageFrontMatter(
   title: string,
   index: number | null = 1,
-  inMenu: boolean = true,
+  inMenu: boolean, // this function is too low-level to assign a default to inMenu
   blogIndex?: boolean,
 ): string {
   return [

@@ -63,6 +63,7 @@
   // parent component should be responsible for awaiting the promise and
   // displaying a loading screen.
   fileP.then(_file => {
+    console.log('fileP', _file)
     file = _file
   })
 
