@@ -93,6 +93,10 @@
   })
 </script>
 
+<svelte:head>
+  <title>Éditer une page — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <Editeur
   bind:file
   contenus={pages}

@@ -46,7 +46,7 @@ export const PROVIDERS: ProviderConfig[] = [
     name: 'Gitlab',
     description: `
       <strong>Gitlab.com</strong> qui est un hébergeur professionnel.<br>
-      Si vous n'avez pas encore de compte, Gitlab demandera à <a href="https://docs.gitlab.com/ee/security/identity_verification.html" target="_blank">vérifier votre identité</a> avec un n° de téléphone ou de carte bleue.
+      Si vous n'avez pas encore de compte, Gitlab demandera à <a href="https://docs.gitlab.com/ee/security/identity_verification.html">vérifier votre identité</a> avec un n° de téléphone ou de carte bleue.
     `,
     signupEnabled: true,
     signupLink: 'https://gitlab.com/users/sign_up',
@@ -92,7 +92,7 @@ export const PROVIDERS: ProviderConfig[] = [
     signupInstructions: `
       <p>
         Pour pouvoir publier votre contenu, il faut que Scribouilli se connecte
-        à un compte <a href="https://github.com" target="_blank">GitHub</a>.
+        à un compte <a href="https://github.com">GitHub</a>.
       </p>
       <p>La création va se passer sur GitHub.com.</p>
       <p class="text-align-start">Elle comporte 3 étapes :</p>

@@ -34,7 +34,7 @@ body {
 }
 
 /*
-  In applications, there can be lists but HTML lists hav=e bullet points and a bunch of useless styling attributes
+  In applications, there can be lists but HTML lists have bullet points and a bunch of useless styling attributes
 */
 ul,
 ol,
@@ -91,18 +91,37 @@ img {
   text-rendering: optimizeLegibility;
 }
 
+/*
+ https://www.scottohara.me/blog/2017/04/14/inclusively-hidden.html
+*/
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.2rem;
   background-color: #ffe7b3;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  font-size: 1.2rem;
 }
 
 main {
+  padding-right: 1rem;
+  padding-left: 1rem;
   padding-bottom: 2rem;
   flex: 1;
+}
+
+header a {
+  white-space: nowrap;
 }
 
 footer {
@@ -110,19 +129,16 @@ footer {
   text-align: right;
 }
 
-#pages,
-.wrapper {
+.container {
   max-width: 100%;
-  width: 800px;
+  width: 50rem;
   margin: 0 auto;
 }
 
-#pages .btn {
-  margin-top: 0;
-}
-
-.mesPages {
-  margin-top: 3rem;
+.narrow-container {
+  max-width: 100%;
+  width: 32rem;
+  margin: 0 auto;
 }
 
 nav ul {
@@ -132,35 +148,15 @@ nav ul {
   justify-content: flex-end;
 }
 
-.screen {
-  padding-right: 1rem;
-  padding-left: 1rem;
+h1 {
+  margin: 2.5rem 0;
+  font-size: 2.4rem;
   text-align: center;
 }
 
-h1 {
-  margin-top: 0.5rem;
-  margin-bottom: 0;
-  font-size: 1.5625rem;
-}
-
-h1 a {
-  color: #000;
-  text-decoration: none;
-}
-
-h2,
-.h2 {
-  font-size: 2.4rem;
-}
-
-h3 {
+h2 {
   font-size: 2rem;
-}
-
-h4 {
-  margin-bottom: 0;
-  font-size: 1.2rem;
+  text-align: center;
 }
 
 .btn {
@@ -199,33 +195,58 @@ h4 {
   opacity: 0.5;
 }
 
+.action-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  margin: 3rem 0;
+}
+
+.loader {
+  text-align: center;
+}
+
 a {
   color: #912222;
 }
 
-a[href]:active,
-a[href]:hover,
-[href]:not(.btn):not(.go-home):hover,
-[href]:not(.btn):not(.go-home):active,
+a:active,
+a:hover,
 .btn:hover,
 .btn:active {
   box-shadow: inset 0px -0.2em 0px currentColor;
 }
 
-[href]:not(.btn):not(.go-home) {
-  display: inline;
+a {
   text-decoration: none;
   box-shadow: inset 0px -0.1em 0px currentColor;
   transition: box-shadow 0s;
+}
+
+svg.icon {
+  width: 1em;
+  height: 0.8em;
+}
+
+a:has(img),
+a:has(img):hover,
+a:has(img):active {
+  box-shadow: none;
+  display: block;
 }
 
 form {
   text-align: left;
 }
 
-h4,
-label {
+label,
+.label {
   display: block;
+  font-size: 1.2rem;
+  margin: 0;
+  text-align: initial;
   font-weight: bold;
 }
 
@@ -241,9 +262,28 @@ textarea {
   min-height: 32rem;
 }
 
+input[type='checkbox'],
+input[type='radio'] {
+  width: 1em;
+  height: 1em;
+}
+
+select {
+  font-size: 1.2rem;
+  padding: 0.5em;
+  width: 100%;
+}
+
+form .actions-zone {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 6rem;
+}
+
 .white-zone {
   padding: 2rem 1rem;
-  width: 500px;
   text-align: center;
   background: white;
   border-radius: 16px;
@@ -253,7 +293,7 @@ textarea {
   margin-top: 3rem;
 }
 
-.white-zone h3 {
+.white-zone h2 {
   margin-top: 0;
 }
 
@@ -348,12 +388,6 @@ code {
   padding: 0.4rem;
   font-family: monospace;
   background-color: rgba(255, 255, 255, 0.4);
-}
-
-a[href]:not(
-    :where([href^='#'], [href^='/'], [href^='//localhost:8080'], [href^='./'], [href^='../'])
-  ):after {
-  content: ' ➚';
 }
 
 ul.list-with-dot {

@@ -32,39 +32,34 @@
   }
 </script>
 
-<section class="screen">
-  <h3>Choisir le site sur lequel vous souhaitez travailler</h3>
+<svelte:head>
+  <title>Selectionner un site — L’atelier de Scribouilli</title>
+</svelte:head>
+
+<div class="container">
+  <h1>Choisir le site sur lequel vous souhaitez travailler</h1>
 
   {#if !currentAccountRepositories}
     <Loader />
   {:else}
-    <div class="wrapper">
-      <form onsubmit={onSubmit}>
-        <div>
-          <label for="name">Nom de votre site</label>
-          <select id="name" bind:value={repo}>
-            {#each currentAccountRepositories as repo}
-              <option value={repo}>{displayRepoName(repo)}</option>
-            {/each}
-          </select>
-        </div>
+    <form onsubmit={onSubmit} class="narrow-container">
+      <div>
+        <label for="name">Nom de votre site</label>
+        <select id="name" bind:value={repo}>
+          {#each currentAccountRepositories as repo}
+            <option value={repo}>{displayRepoName(repo)}</option>
+          {/each}
+        </select>
+      </div>
 
-        <div class="actions-zone">
-          <button type="submit" class="btn__medium btn" disabled={loading}>
-            Choisir ce site
-          </button>
-        </div>
-      </form>
-    </div>
+      <div class="actions-zone">
+        <button type="submit" class="btn__medium btn" disabled={loading}> Choisir ce site </button>
+      </div>
+    </form>
   {/if}
-</section>
+</div>
 
 <style lang="css">
-  select {
-    font-size: 1.2rem;
-    padding: 0.5em;
-  }
-
   .actions-zone {
     display: flex;
     justify-content: space-between;

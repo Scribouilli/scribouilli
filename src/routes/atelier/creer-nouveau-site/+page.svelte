@@ -41,62 +41,51 @@
   }
 </script>
 
-<section class="screen">
+<svelte:head>
+  <title>Créer un nouveau site — L’atelier de Scribouilli</title>
+</svelte:head>
+
+<div class="narrow-container">
   {#if loading}
     <SiteCreationLoader />
   {:else}
-    <h3>Créer un nouveau site</h3>
+    <h1>Créer un nouveau site</h1>
 
-    <div class="wrapper">
-      <form onsubmit={onSubmit}>
-        <div>
-          <label for="name">Nom de votre site</label>
-          <input bind:value={name} type="text" id="name" required />
-        </div>
+    <form onsubmit={onSubmit}>
+      <div>
+        <label for="name">Nom de votre site</label>
+        <input bind:value={name} type="text" id="name" required />
+      </div>
 
-        <div>
-          <label for="template">Je veux créer :</label>
-          <select id="template" bind:value={selectedTemplate}>
-            {#each TEMPLATES as template}
-              <option value={template} selected={template === DEFAULT_TEMPLATE}
-                >{template.description}</option
-              >
-            {/each}
-          </select>
-        </div>
+      <div>
+        <label for="template">Je veux créer :</label>
+        <select id="template" bind:value={selectedTemplate}>
+          {#each TEMPLATES as template}
+            <option value={template} selected={template === DEFAULT_TEMPLATE}
+              >{template.description}</option
+            >
+          {/each}
+        </select>
+      </div>
 
-        <div class="actions-zone">
-          {#if hasError}
-            <div class="error-message">
-              Il y a un <strong>souci de notre côté</strong>. Vous pouvez réessayer dans une heure
-              ou demain. Si le problème persiste, vous pouvez nous contacter.
-            </div>
-          {:else}
-            <button type="submit" class="btn__medium btn" disabled={loading}>
-              Créer mon nouveau site
-            </button>
-          {/if}
-        </div>
-      </form>
-    </div>
+      <div class="actions-zone">
+        {#if hasError}
+          <div class="error-message">
+            Il y a un <strong>souci de notre côté</strong>. Vous pouvez réessayer dans une heure ou
+            demain. Si le problème persiste, vous pouvez nous contacter.
+          </div>
+        {:else}
+          <button type="submit" class="btn__medium btn" disabled={loading}>
+            Créer mon nouveau site
+          </button>
+        {/if}
+      </div>
+    </form>
   {/if}
-</section>
+</div>
 
 <style lang="css">
-  select {
-    font-size: 1.2rem;
-    padding: 0.5em;
-  }
-
   label[for='template'] {
     margin-top: 1rem;
-  }
-
-  .actions-zone {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    margin-bottom: 6rem;
   }
 </style>

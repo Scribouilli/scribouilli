@@ -5,16 +5,15 @@
   import { resolve } from '$app/paths'
   import { getAtelier } from '#lib/atelier/index.svelte.ts'
   import { page } from '$app/state'
+  import NewTabLink from './NewTabLink.svelte'
+  import BuildStatus from './BuildStatus.svelte'
 
   const atelier = getAtelier()
 
   let needsAccountVerification: boolean = $derived(
     atelier.repo.buildStatus === 'needs_account_verification',
   )
-  let buildStatusClass = $derived(
-    atelier.repo.buildStatus ? `build-${atelier.repo.buildStatus}` : undefined,
-  )
-  let publishedWebsiteURL: string | undefined = $derived(atelier.repo.publishedUrl)
+
   let repositoryURL: string = $derived(atelier.repo.publicRepositoryURL)
   let repositoryType: BackendType | undefined = $derived(atelier.repo.repoType)
   let homeURL: string = $derived(
@@ -37,26 +36,13 @@
 </script>
 
 <header>
-  {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
-    <div>
-      <p>
-        {#if !publishedWebsiteURL}
-          (L'adresse du site va apparaître ici…)
-        {:else}
-          <a href={publishedWebsiteURL} class="project-name" target="_blank">
-            {publishedWebsiteURL}
-          </a>
-        {/if}
-      </p>
-      {#if buildStatusClass}
-        <p class={buildStatusClass}></p>
-      {/if}
-    </div>
-  {/if}
+  <div>
+    <BuildStatus />
+  </div>
 
-  <h1>
+  <div class="brand">
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
-  </h1>
+  </div>
 
   {#if atelier.repo.status === 'ready' || atelier.repo.status === 'sync'}
     <nav>
@@ -84,16 +70,18 @@
         </li>
         {#if repositoryURL && repositoryType !== 'scribouilli'}
           <li>
-            <a href={repositoryURL} target="_blank">Sur {new URL(repositoryURL).hostname}</a>
+            <NewTabLink href={repositoryURL}>Sur {new URL(repositoryURL).hostname}</NewTabLink>
           </li>
         {/if}
         {#if repositoryType === 'scribouilli'}
           <li>
-            <a href={`${atelier.repo.origin}/settings`} target="_blank">Mon compte</a>
+            <NewTabLink href={`${atelier.repo.origin}/settings`}>Mon compte</NewTabLink>
           </li>
         {/if}
       </ul>
     </nav>
+  {:else}
+    <div></div>
   {/if}
 </header>
 
@@ -125,7 +113,7 @@
   </section>
 {/if}
 
-<style lang="scss">
+<style lang="css">
   header {
     margin-bottom: 2rem;
     padding-right: 2rem;
@@ -140,24 +128,12 @@
     flex: 1;
   }
 
-  header > div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  header > div > p {
-    margin: 0em;
-  }
-
-  header h1 {
+  header .brand {
     text-align: center;
-  }
 
-  header img {
-    max-height: 3em;
+    img {
+      max-height: 4.5em;
+    }
   }
 
   .warning {
@@ -189,21 +165,5 @@
     .centered {
       text-align: center;
     }
-  }
-
-  [class^='build-'] {
-    margin-top: 0.3rem;
-  }
-
-  .build-in_progress::after {
-    content: '🕰 En cours de publication (2-3 min)';
-  }
-
-  .build-success::after {
-    content: '✅ Site à jour';
-  }
-
-  .build-error::after {
-    content: '🕰 En cours de publication (15 min max)';
   }
 </style>

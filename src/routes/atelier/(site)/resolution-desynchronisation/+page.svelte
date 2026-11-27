@@ -17,8 +17,12 @@
   )
 </script>
 
-<article>
-  <h1 class="h2">Votre site ne peut plus se mettre à jour</h1>
+<svelte:head>
+  <title>Désynchronisation — L’atelier de Scribouilli</title>
+</svelte:head>
+
+<div class="container">
+  <h1>Votre site ne peut plus se mettre à jour</h1>
 
   <p>Le contenu de votre site a été modifié à 2 endroits différents :</p>
 
@@ -49,13 +53,11 @@
 
   {#if atelier.repo.status === 'ready'}
     {#if newConflictOptions}
-      <ul class="options">
+      <div class="action-list">
         {#each newConflictOptions as { message, resolution }}
-          <li>
-            <button class="btn" onclick={resolution}>{message}</button>
-          </li>
+          <button class="btn" onclick={resolution}>{message}</button>
         {/each}
-      </ul>
+      </div>
     {:else}
       <p>
         Woops… gros problème, nous n'arrivons pas à trouver les options. Scribouilli est vraiment
@@ -68,21 +70,4 @@
   {:else}
     <Loader />
   {/if}
-</article>
-
-<style lang="css">
-  article {
-    max-width: 60rem;
-    margin: 0 auto;
-
-    ul.options {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-
-      li {
-        max-width: 25rem;
-      }
-    }
-  }
-</style>
+</div>

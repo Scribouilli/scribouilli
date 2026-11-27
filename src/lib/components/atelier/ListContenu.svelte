@@ -71,75 +71,74 @@
   }
 </script>
 
-<section class="screen">
-  <div>
-    <header>
-      <h2>
-        {title}
-      </h2>
-      <a
-        href={makeUrlParam(atelierPrefix, atelier.repo.owner, atelier.repo.repoPath)}
-        class="btn btn__medium">{newContentButtonText}</a
-      >
-    </header>
+<div class="narrow-container">
+  <header>
+    <h1>
+      {title}
+    </h1>
+    <a
+      href={makeUrlParam(atelierPrefix, atelier.repo.owner, atelier.repo.repoPath)}
+      class="btn btn__medium">{newContentButtonText}</a
+    >
+  </header>
 
-    <div>
-      <ul>
-        {#each listContenu as contenu}
-          <li>
-            <span>{contenu.title}</span>
-            {#if modification && pageGuard(contenu)}
-              <div class="gestionMenu">
-                <label>
-                  Ordre de la page dans le menu
-                  <input
-                    class="order"
-                    aria-label="Ordre de la page dans le menu"
-                    type="number"
-                    min="1"
-                    max={atelier.pages.length}
-                    bind:value={contenu.index}
-                  />
-                </label>
-                <label>
-                  Afficher dans le menu
-                  <input
-                    class="inMenu"
-                    aria-label="Affichage de la page dans le menu"
-                    type="checkbox"
-                    bind:checked={contenu.inMenu}
-                  />
-                </label>
-              </div>
-            {:else}
-              <a
-                href={makeUrlParam(
-                  `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
-                  atelier.repo.owner,
-                  atelier.repo.repoPath,
-                )}
-              >
-                Modifier</a
-              >
-            {/if}
-          </li>
-        {/each}
-      </ul>
-      {#if allowModification}
-        <button class="btn btn_small btn_secondary" onclick={editClick}
-          >{#if modification}
-            Enregistrer
-          {:else}
-            Modifier le menu
-          {/if}</button
-        >
-      {/if}
-    </div>
+  <ul>
+    {#each listContenu as contenu}
+      <li>
+        <span>{contenu.title}</span>
+        {#if modification && pageGuard(contenu)}
+          <div class="gestionMenu">
+            <label>
+              Ordre de la page dans le menu
+              <input
+                class="order"
+                aria-label="Ordre de la page dans le menu"
+                type="number"
+                min="1"
+                max={atelier.pages.length}
+                bind:value={contenu.index}
+              />
+            </label>
+            <label>
+              Afficher dans le menu
+              <input
+                class="inMenu"
+                aria-label="Affichage de la page dans le menu"
+                type="checkbox"
+                bind:checked={contenu.inMenu}
+              />
+            </label>
+          </div>
+        {:else}
+          <a
+            href={makeUrlParam(
+              `${atelierPrefix}?path=${encodeURIComponent(contenu.path)}`,
+              atelier.repo.owner,
+              atelier.repo.repoPath,
+            )}
+          >
+            Modifier</a
+          >
+        {/if}
+      </li>
+    {/each}
+  </ul>
+
+  <div class="action-list">
+    {#if allowModification}
+      <button class="btn btn_small btn_secondary" onclick={editClick}
+        >{#if modification}
+          Enregistrer
+        {:else}
+          Modifier le menu
+        {/if}</button
+      >
+    {/if}
   </div>
 
   {#if onBlogToggle}
-    <div class="wrapper white-zone">
-      <h3>Articles</h3>
+    <div class="white-zone">
+      <h2>Articles</h2>
 
       <p>
         Ajoute un lien "Articles" dans le menu. Celui-ci permet de créer et lister une série de
@@ -155,15 +154,10 @@
       </button>
     </div>
   {/if}
-</section>
+</div>
 
 <style lang="css">
   ul {
-    margin: auto;
-    margin-bottom: 4rem;
-    text-align: left;
-    width: 25em;
-
     li {
       font-size: 1.3rem;
       display: flex;
@@ -221,21 +215,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 5em;
-    width: 26em;
-    margin: 3rem auto;
-    padding: 0;
-    border: none;
 
     & > * {
       flex: 0 1 auto;
     }
-
-    h2 {
-      margin: 0.2em 0;
-    }
-  }
-
-  .white-zone {
-    margin-top: 3rem;
   }
 </style>

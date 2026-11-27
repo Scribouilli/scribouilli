@@ -8,6 +8,10 @@
   let articles: Article[] = $derived(atelier.articles)
 </script>
 
+<svelte:head>
+  <title>Liste des articles — L’atelier de Scribouilli</title>
+</svelte:head>
+
 <ListContenu
   listContenu={articles}
   title="Articles"

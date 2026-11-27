@@ -101,14 +101,18 @@
   ]
 </script>
 
-<section class="screen" id="settings">
-  <h2>Paramètres</h2>
+<svelte:head>
+  <title>Paramètres — L’atelier de Scribouilli</title>
+</svelte:head>
+
+<div class="narrow-container">
+  <h1>Paramètres</h1>
 
   <div id="notifications">{notification}</div>
 
-  <div class="wrapper white-zone">
+  <div class="white-zone">
     <div>
-      <h3>Couleur principale</h3>
+      <h2>Couleur principale</h2>
 
       <div class="radios-wrapper">
         {#each mesCouleurs as { id, color, name }}
@@ -138,8 +142,8 @@
     </p>
   </div>
 
-  <div class="wrapper white-zone">
-    <h3>Personnalisation du site</h3>
+  <div class="white-zone">
+    <h2>Personnalisation du site</h2>
     <p id="customCSS">
       Pour personnaliser le look de votre site, vous pouvez <a
         href="https://developer.mozilla.org/fr/docs/conflicting/Learn_web_development/Core/Styling_basics"
@@ -153,8 +157,8 @@
   </div>
 
   {#if atelier.repo.userPermission === 'owner'}
-    <div class="wrapper white-zone">
-      <h3>Supprimer le site</h3>
+    <div class="white-zone">
+      <h2>Supprimer le site</h2>
       <p>Attention la suppression du site est définitive!</p>
 
       <label>
@@ -176,11 +180,11 @@
       </button>
     </div>
   {/if}
-
-  <hr />
-
-  <div class="wrapper white-zone">
-    <h3>Autres sites</h3>
+</div>
+<hr />
+<div class="narrow-container">
+  <div class="white-zone">
+    <h2>Autres sites</h2>
     <p>
       Vous pouvez <strong>créer un nouveau site</strong> Scribouilli ou retrouver ceux que vous avez
       <strong>déjà créés</strong>.
@@ -188,7 +192,7 @@
 
     <a class="btn btn__medium" href={resolve('/atelier')}> Changer de site </a>
   </div>
-</section>
+</div>
 
 <style lang="css">
   .radios-wrapper {
