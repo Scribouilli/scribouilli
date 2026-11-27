@@ -36,7 +36,9 @@
 </script>
 
 <header>
-  <BuildStatus />
+  <div>
+    <BuildStatus />
+  </div>
 
   <div class="brand">
     <a href={homeURL} class="go-home"><img src={logoAtelier} alt="L'atelier de Scribouilli" /></a>
@@ -78,6 +80,8 @@
         {/if}
       </ul>
     </nav>
+  {:else}
+    <div></div>
   {/if}
 </header>
 
